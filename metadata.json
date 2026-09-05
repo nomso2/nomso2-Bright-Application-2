@@ -1,0 +1,8 @@
+{
+  "name": "Bright",
+  "description": "Nigeria's electricity response and fault tracking platform with meter-based reporting, live outage map, real-time tracking, automatic escalation, vandalism reporting, and DisCo scorecards.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
