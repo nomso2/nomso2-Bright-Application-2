@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import com.example.ui.BrightViewModel
 import com.example.ui.components.EditMeterDialog
 import com.example.ui.components.EnergyOptimizationDialog
+import com.example.ui.components.EstateExcoAndSlaDossierDialog
 import com.example.ui.components.PhaseOnboardingDialog
 import com.example.ui.components.ProfileAdminDialog
 import com.example.ui.components.ResolutionRatingDialog
@@ -95,6 +96,7 @@ fun BrightApp(viewModel: BrightViewModel) {
     var showTransformerForumDialog by remember { mutableStateOf(false) }
     var showEnergyOptimizationDialog by remember { mutableStateOf(false) }
     var showProfileAdminDialog by remember { mutableStateOf(false) }
+    var showEstateExcoDialog by remember { mutableStateOf(false) }
 
     // State collections
     val userProfile by viewModel.userProfile.collectAsState()
@@ -109,7 +111,7 @@ fun BrightApp(viewModel: BrightViewModel) {
     val isLowDataMode by viewModel.isLowDataMode.collectAsState()
     val userMessage by viewModel.userMessage.collectAsState()
 
-    // Phase 1 - 7 States
+    // Phase 1 - 7 States & New Features
     val isDarkMode by viewModel.isDarkMode.collectAsState()
     val auditingRecords by viewModel.auditingRecords.collectAsState()
     val escrowTokens by viewModel.escrowRebateTokens.collectAsState()
@@ -120,6 +122,9 @@ fun BrightApp(viewModel: BrightViewModel) {
     val whistleblowerReports by viewModel.whistleblowerReports.collectAsState()
     val transformerTelemetry by viewModel.transformerTelemetry.collectAsState()
     val isRestorationAlarmEnabled by viewModel.isRestorationAlarmEnabled.collectAsState()
+    val transformerDuesEntries by viewModel.transformerDuesEntries.collectAsState()
+    val surgeWarningActive by viewModel.surgeWarningActive.collectAsState()
+    val surgeCountdownSeconds by viewModel.surgeCountdownSeconds.collectAsState()
 
     // 30 Power Solutions State
     val isOnboardingCompleted by viewModel.isOnboardingCompleted.collectAsState()
@@ -230,7 +235,12 @@ fun BrightApp(viewModel: BrightViewModel) {
                         onOpenRedDangerSOS = { viewModel.triggerRedDangerEmergency() },
                         diagnosticStatus = diagnosticStatus,
                         onToggleDiagnosticStatus = { viewModel.toggleDiagnosticStatus() },
-                        userTrustScore = userTrustScore
+                        userTrustScore = userTrustScore,
+                        onOpenEstateExcoDossier = { showEstateExcoDialog = true },
+                        surgeWarningActive = surgeWarningActive,
+                        surgeCountdownSeconds = surgeCountdownSeconds,
+                        onTriggerSurgeSiren = { viewModel.triggerSurgeSafetySiren() },
+                        onDismissSurgeWarning = { viewModel.dismissSurgeWarning() }
                     )
                 }
 
@@ -288,7 +298,8 @@ fun BrightApp(viewModel: BrightViewModel) {
                         onToggleBatSignalMode = { viewModel.toggleBatSignalMode(it) },
                         onOpenRedDangerSOS = { viewModel.triggerRedDangerEmergency() },
                         onOpenForum = { showTransformerForumDialog = true },
-                        onPlaySirenAlarm = { viewModel.playRestorationChime() }
+                        onPlaySirenAlarm = { viewModel.playRestorationChime() },
+                        onOpenEstateExco = { showEstateExcoDialog = true }
                     )
                 }
             }
@@ -391,6 +402,22 @@ fun BrightApp(viewModel: BrightViewModel) {
                 viewModel.showNotification("📄 Transactional Accounting Ledger exported: BRIGHT_LEDGER_${userProfile.meterNumber}.csv downloaded")
             },
             onDismiss = { showProfileAdminDialog = false }
+        )
+    }
+
+    // Estate Exco Portal & NERC Dossier / Dues Ledger / SLA Refund Calculator
+    if (showEstateExcoDialog) {
+        EstateExcoAndSlaDossierDialog(
+            userProfile = userProfile,
+            activeComplaints = personalComplaints,
+            duesEntries = transformerDuesEntries,
+            onAddDuesEntry = { name, addr, meter, purpose, amount, method ->
+                viewModel.addTransformerDuesContribution(name, addr, meter, purpose, amount, method)
+            },
+            onGenerateSlaAssessment = { ticketId, title, delayHours ->
+                viewModel.generateSlaCompensationAssessment(ticketId, title, delayHours)
+            },
+            onDismiss = { showEstateExcoDialog = false }
         )
     }
 }

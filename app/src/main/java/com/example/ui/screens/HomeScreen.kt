@@ -27,6 +27,7 @@ import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.FlashOn
 import androidx.compose.material.icons.filled.Forum
+import androidx.compose.material.icons.filled.Gavel
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material.icons.filled.Lock
@@ -67,6 +68,7 @@ import com.example.ui.components.PowerRestorationAlertCard
 import com.example.ui.components.QuickActionGrid
 import com.example.ui.components.RealTimeTicker
 import com.example.ui.components.TransformerOverloadCard
+import com.example.ui.components.GridSurgeWarningBanner
 import com.example.ui.theme.ElegantDarkBar
 import com.example.ui.theme.ElegantDarkBorder
 import com.example.ui.theme.ElegantDarkCardStart
@@ -109,6 +111,11 @@ fun HomeScreen(
     diagnosticStatus: String = "LOAD_SHEDDING",
     onToggleDiagnosticStatus: () -> Unit = {},
     userTrustScore: Int = 98,
+    onOpenEstateExcoDossier: () -> Unit = {},
+    surgeWarningActive: Boolean = false,
+    surgeCountdownSeconds: Int = 180,
+    onTriggerSurgeSiren: () -> Unit = {},
+    onDismissSurgeWarning: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.fillMaxSize()) {
@@ -187,6 +194,24 @@ fun HomeScreen(
                         )
                     }
 
+                    // Estate Exco & NERC Dossier Portal Button
+                    IconButton(
+                        onClick = onOpenEstateExcoDossier,
+                        modifier = Modifier
+                            .size(36.dp)
+                            .clip(CircleShape)
+                            .background(Color(0x14FFFFFF))
+                            .border(1.dp, ElegantGoldPrimary.copy(alpha = 0.5f), CircleShape)
+                            .testTag("estate_exco_dossier_button")
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Gavel,
+                            contentDescription = "Estate Exco Portal & NERC Dossier",
+                            tint = ElegantGoldPrimary,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+
                     // Multi-Asset & Protocols Button
                     IconButton(
                         onClick = onOpenProfileAdmin,
@@ -233,6 +258,92 @@ fun HomeScreen(
                 contentPadding = PaddingValues(top = 14.dp, bottom = 96.dp),
                 verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {
+                // High-Pitch Grid Surge Warning Banner (Audio & 3-Min Countdown)
+                if (surgeWarningActive) {
+                    item {
+                        GridSurgeWarningBanner(
+                            countdownSeconds = surgeCountdownSeconds,
+                            onDismiss = onDismissSurgeWarning
+                        )
+                    }
+                }
+
+                // 00. Estate Exco Portal & CDA Transparency Banner
+                item {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable(onClick = onOpenEstateExcoDossier)
+                            .testTag("estate_exco_portal_card"),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B)),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, ElegantGoldPrimary.copy(alpha = 0.5f))
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(14.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(10.dp)
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(36.dp)
+                                        .clip(RoundedCornerShape(8.dp))
+                                        .background(ElegantGoldPrimary.copy(alpha = 0.2f)),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Gavel,
+                                        contentDescription = null,
+                                        tint = ElegantGoldPrimary,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
+                                Column {
+                                    Text(
+                                        text = "ESTATE EXCO & NERC DOSSIER",
+                                        style = MaterialTheme.typography.labelSmall.copy(
+                                            fontWeight = FontWeight.ExtraBold,
+                                            letterSpacing = 0.5.sp
+                                        ),
+                                        color = ElegantGoldPrimary
+                                    )
+                                    Text(
+                                        text = "PDF Legal Export • Dues Ledger • SLA Refund Calc",
+                                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                                        color = Slate100Text
+                                    )
+                                }
+                            }
+
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                Button(
+                                    onClick = onTriggerSurgeSiren,
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color(0xFF991B1B),
+                                        contentColor = Color.White
+                                    ),
+                                    shape = RoundedCornerShape(8.dp),
+                                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
+                                    modifier = Modifier.testTag("test_surge_siren_btn")
+                                ) {
+                                    Icon(Icons.Default.VolumeUp, contentDescription = null, modifier = Modifier.size(14.dp))
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text("Surge Siren", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                                }
+                            }
+                        }
+                    }
+                }
+
                 // 0A. 30 Critical Grid Solutions Hub Banner
                 item {
                     Card(

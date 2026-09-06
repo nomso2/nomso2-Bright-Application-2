@@ -88,3 +88,6 @@ val DarkTextPrimary = Slate100Text
 val DarkTextSecondary = Slate400Text
 val LightTextPrimary = Slate100Text
 val LightTextSecondary = Slate400Text
+
+val DarkCharcoal = Color(0xFF1E293B)
+val MutedSlateText = Color(0xFF94A3B8)

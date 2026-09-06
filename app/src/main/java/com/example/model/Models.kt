@@ -270,4 +270,93 @@ data class WhistleblowerReport(
     val status: String = "CRYPTOGRAPHICALLY_SEALED_NERC_DISPATCHED"
 )
 
+/**
+ * CDA / Transformer Dues Ledger Entry
+ */
+data class TransformerDuesEntry(
+    val id: String,
+    val residentName: String,
+    val houseAddress: String,
+    val meterNumber: String,
+    val purpose: String, // "Jumper Cable Replacement", "500kVA Transformer Oil Top-Up", "Street Security Light Repairs", "Lineman Requisition"
+    val amountNgn: Double,
+    val dateText: String,
+    val paymentMethod: String, // "Bank Transfer", "OPay", "Cash to Chairman"
+    val verifiedByChairman: Boolean = true
+)
+
+/**
+ * NERC SLA Compensation Assessment Record
+ */
+data class SlaCompensationAssessment(
+    val ticketId: String,
+    val faultTitle: String,
+    val discoCode: String,
+    val reportedTimeFormatted: String,
+    val nercStandardHoursLimit: Int, // e.g. 24 hours for fuse, 48 hours for transformer
+    val actualResolutionHours: Int,
+    val excessHoursBreached: Int,
+    val statutoryHourlyRateNgn: Double = 93.75, // NERC approved CPR minimum tariff compensation unit
+    val totalCompensationPayableNgn: Double,
+    val eligibleCreditToken: String,
+    val demandLetterText: String,
+    val isClaimDispatched: Boolean = false
+)
+
+/**
+ * Smart Meter Server Gateway Configuration
+ * Enables connecting the mobile app and backend server to smart meters across Nigeria
+ */
+data class SmartMeterServerConfig(
+    val serverUrl: String = "https://ami.brightgrid.ng/api/v1",
+    val protocol: String = "REST_MQTT_HYBRID", // "REST_MQTT_HYBRID", "DLMS_COSEM_HDLC", "STS6_CELLULAR_APN", "WEBSOCKET_STREAM"
+    val mqttBrokerHost: String = "mqtt.brightgrid.ng:8883",
+    val apiKey: String = "ami_live_ng_98fa01c27e",
+    val webhookEndpoint: String = "/api/v1/telemetry/webhook",
+    val syncIntervalSeconds: Int = 15,
+    val isConnected: Boolean = true,
+    val lastHeartbeatTime: String = "Just now",
+    val latencyMs: Int = 42,
+    val connectedMetersCount: Int = 8,
+    val tlsEnabled: Boolean = true
+)
+
+/**
+ * Smart Meter Device deployed across Nigeria (Mojec, Momas, Conlog, Hexing, Inhemeter, etc.)
+ */
+data class SmartMeterDevice(
+    val meterNumber: String,
+    val manufacturer: String, // "Mojec International", "Momas (MEMCOL)", "Conlog Nigeria", "Hexing Electrical", "Inhemeter"
+    val modelNumber: String,
+    val discoCode: String, // "EKEDC", "IKEDC", "AEDC", "IBEDC", "EEDC", "KEDCO", "PHED"
+    val locationState: String, // "Lagos", "Abuja FCT", "Oyo", "Enugu", "Kano", "Rivers"
+    val feederName: String,
+    val ipOrSimImei: String,
+    val protocol: String, // "DLMS/COSEM", "STS-6/Cellular", "MQTT/JSON", "NB-IoT"
+    val isOnline: Boolean = true,
+    val voltageV: Double = 228.5,
+    val currentA: Double = 12.4,
+    val frequencyHz: Double = 50.02,
+    val activePowerKw: Double = 2.83,
+    val accumulatedKwh: Double = 1420.8,
+    val powerFactor: Double = 0.96,
+    val relayStatusClosed: Boolean = true, // true = Power Connected, false = Disconnected
+    val tamperDetected: Boolean = false,
+    val lastPingSecondsAgo: Int = 4,
+    val signalStrengthDbm: Int = -72, // Cell RSSI
+    val firmwareVersion: String = "v4.2.1-NG-MAP"
+)
+
+/**
+ * Remote Command dispatched to a Smart Meter via the App Server
+ */
+data class SmartMeterCommand(
+    val id: String,
+    val meterNumber: String,
+    val commandType: String, // "RELAY_DISCONNECT", "RELAY_RECONNECT", "OTA_TOKEN_INJECTION", "INSTANT_TELEMETRY_READ", "TIME_SYNC"
+    val payload: String = "",
+    val timestampText: String,
+    val status: String // "DELIVERED_ACK", "PENDING_QUEUE", "FAILED"
+)
+
 
