@@ -240,6 +240,58 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
     private val _userMessage = MutableStateFlow<String?>(null)
     val userMessage: StateFlow<String?> = _userMessage.asStateFlow()
 
+    // 30 Power Solutions State
+    private val _isBatSignalMode = MutableStateFlow(false)
+    val isBatSignalMode: StateFlow<Boolean> = _isBatSignalMode.asStateFlow()
+
+    private val _isOnboardingCompleted = MutableStateFlow(false)
+    val isOnboardingCompleted: StateFlow<Boolean> = _isOnboardingCompleted.asStateFlow()
+
+    private val _userTrustScore = MutableStateFlow(98)
+    val userTrustScore: StateFlow<Int> = _userTrustScore.asStateFlow()
+
+    private val _diagnosticStatus = MutableStateFlow("LOAD_SHEDDING") // "LOAD_SHEDDING" vs "FAULT"
+    val diagnosticStatus: StateFlow<String> = _diagnosticStatus.asStateFlow()
+
+    fun toggleBatSignalMode(enabled: Boolean) {
+        _isBatSignalMode.value = enabled
+    }
+
+    fun completeOnboarding(profile: UserProfile) {
+        viewModelScope.launch {
+            repository.saveUserProfile(profile.copy(isOnboarded = true))
+            _isOnboardingCompleted.value = true
+            _userMessage.value = "Welcome ${profile.customerName}! Meter ${profile.meterNumber} activated on BRIGHT."
+        }
+    }
+
+    fun resetToOnboarding() {
+        _isOnboardingCompleted.value = false
+    }
+
+    fun toggleDiagnosticStatus() {
+        _diagnosticStatus.value = if (_diagnosticStatus.value == "LOAD_SHEDDING") "FAULT" else "LOAD_SHEDDING"
+    }
+
+    fun triggerRedDangerEmergency() {
+        viewModelScope.launch {
+            val profile = userProfile.value
+            val complaintId = repository.submitFaultComplaint(
+                meterNumber = profile.meterNumber,
+                title = "CRITICAL DANGER: Fallen High-Tension Cable / Substation Fire",
+                description = "High-priority life safety hazard reported via Critical Danger Red Button. Bypassed normal queue. DisCo emergency control room alerted.",
+                faultType = FaultType.LIVE_CABLE_EXPOSED,
+                isHazardEmergency = true,
+                discoCode = profile.discoCode,
+                transformerId = profile.transformerId,
+                feederName = profile.feederName,
+                imageUri = "https://images.unsplash.com/photo-1544724569-5f546fd6f2b5?w=600&q=80",
+                isVideo = false
+            )
+            _userMessage.value = "🚨 Critical Danger Alert Logged! DisCo Emergency Crew Dispatched."
+        }
+    }
+
 
     init {
         // Live grid telemetry oscillation simulator (e.g. 50.04 Hz - 50.12 Hz realistic variation)

@@ -42,6 +42,7 @@ import com.example.ui.components.EnergyOptimizationDialog
 import com.example.ui.components.PhaseOnboardingDialog
 import com.example.ui.components.ProfileAdminDialog
 import com.example.ui.components.ResolutionRatingDialog
+import com.example.ui.components.SignUpOnboardingScreen
 import com.example.ui.components.TokenEscrowClearinghouseDialog
 import com.example.ui.components.TransformerForumDialog
 import com.example.ui.screens.GridHubScreen
@@ -120,6 +121,26 @@ fun BrightApp(viewModel: BrightViewModel) {
     val transformerTelemetry by viewModel.transformerTelemetry.collectAsState()
     val isRestorationAlarmEnabled by viewModel.isRestorationAlarmEnabled.collectAsState()
 
+    // 30 Power Solutions State
+    val isOnboardingCompleted by viewModel.isOnboardingCompleted.collectAsState()
+    val isBatSignalMode by viewModel.isBatSignalMode.collectAsState()
+    val diagnosticStatus by viewModel.diagnosticStatus.collectAsState()
+    val userTrustScore by viewModel.userTrustScore.collectAsState()
+
+    // If new user (not onboarded yet) or opened from menu, show the interactive sign-up flow
+    if ((!isOnboardingCompleted && !userProfile.isOnboarded) || showOnboardingDialog) {
+        SignUpOnboardingScreen(
+            onCompleteSignUp = { newProfile ->
+                viewModel.completeOnboarding(newProfile)
+                showOnboardingDialog = false
+            },
+            onSkipForNow = {
+                showOnboardingDialog = false
+                viewModel.completeOnboarding(userProfile)
+            }
+        )
+        return
+    }
 
     // Show Snackbars when user messages are triggered
     LaunchedEffect(userMessage) {
@@ -205,7 +226,11 @@ fun BrightApp(viewModel: BrightViewModel) {
                         onNavigateMap = { currentDestination = BrightNavDestination.MAP },
                         onNavigateVandalism = { currentDestination = BrightNavDestination.VANDALISM },
                         onNavigateHistory = { currentDestination = BrightNavDestination.HISTORY },
-                        onNavigateHub = { currentDestination = BrightNavDestination.GRID_HUB }
+                        onNavigateHub = { currentDestination = BrightNavDestination.GRID_HUB },
+                        onOpenRedDangerSOS = { viewModel.triggerRedDangerEmergency() },
+                        diagnosticStatus = diagnosticStatus,
+                        onToggleDiagnosticStatus = { viewModel.toggleDiagnosticStatus() },
+                        userTrustScore = userTrustScore
                     )
                 }
 
@@ -258,7 +283,12 @@ fun BrightApp(viewModel: BrightViewModel) {
                         onToggleLowData = { viewModel.toggleLowDataMode() },
                         onSubmitBillingDispute = { type, amount, month, desc ->
                             viewModel.submitBillingDispute(type, amount, month, desc)
-                        }
+                        },
+                        isBatSignalMode = isBatSignalMode,
+                        onToggleBatSignalMode = { viewModel.toggleBatSignalMode(it) },
+                        onOpenRedDangerSOS = { viewModel.triggerRedDangerEmergency() },
+                        onOpenForum = { showTransformerForumDialog = true },
+                        onPlaySirenAlarm = { viewModel.playRestorationChime() }
                     )
                 }
             }

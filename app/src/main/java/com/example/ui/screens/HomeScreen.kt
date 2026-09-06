@@ -105,6 +105,10 @@ fun HomeScreen(
     onNavigateVandalism: () -> Unit = {},
     onNavigateHistory: () -> Unit = {},
     onNavigateHub: () -> Unit = {},
+    onOpenRedDangerSOS: () -> Unit = {},
+    diagnosticStatus: String = "LOAD_SHEDDING",
+    onToggleDiagnosticStatus: () -> Unit = {},
+    userTrustScore: Int = 98,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.fillMaxSize()) {
@@ -142,11 +146,29 @@ fun HomeScreen(
                     )
                 }
 
-                // Action Bar: Light/Dark Mode Switcher & Multi-Asset Profile Icon
+                // Action Bar: Light/Dark Mode Switcher & Multi-Asset Profile Icon & Signup Wizard Icon
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
+                    // Sign-Up Wizard / Switch Meter Button
+                    IconButton(
+                        onClick = onOpenOnboarding,
+                        modifier = Modifier
+                            .size(36.dp)
+                            .clip(CircleShape)
+                            .background(Color(0x14FFFFFF))
+                            .border(1.dp, ElegantDarkBorder, CircleShape)
+                            .testTag("onboarding_signup_button")
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = "New User Sign-Up / Meter Setup",
+                            tint = ElegantGoldPrimary,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+
                     // Theme Switcher Button (Dark / Light)
                     IconButton(
                         onClick = onToggleThemeMode,
@@ -211,6 +233,168 @@ fun HomeScreen(
                 contentPadding = PaddingValues(top = 14.dp, bottom = 96.dp),
                 verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {
+                // 0A. 30 Critical Grid Solutions Hub Banner
+                item {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag("solutions_30_banner_card"),
+                        shape = RoundedCornerShape(18.dp),
+                        colors = CardDefaults.cardColors(containerColor = ElegantDarkSurface),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFD97706))
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(28.dp)
+                                            .clip(CircleShape)
+                                            .background(Color(0x26F59E0B)),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Bolt,
+                                            contentDescription = null,
+                                            tint = ElegantGoldPrimary,
+                                            modifier = Modifier.size(18.dp)
+                                        )
+                                    }
+                                    Text(
+                                        text = "30 GRID FIXES DEPLOYED",
+                                        style = MaterialTheme.typography.labelMedium.copy(
+                                            fontWeight = FontWeight.ExtraBold,
+                                            letterSpacing = 1.sp
+                                        ),
+                                        color = ElegantGoldPrimary
+                                    )
+                                }
+                                Box(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(6.dp))
+                                        .background(Color(0x2610B981))
+                                        .padding(horizontal = 8.dp, vertical = 2.dp)
+                                ) {
+                                    Text(
+                                        text = "Trust: $userTrustScore%",
+                                        style = MaterialTheme.typography.labelSmall.copy(
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color(0xFF34D399)
+                                        )
+                                    )
+                                }
+                            }
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = "Intelligent software layer resolving Nigeria's 30 power sector crises: tiered dispatch, transformer fire alerts, USSD offline sync, load-shedding diagnosis & extortion shield.",
+                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
+                                color = Slate400Text
+                            )
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Button(
+                                    onClick = onNavigateHub,
+                                    modifier = Modifier
+                                        .weight(1.2f)
+                                        .testTag("open_30_solutions_btn"),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = ElegantGoldPrimary,
+                                        contentColor = Color.Black
+                                    ),
+                                    shape = RoundedCornerShape(10.dp)
+                                ) {
+                                    Text(
+                                        text = "View 30 Solutions",
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 12.sp
+                                    )
+                                }
+                                Button(
+                                    onClick = onOpenRedDangerSOS,
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .testTag("danger_sos_btn"),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color(0xFFDC2626),
+                                        contentColor = Color.White
+                                    ),
+                                    shape = RoundedCornerShape(10.dp)
+                                ) {
+                                    Text(
+                                        text = "🚨 Red SOS",
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 12.sp
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // 0B. Diagnostic Classifier: Load Shedding vs Unplanned Fault (Solution #5)
+                item {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable(onClick = onToggleDiagnosticStatus)
+                            .testTag("diagnostic_classifier_card"),
+                        shape = RoundedCornerShape(14.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFF0F172A)),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF334155))
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(12.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(10.dp)
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(10.dp)
+                                        .clip(CircleShape)
+                                        .background(if (diagnosticStatus == "LOAD_SHEDDING") Color(0xFFF59E0B) else Color(0xFFEF4444))
+                                )
+                                Column {
+                                    Text(
+                                        text = if (diagnosticStatus == "LOAD_SHEDDING") "AI DIAGNOSIS: PLANNED LOAD SHEDDING" else "AI DIAGNOSIS: UNPLANNED NETWORK FAULT",
+                                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                                        color = if (diagnosticStatus == "LOAD_SHEDDING") Color(0xFFFBBF24) else Color(0xFFF87171)
+                                    )
+                                    Text(
+                                        text = if (diagnosticStatus == "LOAD_SHEDDING") "TCN System Operator Quota reduction on ${userProfile.feederName}" else "Feeder tripped on overcurrent or blown drop-out fuse",
+                                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                                        color = Slate400Text
+                                    )
+                                }
+                            }
+                            Text(
+                                text = "Tap Switch",
+                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                                color = Slate500Text
+                            )
+                        }
+                    }
+                }
+
                 // 1. Meter Identity Card
                 item {
                     MeterProfileHeader(

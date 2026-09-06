@@ -51,6 +51,9 @@ val ElegantGoldLightContainer = Color(0x1AD97706)
 
 
 // Legacy aliases mapped to Elegant Dark for theme compatibility
+val GoldPrimary = ElegantGoldPrimary
+val EmeraldAccent = ElegantGreenLive
+
 val ElectricGreenLight = ElegantGoldPrimary
 val ElectricGreenDark = ElegantGoldPrimary
 val ElectricGreenContainerLight = ElegantGoldContainer

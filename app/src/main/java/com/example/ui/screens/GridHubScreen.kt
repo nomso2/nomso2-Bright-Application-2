@@ -76,8 +76,10 @@ import com.example.model.FeederBand
 import com.example.model.MaintenanceAlert
 import com.example.model.UserProfile
 import com.example.ui.AppLanguage
+import com.example.ui.components.Solutions30ComprehensiveHub
 
 enum class HubSection {
+    SOLUTIONS_30,
     ALL,
     TARIFFS,
     BILLING_METHODOLOGIES,
@@ -102,9 +104,14 @@ fun GridHubScreen(
     onLanguageSelected: (AppLanguage) -> Unit,
     onToggleLowData: () -> Unit,
     onSubmitBillingDispute: (disputeType: String, amount: Double, month: String, desc: String) -> Unit,
+    isBatSignalMode: Boolean = false,
+    onToggleBatSignalMode: (Boolean) -> Unit = {},
+    onOpenRedDangerSOS: () -> Unit = {},
+    onOpenForum: () -> Unit = {},
+    onPlaySirenAlarm: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    var selectedSection by remember { mutableStateOf(HubSection.ALL) }
+    var selectedSection by remember { mutableStateOf(HubSection.SOLUTIONS_30) }
     var selectedPolicyGuide by remember { mutableStateOf<PolicyGuide?>(null) }
 
     // Tariff Calculator State
@@ -207,6 +214,7 @@ fun GridHubScreen(
                 items(HubSection.entries) { section ->
                     val isSelected = selectedSection == section
                     val label = when (section) {
+                        HubSection.SOLUTIONS_30 -> "30 Grid Solutions"
                         HubSection.ALL -> "All Resources"
                         HubSection.TARIFFS -> "Electricity Tariffs"
                         HubSection.BILLING_METHODOLOGIES -> "Billing (Prepaid vs Estimated)"
@@ -224,6 +232,22 @@ fun GridHubScreen(
                         )
                     )
                 }
+            }
+        }
+
+        // ==========================================
+        // 30 POWER SECTOR SOLUTIONS COMPREHENSIVE HUB
+        // ==========================================
+        if (selectedSection == HubSection.SOLUTIONS_30 || selectedSection == HubSection.ALL) {
+            item {
+                Solutions30ComprehensiveHub(
+                    userProfile = userProfile,
+                    isBatSignalMode = isBatSignalMode,
+                    onToggleBatSignalMode = onToggleBatSignalMode,
+                    onOpenRedDangerSOS = onOpenRedDangerSOS,
+                    onOpenForum = onOpenForum,
+                    onPlaySirenAlarm = onPlaySirenAlarm
+                )
             }
         }
 

@@ -15,7 +15,8 @@ data class UserProfile(
     val feederBand: FeederBand = FeederBand.BAND_A,
     val transformerId: String = "TR-VI-ADEOLA-04B",
     val isPrepaid: Boolean = true,
-    val connectedHouseholdsCount: Int = 184
+    val connectedHouseholdsCount: Int = 184,
+    val isOnboarded: Boolean = false
 )
 
 /**

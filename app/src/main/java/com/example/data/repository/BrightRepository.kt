@@ -353,120 +353,14 @@ class BrightRepository(private val database: AppDatabase) {
             feederBand = FeederBand.BAND_A,
             transformerId = "TR-VI-ADEOLA-04B",
             isPrepaid = true,
-            connectedHouseholdsCount = 184
+            connectedHouseholdsCount = 184,
+            isOnboarded = false
         )
         profileDao.setUserProfile(UserProfileEntity.fromDomain(defaultProfile))
 
+        // New user starts with clean 0 complaints slate (ready for first-time reporting)
+        // No foreign or stranger complaints seeded.
         val now = System.currentTimeMillis()
-
-        // Seed 1 active personal complaint and 2 historical complaints so user immediately experiences all features
-        val seedComplaints = listOf(
-            ComplaintEntity(
-                id = "BRT-2026-EK-4821",
-                meterNumber = "01429583192",
-                title = "Blown 500kVA Distribution Transformer",
-                description = "Transformer sparked heavily around 3:15 PM with loud explosion. Oil leaking from base. Entire street in darkness.",
-                faultTypeName = FaultType.BURNT_TRANSFORMER.name,
-                isHazardEmergency = false,
-                statusName = ComplaintStatus.WORK_IN_PROGRESS.name,
-                escalationTierLevel = EscalationTier.LEVEL_2.level, // Auto-escalated to District Office
-                discoCode = "EKEDC",
-                transformerId = "TR-VI-ADEOLA-04B",
-                feederName = "Victoria Island 33kV Injection Feeder 4",
-                reportedAt = now - (6 * 60 * 60 * 1000L), // 6 hours ago
-                updatedAt = now - (45 * 60 * 1000L),
-                escalationDeadline = now + (6 * 60 * 60 * 1000L),
-                upvotesCount = 42, // Community neighbors upvoted
-                assignedCrewName = "Engr. Kelechi Okafor (Area District Lead)",
-                assignedCrewPhone = "0803-455-8910",
-                etaMinutes = 45,
-                resolutionNotes = "Replacement 500kVA transformer core dispatched from Ijora Central Workshop. Crew rigging crane for installation.",
-                userSatisfaction = null,
-                imageUri = null,
-                autoClusteredCount = 184,
-                resolvedAt = null,
-                isVideo = false
-            ),
-            ComplaintEntity(
-                id = "BRT-2026-EK-1109",
-                meterNumber = "01429583192",
-                title = "Low Phase Power & Brownout",
-                description = "Refrigerators and pumps cannot start due to half-current (140V measured on multimeter).",
-                faultTypeName = FaultType.PHASE_FAILURE.name,
-                isHazardEmergency = false,
-                statusName = ComplaintStatus.RESOLVED.name,
-                escalationTierLevel = EscalationTier.LEVEL_1.level,
-                discoCode = "EKEDC",
-                transformerId = "TR-VI-ADEOLA-04B",
-                feederName = "Victoria Island 33kV Injection Feeder 4",
-                reportedAt = now - (5 * 24 * 60 * 60 * 1000L),
-                updatedAt = now - (5 * 24 * 60 * 60 * 1000L) + (4 * 60 * 60 * 1000L),
-                escalationDeadline = now - (5 * 24 * 60 * 60 * 1000L) + (8 * 60 * 60 * 1000L),
-                upvotesCount = 15,
-                assignedCrewName = "Technician Fatai Sanusi",
-                assignedCrewPhone = "0812-700-1122",
-                etaMinutes = 0,
-                resolutionNotes = "Loose jumper replaced at pole 12 crossarm. Voltage restored to 232V balanced.",
-                userSatisfaction = 5,
-                imageUri = "https://images.unsplash.com/photo-1513828583688-c52646db42da?w=600&q=80",
-                autoClusteredCount = 38,
-                resolvedAt = now - (5 * 24 * 60 * 60 * 1000L) + (4 * 60 * 60 * 1000L),
-                isVideo = false
-            ),
-            ComplaintEntity(
-                id = "BRT-2026-EK-0943",
-                meterNumber = "01429583192",
-                title = "Sparking Underground Feeder Cable",
-                description = "Smoking underground armored cable joint near junction box with visible arcing.",
-                faultTypeName = FaultType.LIVE_CABLE_EXPOSED.name,
-                isHazardEmergency = true,
-                statusName = ComplaintStatus.RESOLVED.name,
-                escalationTierLevel = EscalationTier.LEVEL_1.level,
-                discoCode = "EKEDC",
-                transformerId = "TR-VI-ADEOLA-04B",
-                feederName = "Victoria Island 33kV Injection Feeder 4",
-                reportedAt = now - (14 * 24 * 60 * 60 * 1000L),
-                updatedAt = now - (14 * 24 * 60 * 60 * 1000L) + (90 * 60 * 1000L),
-                escalationDeadline = now - (14 * 24 * 60 * 60 * 1000L) + (120 * 60 * 1000L),
-                upvotesCount = 89,
-                assignedCrewName = "Emergency Rapid Intervention Squad",
-                assignedCrewPhone = "0708-065-5555",
-                etaMinutes = 0,
-                resolutionNotes = "Cable isolated within 18 minutes. Joint re-sleeved with resin splice kit and buried according to NERC safety standard.",
-                userSatisfaction = 4,
-                imageUri = "https://images.unsplash.com/photo-1544724569-5f546fd6f2b5?w=600&q=80",
-                autoClusteredCount = 184,
-                resolvedAt = now - (14 * 24 * 60 * 60 * 1000L) + (90 * 60 * 1000L),
-                isVideo = true
-            ),
-            ComplaintEntity(
-                id = "BRT-2026-EK-0641",
-                meterNumber = "01429583192",
-                title = "Blown 300A Feeder Pillar Fuse",
-                description = "Feeder pillar fuse blown after heavy rainfall storm surge.",
-                faultTypeName = FaultType.FEEDER_TRIPPED.name,
-                isHazardEmergency = false,
-                statusName = ComplaintStatus.RESOLVED.name,
-                escalationTierLevel = EscalationTier.LEVEL_1.level,
-                discoCode = "EKEDC",
-                transformerId = "TR-VI-ADEOLA-04B",
-                feederName = "Victoria Island 33kV Injection Feeder 4",
-                reportedAt = now - (28 * 24 * 60 * 60 * 1000L),
-                updatedAt = now - (28 * 24 * 60 * 60 * 1000L) + (135 * 60 * 1000L),
-                escalationDeadline = now - (28 * 24 * 60 * 60 * 1000L) + (240 * 60 * 1000L),
-                upvotesCount = 22,
-                assignedCrewName = "Engr. Segun Adeyemi",
-                assignedCrewPhone = "0802-334-1189",
-                etaMinutes = 0,
-                resolutionNotes = "Replaced blown 300A HRC fuse link and cleaned carbon traces on busbar.",
-                userSatisfaction = 5,
-                imageUri = "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=600&q=80",
-                autoClusteredCount = 64,
-                resolvedAt = now - (28 * 24 * 60 * 60 * 1000L) + (135 * 60 * 1000L),
-                isVideo = false
-            )
-        )
-        complaintDao.insertAll(seedComplaints)
 
         // Seed initial vandalism report
         val seedVandalism = VandalismEntity(

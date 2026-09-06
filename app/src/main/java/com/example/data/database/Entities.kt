@@ -26,7 +26,8 @@ data class UserProfileEntity(
     val feederBand: String,
     val transformerId: String,
     val isPrepaid: Boolean,
-    val connectedHouseholdsCount: Int
+    val connectedHouseholdsCount: Int,
+    val isOnboarded: Boolean = false
 ) {
     fun toDomain(): UserProfile = UserProfile(
         meterNumber = meterNumber,
@@ -40,7 +41,8 @@ data class UserProfileEntity(
         feederBand = try { FeederBand.valueOf(feederBand) } catch (e: Exception) { FeederBand.BAND_A },
         transformerId = transformerId,
         isPrepaid = isPrepaid,
-        connectedHouseholdsCount = connectedHouseholdsCount
+        connectedHouseholdsCount = connectedHouseholdsCount,
+        isOnboarded = isOnboarded
     )
 
     companion object {
@@ -56,7 +58,8 @@ data class UserProfileEntity(
             feederBand = u.feederBand.name,
             transformerId = u.transformerId,
             isPrepaid = u.isPrepaid,
-            connectedHouseholdsCount = u.connectedHouseholdsCount
+            connectedHouseholdsCount = u.connectedHouseholdsCount,
+            isOnboarded = u.isOnboarded
         )
     }
 }
