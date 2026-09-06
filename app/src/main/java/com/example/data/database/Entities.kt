@@ -10,6 +10,8 @@ import com.example.model.FeederBand
 import com.example.model.UserProfile
 import com.example.model.VandalismReport
 import com.example.model.BillingDispute
+import com.example.model.ApplianceDamageClaim
+import com.example.model.StreetHazardPin
 
 @Entity(tableName = "user_profile")
 data class UserProfileEntity(
@@ -228,3 +230,100 @@ data class BillingDisputeEntity(
         )
     }
 }
+
+@Entity(tableName = "appliance_claims")
+data class ApplianceClaimEntity(
+    @PrimaryKey val id: String,
+    val meterNumber: String,
+    val applianceName: String,
+    val applianceBrandModel: String,
+    val estimatedLossNgn: Double,
+    val surgeTimestampText: String,
+    val surgeDescription: String,
+    val statutoryNoticeText: String,
+    val discoCode: String,
+    val status: String,
+    val createdAt: Long
+) {
+    fun toDomain() = ApplianceDamageClaim(
+        id = id,
+        meterNumber = meterNumber,
+        applianceName = applianceName,
+        applianceBrandModel = applianceBrandModel,
+        estimatedLossNgn = estimatedLossNgn,
+        surgeTimestampText = surgeTimestampText,
+        surgeDescription = surgeDescription,
+        statutoryNoticeText = statutoryNoticeText,
+        discoCode = discoCode,
+        status = status,
+        createdAt = createdAt
+    )
+
+    companion object {
+        fun fromDomain(c: ApplianceDamageClaim) = ApplianceClaimEntity(
+            id = c.id,
+            meterNumber = c.meterNumber,
+            applianceName = c.applianceName,
+            applianceBrandModel = c.applianceBrandModel,
+            estimatedLossNgn = c.estimatedLossNgn,
+            surgeTimestampText = c.surgeTimestampText,
+            surgeDescription = c.surgeDescription,
+            statutoryNoticeText = c.statutoryNoticeText,
+            discoCode = c.discoCode,
+            status = c.status,
+            createdAt = c.createdAt
+        )
+    }
+}
+
+@Entity(tableName = "street_hazards")
+data class StreetHazardEntity(
+    @PrimaryKey val id: String,
+    val title: String,
+    val hazardType: String,
+    val urgency: String,
+    val location: String,
+    val landmark: String,
+    val discoCode: String,
+    val reportedBy: String,
+    val verifiedCount: Int,
+    val isDispatched: Boolean,
+    val xPosRatio: Float,
+    val yPosRatio: Float,
+    val reportedAt: Long
+) {
+    fun toDomain() = StreetHazardPin(
+        id = id,
+        title = title,
+        hazardType = hazardType,
+        urgency = urgency,
+        location = location,
+        landmark = landmark,
+        discoCode = discoCode,
+        reportedBy = reportedBy,
+        verifiedCount = verifiedCount,
+        isDispatched = isDispatched,
+        xPosRatio = xPosRatio,
+        yPosRatio = yPosRatio,
+        reportedAt = reportedAt
+    )
+
+    companion object {
+        fun fromDomain(h: StreetHazardPin) = StreetHazardEntity(
+            id = h.id,
+            title = h.title,
+            hazardType = h.hazardType,
+            urgency = h.urgency,
+            location = h.location,
+            landmark = h.landmark,
+            discoCode = h.discoCode,
+            reportedBy = h.reportedBy,
+            verifiedCount = h.verifiedCount,
+            isDispatched = h.isDispatched,
+            xPosRatio = h.xPosRatio,
+            yPosRatio = h.yPosRatio,
+            reportedAt = h.reportedAt
+        )
+    }
+}
+

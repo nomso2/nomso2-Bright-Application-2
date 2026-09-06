@@ -130,3 +130,143 @@ data class GridTelemetry(
     val activeGenCos: Int = 22,
     val lastUpdatedText: String = "Live (TCN NCC Osogbo)"
 )
+
+/**
+ * Appliance Surge Damage Statutory Compensation Claim (NERC CPR 2023)
+ */
+data class ApplianceDamageClaim(
+    val id: String,
+    val meterNumber: String,
+    val applianceName: String,
+    val applianceBrandModel: String,
+    val estimatedLossNgn: Double,
+    val surgeTimestampText: String,
+    val surgeDescription: String,
+    val statutoryNoticeText: String,
+    val discoCode: String,
+    val status: String, // "SUBMITTED_TO_DISCO", "UNDER_TECHNICAL_INSPECTION", "APPROVED_BILLING_CREDIT", "ESCALATED_NERC"
+    val createdAt: Long
+)
+
+/**
+ * Pinned Public Street Electrical Hazard (High Tension wires, fallen poles, etc.)
+ */
+data class StreetHazardPin(
+    val id: String,
+    val title: String,
+    val hazardType: String,
+    val urgency: String,
+    val location: String,
+    val landmark: String,
+    val discoCode: String,
+    val reportedBy: String,
+    val verifiedCount: Int = 1,
+    val isDispatched: Boolean = false,
+    val xPosRatio: Float,
+    val yPosRatio: Float,
+    val reportedAt: Long
+)
+
+/**
+ * Neighborhood Distribution Transformer Real-Time Overload & Phase Balance
+ */
+data class TransformerOverloadTelemetry(
+    val transformerId: String = "TR-VI-ADEOLA-04B",
+    val transformerCapacityKva: Int = 500,
+    val currentLoadPercent: Int = 88,
+    val isOverloaded: Boolean = true,
+    val phaseAVolts: Int = 236,
+    val phaseBVolts: Int = 182,
+    val phaseCVolts: Int = 239,
+    val connectedHouseholds: Int = 184,
+    val designHouseholdCapacity: Int = 150,
+    val peakWindowText: String = "7:00 PM – 10:30 PM",
+    val oilTemperatureCelsius: Int = 74,
+    val humSparkRiskLevel: String = "HIGH (Phase B Coil Heat)"
+)
+
+/**
+ * Phase 2: Contractual Hour Auditing Matrix (Service Band SLA delivery ledger)
+ */
+data class AuditingHourRecord(
+    val dateText: String,
+    val dayName: String,
+    val promisedBandHours: Double = 20.0,
+    val actualDeliveredHours: Double,
+    val isSlaBreached: Boolean = actualDeliveredHours < promisedBandHours,
+    val shortfallHours: Double = (promisedBandHours - actualDeliveredHours).coerceAtLeast(0.0),
+    val compensationDueNgn: Double = shortfallHours * 142.50
+)
+
+/**
+ * Phase 4: Automated Escrow 20-Digit Rebate Token
+ */
+data class EscrowTokenRebate(
+    val id: String,
+    val token20Digit: String,
+    val kwhValue: Double,
+    val monetaryValueNgn: Double,
+    val discoCode: String,
+    val reason: String,
+    val issuedTimestamp: Long,
+    val isRedeemed: Boolean = false
+)
+
+/**
+ * Phase 5: Transformer Cluster Forum Post
+ */
+data class CommunityForumPost(
+    val id: String,
+    val authorName: String,
+    val isVerifiedResident: Boolean = true,
+    val transformerId: String,
+    val content: String,
+    val timestampText: String,
+    val upvotes: Int = 0,
+    val isExtortionReport: Boolean = false
+)
+
+/**
+ * Phase 6: Appliance Consumption Matrix Item
+ */
+data class ApplianceBudgetItem(
+    val id: String,
+    val name: String,
+    val wattage: Int,
+    val hoursDaily: Double,
+    val isEcoMode: Boolean = false
+) {
+    val dailyKwh: Double get() = (wattage * hoursDaily) / 1000.0
+    val monthlyCostNgn: Double get() = dailyKwh * 30.0 * 209.50 // Band A MYTO tariff ~₦209.50/kWh
+}
+
+/**
+ * Phase 7: Multi-Asset Linked Meter
+ */
+data class LinkedMeterAsset(
+    val id: String,
+    val label: String, // e.g. "Primary Residence", "Workspace / Lekki Studio", "Family Home / Surulere"
+    val meterNumber: String,
+    val address: String,
+    val discoCode: String,
+    val feederBand: FeederBand,
+    val transformerId: String,
+    val isPrepaid: Boolean = true,
+    val isSelected: Boolean = false
+)
+
+/**
+ * Phase 7: Regulatory Whistleblower Report (Encrypted NERC Pipeline)
+ */
+data class WhistleblowerReport(
+    val id: String,
+    val discoCode: String,
+    val targetOfficialOrUnit: String,
+    val extortionType: String,
+    val amountDemandedNgn: Double,
+    val incidentDescription: String,
+    val timestampText: String,
+    val status: String = "CRYPTOGRAPHICALLY_SEALED_NERC_DISPATCHED"
+)
+
+

@@ -2,6 +2,7 @@ package com.example.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,16 +20,28 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Bolt
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.FlashOn
+import androidx.compose.material.icons.filled.Forum
+import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Lightbulb
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.PowerOff
+import androidx.compose.material.icons.filled.Security
+import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material.icons.filled.VolumeUp
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,14 +54,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.model.AuditingHourRecord
 import com.example.model.Complaint
 import com.example.model.GridTelemetry
+import com.example.model.TransformerOverloadTelemetry
 import com.example.model.UserProfile
+import com.example.ui.components.AuditingMatrixCard
 import com.example.ui.components.ComplaintCard
 import com.example.ui.components.HazardFastTrackCard
 import com.example.ui.components.MeterProfileHeader
+import com.example.ui.components.PowerRestorationAlertCard
 import com.example.ui.components.QuickActionGrid
 import com.example.ui.components.RealTimeTicker
+import com.example.ui.components.TransformerOverloadCard
 import com.example.ui.theme.ElegantDarkBar
 import com.example.ui.theme.ElegantDarkBorder
 import com.example.ui.theme.ElegantDarkCardStart
@@ -64,12 +82,25 @@ fun HomeScreen(
     userProfile: UserProfile,
     personalComplaints: List<Complaint>,
     telemetry: GridTelemetry,
+    isDarkMode: Boolean = true,
+    auditingRecords: List<AuditingHourRecord> = emptyList(),
+    transformerTelemetry: TransformerOverloadTelemetry = TransformerOverloadTelemetry(),
+    isRestorationAlarmEnabled: Boolean = true,
+    onToggleThemeMode: () -> Unit = {},
     onReportFaultClicked: () -> Unit,
     onEmergencyHazardTriggered: (String) -> Unit,
     onEscalateComplaint: (String) -> Unit,
     onUpvoteComplaint: (String) -> Unit,
     onConfirmResolution: (String) -> Unit,
     onEditProfileClicked: () -> Unit,
+    onOpenOnboarding: () -> Unit = {},
+    onOpenClearinghouse: () -> Unit = {},
+    onOpenTransformerForum: () -> Unit = {},
+    onOpenEnergyOptimization: () -> Unit = {},
+    onOpenProfileAdmin: () -> Unit = {},
+    onReportTransformerHumSpark: () -> Unit = {},
+    onToggleRestorationAlarm: () -> Unit = {},
+    onPlayRestorationChime: () -> Unit = {},
     onNavigateMap: () -> Unit = {},
     onNavigateVandalism: () -> Unit = {},
     onNavigateHistory: () -> Unit = {},
@@ -83,7 +114,7 @@ fun HomeScreen(
                 .fillMaxWidth()
                 .background(ElegantDarkBar)
                 .border(1.dp, ElegantDarkBorder)
-                .padding(horizontal = 16.dp, vertical = 14.dp)
+                .padding(horizontal = 16.dp, vertical = 10.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -102,7 +133,7 @@ fun HomeScreen(
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
-                        text = "${userProfile.discoCode} • Lagos District",
+                        text = "${userProfile.discoCode} • ${userProfile.feederBand.code}",
                         style = MaterialTheme.typography.titleMedium.copy(
                             fontWeight = FontWeight.Bold,
                             letterSpacing = (-0.5).sp
@@ -111,21 +142,63 @@ fun HomeScreen(
                     )
                 }
 
-                // Live status pulsing ring
-                Box(
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(CircleShape)
-                        .background(ElegantDarkCardStart)
-                        .border(1.dp, Color(0x3364748B), CircleShape),
-                    contentAlignment = Alignment.Center
+                // Action Bar: Light/Dark Mode Switcher & Multi-Asset Profile Icon
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
+                    // Theme Switcher Button (Dark / Light)
+                    IconButton(
+                        onClick = onToggleThemeMode,
+                        modifier = Modifier
+                            .size(36.dp)
+                            .clip(CircleShape)
+                            .background(Color(0x14FFFFFF))
+                            .border(1.dp, ElegantDarkBorder, CircleShape)
+                            .testTag("theme_toggle_button")
+                    ) {
+                        Icon(
+                            imageVector = if (isDarkMode) Icons.Default.LightMode else Icons.Default.DarkMode,
+                            contentDescription = "Toggle Light/Dark Theme",
+                            tint = ElegantGoldPrimary,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+
+                    // Multi-Asset & Protocols Button
+                    IconButton(
+                        onClick = onOpenProfileAdmin,
+                        modifier = Modifier
+                            .size(36.dp)
+                            .clip(CircleShape)
+                            .background(Color(0x14FFFFFF))
+                            .border(1.dp, ElegantDarkBorder, CircleShape)
+                            .testTag("multi_asset_profile_button")
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Security,
+                            contentDescription = "Profile Protocols",
+                            tint = ElegantGoldPrimary,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+
+                    // Live status pulsing ring
                     Box(
                         modifier = Modifier
-                            .size(8.dp)
+                            .size(36.dp)
                             .clip(CircleShape)
-                            .background(ElegantGreenLive)
-                    )
+                            .background(ElegantDarkCardStart)
+                            .border(1.dp, Color(0x3364748B), CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(8.dp)
+                                .clip(CircleShape)
+                                .background(ElegantGreenLive)
+                        )
+                    }
                 }
             }
         }
@@ -135,8 +208,8 @@ fun HomeScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(horizontal = 16.dp),
-                contentPadding = PaddingValues(top = 16.dp, bottom = 96.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                contentPadding = PaddingValues(top = 14.dp, bottom = 96.dp),
+                verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {
                 // 1. Meter Identity Card
                 item {
@@ -146,12 +219,153 @@ fun HomeScreen(
                     )
                 }
 
-                // 2. Real-Time National Grid Telemetry Bar
+                // 2. Phase 2: Contractual Hour Auditing Matrix Card
+                item {
+                    AuditingMatrixCard(
+                        userProfile = userProfile,
+                        auditingRecords = auditingRecords,
+                        telemetry = telemetry,
+                        onOpenClearinghouse = onOpenClearinghouse
+                    )
+                }
+
+                // 3. Phase Roadmap Quick Access Grid (Phases 1, 4, 5, 6, 7)
+                item {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag("roadmap_quick_hub_card"),
+                        shape = RoundedCornerShape(18.dp),
+                        colors = CardDefaults.cardColors(containerColor = ElegantDarkSurface),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, ElegantDarkBorder)
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(14.dp)
+                        ) {
+                            Text(
+                                text = "PMI REGULATORY CLEARINGHOUSE PROTOCOLS",
+                                style = MaterialTheme.typography.labelSmall.copy(
+                                    fontWeight = FontWeight.ExtraBold,
+                                    letterSpacing = 0.5.sp
+                                ),
+                                color = ElegantGoldPrimary
+                            )
+                            Spacer(modifier = Modifier.height(10.dp))
+
+                            // Grid of 4 key action items
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                // Phase 1: Onboarding & SIM OTP
+                                Box(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .clip(RoundedCornerShape(12.dp))
+                                        .background(Color(0x14FFFFFF))
+                                        .border(1.dp, ElegantDarkBorder, RoundedCornerShape(12.dp))
+                                        .clickable(onClick = onOpenOnboarding)
+                                        .padding(10.dp)
+                                ) {
+                                    Column {
+                                        Icon(imageVector = Icons.Default.Lock, contentDescription = null, tint = ElegantGoldPrimary, modifier = Modifier.size(18.dp))
+                                        Spacer(modifier = Modifier.height(4.dp))
+                                        Text(text = "Phase 1: Setup", style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold), color = Slate100Text)
+                                        Text(text = "SIM OTP & ₦100", style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp), color = Slate400Text)
+                                    }
+                                }
+
+                                // Phase 4: Token Escrow
+                                Box(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .clip(RoundedCornerShape(12.dp))
+                                        .background(Color(0x1422C55E))
+                                        .border(1.dp, Color(0x3322C55E), RoundedCornerShape(12.dp))
+                                        .clickable(onClick = onOpenClearinghouse)
+                                        .padding(10.dp)
+                                ) {
+                                    Column {
+                                        Icon(imageVector = Icons.Default.AccountBalanceWallet, contentDescription = null, tint = ElegantGreenLive, modifier = Modifier.size(18.dp))
+                                        Spacer(modifier = Modifier.height(4.dp))
+                                        Text(text = "Phase 4: Escrow", style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold), color = Color(0xFF86EFAC))
+                                        Text(text = "₦14.8M Vault & Rebates", style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp), color = Slate400Text)
+                                    }
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                // Phase 5: Cluster Forum & Voice AI
+                                Box(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .clip(RoundedCornerShape(12.dp))
+                                        .background(Color(0x14FFFFFF))
+                                        .border(1.dp, ElegantDarkBorder, RoundedCornerShape(12.dp))
+                                        .clickable(onClick = onOpenTransformerForum)
+                                        .padding(10.dp)
+                                ) {
+                                    Column {
+                                        Icon(imageVector = Icons.Default.Forum, contentDescription = null, tint = Color(0xFF60A5FA), modifier = Modifier.size(18.dp))
+                                        Spacer(modifier = Modifier.height(4.dp))
+                                        Text(text = "Phase 5: Forum", style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold), color = Slate100Text)
+                                        Text(text = "Line Feed & Voice AI", style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp), color = Slate400Text)
+                                    }
+                                }
+
+                                // Phase 6: Energy & Surge Guard
+                                Box(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .clip(RoundedCornerShape(12.dp))
+                                        .background(Color(0x14FFFFFF))
+                                        .border(1.dp, ElegantDarkBorder, RoundedCornerShape(12.dp))
+                                        .clickable(onClick = onOpenEnergyOptimization)
+                                        .padding(10.dp)
+                                ) {
+                                    Column {
+                                        Icon(imageVector = Icons.Default.FlashOn, contentDescription = null, tint = ElegantGoldPrimary, modifier = Modifier.size(18.dp))
+                                        Spacer(modifier = Modifier.height(4.dp))
+                                        Text(text = "Phase 6: Surge", style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold), color = Slate100Text)
+                                        Text(text = "T-5 Min Alert & Load", style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp), color = Slate400Text)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // 4. Real-Time National Grid Telemetry Bar
                 item {
                     RealTimeTicker(telemetry = telemetry)
                 }
 
-                // 3. Quick Action Grid (8 items directly from Design HTML)
+                // 5. Transformer Overload & Phase Telemetry (Feature 7)
+                item {
+                    TransformerOverloadCard(
+                        telemetry = transformerTelemetry,
+                        onReportHumSpark = onReportTransformerHumSpark
+                    )
+                }
+
+                // 6. Power Restoration Alert Chime (Feature 9)
+                item {
+                    PowerRestorationAlertCard(
+                        isAlarmEnabled = isRestorationAlarmEnabled,
+                        transformerId = userProfile.transformerId,
+                        onToggleAlarm = onToggleRestorationAlarm,
+                        onTestChime = onPlayRestorationChime
+                    )
+                }
+
+                // 7. Quick Action Grid (8 items from design)
                 item {
                     QuickActionGrid(
                         onNavigateMap = onNavigateMap,
@@ -171,7 +385,7 @@ fun HomeScreen(
                     )
                 }
 
-                // 4. Section Title: "MY ACTIVE COMPLAINTS" (Strictly personal complaints)
+                // 8. Section Title: "MY ACTIVE COMPLAINTS"
                 item {
                     Row(
                         modifier = Modifier.fillMaxWidth(),

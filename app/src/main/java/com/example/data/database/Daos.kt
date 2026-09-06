@@ -69,3 +69,31 @@ interface BillingDisputeDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertDispute(dispute: BillingDisputeEntity)
 }
+
+@Dao
+interface ApplianceClaimDao {
+    @Query("SELECT * FROM appliance_claims WHERE meterNumber = :meterNumber ORDER BY createdAt DESC")
+    fun getClaimsForMeter(meterNumber: String): Flow<List<ApplianceClaimEntity>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertClaim(claim: ApplianceClaimEntity)
+}
+
+@Dao
+interface StreetHazardDao {
+    @Query("SELECT * FROM street_hazards ORDER BY reportedAt DESC")
+    fun getAllStreetHazards(): Flow<List<StreetHazardEntity>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertHazard(hazard: StreetHazardEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(hazards: List<StreetHazardEntity>)
+
+    @Query("UPDATE street_hazards SET verifiedCount = verifiedCount + 1 WHERE id = :id")
+    suspend fun upvoteHazard(id: String)
+
+    @Query("UPDATE street_hazards SET isDispatched = 1 WHERE id = :id")
+    suspend fun markDispatched(id: String)
+}
+

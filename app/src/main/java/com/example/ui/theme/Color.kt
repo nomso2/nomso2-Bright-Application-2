@@ -33,6 +33,23 @@ val Slate400Text = Color(0xFF94A3B8) // Muted labels & subtitles
 val Slate500Text = Color(0xFF64748B) // Metadata & timestamps
 val Slate700Icon = Color(0xFF334155) // Inactive state
 
+// Elegant Light Palette (High-contrast, crisp styling)
+val ElegantLightCanvas = Color(0xFFF8FAFC) // Crisp daylight canvas #F8FAFC
+val ElegantLightBar = Color(0xFFFFFFFF) // Clean header & nav bar background
+val ElegantLightCardStart = Color(0xFFFFFFFF) // Pure white card surface
+val ElegantLightCardEnd = Color(0xFFF1F5F9) // Slate-100 card subtle gradient
+val ElegantLightSurface = Color(0xFFFFFFFF) // Surface container
+val ElegantLightSurfaceElevated = Color(0xFFF1F5F9) // Elevated modal
+val ElegantLightBorder = Color(0xFFE2E8F0) // Subtle border
+val ElegantLightBorderLight = Color(0xFFCBD5E1) // Interactive border
+
+val Slate900Text = Color(0xFF0F172A) // Dark slate primary text in light mode
+val Slate800Text = Color(0xFF1E293B) // Dark slate titles
+val Slate600Text = Color(0xFF475569) // Secondary text in light mode
+val ElegantGoldLightPrimary = Color(0xFFD97706) // Rich amber-gold for high-contrast light mode
+val ElegantGoldLightContainer = Color(0x1AD97706)
+
+
 // Legacy aliases mapped to Elegant Dark for theme compatibility
 val ElectricGreenLight = ElegantGoldPrimary
 val ElectricGreenDark = ElegantGoldPrimary

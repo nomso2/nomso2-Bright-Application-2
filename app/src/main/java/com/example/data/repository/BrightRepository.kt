@@ -5,6 +5,9 @@ import com.example.data.database.BillingDisputeEntity
 import com.example.data.database.ComplaintEntity
 import com.example.data.database.UserProfileEntity
 import com.example.data.database.VandalismEntity
+import com.example.data.database.ApplianceClaimEntity
+import com.example.data.database.StreetHazardEntity
+import com.example.model.ApplianceDamageClaim
 import com.example.model.BillingDispute
 import com.example.model.Complaint
 import com.example.model.ComplaintStatus
@@ -16,6 +19,7 @@ import com.example.model.GridTelemetry
 import com.example.model.MaintenanceAlert
 import com.example.model.OutageGridNode
 import com.example.model.OutageStatus
+import com.example.model.StreetHazardPin
 import com.example.model.UserProfile
 import com.example.model.VandalismReport
 import kotlinx.coroutines.CoroutineScope
@@ -37,6 +41,8 @@ class BrightRepository(private val database: AppDatabase) {
     private val profileDao = database.userProfileDao()
     private val vandalismDao = database.vandalismDao()
     private val disputeDao = database.billingDisputeDao()
+    private val applianceClaimDao = database.applianceClaimDao()
+    private val streetHazardDao = database.streetHazardDao()
 
     // Real-time Telemetry state
     private val _gridTelemetry = MutableStateFlow(GridTelemetry())
@@ -247,6 +253,85 @@ class BrightRepository(private val database: AppDatabase) {
         return id
     }
 
+    fun getApplianceClaims(meterNumber: String): Flow<List<ApplianceDamageClaim>> {
+        return applianceClaimDao.getClaimsForMeter(meterNumber).map { list ->
+            list.map { it.toDomain() }
+        }
+    }
+
+    suspend fun submitApplianceClaim(
+        meterNumber: String,
+        applianceName: String,
+        applianceBrandModel: String,
+        estimatedLossNgn: Double,
+        surgeTimestampText: String,
+        surgeDescription: String,
+        statutoryNoticeText: String,
+        discoCode: String
+    ): String {
+        val id = "CLM-SRG-${(1000..9999).random()}"
+        val claim = ApplianceClaimEntity(
+            id = id,
+            meterNumber = meterNumber,
+            applianceName = applianceName,
+            applianceBrandModel = applianceBrandModel,
+            estimatedLossNgn = estimatedLossNgn,
+            surgeTimestampText = surgeTimestampText,
+            surgeDescription = surgeDescription,
+            statutoryNoticeText = statutoryNoticeText,
+            discoCode = discoCode,
+            status = "SUBMITTED_TO_DISCO_LEGAL",
+            createdAt = System.currentTimeMillis()
+        )
+        applianceClaimDao.insertClaim(claim)
+        return id
+    }
+
+    fun getAllStreetHazards(): Flow<List<StreetHazardPin>> {
+        return streetHazardDao.getAllStreetHazards().map { list ->
+            list.map { it.toDomain() }
+        }
+    }
+
+    suspend fun pinStreetHazard(
+        title: String,
+        hazardType: String,
+        urgency: String,
+        location: String,
+        landmark: String,
+        discoCode: String,
+        reportedBy: String,
+        xPosRatio: Float,
+        yPosRatio: Float
+    ): String {
+        val id = "HZD-PIN-${(1000..9999).random()}"
+        val hazard = StreetHazardEntity(
+            id = id,
+            title = title,
+            hazardType = hazardType,
+            urgency = urgency,
+            location = location,
+            landmark = landmark,
+            discoCode = discoCode,
+            reportedBy = reportedBy,
+            verifiedCount = 1,
+            isDispatched = true,
+            xPosRatio = xPosRatio,
+            yPosRatio = yPosRatio,
+            reportedAt = System.currentTimeMillis()
+        )
+        streetHazardDao.insertHazard(hazard)
+        return id
+    }
+
+    suspend fun upvoteStreetHazard(id: String) {
+        streetHazardDao.upvoteHazard(id)
+    }
+
+    suspend fun markHazardDispatched(id: String) {
+        streetHazardDao.markDispatched(id)
+    }
+
     fun updateGridTelemetry(frequency: Double, generationMw: Int) {
         _gridTelemetry.value = _gridTelemetry.value.copy(
             systemFrequencyHz = frequency,
@@ -411,6 +496,72 @@ class BrightRepository(private val database: AppDatabase) {
             createdAt = now - (8 * 24 * 60 * 60 * 1000L)
         )
         disputeDao.insertDispute(seedDispute)
+
+        // Seed initial appliance damage claim (NERC CPR 2023)
+        val seedApplianceClaim = ApplianceClaimEntity(
+            id = "CLM-SRG-4192",
+            meterNumber = "01429583192",
+            applianceName = "Smart Inverter & Power Board",
+            applianceBrandModel = "Luminous 5kVA Pure Sine Wave Inverter",
+            estimatedLossNgn = 185000.0,
+            surgeTimestampText = "3 days ago, 11:34 PM (Feeder re-energization)",
+            surgeDescription = "Excessive voltage surge exceeding 310V upon 33kV line restoration blasted charging circuit capacitor and burnt transformer coil.",
+            statutoryNoticeText = "FORMAL NOTICE OF LIABILITY UNDER NERC CPR 2023 REGULATION 18(2):\nDistribution licensee EKEDC is notified of severe electrical surge exceeding tolerance limits. Joint inspection demanded within 7 business days or compensatory billing credit of NGN 185,000.",
+            discoCode = "EKEDC",
+            status = "UNDER_DISCO_LEGAL_REVIEW",
+            createdAt = now - (3 * 24 * 60 * 60 * 1000L)
+        )
+        applianceClaimDao.insertClaim(seedApplianceClaim)
+
+        // Seed public street electrical hazards
+        val seedHazards = listOf(
+            StreetHazardEntity(
+                id = "HZD-PIN-101",
+                title = "Snapped 33kV Live Conductor Dangling Near Gutter",
+                hazardType = "Dangling High-Tension Conductor",
+                urgency = "CRITICAL ELECTROCUTION RISK",
+                location = "Adeola Odeku Junction / Kofo Abayomi Street",
+                landmark = "Opposite Access Bank ATM Gallery",
+                discoCode = "EKEDC",
+                reportedBy = "Resident Patrol",
+                verifiedCount = 19,
+                isDispatched = true,
+                xPosRatio = 0.285f,
+                yPosRatio = 0.655f,
+                reportedAt = now - (45 * 60 * 1000L)
+            ),
+            StreetHazardEntity(
+                id = "HZD-PIN-102",
+                title = "Broken Leaning Concrete Pole Over Pedestrian Walkway",
+                hazardType = "Snapped Leaning Concrete Pole",
+                urgency = "HIGH DANGER",
+                location = "Ozumba Mbadiwe Way",
+                landmark = "Near Civic Center Footbridge",
+                discoCode = "EKEDC",
+                reportedBy = "Community Watch",
+                verifiedCount = 12,
+                isDispatched = true,
+                xPosRatio = 0.292f,
+                yPosRatio = 0.648f,
+                reportedAt = now - (3 * 60 * 60 * 1000L)
+            ),
+            StreetHazardEntity(
+                id = "HZD-PIN-103",
+                title = "Submerged Feeder Pillar in Deep Rain Puddle (Smoking)",
+                hazardType = "Submerged Flooded Feeder Pillar",
+                urgency = "CRITICAL ELECTROCUTION RISK",
+                location = "Ahmadu Bello Way",
+                landmark = "Beside Bar Beach Bus Stop",
+                discoCode = "EKEDC",
+                reportedBy = "Chuka Obunma",
+                verifiedCount = 28,
+                isDispatched = true,
+                xPosRatio = 0.278f,
+                yPosRatio = 0.662f,
+                reportedAt = now - (1 * 60 * 60 * 1000L)
+            )
+        )
+        streetHazardDao.insertAll(seedHazards)
     }
 
     private fun seedLiveOutageData() {

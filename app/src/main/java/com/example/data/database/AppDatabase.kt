@@ -10,9 +10,11 @@ import androidx.room.RoomDatabase
         ComplaintEntity::class,
         UserProfileEntity::class,
         VandalismEntity::class,
-        BillingDisputeEntity::class
+        BillingDisputeEntity::class,
+        ApplianceClaimEntity::class,
+        StreetHazardEntity::class
     ],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -20,6 +22,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun userProfileDao(): UserProfileDao
     abstract fun vandalismDao(): VandalismDao
     abstract fun billingDisputeDao(): BillingDisputeDao
+    abstract fun applianceClaimDao(): ApplianceClaimDao
+    abstract fun streetHazardDao(): StreetHazardDao
 
     companion object {
         @Volatile

@@ -1,0 +1,2 @@
+Bottom bar has 6 destinations: HOME, MAP, REPORT, VANDALISM, HISTORY, GRID_HUB.
+In Material3 NavigationBar, 6 items compress the width per item (360dp / 6 = 60dp).
