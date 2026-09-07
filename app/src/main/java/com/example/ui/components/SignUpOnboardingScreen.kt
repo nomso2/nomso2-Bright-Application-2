@@ -30,7 +30,6 @@ import androidx.compose.material.icons.filled.ElectricMeter
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Phone
-import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material3.Button
@@ -65,7 +64,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
 import com.example.model.DisCo
 import com.example.model.FeederBand
 import com.example.model.UserProfile
@@ -95,8 +93,6 @@ fun SignUpOnboardingScreen(
     var isBandDropdownExpanded by remember { mutableStateOf(false) }
 
     // Simulation states
-    var showQrScannerModal by remember { mutableStateOf(false) }
-    var isScanning by remember { mutableStateOf(false) }
     var isVerifyingOtp by remember { mutableStateOf(false) }
     var otpCode by remember { mutableStateOf("4892") }
     var isOtpSent by remember { mutableStateOf(false) }
@@ -241,45 +237,21 @@ fun SignUpOnboardingScreen(
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.ElectricMeter,
-                                contentDescription = null,
-                                tint = GoldPrimary,
-                                modifier = Modifier.size(20.dp)
-                            )
-                            Text(
-                                text = "1. Prepaid / Postpaid Smart Meter",
-                                style = MaterialTheme.typography.titleSmall,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                        }
-
-                        Button(
-                            onClick = { showQrScannerModal = true },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                            ),
-                            shape = RoundedCornerShape(8.dp),
-                            contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 8.dp, vertical = 4.dp),
-                            modifier = Modifier.testTag("scan_meter_barcode_button")
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.QrCodeScanner,
-                                contentDescription = null,
-                                modifier = Modifier.size(14.dp)
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text("Scan Meter QR", fontSize = 11.sp, fontWeight = FontWeight.Bold)
-                        }
+                        Icon(
+                            imageVector = Icons.Default.ElectricMeter,
+                            contentDescription = null,
+                            tint = GoldPrimary,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Text(
+                            text = "1. Prepaid / Postpaid Smart Meter",
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
                     }
 
                     OutlinedTextField(
@@ -614,82 +586,6 @@ fun SignUpOnboardingScreen(
             }
 
             Spacer(modifier = Modifier.height(28.dp))
-        }
-
-        // SIMULATED QR / BARCODE CAMERA SCANNER DIALOG
-        if (showQrScannerModal) {
-            Dialog(onDismissRequest = { showQrScannerModal = false }) {
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFF0F172A))
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(20.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = "Universal Meter Scanner",
-                                color = Color.White,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 16.sp
-                            )
-                            IconButton(onClick = { showQrScannerModal = false }) {
-                                Icon(Icons.Default.Close, contentDescription = "Close", tint = Color.White)
-                            }
-                        }
-
-                        // Camera Viewfinder Box
-                        Box(
-                            modifier = Modifier
-                                .size(220.dp)
-                                .border(2.dp, GoldPrimary, RoundedCornerShape(12.dp))
-                                .background(Color(0xFF1E293B)),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Icon(
-                                    imageVector = Icons.Default.QrCodeScanner,
-                                    contentDescription = null,
-                                    tint = GoldPrimary,
-                                    modifier = Modifier.size(64.dp)
-                                )
-                                Spacer(modifier = Modifier.height(8.dp))
-                                Text(
-                                    text = "Point camera at prepaid meter barcode or STS QR code",
-                                    color = Color.LightGray,
-                                    fontSize = 11.sp,
-                                    textAlign = TextAlign.Center,
-                                    modifier = Modifier.padding(horizontal = 16.dp)
-                                )
-                            }
-                        }
-
-                        Button(
-                            onClick = {
-                                meterNumber = "04192837461"
-                                selectedDisCo = DisCo.EKEDC
-                                selectedBand = FeederBand.BAND_A
-                                showQrScannerModal = false
-                            },
-                            colors = ButtonDefaults.buttonColors(containerColor = GoldPrimary),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .testTag("simulate_successful_scan_button")
-                        ) {
-                            Text("Simulate Successful Meter Scan", color = Color.Black, fontWeight = FontWeight.Bold)
-                        }
-                    }
-                }
-            }
         }
     }
 }

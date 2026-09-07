@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.filled.Payment
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.TrendingUp
@@ -68,7 +69,7 @@ fun QuickActionGrid(
         QuickActionItem("Billing", Icons.Default.Payment, onNavigateBilling),
         QuickActionItem("Load Shed", Icons.Default.Bolt, onNavigateLoadShed),
         QuickActionItem("Escalate", Icons.Default.TrendingUp, onNavigateEscalate),
-        QuickActionItem("Others", Icons.Default.Add, onNavigateOthers)
+        QuickActionItem("More", Icons.Default.MoreHoriz, onNavigateOthers)
     )
 
     Column(

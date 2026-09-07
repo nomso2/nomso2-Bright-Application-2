@@ -1,5 +1,6 @@
 package com.example.ui.components
 
+import android.content.Intent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -20,6 +21,7 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Engineering
 import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.PhotoCamera
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.Videocam
@@ -29,6 +31,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -38,6 +41,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -65,6 +69,7 @@ fun ComplaintCard(
     onAdvanceStatusDemo: (String, ComplaintStatus) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
     val dateFormat = remember { SimpleDateFormat("dd MMM, hh:mm a", Locale.getDefault()) }
 
     Card(
@@ -136,8 +141,43 @@ fun ComplaintCard(
                     )
                 }
 
-                // Status Badge
-                StatusBadge(status = complaint.status)
+                // Status Badge & Share Button
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    IconButton(
+                        onClick = {
+                            val shareText = "⚡ Power Outage Alert • Ticket #${complaint.id}\n" +
+                                "Transformer: ${complaint.transformerId}\n" +
+                                "Description: ${complaint.description}\n" +
+                                "Status: ${complaint.status.displayName}\n" +
+                                "Priority Upvotes: ${complaint.upvotesCount}\n" +
+                                "Reported via The Bright Project"
+                            val sendIntent = Intent(Intent.ACTION_SEND).apply {
+                                putExtra(Intent.EXTRA_TEXT, shareText)
+                                type = "text/plain"
+                            }
+                            val shareIntent = Intent.createChooser(sendIntent, "Share Ticket to Estate Group")
+                            context.startActivity(shareIntent)
+                        },
+                        modifier = Modifier
+                            .size(32.dp)
+                            .clip(CircleShape)
+                            .background(Color(0x14FFFFFF))
+                            .border(1.dp, Color(0x22FFFFFF), CircleShape)
+                            .testTag("share_complaint_${complaint.id}")
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Share,
+                            contentDescription = "Share to WhatsApp / Estate Group",
+                            tint = ElegantGoldPrimary,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+
+                    StatusBadge(status = complaint.status)
+                }
             }
 
             Spacer(modifier = Modifier.height(10.dp))
