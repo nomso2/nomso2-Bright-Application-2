@@ -81,6 +81,7 @@ import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -137,7 +138,7 @@ fun Solutions30ComprehensiveHub(
 
     Column(
         modifier = modifier
-            .fillMaxSize()
+            .fillMaxWidth()
             .background(MaterialTheme.colorScheme.background)
     ) {
         // Hub Header
@@ -222,24 +223,25 @@ fun Solutions30ComprehensiveHub(
         Divider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
 
         // Solutions List
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
-            items(filteredSolutions, key = { it.problemNumber }) { item ->
-                SolutionCardItem(
-                    item = item,
-                    isBatSignalMode = isBatSignalMode,
-                    onToggleBatSignal = onToggleBatSignalMode,
-                    onLaunchInteractiveAction = {
-                        activeModalSolutionNumber = item.problemNumber
-                    }
-                )
+            filteredSolutions.forEach { item ->
+                key(item.problemNumber) {
+                    SolutionCardItem(
+                        item = item,
+                        isBatSignalMode = isBatSignalMode,
+                        onToggleBatSignal = onToggleBatSignalMode,
+                        onLaunchInteractiveAction = {
+                            activeModalSolutionNumber = item.problemNumber
+                        }
+                    )
+                }
             }
-            item {
-                Spacer(modifier = Modifier.height(64.dp))
-            }
+            Spacer(modifier = Modifier.height(32.dp))
         }
     }
 
