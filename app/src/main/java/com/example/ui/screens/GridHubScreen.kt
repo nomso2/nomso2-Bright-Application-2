@@ -39,6 +39,7 @@ import androidx.compose.material.icons.filled.NetworkCheck
 import androidx.compose.material.icons.filled.OpenInNew
 import androidx.compose.material.icons.filled.PriceCheck
 import androidx.compose.material.icons.filled.ReceiptLong
+import androidx.compose.material.icons.filled.Router
 import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material.icons.filled.Warning
@@ -110,6 +111,7 @@ fun GridHubScreen(
     onOpenForum: () -> Unit = {},
     onPlaySirenAlarm: () -> Unit = {},
     onOpenEstateExco: () -> Unit = {},
+    onOpenSmartMeterGateway: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     var selectedSection by remember { mutableStateOf(HubSection.SOLUTIONS_30) }
@@ -203,6 +205,68 @@ fun GridHubScreen(
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+            }
+        }
+
+        // Smart Meter Server & Nigeria AMI Gateway CTA Banner
+        item {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(onClick = onOpenSmartMeterGateway)
+                    .testTag("hub_smart_meter_server_gateway_card"),
+                shape = RoundedCornerShape(14.dp),
+                colors = CardDefaults.cardColors(containerColor = Color(0xFF0F172A)),
+                border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF38BDF8))
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(14.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(36.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(Color(0xFF38BDF8).copy(alpha = 0.2f)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Router,
+                                contentDescription = null,
+                                tint = Color(0xFF38BDF8),
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                        Column {
+                            Text(
+                                text = "SMART METER SERVER & NIGERIA AMI GATEWAY",
+                                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.ExtraBold),
+                                color = Color(0xFF38BDF8)
+                            )
+                            Text(
+                                text = "Connect App Server • Mojec/Momas/Conlog • DLMS/MQTT Telemetry",
+                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                                color = Color.White
+                            )
+                        }
+                    }
+
+                    Button(
+                        onClick = onOpenSmartMeterGateway,
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF38BDF8), contentColor = Color.Black),
+                        shape = RoundedCornerShape(8.dp),
+                        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp)
+                    ) {
+                        Text("Connect", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    }
+                }
             }
         }
 

@@ -32,6 +32,7 @@ import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.PowerOff
+import androidx.compose.material.icons.filled.Router
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material.icons.filled.VolumeUp
@@ -112,6 +113,7 @@ fun HomeScreen(
     onToggleDiagnosticStatus: () -> Unit = {},
     userTrustScore: Int = 98,
     onOpenEstateExcoDossier: () -> Unit = {},
+    onOpenSmartMeterGateway: () -> Unit = {},
     surgeWarningActive: Boolean = false,
     surgeCountdownSeconds: Int = 180,
     onTriggerSurgeSiren: () -> Unit = {},
@@ -230,6 +232,24 @@ fun HomeScreen(
                         )
                     }
 
+                    // Smart Meter Server Gateway Button
+                    IconButton(
+                        onClick = onOpenSmartMeterGateway,
+                        modifier = Modifier
+                            .size(36.dp)
+                            .clip(CircleShape)
+                            .background(Color(0x14FFFFFF))
+                            .border(1.dp, Color(0xFF38BDF8).copy(alpha = 0.5f), CircleShape)
+                            .testTag("smart_meter_gateway_button")
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Router,
+                            contentDescription = "Smart Meter Server Gateway",
+                            tint = Color(0xFF38BDF8),
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+
                     // Live status pulsing ring
                     Box(
                         modifier = Modifier
@@ -265,6 +285,75 @@ fun HomeScreen(
                             countdownSeconds = surgeCountdownSeconds,
                             onDismiss = onDismissSurgeWarning
                         )
+                    }
+                }
+
+                // 00-A. Smart Meter Server Gateway & Nigerian AMI Card
+                item {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable(onClick = onOpenSmartMeterGateway)
+                            .testTag("smart_meter_server_gateway_card"),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFF0F172A)),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF38BDF8))
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(14.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(10.dp)
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(36.dp)
+                                        .clip(RoundedCornerShape(8.dp))
+                                        .background(Color(0xFF38BDF8).copy(alpha = 0.2f)),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Router,
+                                        contentDescription = null,
+                                        tint = Color(0xFF38BDF8),
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
+                                Column {
+                                    Text(
+                                        text = "SMART METER SERVER GATEWAY",
+                                        style = MaterialTheme.typography.labelSmall.copy(
+                                            fontWeight = FontWeight.ExtraBold,
+                                            letterSpacing = 0.5.sp
+                                        ),
+                                        color = Color(0xFF38BDF8)
+                                    )
+                                    Text(
+                                        text = "Connect Mojec, Momas & Conlog across Nigeria",
+                                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                                        color = Slate100Text
+                                    )
+                                }
+                            }
+
+                            Button(
+                                onClick = onOpenSmartMeterGateway,
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color(0xFF38BDF8),
+                                    contentColor = Color.Black
+                                ),
+                                shape = RoundedCornerShape(8.dp),
+                                contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp),
+                                modifier = Modifier.testTag("open_smart_meter_gateway_btn")
+                            ) {
+                                Text("Manage", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                            }
+                        }
                     }
                 }
 

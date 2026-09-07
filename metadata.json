@@ -1,6 +1,6 @@
 {
   "name": "Bright",
-  "description": "Nigeria's electricity response and fault tracking platform with meter-based reporting, live outage map, real-time tracking, automatic escalation, vandalism reporting, and DisCo scorecards.",
+  "description": "Nigeria's electricity response platform with smart meter server gateway (Mojec, Momas, Conlog), Estate Exco legal dossiers, real-time telemetry, and NERC compliance tracking.",
   "requestFramePermissions": [],
   "majorCapabilities": [
     "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"

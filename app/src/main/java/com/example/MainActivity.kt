@@ -44,6 +44,7 @@ import com.example.ui.components.PhaseOnboardingDialog
 import com.example.ui.components.ProfileAdminDialog
 import com.example.ui.components.ResolutionRatingDialog
 import com.example.ui.components.SignUpOnboardingScreen
+import com.example.ui.components.SmartMeterServerGatewayDialog
 import com.example.ui.components.TokenEscrowClearinghouseDialog
 import com.example.ui.components.TransformerForumDialog
 import com.example.ui.screens.GridHubScreen
@@ -97,6 +98,7 @@ fun BrightApp(viewModel: BrightViewModel) {
     var showEnergyOptimizationDialog by remember { mutableStateOf(false) }
     var showProfileAdminDialog by remember { mutableStateOf(false) }
     var showEstateExcoDialog by remember { mutableStateOf(false) }
+    var showSmartMeterGatewayDialog by remember { mutableStateOf(false) }
 
     // State collections
     val userProfile by viewModel.userProfile.collectAsState()
@@ -131,6 +133,11 @@ fun BrightApp(viewModel: BrightViewModel) {
     val isBatSignalMode by viewModel.isBatSignalMode.collectAsState()
     val diagnosticStatus by viewModel.diagnosticStatus.collectAsState()
     val userTrustScore by viewModel.userTrustScore.collectAsState()
+
+    // Nigeria Smart Meter Server Gateway State
+    val smartMeterServerConfig by viewModel.smartMeterServerConfig.collectAsState()
+    val smartMetersList by viewModel.smartMetersList.collectAsState()
+    val smartMeterCommands by viewModel.smartMeterCommands.collectAsState()
 
     // If new user (not onboarded yet) or opened from menu, show the interactive sign-up flow
     if ((!isOnboardingCompleted && !userProfile.isOnboarded) || showOnboardingDialog) {
@@ -237,6 +244,7 @@ fun BrightApp(viewModel: BrightViewModel) {
                         onToggleDiagnosticStatus = { viewModel.toggleDiagnosticStatus() },
                         userTrustScore = userTrustScore,
                         onOpenEstateExcoDossier = { showEstateExcoDialog = true },
+                        onOpenSmartMeterGateway = { showSmartMeterGatewayDialog = true },
                         surgeWarningActive = surgeWarningActive,
                         surgeCountdownSeconds = surgeCountdownSeconds,
                         onTriggerSurgeSiren = { viewModel.triggerSurgeSafetySiren() },
@@ -299,7 +307,8 @@ fun BrightApp(viewModel: BrightViewModel) {
                         onOpenRedDangerSOS = { viewModel.triggerRedDangerEmergency() },
                         onOpenForum = { showTransformerForumDialog = true },
                         onPlaySirenAlarm = { viewModel.playRestorationChime() },
-                        onOpenEstateExco = { showEstateExcoDialog = true }
+                        onOpenEstateExco = { showEstateExcoDialog = true },
+                        onOpenSmartMeterGateway = { showSmartMeterGatewayDialog = true }
                     )
                 }
             }
@@ -418,6 +427,26 @@ fun BrightApp(viewModel: BrightViewModel) {
                 viewModel.generateSlaCompensationAssessment(ticketId, title, delayHours)
             },
             onDismiss = { showEstateExcoDialog = false }
+        )
+    }
+
+    // Nigeria Smart Meter Server Gateway & AMI Telemetry Portal
+    if (showSmartMeterGatewayDialog) {
+        SmartMeterServerGatewayDialog(
+            serverConfig = smartMeterServerConfig,
+            metersList = smartMetersList,
+            commandsHistory = smartMeterCommands,
+            onUpdateServerConfig = { url, proto, mqtt, key, interval, tls ->
+                viewModel.updateSmartMeterServerConfig(url, proto, mqtt, key, interval, tls)
+            },
+            onTestServerConnection = { viewModel.testAppServerConnection() },
+            onAddMeterDevice = { num, mfg, model, disco, state, feeder, ip, proto ->
+                viewModel.addSmartMeterDevice(num, mfg, model, disco, state, feeder, ip, proto)
+            },
+            onToggleRelay = { meterNum -> viewModel.toggleSmartMeterRelay(meterNum) },
+            onSendOtaToken = { meterNum, token -> viewModel.sendOtaTokenToSmartMeter(meterNum, token) },
+            onPingMeter = { meterNum -> viewModel.pingSmartMeterInstantRead(meterNum) },
+            onDismiss = { showSmartMeterGatewayDialog = false }
         )
     }
 }
