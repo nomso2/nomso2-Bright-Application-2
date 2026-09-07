@@ -30,7 +30,13 @@ import com.example.model.SmartMeterServerConfig
 import com.example.model.SmartMeterDevice
 import com.example.model.SmartMeterCommand
 import com.example.model.FeederBand
+import com.example.model.MeterManufacturer
+import com.example.model.MeterGatewayTelemetry
+import com.example.model.MeterRelayState
+import com.example.model.GatewayResult
 import com.example.data.service.NigeriaSmartMeterServerService
+import com.example.data.service.SmartMeterGatewayService
+import com.example.data.service.SmartMeterGatewayServiceImpl
 import android.media.AudioManager
 
 import android.media.ToneGenerator
@@ -961,5 +967,51 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
             showNotification("Meter #$meterNumber: Telemetry polled (${meters[index].voltageV}V, ${meters[index].currentA}A)")
         }
     }
+
+    // =========================================================================
+    // MOJEC, MOMAS, AND CONLOG METER GATEWAY SIMULATION API LAYER
+    // =========================================================================
+    val meterGatewayService: SmartMeterGatewayService = SmartMeterGatewayServiceImpl()
+
+    private val _gatewayTelemetryMap = MutableStateFlow<Map<MeterManufacturer, MeterGatewayTelemetry?>>(
+        mapOf(
+            MeterManufacturer.MOJEC to null,
+            MeterManufacturer.MOMAS to null,
+            MeterManufacturer.CONLOG to null
+        )
+    )
+    val gatewayTelemetryMap: StateFlow<Map<MeterManufacturer, MeterGatewayTelemetry?>> = _gatewayTelemetryMap.asStateFlow()
+
+    private val _isPollingGateway = MutableStateFlow<Map<MeterManufacturer, Boolean>>(
+        mapOf(
+            MeterManufacturer.MOJEC to false,
+            MeterManufacturer.MOMAS to false,
+            MeterManufacturer.CONLOG to false
+        )
+    )
+    val isPollingGateway: StateFlow<Map<MeterManufacturer, Boolean>> = _isPollingGateway.asStateFlow()
+
+    fun pollManufacturerGateway(
+        meterNumber: String,
+        manufacturer: MeterManufacturer,
+        discoCode: String = "EKEDC"
+    ) {
+        viewModelScope.launch {
+            _isPollingGateway.value = _isPollingGateway.value + (manufacturer to true)
+            showNotification("Pinging ${manufacturer.displayName} Gateway API...")
+            
+            when (val result = meterGatewayService.getRealtimeTelemetry(meterNumber, manufacturer, discoCode)) {
+                is GatewayResult.Success -> {
+                    _gatewayTelemetryMap.value = _gatewayTelemetryMap.value + (manufacturer to result.data)
+                    showNotification("${manufacturer.displayName}: ${result.data.voltageV}V | ${result.data.activePowerKw}kW (${result.latencyMs}ms)")
+                }
+                is GatewayResult.Error -> {
+                    showNotification("Gateway Alert: ${result.message}")
+                }
+            }
+            _isPollingGateway.value = _isPollingGateway.value + (manufacturer to false)
+        }
+    }
 }
+
 

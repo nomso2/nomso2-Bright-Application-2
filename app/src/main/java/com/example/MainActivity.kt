@@ -138,6 +138,8 @@ fun BrightApp(viewModel: BrightViewModel) {
     val smartMeterServerConfig by viewModel.smartMeterServerConfig.collectAsState()
     val smartMetersList by viewModel.smartMetersList.collectAsState()
     val smartMeterCommands by viewModel.smartMeterCommands.collectAsState()
+    val gatewayTelemetryMap by viewModel.gatewayTelemetryMap.collectAsState()
+    val isPollingGateway by viewModel.isPollingGateway.collectAsState()
 
     // If new user (not onboarded yet) or opened from menu, show the interactive sign-up flow
     if ((!isOnboardingCompleted && !userProfile.isOnboarded) || showOnboardingDialog) {
@@ -436,6 +438,9 @@ fun BrightApp(viewModel: BrightViewModel) {
             serverConfig = smartMeterServerConfig,
             metersList = smartMetersList,
             commandsHistory = smartMeterCommands,
+            gatewayTelemetryMap = gatewayTelemetryMap,
+            isPollingGateway = isPollingGateway,
+            onPollGateway = { mfg -> viewModel.pollManufacturerGateway(userProfile.meterNumber, mfg, userProfile.discoCode) },
             onUpdateServerConfig = { url, proto, mqtt, key, interval, tls ->
                 viewModel.updateSmartMeterServerConfig(url, proto, mqtt, key, interval, tls)
             },

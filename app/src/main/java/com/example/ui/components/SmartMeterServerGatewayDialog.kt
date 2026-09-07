@@ -93,6 +93,9 @@ import androidx.compose.ui.window.DialogProperties
 import com.example.model.SmartMeterCommand
 import com.example.model.SmartMeterDevice
 import com.example.model.SmartMeterServerConfig
+import com.example.model.MeterManufacturer
+import com.example.model.MeterGatewayTelemetry
+import com.example.model.MeterRelayState
 import com.example.ui.theme.DarkCharcoal
 import com.example.ui.theme.ElegantDarkBorder
 import com.example.ui.theme.ElegantDarkCanvas
@@ -101,6 +104,7 @@ import com.example.ui.theme.MutedSlateText
 import com.example.ui.theme.Slate100Text
 
 enum class GatewayTab(val title: String) {
+    LIVE_GATEWAYS("Mojec / Momas / Conlog"),
     METERS("Smart Meters"),
     SERVER_CONFIG("Server Config"),
     COMMANDS_LOG("Commands Log"),
@@ -112,6 +116,9 @@ fun SmartMeterServerGatewayDialog(
     serverConfig: SmartMeterServerConfig,
     metersList: List<SmartMeterDevice>,
     commandsHistory: List<SmartMeterCommand>,
+    gatewayTelemetryMap: Map<MeterManufacturer, MeterGatewayTelemetry?> = emptyMap(),
+    isPollingGateway: Map<MeterManufacturer, Boolean> = emptyMap(),
+    onPollGateway: (MeterManufacturer) -> Unit = {},
     onUpdateServerConfig: (url: String, protocol: String, mqttBroker: String, apiKey: String, interval: Int, tls: Boolean) -> Unit,
     onTestServerConnection: () -> Unit,
     onAddMeterDevice: (number: String, manufacturer: String, model: String, disco: String, state: String, feeder: String, ip: String, protocol: String) -> Unit,
@@ -121,7 +128,7 @@ fun SmartMeterServerGatewayDialog(
     onDismiss: () -> Unit
 ) {
     val context = LocalContext.current
-    var selectedTab by remember { mutableStateOf(GatewayTab.METERS) }
+    var selectedTab by remember { mutableStateOf(GatewayTab.LIVE_GATEWAYS) }
 
     // Dialog states
     var showAddMeterModal by remember { mutableStateOf(false) }
@@ -281,6 +288,13 @@ fun SmartMeterServerGatewayDialog(
                     // Tab Content Body
                     Box(modifier = Modifier.weight(1f)) {
                         when (selectedTab) {
+                            GatewayTab.LIVE_GATEWAYS -> {
+                                ManufacturerGatewaysLiveTab(
+                                    telemetryMap = gatewayTelemetryMap,
+                                    isPollingMap = isPollingGateway,
+                                    onPollGateway = onPollGateway
+                                )
+                            }
                             GatewayTab.METERS -> {
                                 MetersCatalogTab(
                                     meters = filteredMeters,
