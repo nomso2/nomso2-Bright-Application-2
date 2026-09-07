@@ -105,84 +105,18 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
     val isLowDataMode: StateFlow<Boolean> = _isLowDataMode.asStateFlow()
 
     // Phase 2: Contractual Hour Auditing Matrix (Immutable service band log)
-    private val _auditingRecords = MutableStateFlow(
-        listOf(
-            AuditingHourRecord("Today (Live)", "Sunday", 20.0, 15.2, true, 4.8, 684.0),
-            AuditingHourRecord("Yesterday", "Saturday", 20.0, 21.4, false, 0.0, 0.0),
-            AuditingHourRecord("05 Sep", "Friday", 20.0, 16.1, true, 3.9, 555.75),
-            AuditingHourRecord("04 Sep", "Thursday", 20.0, 14.8, true, 5.2, 741.0),
-            AuditingHourRecord("03 Sep", "Wednesday", 20.0, 22.0, false, 0.0, 0.0),
-            AuditingHourRecord("02 Sep", "Tuesday", 20.0, 13.5, true, 6.5, 926.25),
-            AuditingHourRecord("01 Sep", "Monday", 20.0, 20.5, false, 0.0, 0.0)
-        )
-    )
+    private val _auditingRecords = MutableStateFlow<List<AuditingHourRecord>>(emptyList())
     val auditingRecords: StateFlow<List<AuditingHourRecord>> = _auditingRecords.asStateFlow()
 
     // Phase 4: Escrow Tokens & Clearinghouse Ledger
-    private val _escrowLiquidityVaultBalanceNgn = MutableStateFlow(14850000.0)
+    private val _escrowLiquidityVaultBalanceNgn = MutableStateFlow(0.0)
     val escrowLiquidityVaultBalanceNgn: StateFlow<Double> = _escrowLiquidityVaultBalanceNgn.asStateFlow()
 
-    private val _escrowRebateTokens = MutableStateFlow(
-        listOf(
-            EscrowTokenRebate(
-                id = "ESC-TK-9021",
-                token20Digit = "4829 1092 3841 9201 3819",
-                kwhValue = 18.5,
-                monetaryValueNgn = 3875.0,
-                discoCode = "EKEDC",
-                reason = "Automated compensatory rebate: 36hr Feeder Breaker Failure SLA Default",
-                issuedTimestamp = System.currentTimeMillis() - 86400000L,
-                isRedeemed = false
-            ),
-            EscrowTokenRebate(
-                id = "ESC-TK-8410",
-                token20Digit = "8832 9401 2284 1029 5519",
-                kwhValue = 12.0,
-                monetaryValueNgn = 2514.0,
-                discoCode = "EKEDC",
-                reason = "SLA Breach Settlement: Unannounced Phase Dropout > 12 hours",
-                issuedTimestamp = System.currentTimeMillis() - 432000000L,
-                isRedeemed = true
-            )
-        )
-    )
+    private val _escrowRebateTokens = MutableStateFlow<List<EscrowTokenRebate>>(emptyList())
     val escrowRebateTokens: StateFlow<List<EscrowTokenRebate>> = _escrowRebateTokens.asStateFlow()
 
     // Phase 5: Transformer Cluster Forum Feed
-    private val _communityForumPosts = MutableStateFlow(
-        listOf(
-            CommunityForumPost(
-                id = "POST-1",
-                authorName = "Engr. Femi A.",
-                isVerifiedResident = true,
-                transformerId = "TR-VI-ADEOLA-04B",
-                content = "DisCo team just arrived at the corner pole near Adeola Odeku junction with an aluminium replacement cross-arm. Estimated completion 45 mins.",
-                timestampText = "12 mins ago",
-                upvotes = 14,
-                isExtortionReport = false
-            ),
-            CommunityForumPost(
-                id = "POST-2",
-                authorName = "Mama Chioma",
-                isVerifiedResident = true,
-                transformerId = "TR-VI-ADEOLA-04B",
-                content = "A self-proclaimed linesman asked our compound for ₦15,000 to reconnect our phase jumper. DO NOT PAY. We have logged this directly into the NERC Whistleblower clearance.",
-                timestampText = "1 hour ago",
-                upvotes = 32,
-                isExtortionReport = true
-            ),
-            CommunityForumPost(
-                id = "POST-3",
-                authorName = "Segun Bankole",
-                isVerifiedResident = true,
-                transformerId = "TR-VI-ADEOLA-04B",
-                content = "Phase B voltage is flickering between 175V and 190V. Please switch off heavy deep freezers and inverter chargers to prevent low-voltage coil damage.",
-                timestampText = "2 hours ago",
-                upvotes = 21,
-                isExtortionReport = false
-            )
-        )
-    )
+    private val _communityForumPosts = MutableStateFlow<List<CommunityForumPost>>(emptyList())
     val communityForumPosts: StateFlow<List<CommunityForumPost>> = _communityForumPosts.asStateFlow()
 
     // Phase 6: Appliance Consumption Matrix
@@ -199,43 +133,7 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
     val applianceBudgetList: StateFlow<List<ApplianceBudgetItem>> = _applianceBudgetList.asStateFlow()
 
     // Phase 7: Multi-Asset Meter Management
-    private val _linkedMeterAssets = MutableStateFlow(
-        listOf(
-            LinkedMeterAsset(
-                id = "asset-1",
-                label = "Primary Residence",
-                meterNumber = "01429583192",
-                address = "14 Adeola Odeku Street, Victoria Island",
-                discoCode = "EKEDC",
-                feederBand = FeederBand.BAND_A,
-                transformerId = "TR-VI-ADEOLA-04B",
-                isPrepaid = true,
-                isSelected = true
-            ),
-            LinkedMeterAsset(
-                id = "asset-2",
-                label = "Workspace Studio",
-                meterNumber = "45019283741",
-                address = "Block 4, Admiralty Way, Lekki Phase 1",
-                discoCode = "EKEDC",
-                feederBand = FeederBand.BAND_A,
-                transformerId = "TR-LEK-ADM-12A",
-                isPrepaid = true,
-                isSelected = false
-            ),
-            LinkedMeterAsset(
-                id = "asset-3",
-                label = "Family Property",
-                meterNumber = "61209384756",
-                address = "28 Adeniran Ogunsanya St, Surulere",
-                discoCode = "EKEDC",
-                feederBand = FeederBand.BAND_B,
-                transformerId = "TR-SUR-ADEN-03C",
-                isPrepaid = false,
-                isSelected = false
-            )
-        )
-    )
+    private val _linkedMeterAssets = MutableStateFlow<List<LinkedMeterAsset>>(emptyList())
     val linkedMeterAssets: StateFlow<List<LinkedMeterAsset>> = _linkedMeterAssets.asStateFlow()
 
     // Phase 7: Whistleblower Reports (Cryptographically Sealed)
@@ -247,43 +145,7 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
     val userMessage: StateFlow<String?> = _userMessage.asStateFlow()
 
     // Transformer Dues & CDA Transparency Ledger
-    private val _transformerDuesEntries = MutableStateFlow(
-        listOf(
-            TransformerDuesEntry(
-                id = "DUE-2026-081",
-                residentName = "Chief Emeka Nwachukwu",
-                houseAddress = "Plot 12B, Adeola Odeku St",
-                meterNumber = "01429583192",
-                purpose = "500kVA Transformer 50L Oil Top-Up & Gasket",
-                amountNgn = 15000.0,
-                dateText = "04 Sep 2026",
-                paymentMethod = "Bank Transfer",
-                verifiedByChairman = true
-            ),
-            TransformerDuesEntry(
-                id = "DUE-2026-082",
-                residentName = "Alhaji Bello Danjuma",
-                houseAddress = "16 Adeola Odeku St (Ground Floor)",
-                meterNumber = "01429583204",
-                purpose = "3x 300A HRC Dropped-Out Fuses Replacement",
-                amountNgn = 10000.0,
-                dateText = "05 Sep 2026",
-                paymentMethod = "OPay",
-                verifiedByChairman = true
-            ),
-            TransformerDuesEntry(
-                id = "DUE-2026-083",
-                residentName = "Mrs. Ronke Adeleke",
-                houseAddress = "Apartment 4, 18 Adeola Odeku St",
-                meterNumber = "01429583311",
-                purpose = "Street Security Light Solar Battery Maintenance",
-                amountNgn = 5000.0,
-                dateText = "06 Sep 2026",
-                paymentMethod = "Bank Transfer",
-                verifiedByChairman = true
-            )
-        )
-    )
+    private val _transformerDuesEntries = MutableStateFlow<List<TransformerDuesEntry>>(emptyList())
     val transformerDuesEntries: StateFlow<List<TransformerDuesEntry>> = _transformerDuesEntries.asStateFlow()
 
     fun addTransformerDuesContribution(

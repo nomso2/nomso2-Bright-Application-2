@@ -288,7 +288,203 @@ fun HomeScreen(
                     }
                 }
 
-                // 00-A. Smart Meter Server Gateway & Nigerian AMI Card
+                // 1. Personal Meter Profile & Connection Identity
+                item {
+                    MeterProfileHeader(
+                        profile = userProfile,
+                        onEditProfileClicked = onEditProfileClicked
+                    )
+                }
+
+                // 2. Direct Action: Report Power Outage / Fault
+                item {
+                    Button(
+                        onClick = onReportFaultClicked,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(52.dp)
+                            .testTag("report_fault_banner_button"),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = ElegantGoldPrimary,
+                            contentColor = Color(0xFF0A0C10)
+                        ),
+                        shape = RoundedCornerShape(14.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Report Outage / Fault",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 15.sp
+                        )
+                    }
+                }
+
+                // 3. Section Title: "MY ACTIVE COMPLAINTS"
+                item {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column {
+                            Text(
+                                text = "MY ACTIVE COMPLAINTS",
+                                style = MaterialTheme.typography.labelMedium.copy(
+                                    fontWeight = FontWeight.ExtraBold,
+                                    letterSpacing = 0.5.sp
+                                ),
+                                color = Slate100Text
+                            )
+                            Text(
+                                text = "Tracked directly with Meter #${userProfile.meterNumber}",
+                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                                color = ElegantGoldPrimary
+                            )
+                        }
+
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(
+                                    if (personalComplaints.isNotEmpty()) Color(0x26EF4444)
+                                    else Color(0x1A22C55E)
+                                )
+                                .padding(horizontal = 8.dp, vertical = 4.dp)
+                        ) {
+                            Text(
+                                text = "${personalComplaints.size} Active",
+                                style = MaterialTheme.typography.labelSmall.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (personalComplaints.isNotEmpty()) Color(0xFFEF4444) else Color(0xFF4ADE80)
+                                )
+                            )
+                        }
+                    }
+                }
+
+                // 4. Personal Complaints List / Clean WhatsApp-like empty card
+                if (personalComplaints.isEmpty()) {
+                    item {
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .testTag("empty_complaints_card"),
+                            shape = RoundedCornerShape(20.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = ElegantDarkSurface
+                            ),
+                            border = androidx.compose.foundation.BorderStroke(1.dp, ElegantDarkBorder),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(24.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(56.dp)
+                                        .clip(CircleShape)
+                                        .background(Color(0x26FACC15)),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Lightbulb,
+                                        contentDescription = "Light is Bright",
+                                        tint = ElegantGoldPrimary,
+                                        modifier = Modifier.size(32.dp)
+                                    )
+                                }
+                                Spacer(modifier = Modifier.height(12.dp))
+                                Text(
+                                    text = "Your Lights are Bright!",
+                                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                                    color = Slate100Text
+                                )
+                                Spacer(modifier = Modifier.height(6.dp))
+                                Text(
+                                    text = "No active faults logged for Meter #${userProfile.meterNumber} on ${userProfile.transformerId}. If power drops, lodge complaint instantly below.",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = Slate400Text,
+                                    textAlign = TextAlign.Center
+                                )
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Button(
+                                    onClick = onReportFaultClicked,
+                                    modifier = Modifier
+                                        .height(44.dp)
+                                        .testTag("report_fault_empty_state_button"),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = ElegantGoldPrimary,
+                                        contentColor = Color(0xFF0A0C10)
+                                    ),
+                                    shape = RoundedCornerShape(12.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.PowerOff,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Text(
+                                        text = "Report Outage / Fault",
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    items(personalComplaints, key = { it.id }) { complaint ->
+                        ComplaintCard(
+                            complaint = complaint,
+                            onEscalateClicked = onEscalateComplaint,
+                            onUpvoteClicked = onUpvoteComplaint,
+                            onConfirmResolutionClicked = onConfirmResolution,
+                            onAdvanceStatusDemo = { _, _ -> }
+                        )
+                    }
+                }
+
+                // 5. Quick Action Grid
+                item {
+                    Text(
+                        text = "GRID & UTILITY SERVICES",
+                        style = MaterialTheme.typography.labelMedium.copy(
+                            fontWeight = FontWeight.ExtraBold,
+                            letterSpacing = 0.5.sp
+                        ),
+                        color = Slate100Text
+                    )
+                }
+
+                item {
+                    QuickActionGrid(
+                        onNavigateMap = onNavigateMap,
+                        onNavigateVandalism = onNavigateVandalism,
+                        onNavigateHazard = { onEmergencyHazardTriggered("Immediate Transformer Fire Hazard") },
+                        onNavigateHistory = onNavigateHistory,
+                        onNavigateBilling = onNavigateHub,
+                        onNavigateLoadShed = onNavigateHub,
+                        onNavigateEscalate = {
+                            if (personalComplaints.isNotEmpty()) {
+                                onEscalateComplaint(personalComplaints.first().id)
+                            } else {
+                                onReportFaultClicked()
+                            }
+                        },
+                        onNavigateOthers = onNavigateHub
+                    )
+                }
+
+                // 6. Smart Meter Server Gateway & Nigerian AMI Card
                 item {
                     Card(
                         modifier = Modifier
@@ -357,389 +553,12 @@ fun HomeScreen(
                     }
                 }
 
-                // 00. Estate Exco Portal & CDA Transparency Banner
-                item {
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable(onClick = onOpenEstateExcoDossier)
-                            .testTag("estate_exco_portal_card"),
-                        shape = RoundedCornerShape(16.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B)),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, ElegantGoldPrimary.copy(alpha = 0.5f))
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(14.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(10.dp)
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(36.dp)
-                                        .clip(RoundedCornerShape(8.dp))
-                                        .background(ElegantGoldPrimary.copy(alpha = 0.2f)),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Gavel,
-                                        contentDescription = null,
-                                        tint = ElegantGoldPrimary,
-                                        modifier = Modifier.size(20.dp)
-                                    )
-                                }
-                                Column {
-                                    Text(
-                                        text = "ESTATE EXCO & NERC DOSSIER",
-                                        style = MaterialTheme.typography.labelSmall.copy(
-                                            fontWeight = FontWeight.ExtraBold,
-                                            letterSpacing = 0.5.sp
-                                        ),
-                                        color = ElegantGoldPrimary
-                                    )
-                                    Text(
-                                        text = "PDF Legal Export • Dues Ledger • SLA Refund Calc",
-                                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
-                                        color = Slate100Text
-                                    )
-                                }
-                            }
-
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(4.dp)
-                            ) {
-                                Button(
-                                    onClick = onTriggerSurgeSiren,
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color(0xFF991B1B),
-                                        contentColor = Color.White
-                                    ),
-                                    shape = RoundedCornerShape(8.dp),
-                                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
-                                    modifier = Modifier.testTag("test_surge_siren_btn")
-                                ) {
-                                    Icon(Icons.Default.VolumeUp, contentDescription = null, modifier = Modifier.size(14.dp))
-                                    Spacer(modifier = Modifier.width(4.dp))
-                                    Text("Surge Siren", fontSize = 11.sp, fontWeight = FontWeight.Bold)
-                                }
-                            }
-                        }
-                    }
-                }
-
-                // 0A. 30 Critical Grid Solutions Hub Banner
-                item {
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .testTag("solutions_30_banner_card"),
-                        shape = RoundedCornerShape(18.dp),
-                        colors = CardDefaults.cardColors(containerColor = ElegantDarkSurface),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFD97706))
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp)
-                        ) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                                ) {
-                                    Box(
-                                        modifier = Modifier
-                                            .size(28.dp)
-                                            .clip(CircleShape)
-                                            .background(Color(0x26F59E0B)),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Default.Bolt,
-                                            contentDescription = null,
-                                            tint = ElegantGoldPrimary,
-                                            modifier = Modifier.size(18.dp)
-                                        )
-                                    }
-                                    Text(
-                                        text = "30 GRID FIXES DEPLOYED",
-                                        style = MaterialTheme.typography.labelMedium.copy(
-                                            fontWeight = FontWeight.ExtraBold,
-                                            letterSpacing = 1.sp
-                                        ),
-                                        color = ElegantGoldPrimary
-                                    )
-                                }
-                                Box(
-                                    modifier = Modifier
-                                        .clip(RoundedCornerShape(6.dp))
-                                        .background(Color(0x2610B981))
-                                        .padding(horizontal = 8.dp, vertical = 2.dp)
-                                ) {
-                                    Text(
-                                        text = "Trust: $userTrustScore%",
-                                        style = MaterialTheme.typography.labelSmall.copy(
-                                            fontWeight = FontWeight.Bold,
-                                            color = Color(0xFF34D399)
-                                        )
-                                    )
-                                }
-                            }
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                text = "Intelligent software layer resolving Nigeria's 30 power sector crises: tiered dispatch, transformer fire alerts, USSD offline sync, load-shedding diagnosis & extortion shield.",
-                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
-                                color = Slate400Text
-                            )
-                            Spacer(modifier = Modifier.height(12.dp))
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                Button(
-                                    onClick = onNavigateHub,
-                                    modifier = Modifier
-                                        .weight(1.2f)
-                                        .testTag("open_30_solutions_btn"),
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = ElegantGoldPrimary,
-                                        contentColor = Color.Black
-                                    ),
-                                    shape = RoundedCornerShape(10.dp)
-                                ) {
-                                    Text(
-                                        text = "View 30 Solutions",
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 12.sp
-                                    )
-                                }
-                                Button(
-                                    onClick = onOpenRedDangerSOS,
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .testTag("danger_sos_btn"),
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color(0xFFDC2626),
-                                        contentColor = Color.White
-                                    ),
-                                    shape = RoundedCornerShape(10.dp)
-                                ) {
-                                    Text(
-                                        text = "🚨 Red SOS",
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 12.sp
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-
-                // 0B. Diagnostic Classifier: Load Shedding vs Unplanned Fault (Solution #5)
-                item {
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable(onClick = onToggleDiagnosticStatus)
-                            .testTag("diagnostic_classifier_card"),
-                        shape = RoundedCornerShape(14.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color(0xFF0F172A)),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF334155))
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(12.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(10.dp)
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(10.dp)
-                                        .clip(CircleShape)
-                                        .background(if (diagnosticStatus == "LOAD_SHEDDING") Color(0xFFF59E0B) else Color(0xFFEF4444))
-                                )
-                                Column {
-                                    Text(
-                                        text = if (diagnosticStatus == "LOAD_SHEDDING") "AI DIAGNOSIS: PLANNED LOAD SHEDDING" else "AI DIAGNOSIS: UNPLANNED NETWORK FAULT",
-                                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                                        color = if (diagnosticStatus == "LOAD_SHEDDING") Color(0xFFFBBF24) else Color(0xFFF87171)
-                                    )
-                                    Text(
-                                        text = if (diagnosticStatus == "LOAD_SHEDDING") "TCN System Operator Quota reduction on ${userProfile.feederName}" else "Feeder tripped on overcurrent or blown drop-out fuse",
-                                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
-                                        color = Slate400Text
-                                    )
-                                }
-                            }
-                            Text(
-                                text = "Tap Switch",
-                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
-                                color = Slate500Text
-                            )
-                        }
-                    }
-                }
-
-                // 1. Meter Identity Card
-                item {
-                    MeterProfileHeader(
-                        profile = userProfile,
-                        onEditProfileClicked = onEditProfileClicked
-                    )
-                }
-
-                // 2. Phase 2: Contractual Hour Auditing Matrix Card
-                item {
-                    AuditingMatrixCard(
-                        userProfile = userProfile,
-                        auditingRecords = auditingRecords,
-                        telemetry = telemetry,
-                        onOpenClearinghouse = onOpenClearinghouse
-                    )
-                }
-
-                // 3. Phase Roadmap Quick Access Grid (Phases 1, 4, 5, 6, 7)
-                item {
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .testTag("roadmap_quick_hub_card"),
-                        shape = RoundedCornerShape(18.dp),
-                        colors = CardDefaults.cardColors(containerColor = ElegantDarkSurface),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, ElegantDarkBorder)
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(14.dp)
-                        ) {
-                            Text(
-                                text = "PMI REGULATORY CLEARINGHOUSE PROTOCOLS",
-                                style = MaterialTheme.typography.labelSmall.copy(
-                                    fontWeight = FontWeight.ExtraBold,
-                                    letterSpacing = 0.5.sp
-                                ),
-                                color = ElegantGoldPrimary
-                            )
-                            Spacer(modifier = Modifier.height(10.dp))
-
-                            // Grid of 4 key action items
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                // Phase 1: Onboarding & SIM OTP
-                                Box(
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .clip(RoundedCornerShape(12.dp))
-                                        .background(Color(0x14FFFFFF))
-                                        .border(1.dp, ElegantDarkBorder, RoundedCornerShape(12.dp))
-                                        .clickable(onClick = onOpenOnboarding)
-                                        .padding(10.dp)
-                                ) {
-                                    Column {
-                                        Icon(imageVector = Icons.Default.Lock, contentDescription = null, tint = ElegantGoldPrimary, modifier = Modifier.size(18.dp))
-                                        Spacer(modifier = Modifier.height(4.dp))
-                                        Text(text = "Phase 1: Setup", style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold), color = Slate100Text)
-                                        Text(text = "SIM OTP & ₦100", style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp), color = Slate400Text)
-                                    }
-                                }
-
-                                // Phase 4: Token Escrow
-                                Box(
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .clip(RoundedCornerShape(12.dp))
-                                        .background(Color(0x1422C55E))
-                                        .border(1.dp, Color(0x3322C55E), RoundedCornerShape(12.dp))
-                                        .clickable(onClick = onOpenClearinghouse)
-                                        .padding(10.dp)
-                                ) {
-                                    Column {
-                                        Icon(imageVector = Icons.Default.AccountBalanceWallet, contentDescription = null, tint = ElegantGreenLive, modifier = Modifier.size(18.dp))
-                                        Spacer(modifier = Modifier.height(4.dp))
-                                        Text(text = "Phase 4: Escrow", style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold), color = Color(0xFF86EFAC))
-                                        Text(text = "₦14.8M Vault & Rebates", style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp), color = Slate400Text)
-                                    }
-                                }
-                            }
-
-                            Spacer(modifier = Modifier.height(8.dp))
-
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                // Phase 5: Cluster Forum & Voice AI
-                                Box(
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .clip(RoundedCornerShape(12.dp))
-                                        .background(Color(0x14FFFFFF))
-                                        .border(1.dp, ElegantDarkBorder, RoundedCornerShape(12.dp))
-                                        .clickable(onClick = onOpenTransformerForum)
-                                        .padding(10.dp)
-                                ) {
-                                    Column {
-                                        Icon(imageVector = Icons.Default.Forum, contentDescription = null, tint = Color(0xFF60A5FA), modifier = Modifier.size(18.dp))
-                                        Spacer(modifier = Modifier.height(4.dp))
-                                        Text(text = "Phase 5: Forum", style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold), color = Slate100Text)
-                                        Text(text = "Line Feed & Voice AI", style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp), color = Slate400Text)
-                                    }
-                                }
-
-                                // Phase 6: Energy & Surge Guard
-                                Box(
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .clip(RoundedCornerShape(12.dp))
-                                        .background(Color(0x14FFFFFF))
-                                        .border(1.dp, ElegantDarkBorder, RoundedCornerShape(12.dp))
-                                        .clickable(onClick = onOpenEnergyOptimization)
-                                        .padding(10.dp)
-                                ) {
-                                    Column {
-                                        Icon(imageVector = Icons.Default.FlashOn, contentDescription = null, tint = ElegantGoldPrimary, modifier = Modifier.size(18.dp))
-                                        Spacer(modifier = Modifier.height(4.dp))
-                                        Text(text = "Phase 6: Surge", style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold), color = Slate100Text)
-                                        Text(text = "T-5 Min Alert & Load", style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp), color = Slate400Text)
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                // 4. Real-Time National Grid Telemetry Bar
+                // 7. Real-Time National Grid Telemetry Bar
                 item {
                     RealTimeTicker(telemetry = telemetry)
                 }
 
-                // 5. Transformer Overload & Phase Telemetry (Feature 7)
-                item {
-                    TransformerOverloadCard(
-                        telemetry = transformerTelemetry,
-                        onReportHumSpark = onReportTransformerHumSpark
-                    )
-                }
-
-                // 6. Power Restoration Alert Chime (Feature 9)
+                // 8. Power Restoration Alert Chime (Feature 9)
                 item {
                     PowerRestorationAlertCard(
                         isAlarmEnabled = isRestorationAlarmEnabled,
@@ -749,156 +568,7 @@ fun HomeScreen(
                     )
                 }
 
-                // 7. Quick Action Grid (8 items from design)
-                item {
-                    QuickActionGrid(
-                        onNavigateMap = onNavigateMap,
-                        onNavigateVandalism = onNavigateVandalism,
-                        onNavigateHazard = { onEmergencyHazardTriggered("Immediate Transformer Fire Hazard") },
-                        onNavigateHistory = onNavigateHistory,
-                        onNavigateBilling = onNavigateHub,
-                        onNavigateLoadShed = onNavigateHub,
-                        onNavigateEscalate = {
-                            if (personalComplaints.isNotEmpty()) {
-                                onEscalateComplaint(personalComplaints.first().id)
-                            } else {
-                                onReportFaultClicked()
-                            }
-                        },
-                        onNavigateOthers = onNavigateHub
-                    )
-                }
-
-                // 8. Section Title: "MY ACTIVE COMPLAINTS"
-                item {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column {
-                            Text(
-                                text = "MY ACTIVE COMPLAINTS",
-                                style = MaterialTheme.typography.labelMedium.copy(
-                                    fontWeight = FontWeight.ExtraBold,
-                                    letterSpacing = 0.5.sp
-                                ),
-                                color = Slate100Text
-                            )
-                            Text(
-                                text = "Tracked directly with Meter #${userProfile.meterNumber}",
-                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
-                                color = ElegantGoldPrimary
-                            )
-                        }
-
-                        Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(8.dp))
-                                .background(
-                                    if (personalComplaints.isNotEmpty()) Color(0x26EF4444)
-                                    else Color(0x1A22C55E)
-                                )
-                                .padding(horizontal = 8.dp, vertical = 4.dp)
-                        ) {
-                            Text(
-                                text = "${personalComplaints.size} Active",
-                                style = MaterialTheme.typography.labelSmall.copy(
-                                    fontWeight = FontWeight.Bold,
-                                    color = if (personalComplaints.isNotEmpty()) Color(0xFFEF4444) else Color(0xFF4ADE80)
-                                )
-                            )
-                        }
-                    }
-                }
-
-                // 5. Personal Complaints List
-                if (personalComplaints.isEmpty()) {
-                    item {
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .testTag("empty_complaints_card"),
-                            shape = RoundedCornerShape(24.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = ElegantDarkSurface
-                            ),
-                            border = androidx.compose.foundation.BorderStroke(1.dp, ElegantDarkBorder),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                        ) {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(24.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Center
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(56.dp)
-                                        .clip(CircleShape)
-                                        .background(Color(0x26FACC15)),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Lightbulb,
-                                        contentDescription = "Light is Bright",
-                                        tint = ElegantGoldPrimary,
-                                        modifier = Modifier.size(32.dp)
-                                    )
-                                }
-                                Spacer(modifier = Modifier.height(12.dp))
-                                Text(
-                                    text = "Your Lights are Bright!",
-                                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                                    color = Slate100Text
-                                )
-                                Spacer(modifier = Modifier.height(6.dp))
-                                Text(
-                                    text = "No active faults logged for Meter #${userProfile.meterNumber} on ${userProfile.transformerId}. If power drops, lodge complaint instantly below.",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = Slate400Text,
-                                    textAlign = TextAlign.Center
-                                )
-                                Spacer(modifier = Modifier.height(16.dp))
-                                Button(
-                                    onClick = onReportFaultClicked,
-                                    modifier = Modifier
-                                        .height(48.dp)
-                                        .testTag("report_fault_empty_state_button"),
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = ElegantGoldPrimary,
-                                        contentColor = Color(0xFF0A0C10)
-                                    ),
-                                    shape = RoundedCornerShape(12.dp)
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.PowerOff,
-                                        contentDescription = null,
-                                        modifier = Modifier.size(18.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(6.dp))
-                                    Text(
-                                        text = "Report Outage / Fault",
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                }
-                            }
-                        }
-                    }
-                } else {
-                    items(personalComplaints, key = { it.id }) { complaint ->
-                        ComplaintCard(
-                            complaint = complaint,
-                            onEscalateClicked = onEscalateComplaint,
-                            onUpvoteClicked = onUpvoteComplaint,
-                            onConfirmResolutionClicked = onConfirmResolution,
-                            onAdvanceStatusDemo = { _, _ -> }
-                        )
-                    }
-                }
-
-                // 6. Emergency Hazard Fast-Track (1-Tap SOS)
+                // 9. Emergency Hazard Fast-Track (1-Tap SOS)
                 item {
                     HazardFastTrackCard(
                         onQuickHazardSelected = onEmergencyHazardTriggered

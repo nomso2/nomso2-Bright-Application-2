@@ -344,10 +344,10 @@ fun VandalismScreen(
             }
         }
 
-        // Feed of Community Vandalism & Vigilance Reports
+        // Feed of Vandalism & Vigilance Reports
         item {
             Text(
-                text = "COMMUNITY INFRASTRUCTURE VIGILANCE LOGS",
+                text = "VANDALISM & TAMPERING REPORTS",
                 style = MaterialTheme.typography.labelMedium.copy(
                     fontWeight = FontWeight.Bold,
                     letterSpacing = 0.5.sp
@@ -356,7 +356,46 @@ fun VandalismScreen(
             )
         }
 
-        items(reports, key = { it.id }) { report ->
+        if (reports.isEmpty()) {
+            item {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag("empty_vandalism_card"),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(24.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Shield,
+                            contentDescription = null,
+                            tint = Color(0xFF10B981),
+                            modifier = Modifier.size(40.dp)
+                        )
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Text(
+                            text = "No Incidents Reported",
+                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Text(
+                            text = "No vandalism or cable theft incidents logged. Tap '+ Report Incident' if you spot illegal tampering with power cables or substations.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                        )
+                    }
+                }
+            }
+        } else {
+            items(reports, key = { it.id }) { report ->
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -451,4 +490,5 @@ fun VandalismScreen(
             }
         }
     }
+}
 }

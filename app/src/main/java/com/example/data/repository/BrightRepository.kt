@@ -58,9 +58,22 @@ class BrightRepository(private val database: AppDatabase) {
 
     init {
         CoroutineScope(Dispatchers.IO).launch {
+            cleanOldDummyData()
             seedDefaultDataIfEmpty()
             seedLiveOutageData()
             seedMaintenanceAlerts()
+        }
+    }
+
+    private suspend fun cleanOldDummyData() {
+        try {
+            complaintDao.deleteSeedComplaints()
+            vandalismDao.deleteSeedReports()
+            disputeDao.deleteSeedDisputes()
+            applianceClaimDao.deleteSeedClaims()
+            streetHazardDao.deleteSeedHazards()
+        } catch (e: Exception) {
+            // Ignored if tables are clean
         }
     }
 
@@ -358,104 +371,8 @@ class BrightRepository(private val database: AppDatabase) {
         )
         profileDao.setUserProfile(UserProfileEntity.fromDomain(defaultProfile))
 
-        // New user starts with clean 0 complaints slate (ready for first-time reporting)
-        // No foreign or stranger complaints seeded.
-        val now = System.currentTimeMillis()
-
-        // Seed initial vandalism report
-        val seedVandalism = VandalismEntity(
-            id = "VAN-NG-8831",
-            incidentType = "Substation Armored Copper Cable Theft",
-            location = "Bishop Oluwole Substation",
-            landmark = "Behind Silverbird Galleria",
-            discoCode = "EKEDC",
-            reportedAt = now - (2 * 24 * 60 * 60 * 1000L),
-            isAnonymous = false,
-            description = "Three men in unauthorized jumpsuits cut copper earthing wires around 2:00 AM.",
-            status = "Security Dispatched & Police Report Filed",
-            suspectDetails = "White unmarked Hiace bus with missing rear bumper"
-        )
-        vandalismDao.insertReport(seedVandalism)
-
-        // Seed initial billing dispute
-        val seedDispute = BillingDisputeEntity(
-            id = "DSP-NG-3042",
-            meterNumber = "01429583192",
-            disputeType = "Capped Tariff Overbilling (Band A supply shortfall)",
-            disputedAmountNgn = 28450.0,
-            billingMonth = "August 2026",
-            discoCode = "EKEDC",
-            description = "Supply logged for August was 14.2 hours daily average instead of minimum 20 hours required for Band A rate.",
-            status = "NERC Audit Approved - NGN 18,200 Token Credit Queued",
-            createdAt = now - (8 * 24 * 60 * 60 * 1000L)
-        )
-        disputeDao.insertDispute(seedDispute)
-
-        // Seed initial appliance damage claim (NERC CPR 2023)
-        val seedApplianceClaim = ApplianceClaimEntity(
-            id = "CLM-SRG-4192",
-            meterNumber = "01429583192",
-            applianceName = "Smart Inverter & Power Board",
-            applianceBrandModel = "Luminous 5kVA Pure Sine Wave Inverter",
-            estimatedLossNgn = 185000.0,
-            surgeTimestampText = "3 days ago, 11:34 PM (Feeder re-energization)",
-            surgeDescription = "Excessive voltage surge exceeding 310V upon 33kV line restoration blasted charging circuit capacitor and burnt transformer coil.",
-            statutoryNoticeText = "FORMAL NOTICE OF LIABILITY UNDER NERC CPR 2023 REGULATION 18(2):\nDistribution licensee EKEDC is notified of severe electrical surge exceeding tolerance limits. Joint inspection demanded within 7 business days or compensatory billing credit of NGN 185,000.",
-            discoCode = "EKEDC",
-            status = "UNDER_DISCO_LEGAL_REVIEW",
-            createdAt = now - (3 * 24 * 60 * 60 * 1000L)
-        )
-        applianceClaimDao.insertClaim(seedApplianceClaim)
-
-        // Seed public street electrical hazards
-        val seedHazards = listOf(
-            StreetHazardEntity(
-                id = "HZD-PIN-101",
-                title = "Snapped 33kV Live Conductor Dangling Near Gutter",
-                hazardType = "Dangling High-Tension Conductor",
-                urgency = "CRITICAL ELECTROCUTION RISK",
-                location = "Adeola Odeku Junction / Kofo Abayomi Street",
-                landmark = "Opposite Access Bank ATM Gallery",
-                discoCode = "EKEDC",
-                reportedBy = "Resident Patrol",
-                verifiedCount = 19,
-                isDispatched = true,
-                xPosRatio = 0.285f,
-                yPosRatio = 0.655f,
-                reportedAt = now - (45 * 60 * 1000L)
-            ),
-            StreetHazardEntity(
-                id = "HZD-PIN-102",
-                title = "Broken Leaning Concrete Pole Over Pedestrian Walkway",
-                hazardType = "Snapped Leaning Concrete Pole",
-                urgency = "HIGH DANGER",
-                location = "Ozumba Mbadiwe Way",
-                landmark = "Near Civic Center Footbridge",
-                discoCode = "EKEDC",
-                reportedBy = "Community Watch",
-                verifiedCount = 12,
-                isDispatched = true,
-                xPosRatio = 0.292f,
-                yPosRatio = 0.648f,
-                reportedAt = now - (3 * 60 * 60 * 1000L)
-            ),
-            StreetHazardEntity(
-                id = "HZD-PIN-103",
-                title = "Submerged Feeder Pillar in Deep Rain Puddle (Smoking)",
-                hazardType = "Submerged Flooded Feeder Pillar",
-                urgency = "CRITICAL ELECTROCUTION RISK",
-                location = "Ahmadu Bello Way",
-                landmark = "Beside Bar Beach Bus Stop",
-                discoCode = "EKEDC",
-                reportedBy = "Chuka Obunma",
-                verifiedCount = 28,
-                isDispatched = true,
-                xPosRatio = 0.278f,
-                yPosRatio = 0.662f,
-                reportedAt = now - (1 * 60 * 60 * 1000L)
-            )
-        )
-        streetHazardDao.insertAll(seedHazards)
+        // Clean slate: 0 fake stranger reports, 0 fake vandalism, 0 fake claims.
+        // User creates and manages their own records, like WhatsApp.
     }
 
     private fun seedLiveOutageData() {

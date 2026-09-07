@@ -41,6 +41,12 @@ interface ComplaintDao {
 
     @Query("UPDATE complaints SET statusName = :status, userSatisfaction = :rating, resolutionNotes = :notes, updatedAt = :updatedAt, resolvedAt = :resolvedAt WHERE id = :id")
     suspend fun resolveComplaint(id: String, status: String, rating: Int, notes: String, updatedAt: Long, resolvedAt: Long)
+
+    @Query("DELETE FROM complaints WHERE id LIKE 'SEED-%' OR id LIKE 'CMP-SEED%'")
+    suspend fun deleteSeedComplaints()
+
+    @Query("DELETE FROM complaints")
+    suspend fun clearAll()
 }
 
 @Dao
@@ -50,6 +56,9 @@ interface UserProfileDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun setUserProfile(profile: UserProfileEntity)
+
+    @Query("DELETE FROM user_profile")
+    suspend fun clearProfile()
 }
 
 @Dao
@@ -59,6 +68,12 @@ interface VandalismDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertReport(report: VandalismEntity)
+
+    @Query("DELETE FROM vandalism_reports WHERE id LIKE 'VAN-NG-8831' OR id LIKE 'SEED-%'")
+    suspend fun deleteSeedReports()
+
+    @Query("DELETE FROM vandalism_reports")
+    suspend fun clearAll()
 }
 
 @Dao
@@ -68,6 +83,12 @@ interface BillingDisputeDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertDispute(dispute: BillingDisputeEntity)
+
+    @Query("DELETE FROM billing_disputes WHERE id LIKE 'DSP-NG-3042' OR id LIKE 'SEED-%'")
+    suspend fun deleteSeedDisputes()
+
+    @Query("DELETE FROM billing_disputes")
+    suspend fun clearAll()
 }
 
 @Dao
@@ -77,6 +98,12 @@ interface ApplianceClaimDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertClaim(claim: ApplianceClaimEntity)
+
+    @Query("DELETE FROM appliance_claims WHERE id LIKE 'CLM-SRG-4192' OR id LIKE 'SEED-%'")
+    suspend fun deleteSeedClaims()
+
+    @Query("DELETE FROM appliance_claims")
+    suspend fun clearAll()
 }
 
 @Dao
@@ -95,5 +122,11 @@ interface StreetHazardDao {
 
     @Query("UPDATE street_hazards SET isDispatched = 1 WHERE id = :id")
     suspend fun markDispatched(id: String)
+
+    @Query("DELETE FROM street_hazards WHERE id LIKE 'HZD-PIN-%' OR id LIKE 'SEED-%'")
+    suspend fun deleteSeedHazards()
+
+    @Query("DELETE FROM street_hazards")
+    suspend fun clearAll()
 }
 
