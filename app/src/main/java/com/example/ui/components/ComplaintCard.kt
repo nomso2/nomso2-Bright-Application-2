@@ -21,6 +21,7 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Engineering
 import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.PhotoCamera
+import androidx.compose.material.icons.filled.PictureAsPdf
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material.icons.filled.Timer
@@ -48,6 +49,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.model.Complaint
 import com.example.model.ComplaintStatus
+import com.example.model.UserProfile
+import com.example.util.NercDossierPdfGenerator
 import com.example.ui.theme.ElegantDarkBorder
 import com.example.ui.theme.ElegantDarkSurface
 import com.example.ui.theme.ElegantGoldPrimary
@@ -67,6 +70,7 @@ fun ComplaintCard(
     onUpvoteClicked: (String) -> Unit,
     onConfirmResolutionClicked: (String) -> Unit,
     onAdvanceStatusDemo: (String, ComplaintStatus) -> Unit,
+    userProfile: UserProfile? = null,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -141,11 +145,37 @@ fun ComplaintCard(
                     )
                 }
 
-                // Status Badge & Share Button
+                // Status Badge & Action Buttons
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
+                    if (userProfile != null) {
+                        IconButton(
+                            onClick = {
+                                NercDossierPdfGenerator.shareNercDossierPdf(
+                                    context = context,
+                                    userProfile = userProfile,
+                                    complaints = listOf(complaint),
+                                    dossierTitle = "NERC STATUTORY TICKET AUDIT: #${complaint.id}"
+                                )
+                            },
+                            modifier = Modifier
+                                .size(32.dp)
+                                .clip(CircleShape)
+                                .background(Color(0x14FFFFFF))
+                                .border(1.dp, ElegantGoldPrimary.copy(alpha = 0.5f), CircleShape)
+                                .testTag("export_pdf_complaint_${complaint.id}")
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.PictureAsPdf,
+                                contentDescription = "Export NERC PDF Dossier",
+                                tint = ElegantGoldPrimary,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+                    }
+
                     IconButton(
                         onClick = {
                             val shareText = "⚡ Power Outage Alert • Ticket #${complaint.id}\n" +

@@ -447,6 +447,7 @@ fun HomeScreen(
                     items(personalComplaints, key = { it.id }) { complaint ->
                         ComplaintCard(
                             complaint = complaint,
+                            userProfile = userProfile,
                             onEscalateClicked = onEscalateComplaint,
                             onUpvoteClicked = onUpvoteComplaint,
                             onConfirmResolutionClicked = onConfirmResolution,

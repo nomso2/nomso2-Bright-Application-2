@@ -33,11 +33,13 @@ import androidx.compose.material.icons.filled.Gavel
 import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.Payments
+import androidx.compose.material.icons.filled.PictureAsPdf
 import androidx.compose.material.icons.filled.Print
 import androidx.compose.material.icons.filled.ReceiptLong
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Timer
+import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
@@ -82,6 +84,7 @@ import com.example.model.Complaint
 import com.example.model.SlaCompensationAssessment
 import com.example.model.TransformerDuesEntry
 import com.example.model.UserProfile
+import com.example.util.NercDossierPdfGenerator
 import com.example.ui.theme.DarkCharcoal
 import com.example.ui.theme.ElegantDarkBar
 import com.example.ui.theme.ElegantDarkBorder
@@ -362,6 +365,7 @@ private fun NercDossierTabContent(
     onShare: (String) -> Unit,
     onCopy: (String) -> Unit
 ) {
+    val context = LocalContext.current
     val currentDate = remember { SimpleDateFormat("dd MMMM yyyy, HH:mm", Locale.getDefault()).format(Date()) }
     val formattedDossier = remember(userProfile, activeComplaints) {
         buildString {
@@ -431,36 +435,27 @@ private fun NercDossierTabContent(
                 border = androidx.compose.foundation.BorderStroke(1.dp, ElegantGoldPrimary.copy(alpha = 0.4f)),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Row(
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(12.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                        .padding(12.dp)
                 ) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = "Official NERC Formatted Dossier",
-                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                            color = ElegantGoldPrimary
-                        )
-                        Text(
-                            text = "Formatted with legal citations under CPR 2023. Ready to print, email to DisCo MD, or file with NERC Forum.",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MutedSlateText
-                        )
-                    }
-
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Button(
-                            onClick = { onShare(formattedDossier) },
-                            colors = ButtonDefaults.buttonColors(containerColor = ElegantGoldPrimary, contentColor = DarkCharcoal),
-                            shape = RoundedCornerShape(8.dp),
-                            modifier = Modifier.testTag("share_nerc_dossier_button")
-                        ) {
-                            Icon(Icons.Default.Share, contentDescription = null, modifier = Modifier.size(16.dp))
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text("Export / Share", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = "Official NERC Formatted Dossier",
+                                style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                                color = ElegantGoldPrimary
+                            )
+                            Text(
+                                text = "Generated pursuant to NERC CPR 2023. Export as certified PDF dossier or text document for DisCo & NERC Forum follow-up.",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MutedSlateText
+                            )
                         }
 
                         OutlinedButton(
@@ -470,6 +465,69 @@ private fun NercDossierTabContent(
                             modifier = Modifier.testTag("copy_nerc_dossier_button")
                         ) {
                             Icon(Icons.Default.ContentCopy, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("Copy Text", fontSize = 11.sp)
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    // PDF and Share Action Row
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Button(
+                            onClick = {
+                                NercDossierPdfGenerator.shareNercDossierPdf(
+                                    context = context,
+                                    userProfile = userProfile,
+                                    complaints = activeComplaints,
+                                    dossierTitle = "NERC STATUTORY COMPLAINT & OUTAGE AUDIT DOSSIER"
+                                )
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = ElegantGoldPrimary,
+                                contentColor = DarkCharcoal
+                            ),
+                            shape = RoundedCornerShape(8.dp),
+                            modifier = Modifier
+                                .weight(1f)
+                                .testTag("export_nerc_pdf_button")
+                        ) {
+                            Icon(Icons.Default.PictureAsPdf, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text("Export PDF Dossier", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                        }
+
+                        OutlinedButton(
+                            onClick = {
+                                NercDossierPdfGenerator.viewNercDossierPdf(
+                                    context = context,
+                                    userProfile = userProfile,
+                                    complaints = activeComplaints,
+                                    dossierTitle = "NERC STATUTORY COMPLAINT & OUTAGE AUDIT DOSSIER"
+                                )
+                            },
+                            colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF38BDF8)),
+                            border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF38BDF8).copy(alpha = 0.5f)),
+                            shape = RoundedCornerShape(8.dp),
+                            modifier = Modifier.testTag("view_nerc_pdf_button")
+                        ) {
+                            Icon(Icons.Default.Visibility, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("Open PDF", fontSize = 11.sp)
+                        }
+
+                        OutlinedButton(
+                            onClick = { onShare(formattedDossier) },
+                            colors = ButtonDefaults.outlinedButtonColors(contentColor = Slate100Text),
+                            shape = RoundedCornerShape(8.dp),
+                            modifier = Modifier.testTag("share_nerc_dossier_button")
+                        ) {
+                            Icon(Icons.Default.Share, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("Share Text", fontSize = 11.sp)
                         }
                     }
                 }
