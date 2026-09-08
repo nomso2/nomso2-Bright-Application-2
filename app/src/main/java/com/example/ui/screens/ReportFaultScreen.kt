@@ -1,5 +1,8 @@
 package com.example.ui.screens
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -26,6 +29,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddPhotoAlternate
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.ElectricMeter
@@ -56,15 +60,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import coil.compose.AsyncImage
 import com.example.R
 import com.example.model.FaultType
 import com.example.model.UserProfile
+import java.io.File
+import java.io.FileOutputStream
 
 @Composable
 fun ReportFaultScreen(
@@ -78,10 +86,49 @@ fun ReportFaultScreen(
     var description by remember { mutableStateOf("") }
     var isEmergencyHazard by remember { mutableStateOf(false) }
 
+    val context = LocalContext.current
+
     // Media upload state: supports both photos and short video clips
     var selectedMediaUri by remember { mutableStateOf<String?>(null) }
     var isVideoMedia by remember { mutableStateOf(false) }
     var mediaLabel by remember { mutableStateOf<String?>(null) }
+
+    // Camera launcher to snap photos of faulty meters or vandalism for evidence
+    val cameraCaptureLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicturePreview()
+    ) { bitmap: Bitmap? ->
+        if (bitmap != null) {
+            try {
+                val cacheDir = File(context.cacheDir, "evidence_photos").apply { mkdirs() }
+                val file = File(cacheDir, "meter_evidence_${System.currentTimeMillis()}.jpg")
+                FileOutputStream(file).use { out ->
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 92, out)
+                }
+                selectedMediaUri = Uri.fromFile(file).toString()
+                isVideoMedia = false
+                mediaLabel = "Live Meter/Vandalism Photo (${file.name})"
+            } catch (e: Exception) {
+                mediaLabel = "Live Camera Photo Evidence"
+            }
+        }
+    }
+
+    val cameraPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            cameraCaptureLauncher.launch(null)
+        }
+    }
+
+    fun triggerCameraSnap() {
+        val hasPermission = ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
+        if (hasPermission) {
+            cameraCaptureLauncher.launch(null)
+        } else {
+            cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+        }
+    }
 
     // Standard Android Photo & Video Picker (Zero-permission, Google Play policy compliant)
     val mediaPickerLauncher = rememberLauncherForActivityResult(
@@ -492,7 +539,56 @@ fun ReportFaultScreen(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                // Primary device picker button
+                // Live Camera Snapping Action (Faulty Meters & Vandalism Evidence)
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(14.dp))
+                        .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.35f))
+                        .border(
+                            width = 1.dp,
+                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f),
+                            shape = RoundedCornerShape(14.dp)
+                        )
+                        .clickable { triggerCameraSnap() }
+                        .padding(16.dp)
+                        .testTag("snap_camera_photo_button"),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(36.dp)
+                                .clip(CircleShape)
+                                .background(MaterialTheme.colorScheme.primary),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.CameraAlt,
+                                contentDescription = "Snap Photo with Camera",
+                                tint = MaterialTheme.colorScheme.onPrimary,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = "Snap Meter or Vandalism Photo",
+                                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                text = "Launch camera to take real-time photo of burnt meter or vandalized cable",
+                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                }
+
+                // Device Gallery / Media Picker button
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -508,7 +604,7 @@ fun ReportFaultScreen(
                                 PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo)
                             )
                         }
-                        .padding(16.dp)
+                        .padding(14.dp)
                         .testTag("attach_photo_button"),
                     contentAlignment = Alignment.Center
                 ) {
@@ -520,16 +616,16 @@ fun ReportFaultScreen(
                             imageVector = Icons.Default.AddPhotoAlternate,
                             contentDescription = "Select Media",
                             tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(24.dp)
+                            modifier = Modifier.size(22.dp)
                         )
                         Column {
                             Text(
-                                text = "Select Photo or Short Video Clip from Device",
+                                text = "Or Pick Media from Device Gallery",
                                 style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
-                                text = "Opens device gallery / camera picker (zero storage permission)",
+                                text = "Select stored photo or short video clip from device storage",
                                 style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )

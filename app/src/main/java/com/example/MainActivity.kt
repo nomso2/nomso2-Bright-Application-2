@@ -247,6 +247,7 @@ fun BrightApp(viewModel: BrightViewModel) {
                         userTrustScore = userTrustScore,
                         onOpenEstateExcoDossier = { showEstateExcoDialog = true },
                         onOpenSmartMeterGateway = { showSmartMeterGatewayDialog = true },
+                        onLogOut = { viewModel.logOut() },
                         surgeWarningActive = surgeWarningActive,
                         surgeCountdownSeconds = surgeCountdownSeconds,
                         onTriggerSurgeSiren = { viewModel.triggerSurgeSafetySiren() },

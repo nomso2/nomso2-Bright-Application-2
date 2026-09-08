@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AutoAwesome
@@ -39,6 +40,7 @@ import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -47,8 +49,13 @@ import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -116,12 +123,61 @@ fun HomeScreen(
     userTrustScore: Int = 98,
     onOpenEstateExcoDossier: () -> Unit = {},
     onOpenSmartMeterGateway: () -> Unit = {},
+    onLogOut: () -> Unit = {},
     surgeWarningActive: Boolean = false,
     surgeCountdownSeconds: Int = 180,
     onTriggerSurgeSiren: () -> Unit = {},
     onDismissSurgeWarning: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
+    var showLogoutConfirmDialog by remember { mutableStateOf(false) }
+
+    if (showLogoutConfirmDialog) {
+        AlertDialog(
+            onDismissRequest = { showLogoutConfirmDialog = false },
+            title = {
+                Text(
+                    text = "Log Out of Bright?",
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                    color = Slate100Text
+                )
+            },
+            text = {
+                Text(
+                    text = "Are you sure you want to log out? Your session will end and you will be returned to the sign-up and meter setup screen.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Slate400Text
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showLogoutConfirmDialog = false
+                        onLogOut()
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFEF4444),
+                        contentColor = Color.White
+                    ),
+                    shape = RoundedCornerShape(8.dp),
+                    modifier = Modifier.testTag("confirm_logout_button")
+                ) {
+                    Text("Log Out", fontWeight = FontWeight.Bold)
+                }
+            },
+            dismissButton = {
+                OutlinedButton(
+                    onClick = { showLogoutConfirmDialog = false },
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Text("Cancel", color = Slate100Text)
+                }
+            },
+            containerColor = ElegantDarkBar,
+            shape = RoundedCornerShape(16.dp)
+        )
+    }
+
     Column(modifier = modifier.fillMaxSize()) {
         // Branded Header from Elegant Dark Design HTML
         Box(
@@ -248,6 +304,24 @@ fun HomeScreen(
                             imageVector = Icons.Default.Router,
                             contentDescription = "Smart Meter Server Gateway",
                             tint = Color(0xFF38BDF8),
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+
+                    // Log Out Button
+                    IconButton(
+                        onClick = { showLogoutConfirmDialog = true },
+                        modifier = Modifier
+                            .size(36.dp)
+                            .clip(CircleShape)
+                            .background(Color(0x14FFFFFF))
+                            .border(1.dp, Color(0xFFEF4444).copy(alpha = 0.5f), CircleShape)
+                            .testTag("logout_action_button")
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ExitToApp,
+                            contentDescription = "Log Out",
+                            tint = Color(0xFFEF4444),
                             modifier = Modifier.size(18.dp)
                         )
                     }

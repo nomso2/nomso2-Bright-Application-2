@@ -298,6 +298,15 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
+    fun logOut() {
+        viewModelScope.launch {
+            _isOnboardingCompleted.value = false
+            val current = userProfile.value
+            repository.saveUserProfile(current.copy(isOnboarded = false))
+            showNotification("Logged out successfully. Returning to Sign-Up.")
+        }
+    }
+
     fun resetToOnboarding() {
         _isOnboardingCompleted.value = false
     }
@@ -586,13 +595,13 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
         showNotification(if (_isDarkMode.value) "🌙 Switched to Elegant Dark Mode" else "☀️ Switched to Crisp Daylight Mode")
     }
 
-    // Phase 1: Onboarding, Meter Index Validation & ₦100 Capitalization Gateway
+    // Phase 1: Onboarding, Meter Index Validation & ₦500 Demo Payment Gateway
     fun verifyAndOnboardMeter(
         meterNum: String,
         discoCode: String,
         band: FeederBand,
         address: String,
-        paymentGateway: String // "OPay", "Moniepoint", "Carrier Airtime (MTN/Airtel/Glo/9mobile)"
+        paymentGateway: String // "OPay", "Moniepoint", "Debit Card", "Carrier Airtime"
     ) {
         val cleanMeter = meterNum.filter { it.isDigit() }
         if (cleanMeter.length !in 11..13) {
@@ -622,7 +631,7 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
             )
             _linkedMeterAssets.value = _linkedMeterAssets.value.map { it.copy(isSelected = false) } + newAsset
 
-            showNotification("✅ SIM & Meter Verified! ₦100 Capitalization settled via $paymentGateway. Decentralized ledger initialized.")
+            showNotification("✅ SIM & Meter Verified! ₦500 Demo Payment settled via $paymentGateway. Decentralized ledger initialized.")
         }
     }
 
@@ -782,9 +791,9 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
-    // Phase 7: Session Token Clearance Protocol
+    // Phase 7: Session Token Clearance Protocol (Logout)
     fun sessionTokenClearance() {
-        showNotification("🔑 Authentication session cleared. Device token revoked.")
+        logOut()
     }
 
     // =========================================================================

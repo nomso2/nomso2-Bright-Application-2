@@ -378,14 +378,14 @@ fun PhaseOnboardingDialog(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Step 3: ₦100 Capitalization Gateway Integration & Carrier Airtime Deduction
+                // Step 3: ₦500 Demo Payment Gateway
                 Text(
-                    text = "3. ₦100 Infrastructure Activation Gateway",
+                    text = "3. ₦500 Demo Payment Column (Meter Activation)",
                     style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
                     color = Slate100Text
                 )
                 Text(
-                    text = "Fixed statutory ₦100 token ledger capitalization via local fintech or direct airtime",
+                    text = "Amount reading: ₦500.00 • 7.5 kWh STS prepaid token credit demo",
                     style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
                     color = Slate400Text
                 )
@@ -396,7 +396,7 @@ fun PhaseOnboardingDialog(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    listOf("OPay", "Moniepoint", "Airtime (MTN/Airtel)").forEach { gateway ->
+                    listOf("OPay", "Moniepoint", "Bank Card", "Airtime (MTN/Airtel)").forEach { gateway ->
                         val isSelected = selectedPaymentGateway == gateway
                         Box(
                             modifier = Modifier
@@ -433,7 +433,7 @@ fun PhaseOnboardingDialog(
                 if (selectedPaymentGateway.contains("Airtime")) {
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "Carrier VAS Bridge: Direct ₦100 airtime balance deduction on SIM line",
+                        text = "Carrier VAS Bridge: Direct ₦500 airtime balance deduction on SIM line",
                         style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
                         color = Color(0xFFFBBF24)
                     )
@@ -465,7 +465,7 @@ fun PhaseOnboardingDialog(
                     shape = RoundedCornerShape(12.dp)
                 ) {
                     Text(
-                        text = if (isSignUpMode) "Register & Activate (₦100)" else "Verify & Sync Decentralized Meter",
+                        text = if (isSignUpMode) "Pay ₦500 (Demo Payment) & Activate" else "Pay ₦500 & Sync Meter",
                         fontWeight = FontWeight.Bold,
                         fontSize = 14.sp
                     )
