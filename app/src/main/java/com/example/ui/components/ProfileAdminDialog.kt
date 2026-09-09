@@ -25,11 +25,14 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DeleteSweep
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Shield
+import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -37,8 +40,11 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -59,6 +65,8 @@ import androidx.compose.ui.window.Dialog
 import com.example.model.LinkedMeterAsset
 import com.example.model.UserProfile
 import com.example.model.WhistleblowerReport
+import com.example.ui.components.BiometricAuthMode
+import com.example.ui.components.BiometricVerificationDialog
 import com.example.ui.theme.ElegantDarkBorder
 import com.example.ui.theme.ElegantDarkSurface
 import com.example.ui.theme.ElegantGoldPrimary
@@ -79,9 +87,16 @@ fun ProfileAdminDialog(
     onPurgeDataDeindexing: () -> Unit,
     onSessionTokenClearance: () -> Unit,
     onExportLedger: () -> Unit,
+    onUpdateBiometrics: (fingerprint: Boolean, facial: Boolean) -> Unit = { _, _ -> },
     onDismiss: () -> Unit
 ) {
-    var activeTab by remember { mutableStateOf(0) } // 0: Multi-Asset Switcher, 1: NERC Whistleblower, 2: Security & Privacy
+    var activeTab by remember { mutableStateOf(0) } // 0: Multi-Asset Switcher, 1: NERC Whistleblower, 2: Biometrics, 3: Security & Privacy
+
+    // Biometric state
+    var testBiometricMode by remember { mutableStateOf<BiometricAuthMode?>(null) }
+    var biometricSuccessMessage by remember { mutableStateOf<String?>(null) }
+    var fingerprintEnabled by remember(userProfile.isFingerprintEnabled) { mutableStateOf(userProfile.isFingerprintEnabled) }
+    var facialEnabled by remember(userProfile.isFacialVerificationEnabled) { mutableStateOf(userProfile.isFacialVerificationEnabled) }
 
     // Whistleblower form states
     var officerOrUnit by remember { mutableStateOf("") }
@@ -153,7 +168,7 @@ fun ProfileAdminDialog(
                         .padding(4.dp),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    listOf("Meters", "Whistleblower", "Privacy & Logout").forEachIndexed { index, title ->
+                    listOf("Meters", "Whistleblower", "Biometrics", "Privacy").forEachIndexed { index, title ->
                         val isSelected = activeTab == index
                         Box(
                             modifier = Modifier
@@ -385,6 +400,225 @@ fun ProfileAdminDialog(
                     }
 
                     2 -> {
+                        // Biometric Verification Hub (Fingerprint & Facial ID)
+                        Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(Color(0x14FFFFFF))
+                                    .border(1.dp, ElegantGoldPrimary.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
+                                    .padding(14.dp)
+                            ) {
+                                Column {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Icon(imageVector = Icons.Default.Security, contentDescription = null, tint = ElegantGoldPrimary)
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Text(
+                                            text = "Biometric Security & Verification",
+                                            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                                            color = ElegantGoldPrimary
+                                        )
+                                    }
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Text(
+                                        text = "Enable hardware biometric authentication for quick, tamper-proof verification during fault ticket escalation and high-tier statutory filings.",
+                                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                                        color = Slate400Text
+                                    )
+                                }
+                            }
+
+                            // Fingerprint Verification Card
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(Color(0x14FFFFFF))
+                                    .border(1.dp, ElegantDarkBorder, RoundedCornerShape(12.dp))
+                                    .padding(14.dp)
+                            ) {
+                                Column {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .size(36.dp)
+                                                    .clip(CircleShape)
+                                                    .background(Color(0xFF3B82F6).copy(alpha = 0.15f)),
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                Icon(
+                                                    imageVector = Icons.Default.Fingerprint,
+                                                    contentDescription = "Fingerprint",
+                                                    tint = Color(0xFF60A5FA),
+                                                    modifier = Modifier.size(20.dp)
+                                                )
+                                            }
+                                            Spacer(modifier = Modifier.width(10.dp))
+                                            Column {
+                                                Text(
+                                                    text = "Fingerprint Verification",
+                                                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                                                    color = Slate100Text
+                                                )
+                                                Text(
+                                                    text = if (fingerprintEnabled) "Active & Enrolled" else "Not Configured",
+                                                    style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                                                    color = if (fingerprintEnabled) Color(0xFF10B981) else Slate500Text
+                                                )
+                                            }
+                                        }
+
+                                        Switch(
+                                            checked = fingerprintEnabled,
+                                            onCheckedChange = { isChecked ->
+                                                fingerprintEnabled = isChecked
+                                                onUpdateBiometrics(fingerprintEnabled, facialEnabled)
+                                                if (isChecked) {
+                                                    testBiometricMode = BiometricAuthMode.FINGERPRINT
+                                                }
+                                            },
+                                            colors = SwitchDefaults.colors(
+                                                checkedThumbColor = ElegantGoldPrimary,
+                                                checkedTrackColor = ElegantGoldPrimary.copy(alpha = 0.4f)
+                                            )
+                                        )
+                                    }
+
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    Text(
+                                        text = "Uses on-device capacitive/optical fingerprint sensor to cryptographically sign fast-track fault escalations.",
+                                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                                        color = Slate400Text
+                                    )
+
+                                    Spacer(modifier = Modifier.height(10.dp))
+                                    OutlinedButton(
+                                        onClick = {
+                                            testBiometricMode = BiometricAuthMode.FINGERPRINT
+                                        },
+                                        colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF60A5FA)),
+                                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF3B82F6).copy(alpha = 0.4f)),
+                                        shape = RoundedCornerShape(8.dp),
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        Icon(imageVector = Icons.Default.Fingerprint, contentDescription = null, modifier = Modifier.size(16.dp))
+                                        Spacer(modifier = Modifier.width(6.dp))
+                                        Text(text = "Scan & Test Fingerprint", fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                                    }
+                                }
+                            }
+
+                            // Facial Verification Card
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(Color(0x14FFFFFF))
+                                    .border(1.dp, ElegantDarkBorder, RoundedCornerShape(12.dp))
+                                    .padding(14.dp)
+                            ) {
+                                Column {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .size(36.dp)
+                                                    .clip(CircleShape)
+                                                    .background(Color(0xFF10B981).copy(alpha = 0.15f)),
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                Icon(
+                                                    imageVector = Icons.Default.Face,
+                                                    contentDescription = "Face ID",
+                                                    tint = Color(0xFF34D399),
+                                                    modifier = Modifier.size(20.dp)
+                                                )
+                                            }
+                                            Spacer(modifier = Modifier.width(10.dp))
+                                            Column {
+                                                Text(
+                                                    text = "Facial Verification (Face ID)",
+                                                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                                                    color = Slate100Text
+                                                )
+                                                Text(
+                                                    text = if (facialEnabled) "Active & Enrolled" else "Not Configured",
+                                                    style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                                                    color = if (facialEnabled) Color(0xFF10B981) else Slate500Text
+                                                )
+                                            }
+                                        }
+
+                                        Switch(
+                                            checked = facialEnabled,
+                                            onCheckedChange = { isChecked ->
+                                                facialEnabled = isChecked
+                                                onUpdateBiometrics(fingerprintEnabled, facialEnabled)
+                                                if (isChecked) {
+                                                    testBiometricMode = BiometricAuthMode.FACIAL_RECOGNITION
+                                                }
+                                            },
+                                            colors = SwitchDefaults.colors(
+                                                checkedThumbColor = Color(0xFF10B981),
+                                                checkedTrackColor = Color(0xFF10B981).copy(alpha = 0.4f)
+                                            )
+                                        )
+                                    }
+
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    Text(
+                                        text = "Validates 3D facial mesh points via device front optics for touchless authentication.",
+                                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                                        color = Slate400Text
+                                    )
+
+                                    Spacer(modifier = Modifier.height(10.dp))
+                                    OutlinedButton(
+                                        onClick = {
+                                            testBiometricMode = BiometricAuthMode.FACIAL_RECOGNITION
+                                        },
+                                        colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF34D399)),
+                                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF10B981).copy(alpha = 0.4f)),
+                                        shape = RoundedCornerShape(8.dp),
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        Icon(imageVector = Icons.Default.Face, contentDescription = null, modifier = Modifier.size(16.dp))
+                                        Spacer(modifier = Modifier.width(6.dp))
+                                        Text(text = "Scan & Test Facial Verification", fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                                    }
+                                }
+                            }
+
+                            biometricSuccessMessage?.let { msg ->
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clip(RoundedCornerShape(8.dp))
+                                        .background(Color(0xFF10B981).copy(alpha = 0.15f))
+                                        .border(1.dp, Color(0xFF10B981).copy(alpha = 0.3f), RoundedCornerShape(8.dp))
+                                        .padding(10.dp)
+                                ) {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Icon(imageVector = Icons.Default.CheckCircle, contentDescription = null, tint = Color(0xFF10B981), modifier = Modifier.size(16.dp))
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Text(text = msg, style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp, fontWeight = FontWeight.Bold), color = Color(0xFF10B981))
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    3 -> {
                         // Privacy & Compliance Data De-indexing Switch + Session Clearance
                         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                             Box(
@@ -474,5 +708,22 @@ fun ProfileAdminDialog(
                 }
             }
         }
+    }
+
+    if (testBiometricMode != null) {
+        BiometricVerificationDialog(
+            initialMode = testBiometricMode ?: BiometricAuthMode.FINGERPRINT,
+            title = if (testBiometricMode == BiometricAuthMode.FINGERPRINT) "Fingerprint Verification" else "Facial Verification",
+            subtitle = "Biometric identity verification for Meter #${userProfile.meterNumber}",
+            onVerificationSuccess = {
+                biometricSuccessMessage = if (testBiometricMode == BiometricAuthMode.FINGERPRINT) {
+                    "Fingerprint biometric verified and hardware cryptographic signature verified."
+                } else {
+                    "Facial recognition verified and 3D geometric mesh match confirmed."
+                }
+                testBiometricMode = null
+            },
+            onDismiss = { testBiometricMode = null }
+        )
     }
 }

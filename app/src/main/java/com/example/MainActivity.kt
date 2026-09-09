@@ -290,7 +290,9 @@ fun BrightApp(viewModel: BrightViewModel) {
                     HistoryScreen(
                         userProfile = userProfile,
                         historicalComplaints = historyComplaints,
-                        billingDisputes = billingDisputes
+                        billingDisputes = billingDisputes,
+                        onEscalateClicked = { id -> viewModel.escalateComplaint(id) },
+                        onAdvanceLifecycle = { id, nextStatus -> viewModel.advanceComplaintLifecycle(id, nextStatus) }
                     )
                 }
 
@@ -413,6 +415,7 @@ fun BrightApp(viewModel: BrightViewModel) {
             onExportLedger = {
                 viewModel.showNotification("📄 Transactional Accounting Ledger exported: BRIGHT_LEDGER_${userProfile.meterNumber}.csv downloaded")
             },
+            onUpdateBiometrics = { fp, face -> viewModel.updateBiometricSettings(fp, face) },
             onDismiss = { showProfileAdminDialog = false }
         )
     }

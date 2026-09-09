@@ -1,5 +1,8 @@
 package com.example.ui.components
 
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -7,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -25,9 +29,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
@@ -50,6 +56,11 @@ fun EscalationTrackerView(
     modifier: Modifier = Modifier
 ) {
     val currentLevel = complaint.escalationTier.level
+    val animatedProgress by animateFloatAsState(
+        targetValue = currentLevel / 4.0f,
+        animationSpec = tween(600, easing = FastOutSlowInEasing),
+        label = "escalation_progress"
+    )
 
     Card(
         modifier = modifier
@@ -101,6 +112,33 @@ fun EscalationTrackerView(
                         letterSpacing = 0.5.sp,
                         color = ElegantGoldPrimary
                     )
+                )
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Real-Time Visual Status Bar Progress
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(6.dp)
+                    .clip(RoundedCornerShape(3.dp))
+                    .background(Color(0xFF1E2430))
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(animatedProgress)
+                        .fillMaxHeight()
+                        .clip(RoundedCornerShape(3.dp))
+                        .background(
+                            Brush.horizontalGradient(
+                                listOf(
+                                    Color(0xFFEAB308),
+                                    Color(0xFFF59E0B),
+                                    Color(0xFF10B981)
+                                )
+                            )
+                        )
                 )
             }
 

@@ -30,12 +30,18 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.ElectricMeter
 import androidx.compose.material.icons.filled.Engineering
+import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.PictureAsPdf
 import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Verified
 import androidx.compose.material.icons.filled.Videocam
@@ -76,6 +82,10 @@ import com.example.model.BillingDispute
 import com.example.model.Complaint
 import com.example.model.ComplaintStatus
 import com.example.model.UserProfile
+import com.example.ui.components.BiometricAuthMode
+import com.example.ui.components.BiometricVerificationDialog
+import com.example.ui.components.EscalationTrackerView
+import com.example.ui.components.FaultEscalationStatusBar
 import com.example.util.NercDossierPdfGenerator
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -93,6 +103,8 @@ fun HistoryScreen(
     userProfile: UserProfile,
     historicalComplaints: List<Complaint>,
     billingDisputes: List<BillingDispute>,
+    onEscalateClicked: (String) -> Unit = {},
+    onAdvanceLifecycle: ((String, ComplaintStatus) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -100,6 +112,10 @@ fun HistoryScreen(
     var selectedFilter by remember { mutableStateOf(HistoryFilter.ALL) }
     var expandedMediaUri by remember { mutableStateOf<String?>(null) }
     var isExpandedVideo by remember { mutableStateOf(false) }
+
+    // Biometric confirmation state for statutory escalation
+    var biometricAuthPendingTicketId by remember { mutableStateOf<String?>(null) }
+    var selectedTicketForStatusBarId by remember { mutableStateOf<String?>(null) }
 
     val dateFormat = remember { SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.getDefault()) }
 
@@ -337,6 +353,26 @@ fun HistoryScreen(
             contentPadding = PaddingValues(bottom = 96.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+            // Visual Status Bar for Fault Tracking & Escalation
+            if (selectedFilter != HistoryFilter.BILLING_DISPUTES && historicalComplaints.isNotEmpty()) {
+                item {
+                    FaultEscalationStatusBar(
+                        complaints = historicalComplaints,
+                        selectedComplaintId = selectedTicketForStatusBarId,
+                        onSelectComplaint = { selectedTicketForStatusBarId = it },
+                        onEscalateClicked = { id ->
+                            if (userProfile.isFingerprintEnabled || userProfile.isFacialVerificationEnabled) {
+                                biometricAuthPendingTicketId = id
+                            } else {
+                                onEscalateClicked(id)
+                            }
+                        },
+                        onAdvanceLifecycle = onAdvanceLifecycle,
+                        modifier = Modifier.padding(bottom = 4.dp)
+                    )
+                }
+            }
+
             if (selectedFilter == HistoryFilter.BILLING_DISPUTES) {
                 if (billingDisputes.isEmpty()) {
                     item {
@@ -368,12 +404,30 @@ fun HistoryScreen(
                             onExpandMedia = { uri, isVideo ->
                                 expandedMediaUri = uri
                                 isExpandedVideo = isVideo
+                            },
+                            onEscalateClicked = onEscalateClicked,
+                            onRequestBiometricEscalation = { id ->
+                                biometricAuthPendingTicketId = id
                             }
                         )
                     }
                 }
             }
         }
+    }
+
+    // Biometric Verification for statutory ticket escalation
+    if (biometricAuthPendingTicketId != null) {
+        BiometricVerificationDialog(
+            initialMode = if (userProfile.isFingerprintEnabled) BiometricAuthMode.FINGERPRINT else BiometricAuthMode.FACIAL_RECOGNITION,
+            title = "Biometric Escalation Authorization",
+            subtitle = "Verify identity with fingerprint or facial scan to confirm ticket escalation #${biometricAuthPendingTicketId}",
+            onVerificationSuccess = {
+                biometricAuthPendingTicketId?.let { onEscalateClicked(it) }
+                biometricAuthPendingTicketId = null
+            },
+            onDismiss = { biometricAuthPendingTicketId = null }
+        )
     }
 
     // Modal dialog to view attached visual evidence full-size
@@ -480,10 +534,13 @@ fun HistoricalComplaintCard(
     complaint: Complaint,
     dateFormat: SimpleDateFormat,
     onExpandMedia: (uri: String, isVideo: Boolean) -> Unit,
+    onEscalateClicked: (String) -> Unit = {},
+    onRequestBiometricEscalation: (String) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
     val isResolved = complaint.status == ComplaintStatus.RESOLVED
+    var showEscalationTracker by remember { mutableStateOf(false) }
 
     Card(
         modifier = modifier
@@ -886,14 +943,119 @@ fun HistoricalComplaintCard(
                 }
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Action: Export Formal NERC Ticket PDF Dossier
+            // Escalation Status Bar Strip
+            Spacer(modifier = Modifier.height(10.dp))
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(Color(0xFF0F172A))
+                    .clickable { showEscalationTracker = !showEscalationTracker }
+                    .padding(horizontal = 10.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Speed,
+                        contentDescription = null,
+                        tint = Color(0xFFF59E0B),
+                        modifier = Modifier.size(14.dp)
+                    )
+                    Text(
+                        text = "Escalation: ${complaint.escalationTier.title} • Tier ${complaint.escalationTier.level}/4",
+                        style = MaterialTheme.typography.labelSmall.copy(
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 11.sp
+                        ),
+                        color = Color(0xFFF59E0B)
+                    )
+                }
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = if (showEscalationTracker) "Hide Pipeline" else "View Status Bar",
+                        style = MaterialTheme.typography.labelSmall.copy(
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 10.sp
+                        ),
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Icon(
+                        imageVector = if (showEscalationTracker) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
+            }
+
+            if (showEscalationTracker) {
+                Spacer(modifier = Modifier.height(8.dp))
+                EscalationTrackerView(
+                    complaint = complaint,
+                    onEscalateClicked = {
+                        if (userProfile.isFingerprintEnabled || userProfile.isFacialVerificationEnabled) {
+                            onRequestBiometricEscalation(complaint.id)
+                        } else {
+                            onEscalateClicked(complaint.id)
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Action Row: Fast-Track Escalation & Export Formal NERC Ticket PDF Dossier
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (!isResolved && complaint.escalationTier.level < 4) {
+                    Button(
+                        onClick = {
+                            if (userProfile.isFingerprintEnabled || userProfile.isFacialVerificationEnabled) {
+                                onRequestBiometricEscalation(complaint.id)
+                            } else {
+                                onEscalateClicked(complaint.id)
+                            }
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFFEAB308),
+                            contentColor = Color(0xFF0F172A)
+                        ),
+                        shape = RoundedCornerShape(8.dp),
+                        modifier = Modifier.testTag("escalate_ticket_${complaint.id}")
+                    ) {
+                        if (userProfile.isFingerprintEnabled) {
+                            Icon(
+                                imageVector = Icons.Default.Fingerprint,
+                                contentDescription = "Fingerprint verification enabled",
+                                modifier = Modifier.size(14.dp)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                        } else if (userProfile.isFacialVerificationEnabled) {
+                            Icon(
+                                imageVector = Icons.Default.Face,
+                                contentDescription = "Facial verification enabled",
+                                modifier = Modifier.size(14.dp)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                        }
+                        Text(
+                            text = "Fast-Track Tier ${complaint.escalationTier.level + 1}",
+                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold)
+                        )
+                    }
+                } else {
+                    Spacer(modifier = Modifier.width(1.dp))
+                }
+
                 OutlinedButton(
                     onClick = {
                         NercDossierPdfGenerator.shareNercDossierPdf(

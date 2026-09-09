@@ -589,6 +589,24 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
+    fun updateBiometricSettings(fingerprintEnabled: Boolean, facialEnabled: Boolean) {
+        viewModelScope.launch {
+            val current = userProfile.value
+            val updated = current.copy(
+                isFingerprintEnabled = fingerprintEnabled,
+                isFacialVerificationEnabled = facialEnabled
+            )
+            repository.saveUserProfile(updated)
+            val msg = when {
+                fingerprintEnabled && facialEnabled -> "Biometrics Active: Fingerprint & Face ID enabled."
+                fingerprintEnabled -> "Biometrics Active: Fingerprint verification enabled."
+                facialEnabled -> "Biometrics Active: Facial verification enabled."
+                else -> "Biometric verification disabled."
+            }
+            showNotification(msg)
+        }
+    }
+
     // Theme Mode Toggle (Dark / Light)
     fun toggleThemeMode() {
         _isDarkMode.value = !_isDarkMode.value

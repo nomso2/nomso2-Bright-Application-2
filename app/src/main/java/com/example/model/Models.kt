@@ -16,7 +16,9 @@ data class UserProfile(
     val transformerId: String = "TR-VI-ADEOLA-04B",
     val isPrepaid: Boolean = true,
     val connectedHouseholdsCount: Int = 184,
-    val isOnboarded: Boolean = false
+    val isOnboarded: Boolean = false,
+    val isFingerprintEnabled: Boolean = false,
+    val isFacialVerificationEnabled: Boolean = false
 )
 
 /**
