@@ -3,6 +3,7 @@ package com.example.ui.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -35,6 +37,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.model.UserProfile
@@ -81,13 +84,13 @@ fun MeterProfileHeader(
                 .padding(20.dp)
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
-                // Top Row: Meter ID & Live Feed Badge
+                // Top Row: Meter ID + Verified Badge, with Live Feed Pill directly underneath
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.Top
                 ) {
-                    Column {
+                    Column(modifier = Modifier.weight(1f)) {
                         Text(
                             text = if (profile.isPrepaid) "METER ID • PREPAID RESIDENTIAL" else "METER ID • POSTPAID ACCOUNT",
                             style = MaterialTheme.typography.labelSmall.copy(
@@ -104,8 +107,8 @@ fun MeterProfileHeader(
                                 style = MaterialTheme.typography.titleLarge.copy(
                                     fontWeight = FontWeight.ExtraBold,
                                     fontFamily = FontFamily.Monospace,
-                                    letterSpacing = 1.5.sp,
-                                    fontSize = 20.sp
+                                    letterSpacing = 1.2.sp,
+                                    fontSize = 19.sp
                                 ),
                                 color = Slate100Text
                             )
@@ -117,13 +120,10 @@ fun MeterProfileHeader(
                                 modifier = Modifier.size(18.dp)
                             )
                         }
-                    }
 
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(6.dp)
-                    ) {
-                        // Live feed pill with emerald pulse
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        // Live feed pill with emerald pulse, positioned directly under verified meter number
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(100.dp))
@@ -133,43 +133,45 @@ fun MeterProfileHeader(
                         ) {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(5.dp)
+                                horizontalArrangement = Arrangement.spacedBy(6.dp)
                             ) {
                                 Box(
                                     modifier = Modifier
-                                        .size(6.dp)
+                                        .size(7.dp)
                                         .clip(CircleShape)
                                         .background(ElegantGreenLive)
                                 )
                                 Text(
-                                    text = "LIVE FEED",
+                                    text = "LIVE FEED • VERIFIED ACTIVE",
                                     style = MaterialTheme.typography.labelSmall.copy(
                                         fontSize = 10.sp,
                                         fontWeight = FontWeight.ExtraBold,
-                                        letterSpacing = 0.5.sp
+                                        letterSpacing = 0.6.sp
                                     ),
-                                    color = Color(0xFF4ADE80)
+                                    color = Color(0xFF4ADE80),
+                                    softWrap = false,
+                                    maxLines = 1
                                 )
                             }
                         }
+                    }
 
-                        // Edit icon
-                        IconButton(
-                            onClick = onEditProfileClicked,
-                            modifier = Modifier
-                                .size(36.dp)
-                                .clip(CircleShape)
-                                .background(Color(0x14FFFFFF))
-                                .border(1.dp, Color(0x22FFFFFF), CircleShape)
-                                .testTag("edit_meter_profile_button")
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Edit,
-                                contentDescription = "Edit Meter or Address",
-                                tint = Slate300Text,
-                                modifier = Modifier.size(16.dp)
-                            )
-                        }
+                    // Edit button on the top right
+                    IconButton(
+                        onClick = onEditProfileClicked,
+                        modifier = Modifier
+                            .size(36.dp)
+                            .clip(CircleShape)
+                            .background(Color(0x14FFFFFF))
+                            .border(1.dp, Color(0x22FFFFFF), CircleShape)
+                            .testTag("edit_meter_profile_button")
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = "Edit Meter or Address",
+                            tint = Slate300Text,
+                            modifier = Modifier.size(16.dp)
+                        )
                     }
                 }
 
@@ -194,7 +196,8 @@ fun MeterProfileHeader(
                     ) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            modifier = Modifier.weight(1f, fill = false)
                         ) {
                             Box(
                                 modifier = Modifier
@@ -205,7 +208,9 @@ fun MeterProfileHeader(
                             Text(
                                 text = "Phase Status: ",
                                 style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
-                                color = Slate400Text
+                                color = Slate400Text,
+                                softWrap = false,
+                                maxLines = 1
                             )
                             Text(
                                 text = "Stable (234V Balanced)",
@@ -213,9 +218,13 @@ fun MeterProfileHeader(
                                     fontWeight = FontWeight.SemiBold,
                                     fontSize = 12.sp
                                 ),
-                                color = Slate100Text
+                                color = Slate100Text,
+                                softWrap = false,
+                                maxLines = 1
                             )
                         }
+
+                        Spacer(modifier = Modifier.width(8.dp))
 
                         Text(
                             text = profile.feederBand.code,
@@ -223,7 +232,9 @@ fun MeterProfileHeader(
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 11.sp
                             ),
-                            color = ElegantGoldPrimary
+                            color = ElegantGoldPrimary,
+                            softWrap = false,
+                            maxLines = 1
                         )
                     }
                 }
@@ -233,7 +244,8 @@ fun MeterProfileHeader(
                 // Address & DisCo info
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     Icon(
                         imageVector = Icons.Default.LocationOn,
@@ -245,16 +257,21 @@ fun MeterProfileHeader(
                         text = "${profile.streetAddress}, ${profile.lga}",
                         style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                         color = Slate400Text,
-                        maxLines = 1
+                        maxLines = 1,
+                        softWrap = false,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                // Information Pills Row
+                // Information Pills Row: Side by side (sideways), horizontally scrollable so Households and all text never wrap straight down
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     InfoPill(
                         label = "DisCo",
@@ -272,7 +289,7 @@ fun MeterProfileHeader(
 
                     InfoPill(
                         label = "Households",
-                        value = "${profile.connectedHouseholdsCount}",
+                        value = "${profile.connectedHouseholdsCount} Connected",
                         containerColor = Color(0x14FFFFFF),
                         contentColor = Color(0xFF60A5FA)
                     )
@@ -294,7 +311,7 @@ fun InfoPill(
             .clip(RoundedCornerShape(8.dp))
             .background(containerColor)
             .border(1.dp, Color(0x1AFFFFFF), RoundedCornerShape(8.dp))
-            .padding(horizontal = 8.dp, vertical = 4.dp)
+            .padding(horizontal = 10.dp, vertical = 5.dp)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -303,7 +320,9 @@ fun InfoPill(
             Text(
                 text = "$label:",
                 style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
-                color = Slate400Text
+                color = Slate400Text,
+                softWrap = false,
+                maxLines = 1
             )
             Text(
                 text = value,
@@ -311,7 +330,9 @@ fun InfoPill(
                     fontWeight = FontWeight.Bold,
                     fontSize = 11.sp
                 ),
-                color = contentColor
+                color = contentColor,
+                softWrap = false,
+                maxLines = 1
             )
         }
     }

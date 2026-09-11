@@ -3,6 +3,7 @@ package com.example.ui.screens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -34,6 +36,7 @@ import androidx.compose.material.icons.filled.Gavel
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PowerOff
 import androidx.compose.material.icons.filled.Router
 import androidx.compose.material.icons.filled.Security
@@ -45,6 +48,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -63,6 +68,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.model.AuditingHourRecord
@@ -86,6 +92,7 @@ import com.example.ui.theme.ElegantDarkSurface
 import com.example.ui.theme.ElegantGoldPrimary
 import com.example.ui.theme.ElegantGreenLive
 import com.example.ui.theme.Slate100Text
+import com.example.ui.theme.Slate300Text
 import com.example.ui.theme.Slate400Text
 import com.example.ui.theme.Slate500Text
 
@@ -131,6 +138,7 @@ fun HomeScreen(
     modifier: Modifier = Modifier
 ) {
     var showLogoutConfirmDialog by remember { mutableStateOf(false) }
+    var showToolsDropdown by remember { mutableStateOf(false) }
 
     if (showLogoutConfirmDialog) {
         AlertDialog(
@@ -179,7 +187,7 @@ fun HomeScreen(
     }
 
     Column(modifier = modifier.fillMaxSize()) {
-        // Branded Header from Elegant Dark Design HTML
+        // Branded Header with User Display Name and Clean Action Controls
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -192,57 +200,43 @@ fun HomeScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column {
+                Column(modifier = Modifier.weight(1f, fill = false)) {
                     Text(
-                        text = "THE BRIGHT PROJECT",
-                        style = MaterialTheme.typography.labelSmall.copy(
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.ExtraBold,
-                            letterSpacing = 2.sp
+                        text = userProfile.customerName.ifBlank { "Resident User" },
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = (-0.3).sp,
+                            fontSize = 17.sp
                         ),
-                        color = ElegantGoldPrimary
+                        color = Slate100Text,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = "${userProfile.discoCode} • ${userProfile.feederBand.code}",
-                        style = MaterialTheme.typography.titleMedium.copy(
-                            fontWeight = FontWeight.Bold,
-                            letterSpacing = (-0.5).sp
+                        style = MaterialTheme.typography.labelSmall.copy(
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 11.sp,
+                            letterSpacing = 0.5.sp
                         ),
-                        color = Slate100Text
+                        color = ElegantGoldPrimary,
+                        maxLines = 1
                     )
                 }
 
-                // Action Bar: Light/Dark Mode Switcher & Multi-Asset Profile Icon & Signup Wizard Icon
+                // Header Action Bar: Clean Theme Switcher & Menu for all quick tools
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    // Sign-Up Wizard / Switch Meter Button
-                    IconButton(
-                        onClick = onOpenOnboarding,
-                        modifier = Modifier
-                            .size(36.dp)
-                            .clip(CircleShape)
-                            .background(Color(0x14FFFFFF))
-                            .border(1.dp, ElegantDarkBorder, CircleShape)
-                            .testTag("onboarding_signup_button")
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = "New User Sign-Up / Meter Setup",
-                            tint = ElegantGoldPrimary,
-                            modifier = Modifier.size(18.dp)
-                        )
-                    }
-
                     // Theme Switcher Button (Dark / Light)
                     IconButton(
                         onClick = onToggleThemeMode,
                         modifier = Modifier
-                            .size(36.dp)
+                            .size(38.dp)
                             .clip(CircleShape)
-                            .background(Color(0x14FFFFFF))
+                            .background(Color(0x1AFFFFFF))
                             .border(1.dp, ElegantDarkBorder, CircleShape)
                             .testTag("theme_toggle_button")
                     ) {
@@ -250,98 +244,321 @@ fun HomeScreen(
                             imageVector = if (isDarkMode) Icons.Default.LightMode else Icons.Default.DarkMode,
                             contentDescription = "Toggle Light/Dark Theme",
                             tint = ElegantGoldPrimary,
-                            modifier = Modifier.size(18.dp)
+                            modifier = Modifier.size(19.dp)
                         )
                     }
 
-                    // Estate Exco & NERC Dossier Portal Button
-                    IconButton(
-                        onClick = onOpenEstateExcoDossier,
-                        modifier = Modifier
-                            .size(36.dp)
-                            .clip(CircleShape)
-                            .background(Color(0x14FFFFFF))
-                            .border(1.dp, ElegantGoldPrimary.copy(alpha = 0.5f), CircleShape)
-                            .testTag("estate_exco_dossier_button")
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Gavel,
-                            contentDescription = "Estate Exco Portal & NERC Dossier",
-                            tint = ElegantGoldPrimary,
-                            modifier = Modifier.size(18.dp)
-                        )
-                    }
-
-                    // Multi-Asset & Protocols Button
-                    IconButton(
-                        onClick = onOpenProfileAdmin,
-                        modifier = Modifier
-                            .size(36.dp)
-                            .clip(CircleShape)
-                            .background(Color(0x14FFFFFF))
-                            .border(1.dp, ElegantDarkBorder, CircleShape)
-                            .testTag("multi_asset_profile_button")
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Security,
-                            contentDescription = "Profile Protocols",
-                            tint = ElegantGoldPrimary,
-                            modifier = Modifier.size(18.dp)
-                        )
-                    }
-
-                    // Smart Meter Server Gateway Button
-                    IconButton(
-                        onClick = onOpenSmartMeterGateway,
-                        modifier = Modifier
-                            .size(36.dp)
-                            .clip(CircleShape)
-                            .background(Color(0x14FFFFFF))
-                            .border(1.dp, Color(0xFF38BDF8).copy(alpha = 0.5f), CircleShape)
-                            .testTag("smart_meter_gateway_button")
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Router,
-                            contentDescription = "Smart Meter Server Gateway",
-                            tint = Color(0xFF38BDF8),
-                            modifier = Modifier.size(18.dp)
-                        )
-                    }
-
-                    // Log Out Button
-                    IconButton(
-                        onClick = { showLogoutConfirmDialog = true },
-                        modifier = Modifier
-                            .size(36.dp)
-                            .clip(CircleShape)
-                            .background(Color(0x14FFFFFF))
-                            .border(1.dp, Color(0xFFEF4444).copy(alpha = 0.5f), CircleShape)
-                            .testTag("logout_action_button")
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ExitToApp,
-                            contentDescription = "Log Out",
-                            tint = Color(0xFFEF4444),
-                            modifier = Modifier.size(18.dp)
-                        )
-                    }
-
-                    // Live status pulsing ring
-                    Box(
-                        modifier = Modifier
-                            .size(36.dp)
-                            .clip(CircleShape)
-                            .background(ElegantDarkCardStart)
-                            .border(1.dp, Color(0x3364748B), CircleShape),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Box(
+                    // Tools & Settings Menu Button
+                    Box {
+                        IconButton(
+                            onClick = { showToolsDropdown = true },
                             modifier = Modifier
-                                .size(8.dp)
+                                .size(38.dp)
                                 .clip(CircleShape)
-                                .background(ElegantGreenLive)
-                        )
+                                .background(Color(0x1AFFFFFF))
+                                .border(1.dp, ElegantDarkBorder, CircleShape)
+                                .testTag("header_tools_menu_button")
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.MoreVert,
+                                contentDescription = "More Tools and Options",
+                                tint = Slate100Text,
+                                modifier = Modifier.size(19.dp)
+                            )
+                        }
+
+                        DropdownMenu(
+                            expanded = showToolsDropdown,
+                            onDismissRequest = { showToolsDropdown = false },
+                            modifier = Modifier.background(ElegantDarkBar)
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text("Smart Meter Gateway", color = Slate100Text) },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Default.Router,
+                                        contentDescription = null,
+                                        tint = Color(0xFF38BDF8),
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                },
+                                onClick = {
+                                    showToolsDropdown = false
+                                    onOpenSmartMeterGateway()
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { Text("Estate Exco & Dossier", color = Slate100Text) },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Default.Gavel,
+                                        contentDescription = null,
+                                        tint = ElegantGoldPrimary,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                },
+                                onClick = {
+                                    showToolsDropdown = false
+                                    onOpenEstateExcoDossier()
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { Text("Switch / Add Meter", color = Slate100Text) },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Default.Add,
+                                        contentDescription = null,
+                                        tint = ElegantGoldPrimary,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                },
+                                onClick = {
+                                    showToolsDropdown = false
+                                    onOpenOnboarding()
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { Text("Profile & Protocols", color = Slate100Text) },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Default.Security,
+                                        contentDescription = null,
+                                        tint = Slate300Text,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                },
+                                onClick = {
+                                    showToolsDropdown = false
+                                    onOpenProfileAdmin()
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { Text("Log Out", color = Color(0xFFEF4444)) },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.AutoMirrored.Filled.ExitToApp,
+                                        contentDescription = null,
+                                        tint = Color(0xFFEF4444),
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                },
+                                onClick = {
+                                    showToolsDropdown = false
+                                    showLogoutConfirmDialog = true
+                                }
+                            )
+                        }
                     }
+                }
+            }
+        }
+
+        // Quick Actions Ribbon: Clean, readable arrangement for Light Mode, Gateway, Exco, etc.
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color(0xFF0D1117))
+                .border(1.dp, Color(0x1AFFFFFF))
+                .horizontalScroll(rememberScrollState())
+                .padding(horizontal = 14.dp, vertical = 7.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Light / Dark Mode Action Pill
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(100.dp))
+                    .background(Color(0x14FFFFFF))
+                    .border(1.dp, ElegantDarkBorder, RoundedCornerShape(100.dp))
+                    .clickable { onToggleThemeMode() }
+                    .padding(horizontal = 10.dp, vertical = 5.dp)
+                    .testTag("ribbon_theme_toggle")
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(5.dp)
+                ) {
+                    Icon(
+                        imageVector = if (isDarkMode) Icons.Default.LightMode else Icons.Default.DarkMode,
+                        contentDescription = null,
+                        tint = ElegantGoldPrimary,
+                        modifier = Modifier.size(13.dp)
+                    )
+                    Text(
+                        text = if (isDarkMode) "Light Mode" else "Dark Mode",
+                        style = MaterialTheme.typography.labelSmall.copy(
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold
+                        ),
+                        color = Slate100Text,
+                        softWrap = false,
+                        maxLines = 1
+                    )
+                }
+            }
+
+            // Smart Meter Gateway Action Pill
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(100.dp))
+                    .background(Color(0x1438BDF8))
+                    .border(1.dp, Color(0x3338BDF8), RoundedCornerShape(100.dp))
+                    .clickable { onOpenSmartMeterGateway() }
+                    .padding(horizontal = 10.dp, vertical = 5.dp)
+                    .testTag("ribbon_smart_gateway")
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(5.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Router,
+                        contentDescription = null,
+                        tint = Color(0xFF38BDF8),
+                        modifier = Modifier.size(13.dp)
+                    )
+                    Text(
+                        text = "Smart Gateway",
+                        style = MaterialTheme.typography.labelSmall.copy(
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold
+                        ),
+                        color = Color(0xFF38BDF8),
+                        softWrap = false,
+                        maxLines = 1
+                    )
+                }
+            }
+
+            // Estate Exco Action Pill
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(100.dp))
+                    .background(Color(0x14E5B869))
+                    .border(1.dp, Color(0x33E5B869), RoundedCornerShape(100.dp))
+                    .clickable { onOpenEstateExcoDossier() }
+                    .padding(horizontal = 10.dp, vertical = 5.dp)
+                    .testTag("ribbon_estate_exco")
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(5.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Gavel,
+                        contentDescription = null,
+                        tint = ElegantGoldPrimary,
+                        modifier = Modifier.size(13.dp)
+                    )
+                    Text(
+                        text = "Estate Exco",
+                        style = MaterialTheme.typography.labelSmall.copy(
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold
+                        ),
+                        color = ElegantGoldPrimary,
+                        softWrap = false,
+                        maxLines = 1
+                    )
+                }
+            }
+
+            // Switch / Add Meter Action Pill
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(100.dp))
+                    .background(Color(0x14FFFFFF))
+                    .border(1.dp, ElegantDarkBorder, RoundedCornerShape(100.dp))
+                    .clickable { onOpenOnboarding() }
+                    .padding(horizontal = 10.dp, vertical = 5.dp)
+                    .testTag("ribbon_switch_meter")
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(5.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = null,
+                        tint = Slate100Text,
+                        modifier = Modifier.size(13.dp)
+                    )
+                    Text(
+                        text = "Switch Meter",
+                        style = MaterialTheme.typography.labelSmall.copy(
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.SemiBold
+                        ),
+                        color = Slate100Text,
+                        softWrap = false,
+                        maxLines = 1
+                    )
+                }
+            }
+
+            // Security Protocols Action Pill
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(100.dp))
+                    .background(Color(0x14FFFFFF))
+                    .border(1.dp, ElegantDarkBorder, RoundedCornerShape(100.dp))
+                    .clickable { onOpenProfileAdmin() }
+                    .padding(horizontal = 10.dp, vertical = 5.dp)
+                    .testTag("ribbon_security_protocols")
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(5.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Security,
+                        contentDescription = null,
+                        tint = Slate300Text,
+                        modifier = Modifier.size(13.dp)
+                    )
+                    Text(
+                        text = "Security",
+                        style = MaterialTheme.typography.labelSmall.copy(
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.SemiBold
+                        ),
+                        color = Slate300Text,
+                        softWrap = false,
+                        maxLines = 1
+                    )
+                }
+            }
+
+            // Log Out Action Pill
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(100.dp))
+                    .background(Color(0x14EF4444))
+                    .border(1.dp, Color(0x33EF4444), RoundedCornerShape(100.dp))
+                    .clickable { showLogoutConfirmDialog = true }
+                    .padding(horizontal = 10.dp, vertical = 5.dp)
+                    .testTag("ribbon_logout")
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(5.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ExitToApp,
+                        contentDescription = null,
+                        tint = Color(0xFFEF4444),
+                        modifier = Modifier.size(13.dp)
+                    )
+                    Text(
+                        text = "Log Out",
+                        style = MaterialTheme.typography.labelSmall.copy(
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.SemiBold
+                        ),
+                        color = Color(0xFFEF4444),
+                        softWrap = false,
+                        maxLines = 1
+                    )
                 }
             }
         }
@@ -715,30 +932,6 @@ fun HomeScreen(
                     }
                 }
             }
-
-            // Floating Action Button to Report Outage
-            ExtendedFloatingActionButton(
-                onClick = onReportFaultClicked,
-                icon = {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "Report New Fault",
-                        tint = Color(0xFF0A0C10)
-                    )
-                },
-                text = {
-                    Text(
-                        text = "Report Fault",
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF0A0C10)
-                    )
-                },
-                containerColor = ElegantGoldPrimary,
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(bottom = 20.dp, end = 20.dp)
-                    .testTag("report_fault_fab")
-            )
         }
     }
 }
