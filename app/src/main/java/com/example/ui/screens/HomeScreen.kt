@@ -25,6 +25,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.AccountBalanceWallet
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Bolt
@@ -303,10 +304,10 @@ fun HomeScreen(
                                 }
                             )
                             DropdownMenuItem(
-                                text = { Text("Switch / Add Meter", color = Slate100Text) },
+                                text = { Text("Sign In / Switch Meter", color = Slate100Text) },
                                 leadingIcon = {
                                     Icon(
-                                        imageVector = Icons.Default.Add,
+                                        imageVector = Icons.Default.AccountCircle,
                                         contentDescription = null,
                                         tint = ElegantGoldPrimary,
                                         modifier = Modifier.size(18.dp)
@@ -463,7 +464,7 @@ fun HomeScreen(
                 }
             }
 
-            // Switch / Add Meter Action Pill
+            // Sign In / Switch Meter Action Pill
             Box(
                 modifier = Modifier
                     .clip(RoundedCornerShape(100.dp))
@@ -478,13 +479,13 @@ fun HomeScreen(
                     horizontalArrangement = Arrangement.spacedBy(5.dp)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Add,
+                        imageVector = Icons.Default.AccountCircle,
                         contentDescription = null,
                         tint = Slate100Text,
                         modifier = Modifier.size(13.dp)
                     )
                     Text(
-                        text = "Switch Meter",
+                        text = "Sign In / Switch",
                         style = MaterialTheme.typography.labelSmall.copy(
                             fontSize = 11.sp,
                             fontWeight = FontWeight.SemiBold

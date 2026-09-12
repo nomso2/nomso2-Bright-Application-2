@@ -141,11 +141,19 @@ fun BrightApp(viewModel: BrightViewModel) {
     val gatewayTelemetryMap by viewModel.gatewayTelemetryMap.collectAsState()
     val isPollingGateway by viewModel.isPollingGateway.collectAsState()
 
-    // If new user (not onboarded yet) or opened from menu, show the interactive sign-up flow
+    // If new user (not onboarded yet) or opened from menu, show the interactive sign-in / sign-up flow
     if ((!isOnboardingCompleted && !userProfile.isOnboarded) || showOnboardingDialog) {
         SignUpOnboardingScreen(
+            currentProfile = userProfile,
+            initialSignInMode = true,
+            isDismissible = showOnboardingDialog && (isOnboardingCompleted || userProfile.isOnboarded),
+            onDismiss = { showOnboardingDialog = false },
             onCompleteSignUp = { newProfile ->
                 viewModel.completeOnboarding(newProfile)
+                showOnboardingDialog = false
+            },
+            onSignIn = { signedInProfile ->
+                viewModel.signIn(signedInProfile)
                 showOnboardingDialog = false
             },
             onSkipForNow = {

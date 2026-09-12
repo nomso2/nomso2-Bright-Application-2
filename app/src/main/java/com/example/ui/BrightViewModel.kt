@@ -298,12 +298,20 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
+    fun signIn(profile: UserProfile) {
+        viewModelScope.launch {
+            repository.saveUserProfile(profile.copy(isOnboarded = true))
+            _isOnboardingCompleted.value = true
+            _userMessage.value = "Welcome back, ${profile.customerName}! Signed in to Meter #${profile.meterNumber}."
+        }
+    }
+
     fun logOut() {
         viewModelScope.launch {
             _isOnboardingCompleted.value = false
             val current = userProfile.value
             repository.saveUserProfile(current.copy(isOnboarded = false))
-            showNotification("Logged out successfully. Returning to Sign-Up.")
+            showNotification("Logged out successfully. You can sign back in anytime.")
         }
     }
 
