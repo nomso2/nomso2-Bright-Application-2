@@ -102,8 +102,8 @@ fun PhaseOnboardingDialog(
                 .padding(vertical = 16.dp)
                 .testTag("phase1_onboarding_dialog"),
             shape = RoundedCornerShape(24.dp),
-            colors = CardDefaults.cardColors(containerColor = ElegantDarkSurface),
-            border = androidx.compose.foundation.BorderStroke(1.dp, ElegantDarkBorder),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)),
             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
         ) {
             Column(
@@ -139,12 +139,12 @@ fun PhaseOnboardingDialog(
                         Text(
                             text = if (isSignUpMode) "Create Decentralized Profile" else "Meter Identity Resolution",
                             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                            color = Slate100Text
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
 
                     IconButton(onClick = onDismiss) {
-                        Icon(imageVector = Icons.Default.Close, contentDescription = "Close", tint = Slate400Text)
+                        Icon(imageVector = Icons.Default.Close, contentDescription = "Close", tint = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
 
@@ -155,7 +155,7 @@ fun PhaseOnboardingDialog(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(12.dp))
-                        .background(Color(0x14FFFFFF))
+                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
                         .padding(4.dp),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
@@ -171,7 +171,7 @@ fun PhaseOnboardingDialog(
                         Text(
                             text = "Manual Login",
                             style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                            color = if (!isSignUpMode) Color(0xFF0A0C10) else Slate400Text
+                            color = if (!isSignUpMode) Color(0xFF0A0C10) else MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
 
@@ -187,7 +187,7 @@ fun PhaseOnboardingDialog(
                         Text(
                             text = "Sign Up / Register",
                             style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                            color = if (isSignUpMode) Color(0xFF0A0C10) else Slate400Text
+                            color = if (isSignUpMode) Color(0xFF0A0C10) else MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -220,7 +220,7 @@ fun PhaseOnboardingDialog(
                             Text(
                                 text = "Native Android App • Data-free USSD Code: *38432#",
                                 style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
-                                color = Slate400Text
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
@@ -232,7 +232,7 @@ fun PhaseOnboardingDialog(
                 Text(
                     text = "1. Meter Index & SIM Authentication",
                     style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                    color = Slate100Text
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Spacer(modifier = Modifier.height(6.dp))
 
@@ -266,9 +266,9 @@ fun PhaseOnboardingDialog(
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = ElegantGoldPrimary,
-                        unfocusedBorderColor = ElegantDarkBorder,
-                        focusedTextColor = Slate100Text,
-                        unfocusedTextColor = Slate100Text
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface
                     )
                 )
 
@@ -285,9 +285,9 @@ fun PhaseOnboardingDialog(
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = ElegantGoldPrimary,
-                        unfocusedBorderColor = ElegantDarkBorder,
-                        focusedTextColor = Slate100Text,
-                        unfocusedTextColor = Slate100Text
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface
                     )
                 )
 
@@ -319,7 +319,7 @@ fun PhaseOnboardingDialog(
                                 Text(
                                     text = "Automated carrier-level OTP validation ($otpCode)",
                                     style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
-                                    color = Slate400Text
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                         }
@@ -337,7 +337,7 @@ fun PhaseOnboardingDialog(
                 Text(
                     text = "2. Utility & Service-Band Topology Mapper",
                     style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                    color = Slate100Text
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Spacer(modifier = Modifier.height(6.dp))
 
@@ -345,8 +345,8 @@ fun PhaseOnboardingDialog(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(12.dp))
-                        .background(Color(0x14FFFFFF))
-                        .border(1.dp, ElegantDarkBorder, RoundedCornerShape(12.dp))
+                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                        .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
                         .padding(12.dp)
                 ) {
                     Column {
@@ -354,7 +354,7 @@ fun PhaseOnboardingDialog(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Text(text = "DisCo Franchise:", style = MaterialTheme.typography.bodySmall, color = Slate400Text)
+                            Text(text = "DisCo Franchise:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             Text(text = "$detectedDisCo Licensee Area", style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold), color = ElegantGoldPrimary)
                         }
                         Spacer(modifier = Modifier.height(4.dp))
@@ -362,7 +362,7 @@ fun PhaseOnboardingDialog(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Text(text = "Service Tier Classification:", style = MaterialTheme.typography.bodySmall, color = Slate400Text)
+                            Text(text = "Service Tier Classification:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             Text(text = "${detectedBand.code} (${detectedBand.minimumHours}+ hrs SLA target)", style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold), color = Color(0xFF60A5FA))
                         }
                         Spacer(modifier = Modifier.height(4.dp))
@@ -370,7 +370,7 @@ fun PhaseOnboardingDialog(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Text(text = "Presidential Metering Initiative (PMI):", style = MaterialTheme.typography.bodySmall, color = Slate400Text)
+                            Text(text = "Presidential Metering Initiative (PMI):", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             Text(text = "Smart Node Cross-Synced", style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold), color = ElegantGreenLive)
                         }
                     }
@@ -382,12 +382,12 @@ fun PhaseOnboardingDialog(
                 Text(
                     text = "3. ₦500 Demo Payment Column (Meter Activation)",
                     style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                    color = Slate100Text
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
                     text = "Amount reading: ₦500.00 • 7.5 kWh STS prepaid token credit demo",
                     style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
-                    color = Slate400Text
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(modifier = Modifier.height(8.dp))
 
@@ -402,10 +402,10 @@ fun PhaseOnboardingDialog(
                             modifier = Modifier
                                 .weight(1f)
                                 .clip(RoundedCornerShape(10.dp))
-                                .background(if (isSelected) Color(0x26FACC15) else Color(0x0DFFFFFF))
+                                .background(if (isSelected) Color(0x26FACC15) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
                                 .border(
                                     1.dp,
-                                    if (isSelected) ElegantGoldPrimary else ElegantDarkBorder,
+                                    if (isSelected) ElegantGoldPrimary else MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
                                     RoundedCornerShape(10.dp)
                                 )
                                 .clickable { selectedPaymentGateway = gateway }
@@ -416,14 +416,14 @@ fun PhaseOnboardingDialog(
                                 Icon(
                                     imageVector = if (gateway.contains("Airtime")) Icons.Default.PhoneAndroid else Icons.Default.CreditCard,
                                     contentDescription = null,
-                                    tint = if (isSelected) ElegantGoldPrimary else Slate400Text,
+                                    tint = if (isSelected) ElegantGoldPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier.size(18.dp)
                                 )
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text(
                                     text = gateway,
                                     style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp, fontWeight = FontWeight.Bold),
-                                    color = if (isSelected) ElegantGoldPrimary else Slate400Text
+                                    color = if (isSelected) ElegantGoldPrimary else MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                         }

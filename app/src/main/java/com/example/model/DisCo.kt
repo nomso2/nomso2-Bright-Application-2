@@ -41,7 +41,10 @@ enum class FeederBand(val code: String, val minimumHours: Int, val description: 
     BAND_B("Band B", 16, "16 - 20 hours daily supply"),
     BAND_C("Band C", 12, "12 - 16 hours daily supply"),
     BAND_D("Band D", 8, "8 - 12 hours daily supply"),
-    BAND_E("Band E", 4, "4 - 8 hours daily supply")
+    BAND_E("Band E", 4, "4 - 8 hours daily supply");
+
+    val label: String get() = code
+    val guaranteedHours: Int get() = minimumHours
 }
 
 /**

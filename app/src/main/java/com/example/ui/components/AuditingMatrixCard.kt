@@ -81,8 +81,8 @@ fun AuditingMatrixCard(
             .fillMaxWidth()
             .testTag("contractual_auditing_matrix_card"),
         shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = ElegantDarkSurface),
-        border = androidx.compose.foundation.BorderStroke(1.dp, ElegantDarkBorder)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
     ) {
         Column(
             modifier = Modifier
@@ -123,7 +123,7 @@ fun AuditingMatrixCard(
                         Text(
                             text = "${userProfile.feederBand.code} • 20h Target SLA Ledger",
                             style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                            color = Slate100Text
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 }
@@ -155,7 +155,7 @@ fun AuditingMatrixCard(
                 Text(
                     text = "Delivered Today: ${todayRecord.actualDeliveredHours} hrs / 20.0 hrs",
                     style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
-                    color = Slate100Text
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
                     text = "${((todayRecord.actualDeliveredHours / 20.0) * 100).toInt()}%",
@@ -173,7 +173,7 @@ fun AuditingMatrixCard(
                     .height(8.dp)
                     .clip(RoundedCornerShape(4.dp)),
                 color = if (todayRecord.actualDeliveredHours >= 16.0) ElegantGoldPrimary else Color(0xFFEF4444),
-                trackColor = Color(0x1AFFFFFF)
+                trackColor = MaterialTheme.colorScheme.surfaceVariant
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -183,8 +183,8 @@ fun AuditingMatrixCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(12.dp))
-                    .background(Color(0x14FFFFFF))
-                    .border(1.dp, Color(0x14FFFFFF), RoundedCornerShape(12.dp))
+                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                    .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
                     .padding(10.dp)
             ) {
                 Row(
@@ -203,13 +203,13 @@ fun AuditingMatrixCard(
                         Text(
                             text = "Geofenced Isolation: ${userProfile.transformerId}",
                             style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
-                            color = Slate100Text
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
 
                     Text(
                         text = "Radius 850m LV Feeder",
-                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp, color = Slate400Text)
+                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     )
                 }
             }
@@ -245,7 +245,7 @@ fun AuditingMatrixCard(
                         Text(
                             text = "Verified DisCo Default",
                             style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp),
-                            color = Slate500Text
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -316,7 +316,7 @@ fun AuditingMatrixCard(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clip(RoundedCornerShape(8.dp))
-                                .background(Color(0x0DFFFFFF))
+                                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
                                 .padding(horizontal = 10.dp, vertical = 6.dp),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
@@ -325,12 +325,12 @@ fun AuditingMatrixCard(
                                 Text(
                                     text = "${record.dateText} (${record.dayName})",
                                     style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                                    color = Slate100Text
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
                                     text = "Target: 20.0h • Delivered: ${record.actualDeliveredHours}h",
                                     style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp),
-                                    color = Slate400Text
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
 

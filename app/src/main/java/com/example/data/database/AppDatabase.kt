@@ -14,7 +14,7 @@ import androidx.room.RoomDatabase
         ApplianceClaimEntity::class,
         StreetHazardEntity::class
     ],
-    version = 5,
+    version = 6,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {

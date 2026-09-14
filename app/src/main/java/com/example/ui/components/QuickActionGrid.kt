@@ -106,8 +106,8 @@ private fun QuickActionCell(
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(16.dp))
-            .background(ElegantDarkSurface)
-            .border(1.dp, ElegantDarkBorder, RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.surface)
+            .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f), RoundedCornerShape(16.dp))
             .clickable(onClick = item.onClick)
             .padding(vertical = 12.dp, horizontal = 4.dp)
             .testTag("quick_action_${item.title.lowercase().replace(" ", "_")}"),
@@ -121,8 +121,8 @@ private fun QuickActionCell(
                 modifier = Modifier
                     .size(36.dp)
                     .clip(CircleShape)
-                    .background(Color(0x14FFFFFF))
-                    .border(1.dp, Color(0x1AFFFFFF), CircleShape),
+                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f))
+                    .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.4f), CircleShape),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -140,7 +140,7 @@ private fun QuickActionCell(
                     fontWeight = FontWeight.Bold,
                     letterSpacing = 0.5.sp
                 ),
-                color = Slate400Text,
+                color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Center,
                 maxLines = 1
             )

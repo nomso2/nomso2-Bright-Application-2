@@ -38,6 +38,8 @@ import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.NetworkCheck
 import androidx.compose.material.icons.filled.OpenInNew
 import androidx.compose.material.icons.filled.PriceCheck
+import com.example.data.service.CitizenMeterStatus
+import com.example.data.service.NigeriaSmartMeterDiscoveryService
 import androidx.compose.material.icons.filled.ReceiptLong
 import androidx.compose.material.icons.filled.Router
 import androidx.compose.material.icons.filled.Shield
@@ -112,6 +114,8 @@ fun GridHubScreen(
     onPlaySirenAlarm: () -> Unit = {},
     onOpenEstateExco: () -> Unit = {},
     onOpenSmartMeterGateway: () -> Unit = {},
+    citizenMeterStatus: CitizenMeterStatus? = null,
+    onAutoDetectSmartMeter: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     var selectedSection by remember { mutableStateOf(HubSection.SOLUTIONS_30) }
@@ -208,16 +212,22 @@ fun GridHubScreen(
             }
         }
 
-        // Smart Meter Server & Nigeria AMI Gateway CTA Banner
+        // Smart Meter Server Gateway CTA Banner (Citizen-First Auto-Connected)
         item {
+            val meterStatus = citizenMeterStatus ?: remember(userProfile) {
+                NigeriaSmartMeterDiscoveryService.checkSmartMeterAccess(userProfile)
+            }
+            val isSmart = meterStatus.hasSmartAccess
+            val themeColor = if (isSmart) Color(0xFF0284C7) else Color(0xFFD97706)
+
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable(onClick = onOpenSmartMeterGateway)
                     .testTag("hub_smart_meter_server_gateway_card"),
                 shape = RoundedCornerShape(14.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFF0F172A)),
-                border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF38BDF8))
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)),
+                border = androidx.compose.foundation.BorderStroke(1.dp, themeColor)
             ) {
                 Row(
                     modifier = Modifier
@@ -227,44 +237,68 @@ fun GridHubScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Row(
+                        modifier = Modifier.weight(1f),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         Box(
                             modifier = Modifier
-                                .size(36.dp)
+                                .size(38.dp)
                                 .clip(RoundedCornerShape(8.dp))
-                                .background(Color(0xFF38BDF8).copy(alpha = 0.2f)),
+                                .background(themeColor.copy(alpha = 0.15f)),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
-                                imageVector = Icons.Default.Router,
+                                imageVector = if (isSmart) Icons.Default.Router else Icons.Default.ElectricMeter,
                                 contentDescription = null,
-                                tint = Color(0xFF38BDF8),
+                                tint = themeColor,
                                 modifier = Modifier.size(20.dp)
                             )
                         }
                         Column {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                            ) {
+                                Text(
+                                    text = if (isSmart) "SMART METER AUTO-CONNECTED" else "STANDARD PREPAID METER (STS)",
+                                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.ExtraBold),
+                                    color = themeColor
+                                )
+                                Box(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(4.dp))
+                                        .background(if (isSmart) Color(0xFF22C55E).copy(alpha = 0.15f) else Color(0xFFD97706).copy(alpha = 0.15f))
+                                        .padding(horizontal = 5.dp, vertical = 1.dp)
+                                ) {
+                                    Text(
+                                        text = if (isSmart) "AUTO-LINKED ONCE" else "NON-SMART AREA",
+                                        fontSize = 9.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = if (isSmart) Color(0xFF22C55E) else Color(0xFFD97706)
+                                    )
+                                }
+                            }
                             Text(
-                                text = "SMART METER SERVER & NIGERIA AMI GATEWAY",
-                                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.ExtraBold),
-                                color = Color(0xFF38BDF8)
-                            )
-                            Text(
-                                text = "Connect App Server • Mojec/Momas/Conlog • DLMS/MQTT Telemetry",
+                                text = if (isSmart)
+                                    "✓ Linked to ${meterStatus.manufacturerName} AMI • 228V • OTA Top-up Ready"
+                                else
+                                    "Standard STS Keypad Meter • Manual 20-digit Token Recharge Active",
                                 style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
-                                color = Color.White
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
 
+                    Spacer(modifier = Modifier.width(8.dp))
+
                     Button(
                         onClick = onOpenSmartMeterGateway,
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF38BDF8), contentColor = Color.Black),
+                        colors = ButtonDefaults.buttonColors(containerColor = themeColor, contentColor = Color.White),
                         shape = RoundedCornerShape(8.dp),
                         contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp)
                     ) {
-                        Text("Connect", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                        Text(if (isSmart) "View Meter" else "Check Access", fontSize = 11.sp, fontWeight = FontWeight.Bold)
                     }
                 }
             }
@@ -278,8 +312,8 @@ fun GridHubScreen(
                     .clickable(onClick = onOpenEstateExco)
                     .testTag("hub_estate_exco_card"),
                 shape = RoundedCornerShape(14.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B)),
-                border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFEAB308))
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)),
+                border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFD97706))
             ) {
                 Row(
                     modifier = Modifier
@@ -296,13 +330,13 @@ fun GridHubScreen(
                             modifier = Modifier
                                 .size(36.dp)
                                 .clip(RoundedCornerShape(8.dp))
-                                .background(Color(0xFFEAB308).copy(alpha = 0.2f)),
+                                .background(Color(0xFFD97706).copy(alpha = 0.15f)),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Gavel,
                                 contentDescription = null,
-                                tint = Color(0xFFEAB308),
+                                tint = Color(0xFFD97706),
                                 modifier = Modifier.size(20.dp)
                             )
                         }
@@ -310,19 +344,19 @@ fun GridHubScreen(
                             Text(
                                 text = "ESTATE EXCO PORTAL & NERC DOSSIER",
                                 style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.ExtraBold),
-                                color = Color(0xFFEAB308)
+                                color = Color(0xFFD97706)
                             )
                             Text(
                                 text = "PDF Export • Dues Ledger • ₦ SLA Refund Calculator",
                                 style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
-                                color = Color.White
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
 
                     Button(
                         onClick = onOpenEstateExco,
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFEAB308), contentColor = Color.Black),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD97706), contentColor = Color.White),
                         shape = RoundedCornerShape(8.dp),
                         contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp)
                     ) {
@@ -563,7 +597,7 @@ fun GridHubScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clip(RoundedCornerShape(10.dp))
-                                .background(Color(0xFF0F172A))
+                                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
                                 .padding(12.dp)
                         ) {
                             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -571,22 +605,22 @@ fun GridHubScreen(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
-                                    Text("Gross Payment:", style = MaterialTheme.typography.bodySmall, color = Color.White)
-                                    Text("₦%,.2f".format(enteredAmt), style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold), color = Color.White)
+                                    Text("Gross Payment:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface)
+                                    Text("₦%,.2f".format(enteredAmt), style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold), color = MaterialTheme.colorScheme.onSurface)
                                 }
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
-                                    Text("Statutory 7.5% VAT:", style = MaterialTheme.typography.bodySmall, color = Color(0xFF94A3B8))
-                                    Text("₦%,.2f".format(vat), style = MaterialTheme.typography.bodySmall, color = Color(0xFF94A3B8))
+                                    Text("Statutory 7.5% VAT:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                    Text("₦%,.2f".format(vat), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                 }
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
-                                    Text("Net Energy Credit:", style = MaterialTheme.typography.bodySmall, color = Color(0xFF94A3B8))
-                                    Text("₦%,.2f".format(energyNet), style = MaterialTheme.typography.bodySmall, color = Color(0xFF94A3B8))
+                                    Text("Net Energy Credit:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                    Text("₦%,.2f".format(energyNet), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                 }
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Row(

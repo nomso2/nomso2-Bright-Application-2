@@ -79,15 +79,15 @@ val NavyDarkSurface = ElegantDarkSurface
 val NavyDarkSurfaceElevated = ElegantDarkSurfaceElevated
 val NavyDarkBorder = ElegantDarkBorder
 
-val LightBackground = ElegantDarkCanvas
-val LightSurface = ElegantDarkSurface
-val LightSurfaceElevated = ElegantDarkSurfaceElevated
-val LightBorder = ElegantDarkBorder
+val LightBackground = ElegantLightCanvas
+val LightSurface = ElegantLightSurface
+val LightSurfaceElevated = ElegantLightSurfaceElevated
+val LightBorder = ElegantLightBorder
 
 val DarkTextPrimary = Slate100Text
 val DarkTextSecondary = Slate400Text
-val LightTextPrimary = Slate100Text
-val LightTextSecondary = Slate400Text
+val LightTextPrimary = Slate900Text
+val LightTextSecondary = Slate600Text
 
 val DarkCharcoal = Color(0xFF1E293B)
 val MutedSlateText = Color(0xFF94A3B8)

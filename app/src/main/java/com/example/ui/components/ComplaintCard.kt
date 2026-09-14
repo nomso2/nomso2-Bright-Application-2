@@ -82,10 +82,10 @@ fun ComplaintCard(
             .testTag("complaint_card_${complaint.id}"),
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(
-            containerColor = ElegantDarkSurface
+            containerColor = MaterialTheme.colorScheme.surface
         ),
-        border = androidx.compose.foundation.BorderStroke(1.dp, ElegantDarkBorder),
-        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
+        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
     ) {
         Column(
             modifier = Modifier
@@ -106,7 +106,7 @@ fun ComplaintCard(
                                 fontWeight = FontWeight.Bold,
                                 letterSpacing = 0.5.sp
                             ),
-                            color = Slate100Text
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                         if (complaint.isHazardEmergency) {
                             Spacer(modifier = Modifier.width(6.dp))
@@ -141,7 +141,7 @@ fun ComplaintCard(
                     Text(
                         text = "Reported: ${dateFormat.format(Date(complaint.reportedAt))}",
                         style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
-                        color = Slate500Text
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
 
@@ -163,7 +163,7 @@ fun ComplaintCard(
                             modifier = Modifier
                                 .size(32.dp)
                                 .clip(CircleShape)
-                                .background(Color(0x14FFFFFF))
+                                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
                                 .border(1.dp, ElegantGoldPrimary.copy(alpha = 0.5f), CircleShape)
                                 .testTag("export_pdf_complaint_${complaint.id}")
                         ) {
@@ -194,8 +194,8 @@ fun ComplaintCard(
                         modifier = Modifier
                             .size(32.dp)
                             .clip(CircleShape)
-                            .background(Color(0x14FFFFFF))
-                            .border(1.dp, Color(0x22FFFFFF), CircleShape)
+                            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                            .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.4f), CircleShape)
                             .testTag("share_complaint_${complaint.id}")
                     ) {
                         Icon(
@@ -218,7 +218,7 @@ fun ComplaintCard(
                 style = MaterialTheme.typography.titleMedium.copy(
                     fontWeight = FontWeight.Bold
                 ),
-                color = Slate100Text
+                color = MaterialTheme.colorScheme.onSurface
             )
 
             Spacer(modifier = Modifier.height(4.dp))
@@ -226,7 +226,7 @@ fun ComplaintCard(
             Text(
                 text = complaint.description,
                 style = MaterialTheme.typography.bodyMedium,
-                color = Slate400Text
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
             if (complaint.imageUri != null) {
@@ -264,8 +264,8 @@ fun ComplaintCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(12.dp))
-                        .background(Color(0x0DFFFFFF))
-                        .border(1.dp, Color(0x14FFFFFF), RoundedCornerShape(12.dp))
+                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                        .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
                         .padding(horizontal = 12.dp, vertical = 8.dp)
                 ) {
                     Row(
@@ -284,7 +284,7 @@ fun ComplaintCard(
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.SemiBold
                             ),
-                            color = Slate300Text
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -297,8 +297,8 @@ fun ComplaintCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(14.dp))
-                        .background(Color(0x0DFFFFFF))
-                        .border(1.dp, Color(0x1AFFFFFF), RoundedCornerShape(14.dp))
+                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                        .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.3f), RoundedCornerShape(14.dp))
                         .padding(12.dp)
                 ) {
                     Row(
@@ -332,12 +332,12 @@ fun ComplaintCard(
                                     style = MaterialTheme.typography.bodySmall.copy(
                                         fontWeight = FontWeight.Bold
                                     ),
-                                    color = Slate100Text
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
                                     text = "ETA: ~${complaint.etaMinutes ?: 30} mins • Contact: ${complaint.assignedCrewPhone ?: "Direct Hotline"}",
                                     style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
-                                    color = Slate500Text
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                         }
@@ -367,7 +367,7 @@ fun ComplaintCard(
                         .height(44.dp)
                         .testTag("upvote_button_${complaint.id}"),
                     shape = RoundedCornerShape(12.dp),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, ElegantDarkBorder)
+                    border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
                 ) {
                     Icon(
                         imageVector = Icons.Default.ThumbUp,
@@ -380,7 +380,7 @@ fun ComplaintCard(
                         text = "Prioritize (${complaint.upvotesCount})",
                         style = MaterialTheme.typography.labelSmall.copy(
                             fontWeight = FontWeight.Bold,
-                            color = Slate100Text
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     )
                 }

@@ -54,6 +54,9 @@ interface UserProfileDao {
     @Query("SELECT * FROM user_profile LIMIT 1")
     fun getUserProfile(): Flow<UserProfileEntity?>
 
+    @Query("SELECT * FROM user_profile LIMIT 1")
+    suspend fun getUserProfileSync(): UserProfileEntity?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun setUserProfile(profile: UserProfileEntity)
 

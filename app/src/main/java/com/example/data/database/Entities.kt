@@ -29,7 +29,8 @@ data class UserProfileEntity(
     val connectedHouseholdsCount: Int,
     val isOnboarded: Boolean = false,
     val isFingerprintEnabled: Boolean = false,
-    val isFacialVerificationEnabled: Boolean = false
+    val isFacialVerificationEnabled: Boolean = false,
+    val isGatewayPaid: Boolean = false
 ) {
     fun toDomain(): UserProfile = UserProfile(
         meterNumber = meterNumber,
@@ -46,7 +47,8 @@ data class UserProfileEntity(
         connectedHouseholdsCount = connectedHouseholdsCount,
         isOnboarded = isOnboarded,
         isFingerprintEnabled = isFingerprintEnabled,
-        isFacialVerificationEnabled = isFacialVerificationEnabled
+        isFacialVerificationEnabled = isFacialVerificationEnabled,
+        isGatewayPaid = isGatewayPaid
     )
 
     companion object {
@@ -65,7 +67,8 @@ data class UserProfileEntity(
             connectedHouseholdsCount = u.connectedHouseholdsCount,
             isOnboarded = u.isOnboarded,
             isFingerprintEnabled = u.isFingerprintEnabled,
-            isFacialVerificationEnabled = u.isFacialVerificationEnabled
+            isFacialVerificationEnabled = u.isFacialVerificationEnabled,
+            isGatewayPaid = u.isGatewayPaid
         )
     }
 }

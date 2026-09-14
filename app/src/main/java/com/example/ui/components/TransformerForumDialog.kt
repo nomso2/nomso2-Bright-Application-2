@@ -84,8 +84,8 @@ fun TransformerForumDialog(
                 .padding(vertical = 16.dp)
                 .testTag("phase5_community_forum_dialog"),
             shape = RoundedCornerShape(24.dp),
-            colors = CardDefaults.cardColors(containerColor = ElegantDarkSurface),
-            border = androidx.compose.foundation.BorderStroke(1.dp, ElegantDarkBorder),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)),
             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
         ) {
             Column(
@@ -121,17 +121,17 @@ fun TransformerForumDialog(
                         Text(
                             text = "Transformer Cluster Forum",
                             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                            color = Slate100Text
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
                             text = "Line: ${userProfile.transformerId} • ${userProfile.connectedHouseholdsCount} Houses",
                             style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
-                            color = Slate400Text
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
 
                     IconButton(onClick = onDismiss) {
-                        Icon(imageVector = Icons.Default.Close, contentDescription = "Close", tint = Slate400Text)
+                        Icon(imageVector = Icons.Default.Close, contentDescription = "Close", tint = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
 
@@ -142,7 +142,7 @@ fun TransformerForumDialog(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(12.dp))
-                        .background(Color(0x14FFFFFF))
+                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
                         .padding(4.dp),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
@@ -160,7 +160,7 @@ fun TransformerForumDialog(
                             Text(
                                 text = title,
                                 style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                                color = if (isSelected) Color(0xFF0A0C10) else Slate400Text
+                                color = if (isSelected) Color(0xFF0A0C10) else MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
@@ -198,7 +198,7 @@ fun TransformerForumDialog(
                                     Text(
                                         text = "Ping ${userProfile.connectedHouseholdsCount} nearby meters on this transformer to co-sign active outage",
                                         style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
-                                        color = Slate400Text
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
                             }
@@ -214,9 +214,9 @@ fun TransformerForumDialog(
                             modifier = Modifier.fillMaxWidth(),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = ElegantGoldPrimary,
-                                unfocusedBorderColor = ElegantDarkBorder,
-                                focusedTextColor = Slate100Text,
-                                unfocusedTextColor = Slate100Text
+                                unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+                                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                                unfocusedTextColor = MaterialTheme.colorScheme.onSurface
                             ),
                             shape = RoundedCornerShape(12.dp)
                         )
@@ -231,7 +231,7 @@ fun TransformerForumDialog(
                             Row(
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(8.dp))
-                                    .background(if (isExtortionFlag) Color(0x26EF4444) else Color(0x0DFFFFFF))
+                                    .background(if (isExtortionFlag) Color(0x26EF4444) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
                                     .clickable { isExtortionFlag = !isExtortionFlag }
                                     .padding(horizontal = 8.dp, vertical = 6.dp),
                                 verticalAlignment = Alignment.CenterVertically
@@ -239,7 +239,7 @@ fun TransformerForumDialog(
                                 Icon(
                                     imageVector = Icons.Default.Warning,
                                     contentDescription = null,
-                                    tint = if (isExtortionFlag) Color(0xFFEF4444) else Slate400Text,
+                                    tint = if (isExtortionFlag) Color(0xFFEF4444) else MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier.size(14.dp)
                                 )
                                 Spacer(modifier = Modifier.width(4.dp))
@@ -247,7 +247,7 @@ fun TransformerForumDialog(
                                     text = "Flag Extortion",
                                     style = MaterialTheme.typography.labelSmall.copy(
                                         fontWeight = FontWeight.Bold,
-                                        color = if (isExtortionFlag) Color(0xFFEF4444) else Slate400Text
+                                        color = if (isExtortionFlag) Color(0xFFEF4444) else MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 )
                             }
@@ -282,10 +282,10 @@ fun TransformerForumDialog(
                                     .fillMaxWidth()
                                     .padding(vertical = 4.dp)
                                     .clip(RoundedCornerShape(12.dp))
-                                    .background(if (post.isExtortionReport) Color(0x1AEF4444) else Color(0x14FFFFFF))
+                                    .background(if (post.isExtortionReport) Color(0x1AEF4444) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
                                     .border(
                                         1.dp,
-                                        if (post.isExtortionReport) Color(0x33EF4444) else ElegantDarkBorder,
+                                        if (post.isExtortionReport) Color(0x33EF4444) else MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
                                         RoundedCornerShape(12.dp)
                                     )
                                     .padding(12.dp)
@@ -300,13 +300,13 @@ fun TransformerForumDialog(
                                             Text(
                                                 text = post.authorName,
                                                 style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                                                color = Slate100Text
+                                                color = MaterialTheme.colorScheme.onSurface
                                             )
                                             Spacer(modifier = Modifier.width(6.dp))
                                             Text(
                                                 text = "• ${post.timestampText}",
                                                 style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp),
-                                                color = Slate500Text
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
                                             )
                                         }
 
@@ -334,7 +334,7 @@ fun TransformerForumDialog(
                                     Text(
                                         text = post.content,
                                         style = MaterialTheme.typography.bodySmall,
-                                        color = Slate100Text
+                                        color = MaterialTheme.colorScheme.onSurface
                                     )
 
                                     Spacer(modifier = Modifier.height(8.dp))
@@ -342,7 +342,7 @@ fun TransformerForumDialog(
                                     Row(
                                         modifier = Modifier
                                             .clip(RoundedCornerShape(6.dp))
-                                            .background(Color(0x14FFFFFF))
+                                            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f))
                                             .clickable { onUpvotePost(post.id) }
                                             .padding(horizontal = 8.dp, vertical = 4.dp),
                                         verticalAlignment = Alignment.CenterVertically
@@ -374,12 +374,12 @@ fun TransformerForumDialog(
                             Text(
                                 text = "Multilingual Speech-to-Fault Parser",
                                 style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                                color = Slate100Text
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
                                 text = "Transforms recorded native voice descriptions into standardized operational SCADA tickets:",
                                 style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
-                                color = Slate400Text
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
 
                             listOf(
@@ -392,11 +392,11 @@ fun TransformerForumDialog(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .clip(RoundedCornerShape(12.dp))
-                                        .background(Color(0x14FFFFFF))
-                                        .border(1.dp, ElegantDarkBorder, RoundedCornerShape(12.dp))
+                                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                                        .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
                                         .clickable { onSimulateVoiceReport(lang) }
                                         .padding(12.dp)
-                                ) {
+                                 ) {
                                     Row(
                                         modifier = Modifier.fillMaxWidth(),
                                         horizontalArrangement = Arrangement.SpaceBetween,
@@ -411,7 +411,7 @@ fun TransformerForumDialog(
                                             Text(
                                                 text = sample,
                                                 style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
-                                                color = Slate400Text
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
                                             )
                                         }
                                         Icon(
@@ -456,7 +456,7 @@ fun TransformerForumDialog(
                                     Text(
                                         text = "Under NERC CPR 2023, DisCo field crew cannot mark a blackout ticket 'RESOLVED' until randomized resident meters on ${userProfile.transformerId} digitally attest that steady current has returned.",
                                         style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
-                                        color = Slate100Text
+                                        color = MaterialTheme.colorScheme.onSurface
                                     )
                                 }
                             }
@@ -465,7 +465,7 @@ fun TransformerForumDialog(
                             Text(
                                 text = "Linear Maintenance Milestone Engine:",
                                 style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                                color = Slate100Text
+                                color = MaterialTheme.colorScheme.onSurface
                             )
 
                             listOf(
@@ -479,7 +479,7 @@ fun TransformerForumDialog(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .clip(RoundedCornerShape(8.dp))
-                                        .background(Color(0x0DFFFFFF))
+                                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
                                         .padding(10.dp),
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                     verticalAlignment = Alignment.CenterVertically
@@ -493,7 +493,7 @@ fun TransformerForumDialog(
                                         Text(
                                             text = stepDesc,
                                             style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp),
-                                            color = Slate400Text
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
                                     }
                                     Icon(

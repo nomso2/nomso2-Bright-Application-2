@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
@@ -25,6 +26,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -34,8 +36,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.example.ui.BrightViewModel
 import com.example.ui.components.EditMeterDialog
 import com.example.ui.components.EnergyOptimizationDialog
@@ -43,6 +49,7 @@ import com.example.ui.components.EstateExcoAndSlaDossierDialog
 import com.example.ui.components.PhaseOnboardingDialog
 import com.example.ui.components.ProfileAdminDialog
 import com.example.ui.components.ResolutionRatingDialog
+import com.example.ui.components.SessionLockScreen
 import com.example.ui.components.SignUpOnboardingScreen
 import com.example.ui.components.SmartMeterServerGatewayDialog
 import com.example.ui.components.TokenEscrowClearinghouseDialog
@@ -140,6 +147,28 @@ fun BrightApp(viewModel: BrightViewModel) {
     val smartMeterCommands by viewModel.smartMeterCommands.collectAsState()
     val gatewayTelemetryMap by viewModel.gatewayTelemetryMap.collectAsState()
     val isPollingGateway by viewModel.isPollingGateway.collectAsState()
+    val paidMeterNumbers by viewModel.paidMeterNumbers.collectAsState()
+    val citizenMeterStatus by viewModel.citizenMeterStatus.collectAsState()
+
+    // Session Lock & Re-Login State (Auto-Lock on leaving app)
+    val isAppLocked by viewModel.isAppLocked.collectAsState()
+    val requireLoginOnLeave by viewModel.requireLoginOnLeave.collectAsState()
+
+    // Auto-lock when user leaves the app (presses Home, switches apps, locks screen)
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner, requireLoginOnLeave, isOnboardingCompleted, userProfile.isOnboarded) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_STOP) {
+                if (requireLoginOnLeave && (isOnboardingCompleted || userProfile.isOnboarded)) {
+                    viewModel.lockAppSession()
+                }
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
 
     // If new user (not onboarded yet) or opened from menu, show the interactive sign-in / sign-up flow
     if ((!isOnboardingCompleted && !userProfile.isOnboarded) || showOnboardingDialog) {
@@ -147,6 +176,10 @@ fun BrightApp(viewModel: BrightViewModel) {
             currentProfile = userProfile,
             initialSignInMode = true,
             isDismissible = showOnboardingDialog && (isOnboardingCompleted || userProfile.isOnboarded),
+            paidMeters = paidMeterNumbers,
+            onRecordMeterPayment = { meterNum ->
+                viewModel.markMeterPaid(meterNum)
+            },
             onDismiss = { showOnboardingDialog = false },
             onCompleteSignUp = { newProfile ->
                 viewModel.completeOnboarding(newProfile)
@@ -155,10 +188,30 @@ fun BrightApp(viewModel: BrightViewModel) {
             onSignIn = { signedInProfile ->
                 viewModel.signIn(signedInProfile)
                 showOnboardingDialog = false
+            }
+        )
+        return
+    }
+
+    // If session is locked (e.g. after leaving the app or pressing Lock button), require re-login
+    if (isAppLocked && (isOnboardingCompleted || userProfile.isOnboarded)) {
+        SessionLockScreen(
+            userProfile = userProfile,
+            requireLoginOnLeave = requireLoginOnLeave,
+            onToggleRequireLoginOnLeave = { enabled ->
+                viewModel.setRequireLoginOnLeave(enabled)
             },
-            onSkipForNow = {
-                showOnboardingDialog = false
-                viewModel.completeOnboarding(userProfile)
+            onUnlockWithPin = { pin ->
+                viewModel.unlockAppSessionWithPin(pin)
+            },
+            onUnlockBiometric = {
+                viewModel.unlockAppSessionBiometric()
+            },
+            onSwitchAccount = {
+                showOnboardingDialog = true
+            },
+            onLogOut = {
+                viewModel.logOut()
             }
         )
         return
@@ -174,15 +227,15 @@ fun BrightApp(viewModel: BrightViewModel) {
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        containerColor = com.example.ui.theme.ElegantDarkCanvas,
+        containerColor = MaterialTheme.colorScheme.background,
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         bottomBar = {
             NavigationBar(
                 modifier = Modifier
                     .testTag("bright_bottom_nav_bar")
-                    .border(width = 1.dp, color = ElegantDarkBorder),
-                containerColor = ElegantDarkBar,
-                tonalElevation = 0.dp
+                    .border(width = 1.dp, color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)),
+                containerColor = MaterialTheme.colorScheme.surface,
+                tonalElevation = 2.dp
             ) {
                 BrightNavDestination.entries.forEach { destination ->
                     NavigationBarItem(
@@ -197,15 +250,16 @@ fun BrightApp(viewModel: BrightViewModel) {
                         label = {
                             Text(
                                 text = destination.label,
-                                fontSize = 10.sp
+                                fontSize = 10.sp,
+                                fontWeight = if (currentDestination == destination) FontWeight.Bold else FontWeight.Normal
                             )
                         },
                         colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = ElegantGoldPrimary,
-                            selectedTextColor = ElegantGoldPrimary,
-                            indicatorColor = Color(0x26FACC15),
-                            unselectedIconColor = Slate500Text,
-                            unselectedTextColor = Slate500Text
+                            selectedIconColor = MaterialTheme.colorScheme.primary,
+                            selectedTextColor = MaterialTheme.colorScheme.primary,
+                            indicatorColor = MaterialTheme.colorScheme.primaryContainer,
+                            unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
                         ),
                         modifier = Modifier.testTag("nav_item_${destination.name.lowercase()}")
                     )
@@ -255,6 +309,9 @@ fun BrightApp(viewModel: BrightViewModel) {
                         userTrustScore = userTrustScore,
                         onOpenEstateExcoDossier = { showEstateExcoDialog = true },
                         onOpenSmartMeterGateway = { showSmartMeterGatewayDialog = true },
+                        citizenMeterStatus = citizenMeterStatus,
+                        onAutoDetectSmartMeter = { viewModel.autoDetectCitizenMeter() },
+                        onLockApp = { viewModel.lockAppSession() },
                         onLogOut = { viewModel.logOut() },
                         surgeWarningActive = surgeWarningActive,
                         surgeCountdownSeconds = surgeCountdownSeconds,
@@ -321,7 +378,9 @@ fun BrightApp(viewModel: BrightViewModel) {
                         onOpenForum = { showTransformerForumDialog = true },
                         onPlaySirenAlarm = { viewModel.playRestorationChime() },
                         onOpenEstateExco = { showEstateExcoDialog = true },
-                        onOpenSmartMeterGateway = { showSmartMeterGatewayDialog = true }
+                        onOpenSmartMeterGateway = { showSmartMeterGatewayDialog = true },
+                        citizenMeterStatus = citizenMeterStatus,
+                        onAutoDetectSmartMeter = { viewModel.autoDetectCitizenMeter() }
                     )
                 }
             }
@@ -424,6 +483,9 @@ fun BrightApp(viewModel: BrightViewModel) {
                 viewModel.showNotification("📄 Transactional Accounting Ledger exported: BRIGHT_LEDGER_${userProfile.meterNumber}.csv downloaded")
             },
             onUpdateBiometrics = { fp, face -> viewModel.updateBiometricSettings(fp, face) },
+            requireLoginOnLeave = requireLoginOnLeave,
+            onToggleRequireLoginOnLeave = { enabled -> viewModel.setRequireLoginOnLeave(enabled) },
+            onLockSession = { viewModel.lockAppSession() },
             onDismiss = { showProfileAdminDialog = false }
         )
     }
@@ -437,8 +499,8 @@ fun BrightApp(viewModel: BrightViewModel) {
             onAddDuesEntry = { name, addr, meter, purpose, amount, method ->
                 viewModel.addTransformerDuesContribution(name, addr, meter, purpose, amount, method)
             },
-            onGenerateSlaAssessment = { ticketId, title, delayHours ->
-                viewModel.generateSlaCompensationAssessment(ticketId, title, delayHours)
+            onGenerateSlaAssessment = { ticketId, title, delayHours, desc, trId ->
+                viewModel.generateSlaCompensationAssessment(ticketId, title, delayHours, desc, trId)
             },
             onDismiss = { showEstateExcoDialog = false }
         )
@@ -450,6 +512,9 @@ fun BrightApp(viewModel: BrightViewModel) {
             serverConfig = smartMeterServerConfig,
             metersList = smartMetersList,
             commandsHistory = smartMeterCommands,
+            userProfile = userProfile,
+            citizenMeterStatus = citizenMeterStatus,
+            onAutoDetectSmartMeter = { viewModel.autoDetectCitizenMeter() },
             gatewayTelemetryMap = gatewayTelemetryMap,
             isPollingGateway = isPollingGateway,
             onPollGateway = { mfg -> viewModel.pollManufacturerGateway(userProfile.meterNumber, mfg, userProfile.discoCode) },

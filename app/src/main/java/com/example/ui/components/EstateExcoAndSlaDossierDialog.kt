@@ -9,6 +9,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -440,66 +442,54 @@ private fun NercDossierTabContent(
                         .fillMaxWidth()
                         .padding(12.dp)
                 ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = "Official NERC Formatted Dossier",
-                                style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                                color = ElegantGoldPrimary
-                            )
-                            Text(
-                                text = "Generated pursuant to NERC CPR 2023. Export as certified PDF dossier or text document for DisCo & NERC Forum follow-up.",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MutedSlateText
-                            )
-                        }
-
-                        OutlinedButton(
-                            onClick = { onCopy(formattedDossier) },
-                            colors = ButtonDefaults.outlinedButtonColors(contentColor = ElegantGoldPrimary),
-                            shape = RoundedCornerShape(8.dp),
-                            modifier = Modifier.testTag("copy_nerc_dossier_button")
-                        ) {
-                            Icon(Icons.Default.ContentCopy, contentDescription = null, modifier = Modifier.size(16.dp))
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text("Copy Text", fontSize = 11.sp)
-                        }
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        Text(
+                            text = "Official NERC Formatted Dossier",
+                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                            color = ElegantGoldPrimary
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = "Generated pursuant to NERC CPR 2023. Export as certified PDF dossier or text document for DisCo & NERC Forum follow-up.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MutedSlateText
+                        )
                     }
 
-                    Spacer(modifier = Modifier.height(10.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
 
-                    // PDF and Share Action Row
+                    // Prominent Primary Action: Full-width Export PDF
+                    Button(
+                        onClick = {
+                            NercDossierPdfGenerator.shareNercDossierPdf(
+                                context = context,
+                                userProfile = userProfile,
+                                complaints = activeComplaints,
+                                dossierTitle = "NERC STATUTORY COMPLAINT & OUTAGE AUDIT DOSSIER"
+                            )
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = ElegantGoldPrimary,
+                            contentColor = DarkCharcoal
+                        ),
+                        shape = RoundedCornerShape(10.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(44.dp)
+                            .testTag("export_nerc_pdf_button")
+                    ) {
+                        Icon(Icons.Default.PictureAsPdf, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Export Official PDF Dossier", fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Secondary Action Row: 3 balanced buttons with equal weights
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Button(
-                            onClick = {
-                                NercDossierPdfGenerator.shareNercDossierPdf(
-                                    context = context,
-                                    userProfile = userProfile,
-                                    complaints = activeComplaints,
-                                    dossierTitle = "NERC STATUTORY COMPLAINT & OUTAGE AUDIT DOSSIER"
-                                )
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = ElegantGoldPrimary,
-                                contentColor = DarkCharcoal
-                            ),
-                            shape = RoundedCornerShape(8.dp),
-                            modifier = Modifier
-                                .weight(1f)
-                                .testTag("export_nerc_pdf_button")
-                        ) {
-                            Icon(Icons.Default.PictureAsPdf, contentDescription = null, modifier = Modifier.size(16.dp))
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text("Export PDF Dossier", fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                        }
-
                         OutlinedButton(
                             onClick = {
                                 NercDossierPdfGenerator.viewNercDossierPdf(
@@ -512,22 +502,42 @@ private fun NercDossierTabContent(
                             colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF38BDF8)),
                             border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF38BDF8).copy(alpha = 0.5f)),
                             shape = RoundedCornerShape(8.dp),
-                            modifier = Modifier.testTag("view_nerc_pdf_button")
+                            contentPadding = PaddingValues(horizontal = 6.dp, vertical = 6.dp),
+                            modifier = Modifier
+                                .weight(1f)
+                                .testTag("view_nerc_pdf_button")
                         ) {
-                            Icon(Icons.Default.Visibility, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Icon(Icons.Default.Visibility, contentDescription = null, modifier = Modifier.size(15.dp))
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text("Open PDF", fontSize = 11.sp)
+                            Text("Open PDF", fontSize = 11.sp, maxLines = 1)
                         }
 
                         OutlinedButton(
                             onClick = { onShare(formattedDossier) },
                             colors = ButtonDefaults.outlinedButtonColors(contentColor = Slate100Text),
                             shape = RoundedCornerShape(8.dp),
-                            modifier = Modifier.testTag("share_nerc_dossier_button")
+                            contentPadding = PaddingValues(horizontal = 6.dp, vertical = 6.dp),
+                            modifier = Modifier
+                                .weight(1f)
+                                .testTag("share_nerc_dossier_button")
                         ) {
-                            Icon(Icons.Default.Share, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Icon(Icons.Default.Share, contentDescription = null, modifier = Modifier.size(15.dp))
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text("Share Text", fontSize = 11.sp)
+                            Text("Share", fontSize = 11.sp, maxLines = 1)
+                        }
+
+                        OutlinedButton(
+                            onClick = { onCopy(formattedDossier) },
+                            colors = ButtonDefaults.outlinedButtonColors(contentColor = ElegantGoldPrimary),
+                            shape = RoundedCornerShape(8.dp),
+                            contentPadding = PaddingValues(horizontal = 6.dp, vertical = 6.dp),
+                            modifier = Modifier
+                                .weight(1f)
+                                .testTag("copy_nerc_dossier_button")
+                        ) {
+                            Icon(Icons.Default.ContentCopy, contentDescription = null, modifier = Modifier.size(15.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("Copy", fontSize = 11.sp, maxLines = 1)
                         }
                     }
                 }
@@ -544,26 +554,32 @@ private fun NercDossierTabContent(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp)
+                        .padding(14.dp)
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
                             text = "OFFICIAL DOCUMENT PREVIEW",
                             fontSize = 11.sp,
                             fontWeight = FontWeight.Bold,
-                            color = ElegantGoldPrimary
+                            color = ElegantGoldPrimary,
+                            modifier = Modifier.weight(1f, fill = false)
                         )
-                        Row(verticalAlignment = Alignment.CenterVertically) {
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.wrapContentWidth()
+                        ) {
                             Box(
                                 modifier = Modifier
-                                    .size(8.dp)
+                                    .size(7.dp)
                                     .background(ElegantGreenLive, CircleShape)
                             )
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text("VERIFIED NERC COMPLIANT", fontSize = 10.sp, color = ElegantGreenLive)
+                            Spacer(modifier = Modifier.width(5.dp))
+                            Text("NERC COMPLIANT", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = ElegantGreenLive)
                         }
                     }
 
@@ -616,52 +632,63 @@ private fun TransformerDuesTabContent(
                 border = androidx.compose.foundation.BorderStroke(1.dp, ElegantGoldPrimary.copy(alpha = 0.3f)),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Column(modifier = Modifier.padding(16.dp)) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(14.dp)
+                ) {
+                    Text(
+                        text = "TRANSFORMER TRUST LEDGER",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = ElegantGoldPrimary,
+                        letterSpacing = 1.sp
+                    )
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Text(
+                        text = "${userProfile.transformerId} Community Pot",
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                        color = Slate100Text
+                    )
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    // Lay sideways under the transformer community pot header
+                    Button(
+                        onClick = onToggleAddForm,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = ElegantGoldPrimary,
+                            contentColor = DarkCharcoal
+                        ),
+                        shape = RoundedCornerShape(10.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(42.dp)
+                            .testTag("record_contribution_button")
+                    ) {
+                        Icon(Icons.Default.Payments, contentDescription = null, modifier = Modifier.size(16.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = if (showAddForm) "Close Form" else "+ Record Payment / Contribution",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column {
-                            Text(
-                                text = "TRANSFORMER TRUST LEDGER",
-                                fontSize = 11.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = ElegantGoldPrimary,
-                                letterSpacing = 1.sp
-                            )
-                            Text(
-                                text = "${userProfile.transformerId} Community Pot",
-                                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                                color = Slate100Text
-                            )
-                        }
-
-                        Button(
-                            onClick = onToggleAddForm,
-                            colors = ButtonDefaults.buttonColors(containerColor = ElegantGoldPrimary, contentColor = DarkCharcoal),
-                            shape = RoundedCornerShape(8.dp),
-                            modifier = Modifier.testTag("record_contribution_button")
-                        ) {
-                            Icon(Icons.Default.Payments, contentDescription = null, modifier = Modifier.size(16.dp))
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text(if (showAddForm) "Close Form" else "+ Record Payment", fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(14.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Column {
                             Text("Total Verified Collections", fontSize = 11.sp, color = MutedSlateText)
-                            Text("₦${String.format("%,.2f", totalCollected)}", fontSize = 20.sp, fontWeight = FontWeight.ExtraBold, color = ElegantGreenLive)
+                            Text("₦${String.format("%,.2f", totalCollected)}", fontSize = 18.sp, fontWeight = FontWeight.ExtraBold, color = ElegantGreenLive)
                         }
                         Column(horizontalAlignment = Alignment.End) {
                             Text("Verified Households", fontSize = 11.sp, color = MutedSlateText)
-                            Text("${duesEntries.size} Recorded", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Slate100Text)
+                            Text("${duesEntries.size} Recorded", fontSize = 15.sp, fontWeight = FontWeight.Bold, color = Slate100Text)
                         }
                     }
                 }

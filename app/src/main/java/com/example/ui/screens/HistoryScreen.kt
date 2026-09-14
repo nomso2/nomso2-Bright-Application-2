@@ -773,7 +773,7 @@ fun HistoricalComplaintCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(10.dp))
-                    .background(Color(0xFF0F172A).copy(alpha = 0.6f))
+                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
                     .padding(10.dp)
             ) {
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -949,7 +949,7 @@ fun HistoricalComplaintCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(8.dp))
-                    .background(Color(0xFF0F172A))
+                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
                     .clickable { showEscalationTracker = !showEscalationTracker }
                     .padding(horizontal = 10.dp, vertical = 8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,

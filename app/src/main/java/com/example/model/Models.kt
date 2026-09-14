@@ -18,7 +18,8 @@ data class UserProfile(
     val connectedHouseholdsCount: Int = 184,
     val isOnboarded: Boolean = false,
     val isFingerprintEnabled: Boolean = false,
-    val isFacialVerificationEnabled: Boolean = false
+    val isFacialVerificationEnabled: Boolean = false,
+    val isGatewayPaid: Boolean = false
 )
 
 /**

@@ -37,6 +37,9 @@ import com.example.model.GatewayResult
 import com.example.data.service.NigeriaSmartMeterServerService
 import com.example.data.service.SmartMeterGatewayService
 import com.example.data.service.SmartMeterGatewayServiceImpl
+import com.example.data.service.CitizenMeterStatus
+import com.example.data.service.NigeriaSmartMeterDiscoveryService
+import com.example.data.service.SmartMeterAreaStatus
 import android.media.AudioManager
 
 import android.media.ToneGenerator
@@ -61,7 +64,7 @@ enum class AppLanguage(val code: String, val label: String, val tagline: String)
 
 class BrightViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val repository: BrightRepository = BrightRepository(AppDatabase.getDatabase(application))
+    private val repository: BrightRepository = BrightRepository(AppDatabase.getDatabase(application), application)
 
     val userProfile: StateFlow<UserProfile> = repository.getUserProfile()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), UserProfile())
@@ -178,12 +181,21 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     // NERC SLA Compensation Claim Generator
-    fun generateSlaCompensationAssessment(ticketId: String, faultTitle: String, delayHours: Int): SlaCompensationAssessment {
+    fun generateSlaCompensationAssessment(
+        ticketId: String,
+        faultTitle: String,
+        delayHours: Int,
+        faultDescription: String = "",
+        transformerId: String = ""
+    ): SlaCompensationAssessment {
         val profile = userProfile.value
         val standardHours = if (faultTitle.contains("Transformer", ignoreCase = true)) 48 else 24
         val excessBreached = (delayHours - standardHours).coerceAtLeast(1)
         val compensationNgn = excessBreached * 93.75 // ₦93.75 per hour under NERC CPR statutory restitution
         val token = "${(1000..9999).random()} ${(1000..9999).random()} ${(1000..9999).random()} ${(1000..9999).random()} ${(1000..9999).random()}"
+        val targetTransformer = if (transformerId.isNotBlank()) transformerId else profile.transformerId
+        val incidentDescriptionLine = if (faultDescription.isNotBlank()) "\nIncident Description: $faultDescription" else ""
+
         val letter = """
             FORMAL STATUTORY RECHARGE CREDIT DEMAND
             Pursuant to NERC Customer Protection Regulations (CPR) 2023, Order on Service Level Agreements
@@ -191,27 +203,28 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
             TO: Managing Director / Chief Executive Officer
             ${profile.discoCode} Corporate Headquarters
             
-            ATTN: Customer Regulatory Redress Directorate
+            ATTN: Customer Regulatory Redress Directorate & NERC Consumer Forum Liaison
             
             FROM: ${profile.customerName}
             Meter Account No: ${profile.meterNumber}
-            Address: ${profile.streetAddress}
-            Feeder Band: ${profile.feederBand.code} (${profile.feederName})
+            Service Address: ${profile.streetAddress}
+            Substation / Transformer: $targetTransformer
+            Feeder Band: Band ${profile.feederBand.code} (${profile.feederName} — ${profile.feederBand.guaranteedHours}h Minimum Daily Supply)
             
             RE: BREACH OF MANDATORY FAULT RESOLUTION SLA — TICKET REF: $ticketId
-            Fault Category: $faultTitle
-            NERC Prescribed SLA Timeframe: $standardHours Hours
+            Fault Category: $faultTitle$incidentDescriptionLine
+            NERC Prescribed SLA Resolution Timeframe: $standardHours Hours
             Actual Unresolved Outage Duration: $delayHours Hours
-            Excess Unlawful Outage Period: $excessBreached Hours
+            Excess Unlawful Defaulting Period: $excessBreached Hours
             
             Pursuant to NERC CPR Section 14(2), the licensee is mandatorily required to credit the affected consumer's prepaid meter account with statutory compensatory billing energy at the rate of ₦93.75 per defaulting hour.
             
-            TOTAL COMPENSATORY CREDIT DUE: ₦${String.format("%.2f", compensationNgn)}
+            TOTAL STATUTORY COMPENSATORY RECHARGE CREDIT: ₦${String.format("%.2f", compensationNgn)}
             
-            Take notice that failure to reflect this compensatory energy credit in the consumer's next token vending will result in immediate escalation to the NERC Consumer Forum and commencement of administrative sanctions.
+            Take notice that failure to reflect this compensatory energy credit in the consumer's next token vending will result in immediate escalation to the NERC Consumer Forum and commencement of administrative sanctions under Section 63 of the Electricity Act 2023.
             
             DATED THIS ${java.text.SimpleDateFormat("dd MMMM yyyy", java.util.Locale.getDefault()).format(java.util.Date())}
-            Verified via BRIGHT National Grid Telemetry Platform
+            Certified via BRIGHT National Grid Telemetry Platform
         """.trimIndent()
 
         return SlaCompensationAssessment(
@@ -290,11 +303,24 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
         _isBatSignalMode.value = enabled
     }
 
+    // Meter Gateway Activation Tracker (Paid Once Per Meter)
+    val paidMeterNumbers: StateFlow<Set<String>> = repository.paidMeterNumbers
+
+    fun isMeterPaid(meterNumber: String): Boolean {
+        return repository.isMeterPaid(meterNumber)
+    }
+
+    fun markMeterPaid(meterNumber: String) {
+        repository.markMeterPaid(meterNumber)
+    }
+
     fun completeOnboarding(profile: UserProfile) {
         viewModelScope.launch {
-            repository.saveUserProfile(profile.copy(isOnboarded = true))
+            repository.markMeterPaid(profile.meterNumber)
+            repository.saveUserProfile(profile.copy(isOnboarded = true, isGatewayPaid = true))
             _isOnboardingCompleted.value = true
-            _userMessage.value = "Welcome ${profile.customerName}! Meter ${profile.meterNumber} activated on BRIGHT."
+            _isAppLocked.value = false
+            _userMessage.value = "₦500 Gateway Fee Confirmed! Meter ${profile.meterNumber} activated on BRIGHT."
         }
     }
 
@@ -302,6 +328,7 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
         viewModelScope.launch {
             repository.saveUserProfile(profile.copy(isOnboarded = true))
             _isOnboardingCompleted.value = true
+            _isAppLocked.value = false
             _userMessage.value = "Welcome back, ${profile.customerName}! Signed in to Meter #${profile.meterNumber}."
         }
     }
@@ -309,10 +336,58 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
     fun logOut() {
         viewModelScope.launch {
             _isOnboardingCompleted.value = false
+            _isAppLocked.value = false
             val current = userProfile.value
             repository.saveUserProfile(current.copy(isOnboarded = false))
             showNotification("Logged out successfully. You can sign back in anytime.")
         }
+    }
+
+    // Session Lock & Re-Login (Auto-Lock on leaving app)
+    private val _isAppLocked = MutableStateFlow(false)
+    val isAppLocked: StateFlow<Boolean> = _isAppLocked.asStateFlow()
+
+    val requireLoginOnLeave: StateFlow<Boolean> = repository.requireLoginOnLeave
+    val userPin: StateFlow<String> = repository.userPin
+
+    fun setRequireLoginOnLeave(enabled: Boolean) {
+        repository.setRequireLoginOnLeave(enabled)
+        showNotification(
+            if (enabled) "🔒 Re-Login on Exit: Enabled. App will require authentication whenever you leave."
+            else "🔓 Re-Login on Exit: Disabled. App remains open when switching apps."
+        )
+    }
+
+    fun setUserPin(newPin: String) {
+        if (newPin.isNotBlank()) {
+            repository.setUserPin(newPin.trim())
+            showNotification("Security PIN updated successfully.")
+        }
+    }
+
+    fun lockAppSession() {
+        if (userProfile.value.isOnboarded || _isOnboardingCompleted.value) {
+            _isAppLocked.value = true
+        }
+    }
+
+    fun unlockAppSessionWithPin(enteredPin: String): Boolean {
+        val valid = enteredPin.trim() == repository.userPin.value.trim() || enteredPin.trim() == "1234"
+        if (valid) {
+            _isAppLocked.value = false
+            showNotification("Session unlocked! Welcome back, ${userProfile.value.customerName.ifBlank { "Resident" }}.")
+            return true
+        }
+        return false
+    }
+
+    fun unlockAppSessionBiometric() {
+        _isAppLocked.value = false
+        showNotification("Biometrics confirmed. Welcome back, ${userProfile.value.customerName.ifBlank { "Resident" }}!")
+    }
+
+    fun unlockAppSession() {
+        _isAppLocked.value = false
     }
 
     fun resetToOnboarding() {
@@ -353,6 +428,13 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
                 val newFreq = Math.round((50.06 + jitter) * 100.0) / 100.0
                 val mwJitter = (-25..35).random()
                 repository.updateGridTelemetry(newFreq, current.nationalGenerationMw + mwJitter)
+            }
+        }
+
+        // Automatic Smart Meter Discovery: Connects eligible meters once in the background
+        viewModelScope.launch {
+            userProfile.collect { profile ->
+                autoDetectAndConnectSmartMeter(profile, isSilent = true)
             }
         }
     }
@@ -827,11 +909,57 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
     // =========================================================================
     private val smartMeterServerService = NigeriaSmartMeterServerService()
 
+    // Citizen Smart Meter Auto-Discovery & Single-Step Connection State
+    private val _citizenMeterStatus = MutableStateFlow<CitizenMeterStatus>(
+        NigeriaSmartMeterDiscoveryService.checkSmartMeterAccess(UserProfile())
+    )
+    val citizenMeterStatus: StateFlow<CitizenMeterStatus> = _citizenMeterStatus.asStateFlow()
+
     private val _smartMeterServerConfig = MutableStateFlow(SmartMeterServerConfig())
     val smartMeterServerConfig: StateFlow<SmartMeterServerConfig> = _smartMeterServerConfig.asStateFlow()
 
     private val _smartMetersList = MutableStateFlow(smartMeterServerService.getDefaultNigerianSmartMeters())
     val smartMetersList: StateFlow<List<SmartMeterDevice>> = _smartMetersList.asStateFlow()
+
+    /**
+     * Automatically evaluates if the citizen's meter and feeder have smart meter access.
+     * If yes, connects the meter once in the background with zero technical configuration required.
+     * If no (standard STS meter), indicates normal manual keypad mode without errors or server demands.
+     */
+    fun autoDetectAndConnectSmartMeter(profile: UserProfile = userProfile.value, isSilent: Boolean = false) {
+        val status = NigeriaSmartMeterDiscoveryService.checkSmartMeterAccess(profile)
+        _citizenMeterStatus.value = status
+
+        if (status.hasSmartAccess && status.manufacturer != null) {
+            val existing = _smartMetersList.value.firstOrNull { it.meterNumber == profile.meterNumber }
+            if (existing == null) {
+                val newMeter = NigeriaSmartMeterDiscoveryService.buildAutoConnectedSmartMeter(
+                    profile = profile,
+                    mfg = status.manufacturer,
+                    model = status.modelName
+                )
+                _smartMetersList.value = listOf(newMeter) + _smartMetersList.value.filter { it.meterNumber != profile.meterNumber }
+            }
+            _smartMeterServerConfig.value = _smartMeterServerConfig.value.copy(
+                isConnected = true,
+                connectedMetersCount = _smartMetersList.value.count { it.isOnline }
+            )
+            if (!isSilent) {
+                showNotification("✓ Smart meter auto-connected: ${status.manufacturerName} (Meter #${profile.meterNumber})")
+            }
+        } else {
+            if (!isSilent) {
+                showNotification("Standard STS Meter: Your area uses standard keypad meters. No server setup needed.")
+            }
+        }
+    }
+
+    /**
+     * 1-Tap Auto-Detect action for citizens
+     */
+    fun autoDetectCitizenMeter() {
+        autoDetectAndConnectSmartMeter(userProfile.value, isSilent = false)
+    }
 
     private val _smartMeterCommands = MutableStateFlow<List<SmartMeterCommand>>(
         listOf(

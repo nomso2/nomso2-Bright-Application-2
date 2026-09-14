@@ -31,7 +31,10 @@ import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.ElectricMeter
 import androidx.compose.material.icons.filled.FlashOn
+import com.example.data.service.CitizenMeterStatus
+import com.example.data.service.NigeriaSmartMeterDiscoveryService
 import androidx.compose.material.icons.filled.Forum
 import androidx.compose.material.icons.filled.Gavel
 import androidx.compose.material.icons.filled.LightMode
@@ -131,6 +134,9 @@ fun HomeScreen(
     userTrustScore: Int = 98,
     onOpenEstateExcoDossier: () -> Unit = {},
     onOpenSmartMeterGateway: () -> Unit = {},
+    citizenMeterStatus: CitizenMeterStatus? = null,
+    onAutoDetectSmartMeter: () -> Unit = {},
+    onLockApp: () -> Unit = {},
     onLogOut: () -> Unit = {},
     surgeWarningActive: Boolean = false,
     surgeCountdownSeconds: Int = 180,
@@ -148,14 +154,14 @@ fun HomeScreen(
                 Text(
                     text = "Log Out of Bright?",
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                    color = Slate100Text
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             },
             text = {
                 Text(
                     text = "Are you sure you want to log out? Your session will end and you will be returned to the sign-up and meter setup screen.",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = Slate400Text
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             },
             confirmButton = {
@@ -179,10 +185,10 @@ fun HomeScreen(
                     onClick = { showLogoutConfirmDialog = false },
                     shape = RoundedCornerShape(8.dp)
                 ) {
-                    Text("Cancel", color = Slate100Text)
+                    Text("Cancel", color = MaterialTheme.colorScheme.onSurface)
                 }
             },
-            containerColor = ElegantDarkBar,
+            containerColor = MaterialTheme.colorScheme.surface,
             shape = RoundedCornerShape(16.dp)
         )
     }
@@ -192,8 +198,8 @@ fun HomeScreen(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(ElegantDarkBar)
-                .border(1.dp, ElegantDarkBorder)
+                .background(MaterialTheme.colorScheme.surface)
+                .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
                 .padding(horizontal = 16.dp, vertical = 10.dp)
         ) {
             Row(
@@ -203,42 +209,53 @@ fun HomeScreen(
             ) {
                 Column(modifier = Modifier.weight(1f, fill = false)) {
                     Text(
-                        text = userProfile.customerName.ifBlank { "Resident User" },
-                        style = MaterialTheme.typography.titleMedium.copy(
-                            fontWeight = FontWeight.Bold,
-                            letterSpacing = (-0.3).sp,
-                            fontSize = 17.sp
-                        ),
-                        color = Slate100Text,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                    Spacer(modifier = Modifier.height(2.dp))
-                    Text(
-                        text = "${userProfile.discoCode} • ${userProfile.feederBand.code}",
+                        text = "THE BRIGHT PROJECT",
                         style = MaterialTheme.typography.labelSmall.copy(
-                            fontWeight = FontWeight.SemiBold,
+                            fontWeight = FontWeight.ExtraBold,
                             fontSize = 11.sp,
-                            letterSpacing = 0.5.sp
+                            letterSpacing = 1.sp
                         ),
                         color = ElegantGoldPrimary,
                         maxLines = 1
                     )
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Text(
+                        text = "${userProfile.discoCode} • ${userProfile.feederBand.code}",
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = (-0.2).sp,
+                            fontSize = 16.sp
+                        ),
+                        color = MaterialTheme.colorScheme.onSurface,
+                        maxLines = 1
+                    )
                 }
 
-                // Header Action Bar: Clean Theme Switcher & Menu for all quick tools
+                // Header Tool Options: Clean, unclustered tool options without circular coverings or empty circles
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    // Theme Switcher Button (Dark / Light)
+                    // 1. Report Outage / Fault Quick Action (+)
+                    IconButton(
+                        onClick = onReportFaultClicked,
+                        modifier = Modifier
+                            .size(36.dp)
+                            .testTag("header_report_button")
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = "Report Outage or Fault",
+                            tint = ElegantGoldPrimary,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+
+                    // 2. Theme Switcher (Sun / Moon)
                     IconButton(
                         onClick = onToggleThemeMode,
                         modifier = Modifier
-                            .size(38.dp)
-                            .clip(CircleShape)
-                            .background(Color(0x1AFFFFFF))
-                            .border(1.dp, ElegantDarkBorder, CircleShape)
+                            .size(36.dp)
                             .testTag("theme_toggle_button")
                     ) {
                         Icon(
@@ -249,32 +266,59 @@ fun HomeScreen(
                         )
                     }
 
-                    // Tools & Settings Menu Button
+                    // 3. Estate Exco & Dossier (Gavel)
+                    IconButton(
+                        onClick = onOpenEstateExcoDossier,
+                        modifier = Modifier
+                            .size(36.dp)
+                            .testTag("header_estate_exco_button")
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Gavel,
+                            contentDescription = "Estate Exco & Dossier",
+                            tint = ElegantGoldPrimary,
+                            modifier = Modifier.size(19.dp)
+                        )
+                    }
+
+                    // 4. Security Protocols & Admin (Shield)
+                    IconButton(
+                        onClick = onOpenProfileAdmin,
+                        modifier = Modifier
+                            .size(36.dp)
+                            .testTag("header_security_protocols_button")
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Security,
+                            contentDescription = "Security Protocols & Admin",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.size(19.dp)
+                        )
+                    }
+
+                    // 5. More Tools & Gateway Menu (Clean, no circular coverings, no empty circle outlines)
                     Box {
                         IconButton(
                             onClick = { showToolsDropdown = true },
                             modifier = Modifier
-                                .size(38.dp)
-                                .clip(CircleShape)
-                                .background(Color(0x1AFFFFFF))
-                                .border(1.dp, ElegantDarkBorder, CircleShape)
+                                .size(36.dp)
                                 .testTag("header_tools_menu_button")
                         ) {
                             Icon(
                                 imageVector = Icons.Default.MoreVert,
                                 contentDescription = "More Tools and Options",
-                                tint = Slate100Text,
-                                modifier = Modifier.size(19.dp)
+                                tint = MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier.size(20.dp)
                             )
                         }
 
                         DropdownMenu(
                             expanded = showToolsDropdown,
                             onDismissRequest = { showToolsDropdown = false },
-                            modifier = Modifier.background(ElegantDarkBar)
+                            modifier = Modifier.background(MaterialTheme.colorScheme.surface)
                         ) {
                             DropdownMenuItem(
-                                text = { Text("Smart Meter Gateway", color = Slate100Text) },
+                                text = { Text("Smart Meter Gateway", color = MaterialTheme.colorScheme.onSurface) },
                                 leadingIcon = {
                                     Icon(
                                         imageVector = Icons.Default.Router,
@@ -289,7 +333,22 @@ fun HomeScreen(
                                 }
                             )
                             DropdownMenuItem(
-                                text = { Text("Estate Exco & Dossier", color = Slate100Text) },
+                                text = { Text("Lock Session / Re-Login", color = MaterialTheme.colorScheme.onSurface) },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Default.Lock,
+                                        contentDescription = null,
+                                        tint = ElegantGoldPrimary,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                },
+                                onClick = {
+                                    showToolsDropdown = false
+                                    onLockApp()
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { Text("Estate Exco & Dossier", color = MaterialTheme.colorScheme.onSurface) },
                                 leadingIcon = {
                                     Icon(
                                         imageVector = Icons.Default.Gavel,
@@ -304,7 +363,7 @@ fun HomeScreen(
                                 }
                             )
                             DropdownMenuItem(
-                                text = { Text("Sign In / Switch Meter", color = Slate100Text) },
+                                text = { Text("Sign In / Switch Meter", color = MaterialTheme.colorScheme.onSurface) },
                                 leadingIcon = {
                                     Icon(
                                         imageVector = Icons.Default.AccountCircle,
@@ -319,12 +378,12 @@ fun HomeScreen(
                                 }
                             )
                             DropdownMenuItem(
-                                text = { Text("Profile & Protocols", color = Slate100Text) },
+                                text = { Text("Profile & Protocols", color = MaterialTheme.colorScheme.onSurface) },
                                 leadingIcon = {
                                     Icon(
                                         imageVector = Icons.Default.Security,
                                         contentDescription = null,
-                                        tint = Slate300Text,
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                         modifier = Modifier.size(18.dp)
                                     )
                                 },
@@ -350,216 +409,6 @@ fun HomeScreen(
                             )
                         }
                     }
-                }
-            }
-        }
-
-        // Quick Actions Ribbon: Clean, readable arrangement for Light Mode, Gateway, Exco, etc.
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color(0xFF0D1117))
-                .border(1.dp, Color(0x1AFFFFFF))
-                .horizontalScroll(rememberScrollState())
-                .padding(horizontal = 14.dp, vertical = 7.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Light / Dark Mode Action Pill
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(100.dp))
-                    .background(Color(0x14FFFFFF))
-                    .border(1.dp, ElegantDarkBorder, RoundedCornerShape(100.dp))
-                    .clickable { onToggleThemeMode() }
-                    .padding(horizontal = 10.dp, vertical = 5.dp)
-                    .testTag("ribbon_theme_toggle")
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(5.dp)
-                ) {
-                    Icon(
-                        imageVector = if (isDarkMode) Icons.Default.LightMode else Icons.Default.DarkMode,
-                        contentDescription = null,
-                        tint = ElegantGoldPrimary,
-                        modifier = Modifier.size(13.dp)
-                    )
-                    Text(
-                        text = if (isDarkMode) "Light Mode" else "Dark Mode",
-                        style = MaterialTheme.typography.labelSmall.copy(
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Bold
-                        ),
-                        color = Slate100Text,
-                        softWrap = false,
-                        maxLines = 1
-                    )
-                }
-            }
-
-            // Smart Meter Gateway Action Pill
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(100.dp))
-                    .background(Color(0x1438BDF8))
-                    .border(1.dp, Color(0x3338BDF8), RoundedCornerShape(100.dp))
-                    .clickable { onOpenSmartMeterGateway() }
-                    .padding(horizontal = 10.dp, vertical = 5.dp)
-                    .testTag("ribbon_smart_gateway")
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(5.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Router,
-                        contentDescription = null,
-                        tint = Color(0xFF38BDF8),
-                        modifier = Modifier.size(13.dp)
-                    )
-                    Text(
-                        text = "Smart Gateway",
-                        style = MaterialTheme.typography.labelSmall.copy(
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Bold
-                        ),
-                        color = Color(0xFF38BDF8),
-                        softWrap = false,
-                        maxLines = 1
-                    )
-                }
-            }
-
-            // Estate Exco Action Pill
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(100.dp))
-                    .background(Color(0x14E5B869))
-                    .border(1.dp, Color(0x33E5B869), RoundedCornerShape(100.dp))
-                    .clickable { onOpenEstateExcoDossier() }
-                    .padding(horizontal = 10.dp, vertical = 5.dp)
-                    .testTag("ribbon_estate_exco")
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(5.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Gavel,
-                        contentDescription = null,
-                        tint = ElegantGoldPrimary,
-                        modifier = Modifier.size(13.dp)
-                    )
-                    Text(
-                        text = "Estate Exco",
-                        style = MaterialTheme.typography.labelSmall.copy(
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Bold
-                        ),
-                        color = ElegantGoldPrimary,
-                        softWrap = false,
-                        maxLines = 1
-                    )
-                }
-            }
-
-            // Sign In / Switch Meter Action Pill
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(100.dp))
-                    .background(Color(0x14FFFFFF))
-                    .border(1.dp, ElegantDarkBorder, RoundedCornerShape(100.dp))
-                    .clickable { onOpenOnboarding() }
-                    .padding(horizontal = 10.dp, vertical = 5.dp)
-                    .testTag("ribbon_switch_meter")
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(5.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.AccountCircle,
-                        contentDescription = null,
-                        tint = Slate100Text,
-                        modifier = Modifier.size(13.dp)
-                    )
-                    Text(
-                        text = "Sign In / Switch",
-                        style = MaterialTheme.typography.labelSmall.copy(
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.SemiBold
-                        ),
-                        color = Slate100Text,
-                        softWrap = false,
-                        maxLines = 1
-                    )
-                }
-            }
-
-            // Security Protocols Action Pill
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(100.dp))
-                    .background(Color(0x14FFFFFF))
-                    .border(1.dp, ElegantDarkBorder, RoundedCornerShape(100.dp))
-                    .clickable { onOpenProfileAdmin() }
-                    .padding(horizontal = 10.dp, vertical = 5.dp)
-                    .testTag("ribbon_security_protocols")
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(5.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Security,
-                        contentDescription = null,
-                        tint = Slate300Text,
-                        modifier = Modifier.size(13.dp)
-                    )
-                    Text(
-                        text = "Security",
-                        style = MaterialTheme.typography.labelSmall.copy(
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.SemiBold
-                        ),
-                        color = Slate300Text,
-                        softWrap = false,
-                        maxLines = 1
-                    )
-                }
-            }
-
-            // Log Out Action Pill
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(100.dp))
-                    .background(Color(0x14EF4444))
-                    .border(1.dp, Color(0x33EF4444), RoundedCornerShape(100.dp))
-                    .clickable { showLogoutConfirmDialog = true }
-                    .padding(horizontal = 10.dp, vertical = 5.dp)
-                    .testTag("ribbon_logout")
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(5.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ExitToApp,
-                        contentDescription = null,
-                        tint = Color(0xFFEF4444),
-                        modifier = Modifier.size(13.dp)
-                    )
-                    Text(
-                        text = "Log Out",
-                        style = MaterialTheme.typography.labelSmall.copy(
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.SemiBold
-                        ),
-                        color = Color(0xFFEF4444),
-                        softWrap = false,
-                        maxLines = 1
-                    )
                 }
             }
         }
@@ -632,7 +481,7 @@ fun HomeScreen(
                                     fontWeight = FontWeight.ExtraBold,
                                     letterSpacing = 0.5.sp
                                 ),
-                                color = Slate100Text
+                                color = MaterialTheme.colorScheme.onBackground
                             )
                             Text(
                                 text = "Tracked directly with Meter #${userProfile.meterNumber}",
@@ -670,9 +519,9 @@ fun HomeScreen(
                                 .testTag("empty_complaints_card"),
                             shape = RoundedCornerShape(20.dp),
                             colors = CardDefaults.cardColors(
-                                containerColor = ElegantDarkSurface
+                                containerColor = MaterialTheme.colorScheme.surface
                             ),
-                            border = androidx.compose.foundation.BorderStroke(1.dp, ElegantDarkBorder),
+                            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)),
                             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                         ) {
                             Column(
@@ -700,13 +549,13 @@ fun HomeScreen(
                                 Text(
                                     text = "Your Lights are Bright!",
                                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                                    color = Slate100Text
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Spacer(modifier = Modifier.height(6.dp))
                                 Text(
                                     text = "No active faults logged for Meter #${userProfile.meterNumber} on ${userProfile.transformerId}. If power drops, lodge complaint instantly below.",
                                     style = MaterialTheme.typography.bodySmall,
-                                    color = Slate400Text,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     textAlign = TextAlign.Center
                                 )
                                 Spacer(modifier = Modifier.height(16.dp))
@@ -756,7 +605,7 @@ fun HomeScreen(
                             fontWeight = FontWeight.ExtraBold,
                             letterSpacing = 0.5.sp
                         ),
-                        color = Slate100Text
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                 }
 
@@ -779,16 +628,22 @@ fun HomeScreen(
                     )
                 }
 
-                // 6. Smart Meter Server Gateway & Nigerian AMI Card
+                // 6. Citizen Smart Meter Gateway Card (Auto-Connected or Standard STS)
                 item {
+                    val meterStatus = citizenMeterStatus ?: remember(userProfile) {
+                        NigeriaSmartMeterDiscoveryService.checkSmartMeterAccess(userProfile)
+                    }
+                    val isSmart = meterStatus.hasSmartAccess
+                    val themeColor = if (isSmart) Color(0xFF38BDF8) else Color(0xFFD97706)
+
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable(onClick = onOpenSmartMeterGateway)
                             .testTag("smart_meter_server_gateway_card"),
                         shape = RoundedCornerShape(16.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color(0xFF0F172A)),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF38BDF8))
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, themeColor.copy(alpha = 0.6f))
                     ) {
                         Row(
                             modifier = Modifier
@@ -798,6 +653,7 @@ fun HomeScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Row(
+                                modifier = Modifier.weight(1f),
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(10.dp)
                             ) {
@@ -805,29 +661,50 @@ fun HomeScreen(
                                     modifier = Modifier
                                         .size(36.dp)
                                         .clip(RoundedCornerShape(8.dp))
-                                        .background(Color(0xFF38BDF8).copy(alpha = 0.2f)),
+                                        .background(themeColor.copy(alpha = 0.2f)),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Icon(
-                                        imageVector = Icons.Default.Router,
+                                        imageVector = if (isSmart) Icons.Default.Router else Icons.Default.ElectricMeter,
                                         contentDescription = null,
-                                        tint = Color(0xFF38BDF8),
+                                        tint = themeColor,
                                         modifier = Modifier.size(20.dp)
                                     )
                                 }
                                 Column {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                    ) {
+                                        Text(
+                                            text = if (isSmart) "SMART METER AUTO-CONNECTED" else "STANDARD PREPAID METER",
+                                            style = MaterialTheme.typography.labelSmall.copy(
+                                                fontWeight = FontWeight.ExtraBold,
+                                                letterSpacing = 0.5.sp
+                                            ),
+                                            color = themeColor
+                                        )
+                                        Box(
+                                            modifier = Modifier
+                                                .clip(RoundedCornerShape(4.dp))
+                                                .background(if (isSmart) Color(0xFF22C55E).copy(alpha = 0.15f) else Color(0xFFD97706).copy(alpha = 0.15f))
+                                                .padding(horizontal = 5.dp, vertical = 1.dp)
+                                        ) {
+                                            Text(
+                                                text = if (isSmart) "AUTO-LINKED" else "STS KEYPAD",
+                                                fontSize = 9.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                color = if (isSmart) Color(0xFF22C55E) else Color(0xFFD97706)
+                                            )
+                                        }
+                                    }
                                     Text(
-                                        text = "SMART METER SERVER GATEWAY",
-                                        style = MaterialTheme.typography.labelSmall.copy(
-                                            fontWeight = FontWeight.ExtraBold,
-                                            letterSpacing = 0.5.sp
-                                        ),
-                                        color = Color(0xFF38BDF8)
-                                    )
-                                    Text(
-                                        text = "Connect Mojec, Momas & Conlog across Nigeria",
+                                        text = if (isSmart)
+                                            "✓ Auto-connected to ${meterStatus.manufacturerName} • 228V"
+                                        else
+                                            "Non-Smart Area • Standard 20-digit token keypad meter",
                                         style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
-                                        color = Slate100Text
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
                             }
@@ -835,14 +712,14 @@ fun HomeScreen(
                             Button(
                                 onClick = onOpenSmartMeterGateway,
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(0xFF38BDF8),
-                                    contentColor = Color.Black
+                                    containerColor = themeColor,
+                                    contentColor = if (isSmart) Color.Black else Color.White
                                 ),
                                 shape = RoundedCornerShape(8.dp),
                                 contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp),
                                 modifier = Modifier.testTag("open_smart_meter_gateway_btn")
                             ) {
-                                Text("Manage", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                                Text(if (isSmart) "View" else "Status", fontSize = 11.sp, fontWeight = FontWeight.Bold)
                             }
                         }
                     }
@@ -878,8 +755,8 @@ fun HomeScreen(
                             .clickable(onClick = onNavigateHub)
                             .testTag("more_tools_section_card"),
                         shape = RoundedCornerShape(16.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color(0xFF131722)),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF1F2937))
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
                     ) {
                         Row(
                             modifier = Modifier
@@ -913,12 +790,12 @@ fun HomeScreen(
                                             fontWeight = FontWeight.ExtraBold,
                                             letterSpacing = 0.5.sp
                                         ),
-                                        color = Slate100Text
+                                        color = MaterialTheme.colorScheme.onSurface
                                     )
                                     Text(
                                         text = "Tariffs, diagnostics, escrow rebates, forums & policies",
                                         style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
-                                        color = Slate400Text
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
                             }
@@ -926,7 +803,7 @@ fun HomeScreen(
                             Icon(
                                 imageVector = Icons.Filled.ChevronRight,
                                 contentDescription = "View More",
-                                tint = Slate400Text,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.size(20.dp)
                             )
                         }

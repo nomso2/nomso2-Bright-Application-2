@@ -58,6 +58,13 @@ fun MeterProfileHeader(
     onEditProfileClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val isDark = MaterialTheme.colorScheme.background == com.example.ui.theme.ElegantDarkCanvas
+    val cardBrush = if (isDark) {
+        Brush.linearGradient(colors = listOf(ElegantDarkCardStart, ElegantDarkCardEnd))
+    } else {
+        Brush.linearGradient(colors = listOf(Color(0xFFFFFFFF), Color(0xFFF1F5F9)))
+    }
+
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -66,25 +73,21 @@ fun MeterProfileHeader(
         colors = CardDefaults.cardColors(
             containerColor = Color.Transparent
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(
-                    brush = Brush.linearGradient(
-                        colors = listOf(ElegantDarkCardStart, ElegantDarkCardEnd)
-                    )
-                )
+                .background(brush = cardBrush)
                 .border(
                     width = 1.dp,
-                    color = ElegantDarkBorder,
+                    color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
                     shape = RoundedCornerShape(24.dp)
                 )
                 .padding(20.dp)
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
-                // Top Row: Meter ID + Verified Badge, with Live Feed Pill directly underneath
+                // Top Row: Meter ID + Verified Badge and Edit icon
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -98,7 +101,7 @@ fun MeterProfileHeader(
                                 fontWeight = FontWeight.Bold,
                                 letterSpacing = 1.5.sp
                             ),
-                            color = Slate400Text
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -110,7 +113,7 @@ fun MeterProfileHeader(
                                     letterSpacing = 1.2.sp,
                                     fontSize = 19.sp
                                 ),
-                                color = Slate100Text
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                             Spacer(modifier = Modifier.width(6.dp))
                             Icon(
@@ -123,13 +126,14 @@ fun MeterProfileHeader(
 
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        // Live feed pill with emerald pulse, positioned directly under verified meter number
+                        // Live feed option laid sideways in the empty space under the meter number (no empty circles)
                         Box(
                             modifier = Modifier
-                                .clip(RoundedCornerShape(100.dp))
+                                .clip(RoundedCornerShape(8.dp))
                                 .background(Color(0x1A22C55E))
-                                .border(1.dp, Color(0x3322C55E), RoundedCornerShape(100.dp))
-                                .padding(horizontal = 10.dp, vertical = 4.dp)
+                                .border(1.dp, Color(0x3322C55E), RoundedCornerShape(8.dp))
+                                .padding(horizontal = 10.dp, vertical = 5.dp)
+                                .testTag("meter_live_feed_badge")
                         ) {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
@@ -137,18 +141,18 @@ fun MeterProfileHeader(
                             ) {
                                 Box(
                                     modifier = Modifier
-                                        .size(7.dp)
+                                        .size(8.dp)
                                         .clip(CircleShape)
                                         .background(ElegantGreenLive)
                                 )
                                 Text(
                                     text = "LIVE FEED • VERIFIED ACTIVE",
                                     style = MaterialTheme.typography.labelSmall.copy(
-                                        fontSize = 10.sp,
+                                        fontSize = 11.sp,
                                         fontWeight = FontWeight.ExtraBold,
-                                        letterSpacing = 0.6.sp
+                                        letterSpacing = 0.5.sp
                                     ),
-                                    color = Color(0xFF4ADE80),
+                                    color = Color(0xFF16A34A),
                                     softWrap = false,
                                     maxLines = 1
                                 )
@@ -156,48 +160,44 @@ fun MeterProfileHeader(
                         }
                     }
 
-                    // Edit button on the top right
+                    // Edit button on the top right (clean, without heavy circular covering)
                     IconButton(
                         onClick = onEditProfileClicked,
                         modifier = Modifier
-                            .size(36.dp)
-                            .clip(CircleShape)
-                            .background(Color(0x14FFFFFF))
-                            .border(1.dp, Color(0x22FFFFFF), CircleShape)
+                            .size(32.dp)
                             .testTag("edit_meter_profile_button")
                     ) {
                         Icon(
                             imageVector = Icons.Default.Edit,
                             contentDescription = "Edit Meter or Address",
-                            tint = Slate300Text,
-                            modifier = Modifier.size(16.dp)
+                            tint = ElegantGoldPrimary,
+                            modifier = Modifier.size(18.dp)
                         )
                     }
                 }
 
                 Spacer(modifier = Modifier.height(14.dp))
 
-                // Phase Status row
+                // Phase Status Box with Band C column laid sideways under the empty space in phase status's column
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .border(
                             width = 1.dp,
-                            color = Color(0x1FFFFFFF),
+                            color = MaterialTheme.colorScheme.outline.copy(alpha = 0.4f),
                             shape = RoundedCornerShape(12.dp)
                         )
-                        .background(Color(0x0DFFFFFF))
-                        .padding(horizontal = 12.dp, vertical = 8.dp)
+                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))
+                        .padding(horizontal = 12.dp, vertical = 10.dp)
                 ) {
-                    Row(
+                    Column(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
+                        // Top row: Phase Status
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            modifier = Modifier.weight(1f, fill = false)
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             Box(
                                 modifier = Modifier
@@ -206,9 +206,9 @@ fun MeterProfileHeader(
                                     .background(ElegantBluePhase)
                             )
                             Text(
-                                text = "Phase Status: ",
+                                text = "Phase Status:",
                                 style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
-                                color = Slate400Text,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 softWrap = false,
                                 maxLines = 1
                             )
@@ -218,30 +218,51 @@ fun MeterProfileHeader(
                                     fontWeight = FontWeight.SemiBold,
                                     fontSize = 12.sp
                                 ),
-                                color = Slate100Text,
+                                color = MaterialTheme.colorScheme.onSurface,
                                 softWrap = false,
                                 maxLines = 1
                             )
                         }
 
-                        Spacer(modifier = Modifier.width(8.dp))
-
-                        Text(
-                            text = profile.feederBand.code,
-                            style = MaterialTheme.typography.labelSmall.copy(
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 11.sp
-                            ),
-                            color = ElegantGoldPrimary,
-                            softWrap = false,
-                            maxLines = 1
-                        )
+                        // Band C laid sideways under the empty space in phase status's column
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(6.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(6.dp))
+                                    .background(ElegantGoldPrimary.copy(alpha = 0.15f))
+                                    .border(1.dp, ElegantGoldPrimary.copy(alpha = 0.4f), RoundedCornerShape(6.dp))
+                                    .padding(horizontal = 8.dp, vertical = 3.dp)
+                            ) {
+                                Text(
+                                    text = profile.feederBand.code,
+                                    style = MaterialTheme.typography.labelSmall.copy(
+                                        fontWeight = FontWeight.ExtraBold,
+                                        fontSize = 11.sp,
+                                        letterSpacing = 0.5.sp
+                                    ),
+                                    color = ElegantGoldPrimary,
+                                    softWrap = false,
+                                    maxLines = 1
+                                )
+                            }
+                            Text(
+                                text = "• Min ${profile.feederBand.minimumHours} hrs/day guaranteed daily power supply",
+                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
                     }
                 }
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // Address & DisCo info
+                // Address
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(6.dp),
@@ -250,13 +271,13 @@ fun MeterProfileHeader(
                     Icon(
                         imageVector = Icons.Default.LocationOn,
                         contentDescription = "Service Address",
-                        tint = Slate400Text,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(15.dp)
                     )
                     Text(
                         text = "${profile.streetAddress}, ${profile.lga}",
                         style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
-                        color = Slate400Text,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 1,
                         softWrap = false,
                         overflow = TextOverflow.Ellipsis
@@ -265,34 +286,65 @@ fun MeterProfileHeader(
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                // Information Pills Row: Side by side (sideways), horizontally scrollable so Households and all text never wrap straight down
+                // DisCo & Transformer row side by side
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .horizontalScroll(rememberScrollState()),
+                    modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     InfoPill(
                         label = "DisCo",
                         value = profile.discoCode,
-                        containerColor = Color(0x14FFFFFF),
-                        contentColor = ElegantGoldPrimary
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                        contentColor = ElegantGoldPrimary,
+                        modifier = Modifier.weight(1f)
                     )
 
                     InfoPill(
                         label = "Transformer",
                         value = profile.transformerId,
-                        containerColor = Color(0x14FFFFFF),
-                        contentColor = Slate100Text
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                        contentColor = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.weight(1.3f)
                     )
+                }
 
-                    InfoPill(
-                        label = "Households",
-                        value = "${profile.connectedHouseholdsCount} Connected",
-                        containerColor = Color(0x14FFFFFF),
-                        contentColor = Color(0xFF60A5FA)
-                    )
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Households column laid sideways in the empty space under the transformer and disco
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                        .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.4f), RoundedCornerShape(8.dp))
+                        .padding(horizontal = 10.dp, vertical = 6.dp)
+                        .testTag("households_info_banner")
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = "Households:",
+                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            softWrap = false,
+                            maxLines = 1
+                        )
+                        Text(
+                            text = "${profile.connectedHouseholdsCount} Connected Consumers on Local Feeder",
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 11.sp
+                            ),
+                            color = Color(0xFF38BDF8),
+                            softWrap = false,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
                 }
             }
         }
@@ -304,13 +356,14 @@ fun InfoPill(
     label: String,
     value: String,
     containerColor: Color,
-    contentColor: Color
+    contentColor: Color,
+    modifier: Modifier = Modifier
 ) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .clip(RoundedCornerShape(8.dp))
             .background(containerColor)
-            .border(1.dp, Color(0x1AFFFFFF), RoundedCornerShape(8.dp))
+            .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.4f), RoundedCornerShape(8.dp))
             .padding(horizontal = 10.dp, vertical = 5.dp)
     ) {
         Row(
@@ -320,7 +373,7 @@ fun InfoPill(
             Text(
                 text = "$label:",
                 style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
-                color = Slate400Text,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 softWrap = false,
                 maxLines = 1
             )

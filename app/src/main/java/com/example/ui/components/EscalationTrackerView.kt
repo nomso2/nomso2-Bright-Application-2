@@ -68,9 +68,9 @@ fun EscalationTrackerView(
             .testTag("escalation_tracker_view"),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color(0x0DFFFFFF)
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
         ),
-        border = androidx.compose.foundation.BorderStroke(1.dp, ElegantDarkBorder)
+        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.4f))
     ) {
         Column(
             modifier = Modifier
@@ -100,7 +100,7 @@ fun EscalationTrackerView(
                             fontSize = 11.sp,
                             letterSpacing = 1.sp
                         ),
-                        color = Slate100Text
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
 
@@ -123,7 +123,7 @@ fun EscalationTrackerView(
                     .fillMaxWidth()
                     .height(6.dp)
                     .clip(RoundedCornerShape(3.dp))
-                    .background(Color(0xFF1E2430))
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
             ) {
                 Box(
                     modifier = Modifier
@@ -166,7 +166,7 @@ fun EscalationTrackerView(
                                     when {
                                         isPast -> ElegantGoldDark
                                         isCurrent -> ElegantGoldPrimary
-                                        else -> Color(0xFF1E2430)
+                                        else -> MaterialTheme.colorScheme.surfaceVariant
                                     }
                                 )
                                 .border(
@@ -189,7 +189,7 @@ fun EscalationTrackerView(
                                     style = MaterialTheme.typography.labelSmall.copy(
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 10.sp,
-                                        color = if (isCurrent) Color(0xFF0A0C10) else Slate400Text
+                                        color = if (isCurrent) Color(0xFF0A0C10) else MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 )
                             }
@@ -208,7 +208,7 @@ fun EscalationTrackerView(
                                 fontSize = 10.sp,
                                 fontWeight = if (isCurrent) FontWeight.Bold else FontWeight.Medium
                             ),
-                            color = if (isCurrent) Slate100Text else Slate500Text,
+                            color = if (isCurrent) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
                             maxLines = 1
                         )
                     }
@@ -220,7 +220,7 @@ fun EscalationTrackerView(
                                 .height(2.dp)
                                 .background(
                                     if (tier.level < currentLevel) ElegantGoldPrimary
-                                    else Color(0xFF1E2430)
+                                    else MaterialTheme.colorScheme.surfaceVariant
                                 )
                         )
                     }
@@ -234,21 +234,21 @@ fun EscalationTrackerView(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(12.dp))
-                    .background(Color(0x0DFFFFFF))
-                    .border(1.dp, Color(0x14FFFFFF), RoundedCornerShape(12.dp))
+                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                    .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
                     .padding(10.dp)
             ) {
                 Column {
                     Text(
                         text = "Current Authority Handling Ticket:",
                         style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
-                        color = Slate500Text
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Text(
                         text = complaint.escalationTier.authority,
                         style = MaterialTheme.typography.bodySmall.copy(
                             fontWeight = FontWeight.Bold,
-                            color = Slate100Text
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     )
                     Text(
@@ -270,7 +270,7 @@ fun EscalationTrackerView(
                         .height(44.dp)
                         .testTag("escalate_ticket_button"),
                     shape = RoundedCornerShape(12.dp),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, ElegantDarkBorder)
+                    border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
                 ) {
                     Icon(
                         imageVector = Icons.Default.NotificationsActive,
@@ -283,7 +283,7 @@ fun EscalationTrackerView(
                         text = "Trigger Manual Escalation (${complaint.escalationTier.nextTier()?.title ?: "Next"})",
                         style = MaterialTheme.typography.labelMedium.copy(
                             fontWeight = FontWeight.SemiBold,
-                            color = Slate100Text
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     )
                 }

@@ -447,7 +447,7 @@ fun ReportFaultScreen(
                             modifier = Modifier
                                 .size(64.dp)
                                 .clip(RoundedCornerShape(10.dp))
-                                .background(Color(0xFF0F172A)),
+                                .background(MaterialTheme.colorScheme.surfaceVariant),
                             contentAlignment = Alignment.Center
                         ) {
                             if (selectedMediaUri!!.startsWith("http") || selectedMediaUri!!.startsWith("content")) {

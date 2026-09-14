@@ -43,9 +43,9 @@ fun RealTimeTicker(
         modifier = modifier
             .fillMaxWidth()
             .testTag("real_time_ticker_bar"),
-        color = ElegantDarkBar,
+        color = MaterialTheme.colorScheme.surface,
         shape = RoundedCornerShape(16.dp),
-        border = androidx.compose.foundation.BorderStroke(1.dp, ElegantDarkBorder)
+        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
     ) {
         Row(
             modifier = Modifier
@@ -72,7 +72,7 @@ fun RealTimeTicker(
                         fontSize = 11.sp,
                         letterSpacing = 0.5.sp
                     ),
-                    color = Color(0xFF4ADE80)
+                    color = Color(0xFF16A34A)
                 )
             }
 
@@ -93,7 +93,7 @@ fun RealTimeTicker(
                         fontWeight = FontWeight.Bold,
                         fontSize = 12.sp
                     ),
-                    color = Slate100Text
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
 
@@ -114,7 +114,7 @@ fun RealTimeTicker(
                         fontWeight = FontWeight.Bold,
                         fontSize = 12.sp
                     ),
-                    color = if (telemetry.systemFrequencyHz in 49.8..50.2) Slate100Text else MaterialTheme.colorScheme.error
+                    color = if (telemetry.systemFrequencyHz in 49.8..50.2) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.error
                 )
             }
 

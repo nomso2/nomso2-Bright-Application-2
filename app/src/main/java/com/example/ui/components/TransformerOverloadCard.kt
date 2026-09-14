@@ -78,8 +78,8 @@ fun TransformerOverloadCard(
             .fillMaxWidth()
             .testTag("transformer_overload_card"),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = ElegantDarkBar),
-        border = androidx.compose.foundation.BorderStroke(1.dp, ElegantDarkBorder),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
@@ -125,7 +125,7 @@ fun TransformerOverloadCard(
                         Text(
                             text = "${telemetry.transformerId} (${telemetry.transformerCapacityKva} kVA)",
                             style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                            color = Slate100Text
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 }
@@ -158,12 +158,12 @@ fun TransformerOverloadCard(
                     Text(
                         text = "Current Load: ${telemetry.currentLoadPercent}% of Rated Capacity",
                         style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
-                        color = Slate100Text
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
                         text = "Peak: ${telemetry.peakWindowText}",
                         style = MaterialTheme.typography.labelSmall,
-                        color = Slate400Text
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
 
@@ -174,7 +174,7 @@ fun TransformerOverloadCard(
                         .height(8.dp)
                         .clip(RoundedCornerShape(4.dp)),
                     color = loadColor,
-                    trackColor = Color(0xFF1E2430)
+                    trackColor = MaterialTheme.colorScheme.surfaceVariant
                 )
             }
 
@@ -187,7 +187,7 @@ fun TransformerOverloadCard(
                         fontWeight = FontWeight.Bold,
                         letterSpacing = 0.5.sp
                     ),
-                    color = Slate400Text
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
                 Row(
@@ -220,7 +220,7 @@ fun TransformerOverloadCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(8.dp))
-                    .background(Color(0xFF0F131A))
+                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
                     .padding(8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
@@ -229,12 +229,12 @@ fun TransformerOverloadCard(
                     Text(
                         text = "Connected Households",
                         style = MaterialTheme.typography.labelSmall,
-                        color = Slate500Text
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Text(
                         text = "${telemetry.connectedHouseholds} / ${telemetry.designHouseholdCapacity} max threshold",
                         style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                        color = if (telemetry.connectedHouseholds > telemetry.designHouseholdCapacity) Color(0xFFEF4444) else Slate100Text
+                        color = if (telemetry.connectedHouseholds > telemetry.designHouseholdCapacity) Color(0xFFEF4444) else MaterialTheme.colorScheme.onSurface
                     )
                 }
 
@@ -248,7 +248,7 @@ fun TransformerOverloadCard(
                     Text(
                         text = "${telemetry.oilTemperatureCelsius}°C Coil Temp",
                         style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                        color = if (telemetry.oilTemperatureCelsius > 70) Color(0xFFEF4444) else Slate100Text
+                        color = if (telemetry.oilTemperatureCelsius > 70) Color(0xFFEF4444) else MaterialTheme.colorScheme.onSurface
                     )
                 }
             }
@@ -290,8 +290,8 @@ private fun PhaseVoltageBadge(
     isWarning: Boolean,
     modifier: Modifier = Modifier
 ) {
-    val borderColor = if (isWarning) Color(0xFFEF4444) else ElegantDarkBorder
-    val bgColor = if (isWarning) Color(0x22EF4444) else Color(0xFF161B24)
+    val borderColor = if (isWarning) Color(0xFFEF4444) else MaterialTheme.colorScheme.outline.copy(alpha = 0.4f)
+    val bgColor = if (isWarning) Color(0x22EF4444) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
 
     Box(
         modifier = modifier
@@ -305,7 +305,7 @@ private fun PhaseVoltageBadge(
                 text = phaseLabel,
                 fontSize = 9.sp,
                 fontWeight = FontWeight.Medium,
-                color = Slate400Text,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1
             )
             Spacer(modifier = Modifier.height(2.dp))

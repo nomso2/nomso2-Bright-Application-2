@@ -96,6 +96,9 @@ import com.example.model.SmartMeterServerConfig
 import com.example.model.MeterManufacturer
 import com.example.model.MeterGatewayTelemetry
 import com.example.model.MeterRelayState
+import com.example.model.UserProfile
+import com.example.data.service.CitizenMeterStatus
+import com.example.data.service.NigeriaSmartMeterDiscoveryService
 import com.example.ui.theme.DarkCharcoal
 import com.example.ui.theme.ElegantDarkBorder
 import com.example.ui.theme.ElegantDarkCanvas
@@ -104,11 +107,12 @@ import com.example.ui.theme.MutedSlateText
 import com.example.ui.theme.Slate100Text
 
 enum class GatewayTab(val title: String) {
+    CITIZEN_AUTO_CONNECT("Citizen Auto-Link"),
     LIVE_GATEWAYS("Mojec / Momas / Conlog"),
-    METERS("Smart Meters"),
-    SERVER_CONFIG("Server Config"),
+    METERS("All Smart Meters"),
+    SERVER_CONFIG("Advanced Server"),
     COMMANDS_LOG("Commands Log"),
-    API_DOCS("API & Webhook Docs")
+    API_DOCS("API Docs")
 }
 
 @Composable
@@ -116,6 +120,9 @@ fun SmartMeterServerGatewayDialog(
     serverConfig: SmartMeterServerConfig,
     metersList: List<SmartMeterDevice>,
     commandsHistory: List<SmartMeterCommand>,
+    userProfile: UserProfile = UserProfile(),
+    citizenMeterStatus: CitizenMeterStatus? = null,
+    onAutoDetectSmartMeter: () -> Unit = {},
     gatewayTelemetryMap: Map<MeterManufacturer, MeterGatewayTelemetry?> = emptyMap(),
     isPollingGateway: Map<MeterManufacturer, Boolean> = emptyMap(),
     onPollGateway: (MeterManufacturer) -> Unit = {},
@@ -128,7 +135,7 @@ fun SmartMeterServerGatewayDialog(
     onDismiss: () -> Unit
 ) {
     val context = LocalContext.current
-    var selectedTab by remember { mutableStateOf(GatewayTab.LIVE_GATEWAYS) }
+    var selectedTab by remember { mutableStateOf(GatewayTab.CITIZEN_AUTO_CONNECT) }
 
     // Dialog states
     var showAddMeterModal by remember { mutableStateOf(false) }
@@ -168,8 +175,8 @@ fun SmartMeterServerGatewayDialog(
                     .fillMaxHeight(0.96f)
                     .testTag("smart_meter_server_gateway_dialog"),
                 shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(containerColor = ElegantDarkCanvas),
-                border = androidx.compose.foundation.BorderStroke(1.dp, ElegantDarkBorder)
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
             ) {
                 Column(modifier = Modifier.fillMaxSize()) {
                     // Header Bar
@@ -203,9 +210,10 @@ fun SmartMeterServerGatewayDialog(
                                     modifier = Modifier.size(24.dp)
                                 )
                             }
+                            val headerStatus = citizenMeterStatus ?: NigeriaSmartMeterDiscoveryService.checkSmartMeterAccess(userProfile)
                             Column {
                                 Text(
-                                    text = "NIGERIA SMART METER SERVER GATEWAY",
+                                    text = if (headerStatus.hasSmartAccess) "SMART METER AUTO-CONNECTED" else "STANDARD PREPAID METER (STS)",
                                     style = MaterialTheme.typography.titleMedium.copy(
                                         fontWeight = FontWeight.ExtraBold,
                                         letterSpacing = 0.5.sp
@@ -221,17 +229,17 @@ fun SmartMeterServerGatewayDialog(
                                             .size(8.dp)
                                             .clip(CircleShape)
                                             .background(
-                                                if (serverConfig.isConnected) Color(0xFF22C55E) else Color(0xFFEF4444)
+                                                if (headerStatus.hasSmartAccess) Color(0xFF22C55E) else Color(0xFFD97706)
                                             )
                                     )
                                     Text(
-                                        text = if (serverConfig.isConnected) "SERVER CONNECTED (${serverConfig.latencyMs}ms)" else "OFFLINE / DISCONNECTED",
+                                        text = if (headerStatus.hasSmartAccess) "AUTO-LINKED ONCE (${headerStatus.manufacturerName})" else "NON-SMART AREA (KEYPAD ONLY)",
                                         fontSize = 11.sp,
                                         fontWeight = FontWeight.Bold,
-                                        color = if (serverConfig.isConnected) Color(0xFF22C55E) else Color(0xFFEF4444)
+                                        color = if (headerStatus.hasSmartAccess) Color(0xFF22C55E) else Color(0xFFD97706)
                                     )
                                     Text(
-                                        text = "• ${serverConfig.protocol}",
+                                        text = "• #${userProfile.meterNumber}",
                                         fontSize = 11.sp,
                                         color = MutedSlateText
                                     )
@@ -259,7 +267,7 @@ fun SmartMeterServerGatewayDialog(
                     // Navigation Tabs
                     ScrollableTabRow(
                         selectedTabIndex = selectedTab.ordinal,
-                        containerColor = Color(0xFF11141B),
+                        containerColor = MaterialTheme.colorScheme.surface,
                         contentColor = ElegantGoldPrimary,
                         edgePadding = 12.dp,
                         indicator = { tabPositions ->
@@ -288,6 +296,19 @@ fun SmartMeterServerGatewayDialog(
                     // Tab Content Body
                     Box(modifier = Modifier.weight(1f)) {
                         when (selectedTab) {
+                            GatewayTab.CITIZEN_AUTO_CONNECT -> {
+                                val effectiveStatus = citizenMeterStatus ?: NigeriaSmartMeterDiscoveryService.checkSmartMeterAccess(userProfile)
+                                val activeSmartMeter = metersList.firstOrNull { it.meterNumber == userProfile.meterNumber }
+                                CitizenAutoConnectTab(
+                                    userProfile = userProfile,
+                                    citizenMeterStatus = effectiveStatus,
+                                    activeSmartMeter = activeSmartMeter,
+                                    onAutoDetectSmartMeter = onAutoDetectSmartMeter,
+                                    onSendOtaToken = onSendOtaToken,
+                                    onPingMeter = onPingMeter,
+                                    onToggleRelay = onToggleRelay
+                                )
+                            }
                             GatewayTab.LIVE_GATEWAYS -> {
                                 ManufacturerGatewaysLiveTab(
                                     telemetryMap = gatewayTelemetryMap,

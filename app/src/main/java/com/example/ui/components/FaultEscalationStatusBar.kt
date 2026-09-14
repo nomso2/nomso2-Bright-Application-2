@@ -92,8 +92,8 @@ fun FaultEscalationStatusBar(
                 .fillMaxWidth()
                 .testTag("fault_escalation_status_bar_empty"),
             shape = RoundedCornerShape(20.dp),
-            colors = CardDefaults.cardColors(containerColor = ElegantDarkSurface),
-            border = androidx.compose.foundation.BorderStroke(1.dp, ElegantDarkBorder)
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
         ) {
             Row(
                 modifier = Modifier
@@ -128,7 +128,7 @@ fun FaultEscalationStatusBar(
                     Text(
                         text = "No active submitted tickets currently in escalation queue.",
                         style = MaterialTheme.typography.bodySmall,
-                        color = Slate400Text
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
@@ -178,7 +178,7 @@ fun FaultEscalationStatusBar(
             .fillMaxWidth()
             .testTag("fault_escalation_status_bar"),
         shape = RoundedCornerShape(22.dp),
-        colors = CardDefaults.cardColors(containerColor = ElegantDarkSurface),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         border = androidx.compose.foundation.BorderStroke(1.5.dp, ElegantGoldPrimary.copy(alpha = 0.45f)),
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
     ) {
@@ -219,8 +219,8 @@ fun FaultEscalationStatusBar(
                 // DisCo Code & Feeder Badge
                 Surface(
                     shape = RoundedCornerShape(6.dp),
-                    color = Color(0x14FFFFFF),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0x24FFFFFF))
+                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
                 ) {
                     Text(
                         text = "${activeComplaint.discoCode} • ${activeComplaint.status.displayName.uppercase()}",
@@ -253,7 +253,7 @@ fun FaultEscalationStatusBar(
                                 fontWeight = FontWeight.Black,
                                 letterSpacing = 0.5.sp
                             ),
-                            color = Slate100Text
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                         if (complaints.size > 1) {
                             Box {
@@ -293,7 +293,7 @@ fun FaultEscalationStatusBar(
                     Text(
                         text = activeComplaint.title,
                         style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
-                        color = Slate400Text,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 1
                     )
                 }
@@ -337,7 +337,7 @@ fun FaultEscalationStatusBar(
                         .fillMaxWidth()
                         .height(10.dp)
                         .clip(RoundedCornerShape(5.dp))
-                        .background(Color(0xFF1E2430))
+                        .background(MaterialTheme.colorScheme.surfaceVariant)
                 ) {
                     Box(
                         modifier = Modifier
@@ -382,12 +382,12 @@ fun FaultEscalationStatusBar(
                                         when {
                                             isPast -> Color(0xFF10B981)
                                             isCurrent -> ElegantGoldPrimary
-                                            else -> Color(0xFF1E2430)
+                                            else -> MaterialTheme.colorScheme.surfaceVariant
                                         }
                                     )
                                     .border(
                                         width = if (isCurrent) 2.dp else 1.dp,
-                                        color = if (isCurrent) Color.White else Color(0x33FFFFFF),
+                                        color = if (isCurrent) Color.White else MaterialTheme.colorScheme.outline.copy(alpha = 0.4f),
                                         shape = CircleShape
                                     ),
                                 contentAlignment = Alignment.Center
@@ -413,7 +413,7 @@ fun FaultEscalationStatusBar(
                                             fontSize = 10.sp,
                                             fontWeight = FontWeight.Bold
                                         ),
-                                        color = Slate500Text
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
                             }
@@ -432,14 +432,14 @@ fun FaultEscalationStatusBar(
                                     fontSize = 10.sp,
                                     fontWeight = if (isCurrent) FontWeight.ExtraBold else FontWeight.Medium
                                 ),
-                                color = if (isCurrent) ElegantGoldPrimary else if (isPast) Slate100Text else Slate500Text
+                                color = if (isCurrent) ElegantGoldPrimary else if (isPast) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
                             )
 
                             // SLA label
                             Text(
                                 text = "${tier.maxSlaHours}h SLA",
                                 style = MaterialTheme.typography.labelSmall.copy(fontSize = 8.5.sp),
-                                color = Slate500Text
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
@@ -453,8 +453,8 @@ fun FaultEscalationStatusBar(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(14.dp))
-                    .background(Color(0x14FFFFFF))
-                    .border(1.dp, Color(0x1AFFFFFF), RoundedCornerShape(14.dp))
+                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                    .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.3f), RoundedCornerShape(14.dp))
                     .padding(12.dp)
             ) {
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -470,7 +470,7 @@ fun FaultEscalationStatusBar(
                                 fontWeight = FontWeight.Bold,
                                 letterSpacing = 0.5.sp
                             ),
-                            color = Slate400Text
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -494,7 +494,7 @@ fun FaultEscalationStatusBar(
                         text = activeComplaint.escalationTier.authority,
                         style = MaterialTheme.typography.bodyMedium.copy(
                             fontWeight = FontWeight.Bold,
-                            color = Slate100Text
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     )
 
@@ -505,7 +505,7 @@ fun FaultEscalationStatusBar(
                         Text(
                             text = "Standard Window: ${activeComplaint.escalationTier.maxSlaHours} hrs",
                             style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
-                            color = Slate400Text
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Text(
                             text = if (currentLevel < 4) "Auto-escalates upon SLA breach" else "Highest Statutory Level",
@@ -570,7 +570,7 @@ fun FaultEscalationStatusBar(
                             .height(44.dp)
                             .testTag("status_bar_advance_lifecycle_button"),
                         shape = RoundedCornerShape(12.dp),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, ElegantDarkBorder)
+                        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
                     ) {
                         Icon(
                             imageVector = Icons.Default.Radar,
@@ -582,7 +582,7 @@ fun FaultEscalationStatusBar(
                         Text(
                             text = "Advance Lifecycle",
                             style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                            color = Slate100Text
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 }

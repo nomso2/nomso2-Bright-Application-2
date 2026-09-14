@@ -49,10 +49,10 @@ fun HazardFastTrackCard(
             .testTag("emergency_hazard_card"),
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(
-            containerColor = ElegantDarkSurface
+            containerColor = MaterialTheme.colorScheme.surface
         ),
-        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0x33EF4444)),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0x4DEF4444)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
             modifier = Modifier
@@ -96,7 +96,7 @@ fun HazardFastTrackCard(
                         Text(
                             text = "Life safety emergency? Bypasses queue instantly.",
                             style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
-                            color = Slate400Text
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -138,8 +138,8 @@ fun EmergencyButton(
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(12.dp))
-            .background(Color(0x0DFFFFFF))
-            .border(1.dp, ElegantDarkBorder, RoundedCornerShape(12.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+            .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.4f), RoundedCornerShape(12.dp))
             .clickable(onClick = onClick)
             .padding(vertical = 10.dp, horizontal = 6.dp)
             .testTag("emergency_btn_${label.replace(" ", "_").lowercase()}"),
@@ -162,7 +162,7 @@ fun EmergencyButton(
                     fontWeight = FontWeight.Bold,
                     fontSize = 10.sp
                 ),
-                color = Slate100Text,
+                color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1
             )
         }

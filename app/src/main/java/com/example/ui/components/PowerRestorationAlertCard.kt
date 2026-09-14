@@ -61,8 +61,8 @@ fun PowerRestorationAlertCard(
             .fillMaxWidth()
             .testTag("power_restoration_alert_card"),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = ElegantDarkBar),
-        border = androidx.compose.foundation.BorderStroke(1.dp, ElegantDarkBorder),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
@@ -107,7 +107,7 @@ fun PowerRestorationAlertCard(
                         Text(
                             text = "Alert When Light Returns",
                             style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                            color = Slate100Text
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 }
@@ -118,8 +118,8 @@ fun PowerRestorationAlertCard(
                     colors = SwitchDefaults.colors(
                         checkedThumbColor = Color.Black,
                         checkedTrackColor = ElegantGoldPrimary,
-                        uncheckedThumbColor = Slate500Text,
-                        uncheckedTrackColor = Color(0xFF1E2430)
+                        uncheckedThumbColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant
                     ),
                     modifier = Modifier.testTag("toggle_restoration_chime_switch")
                 )
@@ -128,7 +128,7 @@ fun PowerRestorationAlertCard(
             Text(
                 text = "Turn off generators promptly and save fuel: Your phone sounds a distinctive chime the instant $transformerId power is re-energized.",
                 style = MaterialTheme.typography.bodySmall,
-                color = Slate400Text,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 lineHeight = 16.sp
             )
 

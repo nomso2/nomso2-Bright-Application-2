@@ -22,6 +22,8 @@ import com.example.model.OutageStatus
 import com.example.model.StreetHazardPin
 import com.example.model.UserProfile
 import com.example.model.VandalismReport
+import android.content.Context
+import android.content.SharedPreferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -35,7 +37,10 @@ import java.util.Date
 import java.util.Locale
 import java.util.UUID
 
-class BrightRepository(private val database: AppDatabase) {
+class BrightRepository(
+    private val database: AppDatabase,
+    private val context: Context? = null
+) {
 
     private val complaintDao = database.complaintDao()
     private val profileDao = database.userProfileDao()
@@ -44,9 +49,48 @@ class BrightRepository(private val database: AppDatabase) {
     private val applianceClaimDao = database.applianceClaimDao()
     private val streetHazardDao = database.streetHazardDao()
 
+    private val prefs: SharedPreferences? = context?.getSharedPreferences("bright_security_prefs", Context.MODE_PRIVATE)
+
+    // Re-login & Session Lock preferences
+    private val _requireLoginOnLeave = MutableStateFlow(
+        prefs?.getBoolean("require_login_on_leave", true) ?: true
+    )
+    val requireLoginOnLeave: StateFlow<Boolean> = _requireLoginOnLeave.asStateFlow()
+
+    fun setRequireLoginOnLeave(enabled: Boolean) {
+        _requireLoginOnLeave.value = enabled
+        prefs?.edit()?.putBoolean("require_login_on_leave", enabled)?.apply()
+    }
+
+    private val _userPin = MutableStateFlow(
+        prefs?.getString("user_pin", "1234") ?: "1234"
+    )
+    val userPin: StateFlow<String> = _userPin.asStateFlow()
+
+    fun setUserPin(pin: String) {
+        _userPin.value = pin
+        prefs?.edit()?.putString("user_pin", pin)?.apply()
+    }
+
     // Real-time Telemetry state
     private val _gridTelemetry = MutableStateFlow(GridTelemetry())
     val gridTelemetry: StateFlow<GridTelemetry> = _gridTelemetry.asStateFlow()
+
+    // Meter Gateway Activation Tracker (Paid Once Per Meter)
+    private val _paidMeterNumbers = MutableStateFlow<Set<String>>(
+        prefs?.getStringSet("paid_meters", null) ?: setOf("01429583192", "04821094821")
+    )
+    val paidMeterNumbers: StateFlow<Set<String>> = _paidMeterNumbers.asStateFlow()
+
+    fun isMeterPaid(meterNumber: String): Boolean {
+        return _paidMeterNumbers.value.contains(meterNumber.trim())
+    }
+
+    fun markMeterPaid(meterNumber: String) {
+        val updated = _paidMeterNumbers.value + meterNumber.trim()
+        _paidMeterNumbers.value = updated
+        prefs?.edit()?.putStringSet("paid_meters", updated)?.apply()
+    }
 
     // Live Outage Map nodes
     private val _outageNodes = MutableStateFlow<List<OutageGridNode>>(emptyList())
@@ -84,6 +128,9 @@ class BrightRepository(private val database: AppDatabase) {
     }
 
     suspend fun saveUserProfile(profile: UserProfile) {
+        if (profile.isGatewayPaid) {
+            markMeterPaid(profile.meterNumber)
+        }
         profileDao.setUserProfile(UserProfileEntity.fromDomain(profile))
     }
 
@@ -354,22 +401,26 @@ class BrightRepository(private val database: AppDatabase) {
     }
 
     private suspend fun seedDefaultDataIfEmpty() {
-        val defaultProfile = UserProfile(
-            meterNumber = "01429583192",
-            customerName = "Chuka Obunma",
-            phoneNumber = "+234 803 892 4110",
-            streetAddress = "14 Adeola Odeku Street, Victoria Island",
-            lga = "Eti-Osa",
-            state = "Lagos State",
-            discoCode = "EKEDC",
-            feederName = "Victoria Island 33kV Injection Feeder 4",
-            feederBand = FeederBand.BAND_A,
-            transformerId = "TR-VI-ADEOLA-04B",
-            isPrepaid = true,
-            connectedHouseholdsCount = 184,
-            isOnboarded = false
-        )
-        profileDao.setUserProfile(UserProfileEntity.fromDomain(defaultProfile))
+        val existing = profileDao.getUserProfileSync()
+        if (existing == null) {
+            val defaultProfile = UserProfile(
+                meterNumber = "01429583192",
+                customerName = "Chuka Obunma",
+                phoneNumber = "+234 803 892 4110",
+                streetAddress = "14 Adeola Odeku Street, Victoria Island",
+                lga = "Eti-Osa",
+                state = "Lagos State",
+                discoCode = "EKEDC",
+                feederName = "Victoria Island 33kV Injection Feeder 4",
+                feederBand = FeederBand.BAND_A,
+                transformerId = "TR-VI-ADEOLA-04B",
+                isPrepaid = true,
+                connectedHouseholdsCount = 184,
+                isOnboarded = true,
+                isGatewayPaid = true
+            )
+            profileDao.setUserProfile(UserProfileEntity.fromDomain(defaultProfile))
+        }
 
         // Clean slate: 0 fake stranger reports, 0 fake vandalism, 0 fake claims.
         // User creates and manages their own records, like WhatsApp.
