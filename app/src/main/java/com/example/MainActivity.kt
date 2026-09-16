@@ -499,8 +499,8 @@ fun BrightApp(viewModel: BrightViewModel) {
             onAddDuesEntry = { name, addr, meter, purpose, amount, method ->
                 viewModel.addTransformerDuesContribution(name, addr, meter, purpose, amount, method)
             },
-            onGenerateSlaAssessment = { ticketId, title, delayHours, desc, trId ->
-                viewModel.generateSlaCompensationAssessment(ticketId, title, delayHours, desc, trId)
+            onGenerateSlaAssessment = { ticketId, title, delayHours ->
+                viewModel.generateSlaCompensationAssessment(ticketId, title, delayHours)
             },
             onDismiss = { showEstateExcoDialog = false }
         )
