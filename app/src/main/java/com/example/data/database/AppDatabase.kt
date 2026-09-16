@@ -12,9 +12,13 @@ import androidx.room.RoomDatabase
         VandalismEntity::class,
         BillingDisputeEntity::class,
         ApplianceClaimEntity::class,
-        StreetHazardEntity::class
+        StreetHazardEntity::class,
+        OutageGridNodeEntity::class,
+        MaintenanceAlertEntity::class,
+        GridTelemetryEntity::class,
+        OfflineSyncQueueEntity::class
     ],
-    version = 6,
+    version = 7,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -24,6 +28,10 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun billingDisputeDao(): BillingDisputeDao
     abstract fun applianceClaimDao(): ApplianceClaimDao
     abstract fun streetHazardDao(): StreetHazardDao
+    abstract fun outageGridNodeDao(): OutageGridNodeDao
+    abstract fun maintenanceAlertDao(): MaintenanceAlertDao
+    abstract fun gridTelemetryDao(): GridTelemetryDao
+    abstract fun offlineSyncQueueDao(): OfflineSyncQueueDao
 
     companion object {
         @Volatile

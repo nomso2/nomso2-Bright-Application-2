@@ -78,6 +78,7 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     val outageNodes: StateFlow<List<OutageGridNode>> = repository.outageNodes
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
     val vandalismReports: StateFlow<List<VandalismReport>> = repository.getVandalismReports()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
     val billingDisputes: StateFlow<List<BillingDispute>> = userProfile.flatMapLatest { profile ->
@@ -85,6 +86,9 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
     val gridTelemetry: StateFlow<GridTelemetry> = repository.gridTelemetry
     val maintenanceAlerts: StateFlow<List<MaintenanceAlert>> = repository.maintenanceAlerts
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    val pendingSyncCount: StateFlow<Int> = repository.pendingSyncCount
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
 
     // Feature 4: Appliance Damage Claims
     val applianceClaims: StateFlow<List<ApplianceDamageClaim>> = userProfile.flatMapLatest { profile ->
@@ -417,28 +421,6 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
-
-    init {
-        // Live grid telemetry oscillation simulator (e.g. 50.04 Hz - 50.12 Hz realistic variation)
-        viewModelScope.launch {
-            while (true) {
-                delay(8000)
-                val current = gridTelemetry.value
-                val jitter = ((-4..4).random()) / 100.0
-                val newFreq = Math.round((50.06 + jitter) * 100.0) / 100.0
-                val mwJitter = (-25..35).random()
-                repository.updateGridTelemetry(newFreq, current.nationalGenerationMw + mwJitter)
-            }
-        }
-
-        // Automatic Smart Meter Discovery: Connects eligible meters once in the background
-        viewModelScope.launch {
-            userProfile.collect { profile ->
-                autoDetectAndConnectSmartMeter(profile, isSilent = true)
-            }
-        }
-    }
-
     fun setLanguage(lang: AppLanguage) {
         _selectedLanguage.value = lang
         showNotification("Language switched to ${lang.label}")
@@ -627,6 +609,13 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
         viewModelScope.launch {
             repository.upvoteStreetHazard(id)
             showNotification("Hazard urgency verified! Escalating crew dispatch priority.")
+        }
+    }
+
+    fun syncOfflineQueue() {
+        viewModelScope.launch {
+            val flushed = repository.flushOfflineSyncQueue()
+            showNotification("Offline cache verified! Grid status and local reports synchronized.")
         }
     }
 
@@ -1173,6 +1162,27 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
                 }
             }
             _isPollingGateway.value = _isPollingGateway.value + (manufacturer to false)
+        }
+    }
+
+    init {
+        // Live grid telemetry oscillation simulator (e.g. 50.04 Hz - 50.12 Hz realistic variation)
+        viewModelScope.launch {
+            while (true) {
+                delay(8000)
+                val current = gridTelemetry.value
+                val jitter = ((-4..4).random()) / 100.0
+                val newFreq = Math.round((50.06 + jitter) * 100.0) / 100.0
+                val mwJitter = (-25..35).random()
+                repository.updateGridTelemetry(newFreq, current.nationalGenerationMw + mwJitter)
+            }
+        }
+
+        // Automatic Smart Meter Discovery: Connects eligible meters once in the background
+        viewModelScope.launch {
+            userProfile.collect { profile ->
+                autoDetectAndConnectSmartMeter(profile, isSilent = true)
+            }
         }
     }
 }

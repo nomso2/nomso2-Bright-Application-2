@@ -375,7 +375,7 @@ fun GridHubScreen(
                 items(HubSection.entries) { section ->
                     val isSelected = selectedSection == section
                     val label = when (section) {
-                        HubSection.SOLUTIONS_30 -> "30 Grid Solutions"
+                        HubSection.SOLUTIONS_30 -> "MORE"
                         HubSection.ALL -> "All Resources"
                         HubSection.TARIFFS -> "Electricity Tariffs"
                         HubSection.BILLING_METHODOLOGIES -> "Billing (Prepaid vs Estimated)"

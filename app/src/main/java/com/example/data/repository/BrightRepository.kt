@@ -7,6 +7,10 @@ import com.example.data.database.UserProfileEntity
 import com.example.data.database.VandalismEntity
 import com.example.data.database.ApplianceClaimEntity
 import com.example.data.database.StreetHazardEntity
+import com.example.data.database.OutageGridNodeEntity
+import com.example.data.database.MaintenanceAlertEntity
+import com.example.data.database.GridTelemetryEntity
+import com.example.data.database.OfflineSyncQueueEntity
 import com.example.model.ApplianceDamageClaim
 import com.example.model.BillingDispute
 import com.example.model.Complaint
@@ -48,6 +52,10 @@ class BrightRepository(
     private val disputeDao = database.billingDisputeDao()
     private val applianceClaimDao = database.applianceClaimDao()
     private val streetHazardDao = database.streetHazardDao()
+    private val outageDao = database.outageGridNodeDao()
+    private val maintenanceDao = database.maintenanceAlertDao()
+    private val telemetryDao = database.gridTelemetryDao()
+    private val offlineQueueDao = database.offlineSyncQueueDao()
 
     private val prefs: SharedPreferences? = context?.getSharedPreferences("bright_security_prefs", Context.MODE_PRIVATE)
 
@@ -72,10 +80,6 @@ class BrightRepository(
         prefs?.edit()?.putString("user_pin", pin)?.apply()
     }
 
-    // Real-time Telemetry state
-    private val _gridTelemetry = MutableStateFlow(GridTelemetry())
-    val gridTelemetry: StateFlow<GridTelemetry> = _gridTelemetry.asStateFlow()
-
     // Meter Gateway Activation Tracker (Paid Once Per Meter)
     private val _paidMeterNumbers = MutableStateFlow<Set<String>>(
         prefs?.getStringSet("paid_meters", null) ?: setOf("01429583192", "04821094821")
@@ -92,13 +96,23 @@ class BrightRepository(
         prefs?.edit()?.putStringSet("paid_meters", updated)?.apply()
     }
 
-    // Live Outage Map nodes
-    private val _outageNodes = MutableStateFlow<List<OutageGridNode>>(emptyList())
-    val outageNodes: StateFlow<List<OutageGridNode>> = _outageNodes.asStateFlow()
+    // Live Outage Map nodes - Persisted & cached in Room database
+    val outageNodes: Flow<List<OutageGridNode>> = outageDao.getAllNodes().map { list ->
+        list.map { it.toDomain() }
+    }
 
-    // Maintenance Alerts
-    private val _maintenanceAlerts = MutableStateFlow<List<MaintenanceAlert>>(emptyList())
-    val maintenanceAlerts: StateFlow<List<MaintenanceAlert>> = _maintenanceAlerts.asStateFlow()
+    // Maintenance Alerts - Persisted & cached in Room database
+    val maintenanceAlerts: Flow<List<MaintenanceAlert>> = maintenanceDao.getAllAlerts().map { list ->
+        list.map { it.toDomain() }
+    }
+
+    // Offline Sync Outbox Queue - Count of pending offline operations
+    val pendingSyncCount: Flow<Int> = offlineQueueDao.getPendingCount()
+    val pendingSyncActions: Flow<List<OfflineSyncQueueEntity>> = offlineQueueDao.getPendingActions()
+
+    // Real-time Telemetry state backed by Room cache
+    private val _gridTelemetry = MutableStateFlow(GridTelemetry())
+    val gridTelemetry: StateFlow<GridTelemetry> = _gridTelemetry.asStateFlow()
 
     init {
         CoroutineScope(Dispatchers.IO).launch {
@@ -106,6 +120,21 @@ class BrightRepository(
             seedDefaultDataIfEmpty()
             seedLiveOutageData()
             seedMaintenanceAlerts()
+            initTelemetryCache()
+        }
+    }
+
+    private suspend fun initTelemetryCache() {
+        try {
+            telemetryDao.getTelemetry().collect { cached ->
+                if (cached != null) {
+                    _gridTelemetry.value = cached.toDomain()
+                } else {
+                    telemetryDao.cacheTelemetry(GridTelemetryEntity.fromDomain(_gridTelemetry.value))
+                }
+            }
+        } catch (e: Exception) {
+            // Room telemetry cache fallback
         }
     }
 
@@ -212,6 +241,7 @@ class BrightRepository(
         )
 
         complaintDao.insertComplaint(newComplaint)
+        enqueueOfflineSyncAction("FAULT_REPORT", ticketId, """{"title":"$title","faultType":"${faultType.name}"}""")
         return ticketId
     }
 
@@ -245,6 +275,7 @@ class BrightRepository(
                 updatedAt = System.currentTimeMillis()
             )
         )
+        enqueueOfflineSyncAction("STATUS_UPDATE", complaintId, """{"nextStatus":"${nextStatus.name}"}""")
     }
 
     suspend fun resolveComplaint(complaintId: String, rating: Int, notes: String) {
@@ -257,10 +288,12 @@ class BrightRepository(
             updatedAt = now,
             resolvedAt = now
         )
+        enqueueOfflineSyncAction("RESOLUTION_CONFIRMED", complaintId, """{"rating":$rating,"notes":"$notes"}""")
     }
 
     suspend fun upvoteComplaint(complaintId: String) {
         complaintDao.upvoteComplaint(complaintId)
+        enqueueOfflineSyncAction("UPVOTE", complaintId, """{}""")
     }
 
     suspend fun reportVandalism(
@@ -286,6 +319,7 @@ class BrightRepository(
             suspectDetails = suspectDetails
         )
         vandalismDao.insertReport(report)
+        enqueueOfflineSyncAction("VANDALISM_REPORT", id, """{"type":"$incidentType","location":"$location"}""")
         return id
     }
 
@@ -310,6 +344,7 @@ class BrightRepository(
             createdAt = System.currentTimeMillis()
         )
         disputeDao.insertDispute(dispute)
+        enqueueOfflineSyncAction("BILLING_DISPUTE", id, """{"type":"$disputeType","amount":$disputedAmountNgn}""")
         return id
     }
 
@@ -344,6 +379,7 @@ class BrightRepository(
             createdAt = System.currentTimeMillis()
         )
         applianceClaimDao.insertClaim(claim)
+        enqueueOfflineSyncAction("APPLIANCE_CLAIM", id, """{"appliance":"$applianceName","loss":$estimatedLossNgn}""")
         return id
     }
 
@@ -381,6 +417,7 @@ class BrightRepository(
             reportedAt = System.currentTimeMillis()
         )
         streetHazardDao.insertHazard(hazard)
+        enqueueOfflineSyncAction("STREET_HAZARD", id, """{"title":"$title","hazardType":"$hazardType"}""")
         return id
     }
 
@@ -426,7 +463,7 @@ class BrightRepository(
         // User creates and manages their own records, like WhatsApp.
     }
 
-    private fun seedLiveOutageData() {
+    private suspend fun seedLiveOutageData() {
         val nodes = listOf(
             OutageGridNode(
                 id = "NODE-LAG-01",
@@ -583,10 +620,10 @@ class BrightRepository(
                 estimatedRestoration = "Operational"
             )
         )
-        _outageNodes.value = nodes
+        outageDao.insertAll(nodes.map { OutageGridNodeEntity.fromDomain(it) })
     }
 
-    private fun seedMaintenanceAlerts() {
+    private suspend fun seedMaintenanceAlerts() {
         val alerts = listOf(
             MaintenanceAlert(
                 id = "MNT-01",
@@ -619,6 +656,26 @@ class BrightRepository(
                 alternativeSupplyAvailable = true
             )
         )
-        _maintenanceAlerts.value = alerts
+        maintenanceDao.insertAll(alerts.map { MaintenanceAlertEntity.fromDomain(it) })
+    }
+
+    suspend fun enqueueOfflineSyncAction(actionType: String, referenceId: String, payloadJson: String = "") {
+        offlineQueueDao.enqueueAction(
+            OfflineSyncQueueEntity(
+                id = "SYNC-${UUID.randomUUID()}",
+                actionType = actionType,
+                referenceId = referenceId,
+                payloadJson = payloadJson,
+                timestamp = System.currentTimeMillis(),
+                isSynced = false
+            )
+        )
+    }
+
+    suspend fun flushOfflineSyncQueue(): Int {
+        var count = 0
+        // Simulates pushing pending outbox events to the DisCo SCADA server when network recovers
+        offlineQueueDao.clearCompleted()
+        return count
     }
 }

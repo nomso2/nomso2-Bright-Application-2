@@ -1,5 +1,6 @@
 package com.example.ui.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -60,6 +61,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -142,6 +144,8 @@ fun HomeScreen(
     surgeCountdownSeconds: Int = 180,
     onTriggerSurgeSiren: () -> Unit = {},
     onDismissSurgeWarning: () -> Unit = {},
+    pendingSyncCount: Int = 0,
+    onSyncNow: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     var showLogoutConfirmDialog by remember { mutableStateOf(false) }
@@ -428,6 +432,69 @@ fun HomeScreen(
                             countdownSeconds = surgeCountdownSeconds,
                             onDismiss = onDismissSurgeWarning
                         )
+                    }
+                }
+
+                // Room Database Offline-Ready Status Banner
+                item {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag("offline_cache_status_card"),
+                        colors = CardDefaults.cardColors(
+                            containerColor = if (pendingSyncCount > 0) Color(0xFF1E293B) else Color(0xFF0F172A)
+                        ),
+                        shape = RoundedCornerShape(12.dp),
+                        border = BorderStroke(
+                            1.dp,
+                            if (pendingSyncCount > 0) ElegantGoldPrimary.copy(alpha = 0.5f) else Color(0xFF22C55E).copy(alpha = 0.3f)
+                        )
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 14.dp, vertical = 10.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(10.dp)
+                                        .background(
+                                            if (pendingSyncCount > 0) ElegantGoldPrimary else Color(0xFF22C55E),
+                                            shape = CircleShape
+                                        )
+                                )
+                                Column {
+                                    Text(
+                                        text = if (pendingSyncCount > 0) "Room Database: $pendingSyncCount Cached Actions Pending Sync" else "Room Cache: 100% Offline-Ready & Active",
+                                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                                        color = MaterialTheme.colorScheme.onSurface
+                                    )
+                                    Text(
+                                        text = "All fault reports, grid telemetry, and statuses are stored locally in Room SQLite.",
+                                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            }
+                            TextButton(
+                                onClick = onSyncNow,
+                                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
+                                modifier = Modifier.testTag("offline_sync_button")
+                            ) {
+                                Text(
+                                    text = "Sync Now",
+                                    color = ElegantGoldPrimary,
+                                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold)
+                                )
+                            }
+                        }
                     }
                 }
 

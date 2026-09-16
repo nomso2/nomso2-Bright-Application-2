@@ -153,6 +153,7 @@ fun BrightApp(viewModel: BrightViewModel) {
     // Session Lock & Re-Login State (Auto-Lock on leaving app)
     val isAppLocked by viewModel.isAppLocked.collectAsState()
     val requireLoginOnLeave by viewModel.requireLoginOnLeave.collectAsState()
+    val pendingSyncCount by viewModel.pendingSyncCount.collectAsState()
 
     // Auto-lock when user leaves the app (presses Home, switches apps, locks screen)
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -316,7 +317,9 @@ fun BrightApp(viewModel: BrightViewModel) {
                         surgeWarningActive = surgeWarningActive,
                         surgeCountdownSeconds = surgeCountdownSeconds,
                         onTriggerSurgeSiren = { viewModel.triggerSurgeSafetySiren() },
-                        onDismissSurgeWarning = { viewModel.dismissSurgeWarning() }
+                        onDismissSurgeWarning = { viewModel.dismissSurgeWarning() },
+                        pendingSyncCount = pendingSyncCount,
+                        onSyncNow = { viewModel.syncOfflineQueue() }
                     )
                 }
 

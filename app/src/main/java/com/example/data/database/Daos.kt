@@ -133,3 +133,58 @@ interface StreetHazardDao {
     suspend fun clearAll()
 }
 
+@Dao
+interface OutageGridNodeDao {
+    @Query("SELECT * FROM outage_grid_nodes ORDER BY name ASC")
+    fun getAllNodes(): Flow<List<OutageGridNodeEntity>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(nodes: List<OutageGridNodeEntity>)
+
+    @Query("UPDATE outage_grid_nodes SET statusName = :status, lastUpdate = :lastUpdate, affectedConsumers = :affectedConsumers WHERE id = :id")
+    suspend fun updateNodeStatus(id: String, status: String, lastUpdate: String, affectedConsumers: Int)
+
+    @Query("DELETE FROM outage_grid_nodes")
+    suspend fun clearAll()
+}
+
+@Dao
+interface MaintenanceAlertDao {
+    @Query("SELECT * FROM maintenance_alerts ORDER BY id ASC")
+    fun getAllAlerts(): Flow<List<MaintenanceAlertEntity>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(alerts: List<MaintenanceAlertEntity>)
+
+    @Query("DELETE FROM maintenance_alerts")
+    suspend fun clearAll()
+}
+
+@Dao
+interface GridTelemetryDao {
+    @Query("SELECT * FROM grid_telemetry_cache WHERE id = 'CURRENT_TELEMETRY' LIMIT 1")
+    fun getTelemetry(): Flow<GridTelemetryEntity?>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun cacheTelemetry(telemetry: GridTelemetryEntity)
+}
+
+@Dao
+interface OfflineSyncQueueDao {
+    @Query("SELECT * FROM offline_sync_queue WHERE isSynced = 0 ORDER BY timestamp ASC")
+    fun getPendingActions(): Flow<List<OfflineSyncQueueEntity>>
+
+    @Query("SELECT COUNT(*) FROM offline_sync_queue WHERE isSynced = 0")
+    fun getPendingCount(): Flow<Int>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun enqueueAction(action: OfflineSyncQueueEntity)
+
+    @Query("UPDATE offline_sync_queue SET isSynced = 1 WHERE id = :id")
+    suspend fun markSynced(id: String)
+
+    @Query("DELETE FROM offline_sync_queue WHERE isSynced = 1")
+    suspend fun clearCompleted()
+}
+
+

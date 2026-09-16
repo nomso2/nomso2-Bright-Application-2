@@ -102,6 +102,7 @@ import com.example.model.PowerProblemSolution
 import com.example.model.PowerSector30Registry
 import com.example.model.SolutionCategory
 import com.example.model.UserProfile
+import com.example.ui.solutions.*
 import com.example.ui.theme.EmeraldAccent
 import com.example.ui.theme.GoldPrimary
 
@@ -154,15 +155,15 @@ fun Solutions30ComprehensiveHub(
             ) {
                 Column {
                     Text(
-                        text = "30 POWER SECTOR SOLUTIONS",
+                        text = "MORE",
                         style = MaterialTheme.typography.titleMedium.copy(
                             fontWeight = FontWeight.Black,
-                            letterSpacing = 0.5.sp
+                            letterSpacing = 1.sp
                         ),
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
-                        text = "Automated consumer software fixing Nigeria's grid failures",
+                        text = "Comprehensive Nigerian Power Sector Solutions & Utilities",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -340,305 +341,50 @@ fun Solutions30ComprehensiveHub(
                             }
                         }
 
-                        // Solution-Specific Interactive Widget
+                        // Solution-Specific Interactive Feature Implementation (All 30 Features Fully Accessible)
                         when (solution.problemNumber) {
-                            1 -> { // Tiered Urgency
-                                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                                    Text("Test Urgency Tier Dispatching:", fontWeight = FontWeight.Bold, fontSize = 12.sp)
-                                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                        Button(
-                                            onClick = { selectedUrgencyTier = 1 },
-                                            colors = ButtonDefaults.buttonColors(
-                                                containerColor = if (selectedUrgencyTier == 1) GoldPrimary else MaterialTheme.colorScheme.surfaceVariant,
-                                                contentColor = if (selectedUrgencyTier == 1) Color.Black else MaterialTheme.colorScheme.onSurface
-                                            ),
-                                            shape = RoundedCornerShape(8.dp),
-                                            modifier = Modifier.weight(1f)
-                                        ) {
-                                            Text("Tier 1 (House)", fontSize = 10.sp)
-                                        }
-                                        Button(
-                                            onClick = { selectedUrgencyTier = 2 },
-                                            colors = ButtonDefaults.buttonColors(
-                                                containerColor = if (selectedUrgencyTier == 2) GoldPrimary else MaterialTheme.colorScheme.surfaceVariant,
-                                                contentColor = if (selectedUrgencyTier == 2) Color.Black else MaterialTheme.colorScheme.onSurface
-                                            ),
-                                            shape = RoundedCornerShape(8.dp),
-                                            modifier = Modifier.weight(1f)
-                                        ) {
-                                            Text("Tier 2 (Street)", fontSize = 10.sp)
-                                        }
-                                        Button(
-                                            onClick = { selectedUrgencyTier = 3 },
-                                            colors = ButtonDefaults.buttonColors(
-                                                containerColor = if (selectedUrgencyTier == 3) GoldPrimary else MaterialTheme.colorScheme.surfaceVariant,
-                                                contentColor = if (selectedUrgencyTier == 3) Color.Black else MaterialTheme.colorScheme.onSurface
-                                            ),
-                                            shape = RoundedCornerShape(8.dp),
-                                            modifier = Modifier.weight(1f)
-                                        ) {
-                                            Text("Tier 3 (Substation)", fontSize = 10.sp)
-                                        }
-                                    }
-                                    Text(
-                                        text = when (selectedUrgencyTier) {
-                                            1 -> "Tier 1: Single meter trip routed to local field technician (4hr SLA)."
-                                            2 -> "Tier 2: Street transformer fuse/jumper fault. Clustered with 184 neighbors (2hr SLA)."
-                                            else -> "Tier 3: 33kV Injection Feeder collapse. Critical escalation to Area Operations (1hr SLA)."
-                                        },
-                                        fontSize = 11.sp,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                }
-                            }
-                            4 -> { // Red Button
-                                Button(
-                                    onClick = {
-                                        activeModalSolutionNumber = null
-                                        onOpenRedDangerSOS()
-                                    },
-                                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
-                                    modifier = Modifier.fillMaxWidth(),
-                                    shape = RoundedCornerShape(10.dp)
-                                ) {
-                                    Icon(Icons.Default.Emergency, contentDescription = null)
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Text("Open Critical Danger Red Button", color = Color.White, fontWeight = FontWeight.Bold)
-                                }
-                            }
-                            5 -> { // Diagnostic Status
-                                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                                    Text("Current Feeder Diagnostic Engine:", fontWeight = FontWeight.Bold, fontSize = 12.sp)
-                                    Surface(
-                                        color = if (simulatedDiagnosticMode == "LOAD_SHEDDING") Color(0xFF8B5CF6).copy(alpha = 0.15f) else MaterialTheme.colorScheme.error.copy(alpha = 0.15f),
-                                        shape = RoundedCornerShape(8.dp),
-                                        border = androidx.compose.foundation.BorderStroke(1.dp, if (simulatedDiagnosticMode == "LOAD_SHEDDING") Color(0xFF8B5CF6) else MaterialTheme.colorScheme.error)
-                                    ) {
-                                        Row(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .padding(12.dp),
-                                            verticalAlignment = Alignment.CenterVertically,
-                                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                                        ) {
-                                            Icon(
-                                                imageVector = if (simulatedDiagnosticMode == "LOAD_SHEDDING") Icons.Default.Timeline else Icons.Default.Warning,
-                                                contentDescription = null,
-                                                tint = if (simulatedDiagnosticMode == "LOAD_SHEDDING") Color(0xFF8B5CF6) else MaterialTheme.colorScheme.error
-                                            )
-                                            Column {
-                                                Text(
-                                                    text = if (simulatedDiagnosticMode == "LOAD_SHEDDING") "TCN Grid Load-Shedding Active" else "Unplanned Distribution Fault",
-                                                    fontWeight = FontWeight.Bold,
-                                                    fontSize = 12.sp
-                                                )
-                                                Text(
-                                                    text = if (simulatedDiagnosticMode == "LOAD_SHEDDING") "Power cut intentionally per national quota. Expected return: 4:00 PM." else "Fuse blown on Feeder 4. Technician en route (ETA 45 mins).",
-                                                    fontSize = 11.sp
-                                                )
-                                            }
-                                        }
-                                    }
-                                    OutlinedButton(
-                                        onClick = {
-                                            simulatedDiagnosticMode = if (simulatedDiagnosticMode == "LOAD_SHEDDING") "FAULT" else "LOAD_SHEDDING"
-                                        },
-                                        modifier = Modifier.fillMaxWidth()
-                                    ) {
-                                        Text("Toggle Diagnostic State Simulation")
-                                    }
-                                }
-                            }
-                            6 -> { // USSD Offline
-                                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                                    Text("Offline USSD / SMS Command Code:", fontWeight = FontWeight.Bold, fontSize = 12.sp)
-                                    Text(
-                                        text = "*384*55*${userProfile.meterNumber}*1#",
-                                        fontSize = 16.sp,
-                                        fontWeight = FontWeight.Black,
-                                        color = GoldPrimary
-                                    )
-                                    Button(
-                                        onClick = {
-                                            val intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:*384*55*${userProfile.meterNumber}*1%23"))
-                                            context.startActivity(intent)
-                                        },
-                                        colors = ButtonDefaults.buttonColors(containerColor = GoldPrimary, contentColor = Color.Black),
-                                        modifier = Modifier.fillMaxWidth()
-                                    ) {
-                                        Icon(Icons.Default.Call, contentDescription = null, modifier = Modifier.size(16.dp))
-                                        Spacer(modifier = Modifier.width(6.dp))
-                                        Text("Launch Offline USSD Code in Dialer")
-                                    }
-                                }
-                            }
-                            8 -> { // Bat-Signal Mode
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(vertical = 8.dp),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Column {
-                                        Text("Bat-Signal Low Power Mode", fontWeight = FontWeight.Bold, fontSize = 12.sp)
-                                        Text("Monochrome, pure text OLED saver (<1% battery)", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                    }
-                                    Switch(
-                                        checked = isBatSignalMode,
-                                        onCheckedChange = onToggleBatSignalMode,
-                                        colors = SwitchDefaults.colors(checkedThumbColor = GoldPrimary)
-                                    )
-                                }
-                            }
-                            13 -> { // Estimated Bill Calculator
-                                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                                    Text("Community Consumption Calculator:", fontWeight = FontWeight.Bold, fontSize = 12.sp)
-                                    OutlinedTextField(
-                                        value = estimatedBillInput,
-                                        onValueChange = { estimatedBillInput = it },
-                                        label = { Text("Your DisCo Estimated Bill (₦)") },
-                                        modifier = Modifier.fillMaxWidth()
-                                    )
-                                    val unmetered = estimatedBillInput.toDoubleOrNull() ?: 45000.0
-                                    val avgNeighbors = 18200.0 // verified average from metered neighbors on same street
-                                    val excess = (unmetered - avgNeighbors).coerceAtLeast(0.0)
-
-                                    Surface(
-                                        color = EmeraldAccent.copy(alpha = 0.1f),
-                                        shape = RoundedCornerShape(8.dp),
-                                        modifier = Modifier.padding(top = 4.dp)
-                                    ) {
-                                        Column(modifier = Modifier.padding(10.dp)) {
-                                            Text("Verified Street Average (12 Neighbors): ₦18,200", fontWeight = FontWeight.Bold, fontSize = 11.sp)
-                                            Text("Calculated Arbitrary Overbilling: ₦${String.format("%,.2f", excess)}", color = MaterialTheme.colorScheme.error, fontWeight = FontWeight.Bold, fontSize = 11.sp)
-                                        }
-                                    }
-
-                                    Button(
-                                        onClick = {
-                                            Toast.makeText(context, "NERC Capped Overbilling Dispute Document Generated!", Toast.LENGTH_SHORT).show()
-                                        },
-                                        modifier = Modifier.fillMaxWidth(),
-                                        colors = ButtonDefaults.buttonColors(containerColor = GoldPrimary, contentColor = Color.Black)
-                                    ) {
-                                        Text("Generate NERC Capped Dispute Letter")
-                                    }
-                                }
-                            }
-                            17 -> { // Wake Up Street
-                                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                                    Text("Broadcast to ${userProfile.transformerId}:", fontWeight = FontWeight.Bold, fontSize = 12.sp)
-                                    Text("Invites all $wakeUpCount co-connected households on this transformer to open BRIGHT and co-sign the report in 1 tap.", fontSize = 11.sp)
-                                    Button(
-                                        onClick = {
-                                            Toast.makeText(context, "Broadcast sent! 42 neighbors opened BRIGHT.", Toast.LENGTH_SHORT).show()
-                                        },
-                                        modifier = Modifier.fillMaxWidth(),
-                                        colors = ButtonDefaults.buttonColors(containerColor = EmeraldAccent)
-                                    ) {
-                                        Icon(Icons.Default.NotificationsActive, contentDescription = null, modifier = Modifier.size(16.dp))
-                                        Spacer(modifier = Modifier.width(6.dp))
-                                        Text("Send 'Wake Up the Street' Broadcast")
-                                    }
-                                }
-                            }
-                            19 -> { // Forum
-                                Button(
-                                    onClick = {
-                                        activeModalSolutionNumber = null
-                                        onOpenForum()
-                                    },
-                                    colors = ButtonDefaults.buttonColors(containerColor = GoldPrimary, contentColor = Color.Black),
-                                    modifier = Modifier.fillMaxWidth()
-                                ) {
-                                    Icon(Icons.Default.Forum, contentDescription = null)
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Text("Open Transformer ${userProfile.transformerId} Forum")
-                                }
-                            }
-                            20 -> { // Voice Dialects
-                                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                                    Text("Select Dialect for Speech-to-Ticket AI:", fontWeight = FontWeight.Bold, fontSize = 12.sp)
-                                    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                                        listOf("Pidgin", "Hausa", "Yoruba", "Igbo").forEach { dialect ->
-                                            FilterChip(
-                                                selected = selectedDialect == dialect,
-                                                onClick = { selectedDialect = dialect },
-                                                label = { Text(dialect, fontSize = 11.sp) }
-                                            )
-                                        }
-                                    }
-                                    Text(
-                                        text = when (selectedDialect) {
-                                            "Pidgin" -> "Sample: \"Light don quench for our street since 2pm, transformer don spark!\""
-                                            "Hausa" -> "Misali: \"Wutar lantarki ta dauke a unguwarmu, ga hayaki a transformer!\""
-                                            "Yoruba" -> "Apeere: \"Iná ti kú láti ọ̀sán, transformer tún ń kọ iná!\""
-                                            else -> "Ọmụma: \"Ọkụ agwala n'ogbe anyị kemgbe ehihie, transformer na-agba ọkụ!\""
-                                        },
-                                        fontSize = 11.sp,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                    Button(
-                                        onClick = {
-                                            Toast.makeText(context, "Voice parsed and mapped to SCADA ticket!", Toast.LENGTH_SHORT).show()
-                                        },
-                                        modifier = Modifier.fillMaxWidth(),
-                                        colors = ButtonDefaults.buttonColors(containerColor = GoldPrimary, contentColor = Color.Black)
-                                    ) {
-                                        Icon(Icons.Default.Mic, contentDescription = null, modifier = Modifier.size(16.dp))
-                                        Spacer(modifier = Modifier.width(6.dp))
-                                        Text("Simulate AI Voice Recording ($selectedDialect)")
-                                    }
-                                }
-                            }
-                            23 -> { // Consumer Closure
-                                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                                    Text("Consumer Ticket Closure Gatekeeper:", fontWeight = FontWeight.Bold, fontSize = 12.sp)
-                                    Text("Technicians cannot close a ticket alone. You verify whether power has truly returned.", fontSize = 11.sp)
-                                    Button(
-                                        onClick = {
-                                            hasConsumerVerifiedLight = true
-                                            Toast.makeText(context, "Verification confirmed! Ticket officially closed.", Toast.LENGTH_SHORT).show()
-                                        },
-                                        colors = ButtonDefaults.buttonColors(
-                                            containerColor = if (hasConsumerVerifiedLight) EmeraldAccent else GoldPrimary,
-                                            contentColor = Color.Black
-                                        ),
-                                        modifier = Modifier.fillMaxWidth()
-                                    ) {
-                                        Icon(Icons.Default.CheckCircle, contentDescription = null, modifier = Modifier.size(16.dp))
-                                        Spacer(modifier = Modifier.width(6.dp))
-                                        Text(if (hasConsumerVerifiedLight) "Light Verified (Ticket Closed)" else "Yes, My Light is Back!")
-                                    }
-                                }
-                            }
-                            27 -> { // Grid is Back Siren
-                                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                                    Text("'Grid is Back' Audio Siren:", fontWeight = FontWeight.Bold, fontSize = 12.sp)
-                                    Text("Plays loud alert tone instantly when power returns to notify you to turn off your generator.", fontSize = 11.sp)
-                                    Button(
-                                        onClick = onPlaySirenAlarm,
-                                        modifier = Modifier.fillMaxWidth(),
-                                        colors = ButtonDefaults.buttonColors(containerColor = GoldPrimary, contentColor = Color.Black)
-                                    ) {
-                                        Icon(Icons.Default.VolumeUp, contentDescription = null, modifier = Modifier.size(18.dp))
-                                        Spacer(modifier = Modifier.width(6.dp))
-                                        Text("Test Generator Shut-Off Siren")
-                                    }
-                                }
-                            }
+                            1 -> TieredUrgencyCategoriserFeature(userProfile = userProfile)
+                            2 -> GpsFaultGeofencingFeature(userProfile = userProfile)
+                            3 -> AutomatedDispatchRouterFeature(userProfile = userProfile)
+                            4 -> CriticalDangerRedButtonFeature(onTriggerEmergency = {
+                                activeModalSolutionNumber = null
+                                onOpenRedDangerSOS()
+                            })
+                            5 -> DiagnosticStatusTrackerFeature(userProfile = userProfile)
+                            6 -> OfflineUssdBridgeFeature(userProfile = userProfile)
+                            7 -> TamperCrowdsourcingFeature(userProfile = userProfile)
+                            8 -> LowPowerBatSignalFeature(
+                                isBatSignalMode = isBatSignalMode,
+                                onToggleBatSignal = onToggleBatSignalMode,
+                                userProfile = userProfile
+                            )
+                            9 -> UniversalMeterSyncFeature(userProfile = userProfile)
+                            10 -> NationalGridPulseMonitorFeature()
+                            11 -> AutomatedBandAuditorFeature(userProfile = userProfile)
+                            12 -> AutomatedRefundLedgerFeature(userProfile = userProfile)
+                            13 -> CommunityConsumptionCalculatorFeature(userProfile = userProfile)
+                            14 -> MeterWaitlistTrackerFeature(userProfile = userProfile)
+                            15 -> OfflineTokenVendingFeature(userProfile = userProfile)
+                            16 -> VisualProofOverrideFeature(userProfile = userProfile)
+                            17 -> WakeUpStreetAlertsFeature(userProfile = userProfile)
+                            18 -> UserTrustScoreFeature(userTrustScore = userTrustScore)
+                            19 -> NeighborhoodGridForumFeature(userProfile = userProfile, onOpenFullForum = {
+                                activeModalSolutionNumber = null
+                                onOpenForum()
+                            })
+                            20 -> MultiLingualVoiceReportingFeature(userProfile = userProfile)
+                            21 -> AnonymousWhistleblowerFeature(userProfile = userProfile)
+                            22 -> PizzaStyleDeliveryTrackerFeature(userProfile = userProfile)
+                            23 -> ConsumerClosureVerificationFeature(userProfile = userProfile)
+                            24 -> FaultHistoryLogFeature(userProfile = userProfile)
+                            25 -> InventoryRequestMonitorFeature(userProfile = userProfile)
+                            26 -> SurgeReturnWarningFeature(onPlaySiren = onPlaySirenAlarm)
+                            27 -> GridIsBackAudioSirenFeature(onPlaySiren = onPlaySirenAlarm)
+                            28 -> ApplianceLoadBudgeterFeature()
+                            29 -> HybridEnergyOptimizerFeature()
+                            30 -> TariffFlashNewsFeature()
                             else -> {
-                                Button(
-                                    onClick = {
-                                        Toast.makeText(context, "Executing ${solution.solutionTitle}...", Toast.LENGTH_SHORT).show()
-                                        activeModalSolutionNumber = null
-                                    },
-                                    modifier = Modifier.fillMaxWidth(),
-                                    colors = ButtonDefaults.buttonColors(containerColor = GoldPrimary, contentColor = Color.Black)
-                                ) {
-                                    Text("Execute Automated Protocol", fontWeight = FontWeight.Bold)
-                                }
+                                Text("Feature fully active and ready.")
                             }
                         }
                     }
@@ -764,13 +510,14 @@ private fun SolutionCardItem(
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f)
                 )
 
-                OutlinedButton(
+                Button(
                     onClick = onLaunchInteractiveAction,
                     shape = RoundedCornerShape(8.dp),
-                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp),
-                    modifier = Modifier.height(30.dp)
+                    colors = ButtonDefaults.buttonColors(containerColor = GoldPrimary, contentColor = Color.Black),
+                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
+                    modifier = Modifier.height(32.dp)
                 ) {
-                    Text("Test Solution #${item.problemNumber}", fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                    Text("Launch Feature #${item.problemNumber}", fontSize = 11.sp, fontWeight = FontWeight.Black)
                 }
             }
         }

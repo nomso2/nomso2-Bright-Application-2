@@ -339,3 +339,146 @@ data class StreetHazardEntity(
     }
 }
 
+/**
+ * Room Entity caching Outage Status Nodes for offline map and neighborhood status availability
+ */
+@Entity(tableName = "outage_grid_nodes")
+data class OutageGridNodeEntity(
+    @PrimaryKey val id: String,
+    val name: String,
+    val city: String,
+    val state: String,
+    val discoCode: String,
+    val statusName: String,
+    val affectedConsumers: Int,
+    val xPosRatio: Float,
+    val yPosRatio: Float,
+    val lastUpdate: String,
+    val reportedFaults: Int,
+    val estimatedRestoration: String,
+    val cachedAt: Long = System.currentTimeMillis()
+) {
+    fun toDomain() = com.example.model.OutageGridNode(
+        id = id,
+        name = name,
+        city = city,
+        state = state,
+        discoCode = discoCode,
+        status = try { com.example.model.OutageStatus.valueOf(statusName) } catch (e: Exception) { com.example.model.OutageStatus.ACTIVE },
+        affectedConsumers = affectedConsumers,
+        xPosRatio = xPosRatio,
+        yPosRatio = yPosRatio,
+        lastUpdate = lastUpdate,
+        reportedFaults = reportedFaults,
+        estimatedRestoration = estimatedRestoration
+    )
+
+    companion object {
+        fun fromDomain(n: com.example.model.OutageGridNode) = OutageGridNodeEntity(
+            id = n.id,
+            name = n.name,
+            city = n.city,
+            state = n.state,
+            discoCode = n.discoCode,
+            statusName = n.status.name,
+            affectedConsumers = n.affectedConsumers,
+            xPosRatio = n.xPosRatio,
+            yPosRatio = n.yPosRatio,
+            lastUpdate = n.lastUpdate,
+            reportedFaults = n.reportedFaults,
+            estimatedRestoration = n.estimatedRestoration
+        )
+    }
+}
+
+/**
+ * Room Entity caching Scheduled Maintenance Alerts for offline awareness
+ */
+@Entity(tableName = "maintenance_alerts")
+data class MaintenanceAlertEntity(
+    @PrimaryKey val id: String,
+    val title: String,
+    val discoCode: String,
+    val affectedFeeders: String,
+    val startDate: String,
+    val durationHours: Int,
+    val reason: String,
+    val alternativeSupplyAvailable: Boolean,
+    val cachedAt: Long = System.currentTimeMillis()
+) {
+    fun toDomain() = com.example.model.MaintenanceAlert(
+        id = id,
+        title = title,
+        discoCode = discoCode,
+        affectedFeeders = affectedFeeders,
+        startDate = startDate,
+        durationHours = durationHours,
+        reason = reason,
+        alternativeSupplyAvailable = alternativeSupplyAvailable
+    )
+
+    companion object {
+        fun fromDomain(a: com.example.model.MaintenanceAlert) = MaintenanceAlertEntity(
+            id = a.id,
+            title = a.title,
+            discoCode = a.discoCode,
+            affectedFeeders = a.affectedFeeders,
+            startDate = a.startDate,
+            durationHours = a.durationHours,
+            reason = a.reason,
+            alternativeSupplyAvailable = a.alternativeSupplyAvailable
+        )
+    }
+}
+
+/**
+ * Room Entity caching National Grid Telemetry for offline status review
+ */
+@Entity(tableName = "grid_telemetry_cache")
+data class GridTelemetryEntity(
+    @PrimaryKey val id: String = "CURRENT_TELEMETRY",
+    val nationalGenerationMw: Int,
+    val peakForecastMw: Int,
+    val systemFrequencyHz: Double,
+    val systemStatus: String,
+    val spinningReserveMw: Int,
+    val activeGenCos: Int,
+    val lastUpdatedText: String,
+    val cachedAt: Long = System.currentTimeMillis()
+) {
+    fun toDomain() = com.example.model.GridTelemetry(
+        nationalGenerationMw = nationalGenerationMw,
+        peakForecastMw = peakForecastMw,
+        systemFrequencyHz = systemFrequencyHz,
+        systemStatus = systemStatus,
+        spinningReserveMw = spinningReserveMw,
+        activeGenCos = activeGenCos,
+        lastUpdatedText = "$lastUpdatedText (Cached locally)"
+    )
+
+    companion object {
+        fun fromDomain(t: com.example.model.GridTelemetry) = GridTelemetryEntity(
+            nationalGenerationMw = t.nationalGenerationMw,
+            peakForecastMw = t.peakForecastMw,
+            systemFrequencyHz = t.systemFrequencyHz,
+            systemStatus = t.systemStatus,
+            spinningReserveMw = t.spinningReserveMw,
+            activeGenCos = t.activeGenCos,
+            lastUpdatedText = t.lastUpdatedText
+        )
+    }
+}
+
+/**
+ * Room Entity for Outbox / Queued user actions submitted while offline
+ */
+@Entity(tableName = "offline_sync_queue")
+data class OfflineSyncQueueEntity(
+    @PrimaryKey val id: String,
+    val actionType: String,
+    val referenceId: String,
+    val payloadJson: String,
+    val timestamp: Long = System.currentTimeMillis(),
+    val isSynced: Boolean = false
+)
+
