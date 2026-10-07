@@ -5,6 +5,11 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.data.database.AppDatabase
 import com.example.data.repository.BrightRepository
+import com.example.data.payment.ActivationFee
+import com.example.data.payment.ActivationPaymentGateway
+import com.example.data.payment.ActivationPaymentState
+import com.example.data.payment.PaymentResult
+import com.example.data.payment.SimulatedActivationPaymentGateway
 import com.example.model.BillingDispute
 import com.example.model.Complaint
 import com.example.model.ComplaintStatus
@@ -318,17 +323,71 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
         repository.markMeterPaid(meterNumber)
     }
 
-    fun completeOnboarding(profile: UserProfile) {
+    // Meter activation payment (₦1,000, once per meter, lifetime access).
+    // TODO(payments): swap in a Google Play Billing gateway (consumable product, verified
+    // server-side, recorded per meter). See ActivationPaymentGateway.
+    private val activationPaymentGateway: ActivationPaymentGateway = SimulatedActivationPaymentGateway()
+
+    private val _activationPaymentState = MutableStateFlow<ActivationPaymentState>(ActivationPaymentState.Idle)
+    val activationPaymentState: StateFlow<ActivationPaymentState> = _activationPaymentState.asStateFlow()
+
+    /** Starts the one-time activation payment for [meterNumber]. A paid meter is never charged again. */
+    fun startActivationPayment(meterNumber: String) {
+        val meter = meterNumber.trim()
+        if (meter.isEmpty() || _activationPaymentState.value is ActivationPaymentState.InProgress) return
+        if (repository.isMeterPaid(meter)) {
+            _activationPaymentState.value = ActivationPaymentState.Succeeded(meter, reference = "ALREADY-PAID")
+            return
+        }
+        _activationPaymentState.value = ActivationPaymentState.InProgress(meter)
         viewModelScope.launch {
-            repository.markMeterPaid(profile.meterNumber)
-            repository.saveUserProfile(profile.copy(isOnboarded = true, isGatewayPaid = true))
-            _isOnboardingCompleted.value = true
-            // Registering a new meter must not bypass an existing session lock: if a PIN is set and
-            // the session is locked, the user still has to unlock with the PIN or biometrics.
-            if (!(isPinSet && _isAppLocked.value)) {
-                _isAppLocked.value = false
+            val result = try {
+                activationPaymentGateway.startPayment(meter, ActivationFee.AMOUNT_KOBO)
+            } catch (e: Exception) {
+                PaymentResult.Failed("We couldn't reach the payment service. Check your connection and try again.")
             }
-            _userMessage.value = "₦500 Gateway Fee Confirmed! Meter ${profile.meterNumber} activated on BRIGHT."
+            _activationPaymentState.value = when (result) {
+                is PaymentResult.Success -> {
+                    repository.markMeterPaid(meter)
+                    ActivationPaymentState.Succeeded(meter, result.reference)
+                }
+                is PaymentResult.Cancelled -> ActivationPaymentState.Idle
+                is PaymentResult.Failed -> ActivationPaymentState.Failed(meter, result.message)
+            }
+        }
+    }
+
+    fun resetActivationPayment() {
+        if (_activationPaymentState.value !is ActivationPaymentState.InProgress) {
+            _activationPaymentState.value = ActivationPaymentState.Idle
+        }
+    }
+
+    /**
+     * Finishes sign-up. Requires the meter's activation to be paid. [newPin] is saved only when no
+     * PIN exists on this phone yet; an existing PIN is never silently replaced (the sign-up screen
+     * asks for it instead).
+     */
+    fun completeOnboarding(profile: UserProfile, newPin: String? = null) {
+        val meter = profile.meterNumber.trim()
+        if (!repository.isMeterPaid(meter)) {
+            showNotification("Meter $meter isn't activated yet. Pay the one-time ${ActivationFee.LABEL} to continue.")
+            return
+        }
+        if (!isPinSet) {
+            if (newPin == null || !isValidPinFormat(newPin)) {
+                showNotification("Create a PIN of 4 to 6 digits to finish signing up.")
+                return
+            }
+            repository.setUserPin(newPin.trim())
+        }
+        viewModelScope.launch {
+            repository.saveUserProfile(profile.copy(meterNumber = meter, isOnboarded = true, isGatewayPaid = true))
+            _isOnboardingCompleted.value = true
+            _activationPaymentState.value = ActivationPaymentState.Idle
+            // The lock state is deliberately left alone: registering a meter must not bypass an
+            // existing session lock (the user still unlocks with the PIN or biometrics).
+            _userMessage.value = "Meter $meter is activated. Welcome to Bright, ${profile.customerName.ifBlank { "neighbour" }}!"
         }
     }
 
@@ -341,15 +400,40 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
+    /**
+     * Log out ends the session only. The profile, PIN and saved data stay on this phone, so
+     * signing back in (or registering another meter here) needs the existing PIN.
+     * To remove everything, use [deleteAccount].
+     */
     fun logOut() {
         viewModelScope.launch {
             _isOnboardingCompleted.value = false
             _isAppLocked.value = false
-            // Signing out removes this phone's PIN so the next sign-up can create its own.
-            repository.setUserPin("")
             val current = userProfile.value
             repository.saveUserProfile(current.copy(isOnboarded = false))
-            showNotification("Logged out successfully. You can sign back in anytime.")
+            showNotification("Logged out. Sign in with your PIN anytime.")
+        }
+    }
+
+    /**
+     * Permanently deletes the account from this phone: profile, PIN, complaints and history,
+     * reports, cached data and preferences, then returns to sign-up. The meter's paid activation
+     * record is kept so re-registering the same meter isn't charged again.
+     */
+    fun deleteAccount() {
+        viewModelScope.launch {
+            repository.deleteAllLocalUserData()
+            _isOnboardingCompleted.value = false
+            _isAppLocked.value = false
+            _activationPaymentState.value = ActivationPaymentState.Idle
+            _auditingRecords.value = emptyList()
+            _escrowRebateTokens.value = emptyList()
+            _escrowLiquidityVaultBalanceNgn.value = 0.0
+            _communityForumPosts.value = emptyList()
+            _linkedMeterAssets.value = emptyList()
+            _whistleblowerReports.value = emptyList()
+            _transformerDuesEntries.value = emptyList()
+            showNotification("Your account was deleted from this phone.")
         }
     }
 
@@ -372,10 +456,10 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
     val isPinSet: Boolean
         get() = repository.userPin.value.isNotBlank()
 
-    /** A valid PIN is 4 to 8 digits. */
+    /** A valid new PIN is 4 to 6 digits. (Older PINs of up to 8 digits still verify.) */
     fun isValidPinFormat(pin: String): Boolean {
         val trimmed = pin.trim()
-        return trimmed.length in 4..8 && trimmed.all { it.isDigit() }
+        return trimmed.length in 4..6 && trimmed.all { it.isDigit() }
     }
 
     fun setUserPin(newPin: String) {
@@ -732,13 +816,13 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
         showNotification(if (_isDarkMode.value) "🌙 Switched to Elegant Dark Mode" else "☀️ Switched to Crisp Daylight Mode")
     }
 
-    // Phase 1: Onboarding, Meter Index Validation & ₦500 Demo Payment Gateway
+    // Phase 1: Linking an extra meter (no payment here; activation is paid in sign-up)
     fun verifyAndOnboardMeter(
         meterNum: String,
         discoCode: String,
         band: FeederBand,
         address: String,
-        paymentGateway: String // "OPay", "Moniepoint", "Debit Card", "Carrier Airtime"
+        paymentGateway: String // unused: activation is paid once per meter during sign-up
     ) {
         val cleanMeter = meterNum.filter { it.isDigit() }
         if (cleanMeter.length !in 11..13) {
@@ -768,7 +852,7 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
             )
             _linkedMeterAssets.value = _linkedMeterAssets.value.map { it.copy(isSelected = false) } + newAsset
 
-            showNotification("✅ SIM & Meter Verified! ₦500 Demo Payment settled via $paymentGateway. Decentralized ledger initialized.")
+            showNotification("Meter #$cleanMeter linked to your account.")
         }
     }
 

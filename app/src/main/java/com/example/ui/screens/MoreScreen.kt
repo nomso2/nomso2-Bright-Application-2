@@ -21,6 +21,7 @@ import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Forum
 import androidx.compose.material.icons.filled.Gavel
 import androidx.compose.material.icons.filled.Lock
@@ -79,6 +80,7 @@ fun MoreScreen(
     onOpenOnboarding: () -> Unit,
     onLockApp: () -> Unit,
     onLogOut: () -> Unit,
+    onDeleteAccount: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     var showLogoutConfirmDialog by remember { mutableStateOf(false) }
@@ -96,7 +98,8 @@ fun MoreScreen(
         MoreItem("profile_admin", "Profile & Security", "Linked meters, biometrics and privacy", Icons.Default.AccountCircle, onOpenProfileAdmin),
         MoreItem("switch_meter", "Sign In / Switch Meter", "Use a different meter account", Icons.Default.SwapHoriz, onOpenOnboarding),
         MoreItem("lock_app", "Lock App", "Require your PIN or fingerprint to reopen", Icons.Default.Lock, onLockApp),
-        MoreItem("log_out", "Log Out", "Sign out of Bright on this phone", Icons.AutoMirrored.Filled.ExitToApp, { showLogoutConfirmDialog = true }, isDestructive = true)
+        MoreItem("log_out", "Log Out", "Sign out on this phone. Your data and PIN stay here.", Icons.AutoMirrored.Filled.ExitToApp, { showLogoutConfirmDialog = true }),
+        MoreItem("delete_account", "Delete account", "Permanently remove your profile, PIN and history from this phone", Icons.Default.DeleteForever, onDeleteAccount, isDestructive = true)
     )
 
     LazyColumn(
@@ -116,7 +119,7 @@ fun MoreScreen(
         AlertDialog(
             onDismissRequest = { showLogoutConfirmDialog = false },
             title = { Text("Log out of Bright?", fontWeight = FontWeight.Bold) },
-            text = { Text("You'll need to sign in again to see your reports.") },
+            text = { Text("You'll need your PIN to sign in again. Your reports stay saved on this phone.") },
             confirmButton = {
                 Button(
                     onClick = {

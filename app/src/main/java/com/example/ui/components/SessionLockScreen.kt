@@ -93,8 +93,8 @@ fun SessionLockScreen(
         val pin = enteredPin.trim()
         if (!isPinSet) {
             // No PIN exists yet: ask the user to create one instead of accepting a default.
-            if (pin.length !in 4..8 || !pin.all { it.isDigit() }) {
-                errorMessage = "Choose a PIN of 4 to 8 digits."
+            if (pin.length !in 4..6 || !pin.all { it.isDigit() }) {
+                errorMessage = "Choose a PIN of 4 to 6 digits."
                 return
             }
             if (pin != confirmPin.trim()) {
@@ -279,7 +279,7 @@ fun SessionLockScreen(
                                 errorMessage = null
                             }
                         },
-                        label = { Text(if (isPinSet) "Security PIN" else "New PIN (4 to 8 digits)") },
+                        label = { Text(if (isPinSet) "Security PIN" else "New PIN (4 to 6 digits)") },
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Default.Lock,
@@ -469,7 +469,7 @@ fun SessionLockScreen(
                     modifier = Modifier.size(16.dp)
                 )
                 Text(
-                    text = "Sign Out Completely",
+                    text = "Log out",
                     style = MaterialTheme.typography.labelMedium.copy(
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.error

@@ -52,8 +52,8 @@ import com.example.ui.BrightViewModel
 import com.example.ui.components.EditMeterDialog
 import com.example.ui.components.EnergyOptimizationDialog
 import com.example.ui.components.EstateExcoAndSlaDossierDialog
-import com.example.ui.components.PhaseOnboardingDialog
 import com.example.ui.components.ProfileAdminDialog
+import com.example.ui.components.DeleteAccountDialog
 import com.example.ui.components.ResolutionRatingDialog
 import com.example.ui.components.SessionLockScreen
 import com.example.ui.components.SignUpOnboardingScreen
@@ -128,6 +128,7 @@ fun BrightApp(viewModel: BrightViewModel) {
     var showProfileAdminDialog by remember { mutableStateOf(false) }
     var showEstateExcoDialog by remember { mutableStateOf(false) }
     var showSmartMeterGatewayDialog by remember { mutableStateOf(false) }
+    var showDeleteAccountDialog by remember { mutableStateOf(false) }
 
     // State collections
     val userProfile by viewModel.userProfile.collectAsState()
@@ -170,6 +171,7 @@ fun BrightApp(viewModel: BrightViewModel) {
     val gatewayTelemetryMap by viewModel.gatewayTelemetryMap.collectAsState()
     val isPollingGateway by viewModel.isPollingGateway.collectAsState()
     val paidMeterNumbers by viewModel.paidMeterNumbers.collectAsState()
+    val activationPaymentState by viewModel.activationPaymentState.collectAsState()
     val citizenMeterStatus by viewModel.citizenMeterStatus.collectAsState()
 
     // Session Lock & Re-Login State (Auto-Lock on leaving app)
@@ -202,15 +204,16 @@ fun BrightApp(viewModel: BrightViewModel) {
         BackHandler(enabled = canDismissOnboarding) { showOnboardingDialog = false }
         SignUpOnboardingScreen(
             currentProfile = userProfile,
-            initialSignInMode = true,
+            // A phone with an account on it opens on Sign in; otherwise on Register.
+            initialSignInMode = isPinSet,
             isDismissible = canDismissOnboarding,
             paidMeters = paidMeterNumbers,
-            onRecordMeterPayment = { meterNum ->
-                viewModel.markMeterPaid(meterNum)
-            },
+            paymentState = activationPaymentState,
+            onStartPayment = { meterNum -> viewModel.startActivationPayment(meterNum) },
+            onResetPayment = { viewModel.resetActivationPayment() },
             onDismiss = { showOnboardingDialog = false },
-            onCompleteSignUp = { newProfile ->
-                viewModel.completeOnboarding(newProfile)
+            onCompleteSignUp = { newProfile, newPin ->
+                viewModel.completeOnboarding(newProfile, newPin)
                 showOnboardingDialog = false
             },
             onSignIn = { signedInProfile ->
@@ -219,8 +222,7 @@ fun BrightApp(viewModel: BrightViewModel) {
             },
             isPinSet = isPinSet,
             verifyPin = { pin -> viewModel.verifyPin(pin) },
-            // Only used when no PIN exists yet; an existing PIN is never silently replaced.
-            onCreatePin = { newPin -> if (!isPinSet) viewModel.setUserPin(newPin) }
+            onDeleteAccount = { viewModel.deleteAccount() }
         )
         return
     }
@@ -420,7 +422,8 @@ fun BrightApp(viewModel: BrightViewModel) {
                     onOpenProfileAdmin = { showProfileAdminDialog = true },
                     onOpenOnboarding = { showOnboardingDialog = true },
                     onLockApp = { viewModel.lockAppSession() },
-                    onLogOut = { viewModel.logOut() }
+                    onLogOut = { viewModel.logOut() },
+                    onDeleteAccount = { showDeleteAccountDialog = true }
                 )
             }
 
@@ -482,17 +485,6 @@ fun BrightApp(viewModel: BrightViewModel) {
         )
     }
 
-    // Phase 1: Onboarding & SIM-Authenticated Verification Dialog
-    if (showOnboardingDialog) {
-        PhaseOnboardingDialog(
-            currentProfile = userProfile,
-            onDismiss = { showOnboardingDialog = false },
-            onCompleteOnboarding = { meterNum, disco, band, address, paymentGateway ->
-                viewModel.verifyAndOnboardMeter(meterNum, disco, band, address, paymentGateway)
-            }
-        )
-    }
-
     // Phase 4: Token Escrow & AI Settlement Clearinghouse
     if (showClearinghouseDialog) {
         TokenEscrowClearinghouseDialog(
@@ -549,7 +541,10 @@ fun BrightApp(viewModel: BrightViewModel) {
             onSubmitWhistleblower = { target, extType, amt, desc ->
                 viewModel.submitWhistleblowerReport(target, extType, amt, desc)
             },
-            onPurgeDataDeindexing = { viewModel.purgeUserDataDeindexing() },
+            onRequestDeleteAccount = {
+                showProfileAdminDialog = false
+                showDeleteAccountDialog = true
+            },
             onSessionTokenClearance = { viewModel.sessionTokenClearance() },
             onExportLedger = {
                 viewModel.showNotification("📄 Transactional Accounting Ledger exported: BRIGHT_LEDGER_${userProfile.meterNumber}.csv downloaded")
@@ -559,6 +554,23 @@ fun BrightApp(viewModel: BrightViewModel) {
             onToggleRequireLoginOnLeave = { enabled -> viewModel.setRequireLoginOnLeave(enabled) },
             onLockSession = { viewModel.lockAppSession() },
             onDismiss = { showProfileAdminDialog = false }
+        )
+    }
+
+    // Delete account (from More > Account or Profile & Security)
+    if (showDeleteAccountDialog) {
+        DeleteAccountDialog(
+            meterNumber = userProfile.meterNumber,
+            isPinSet = isPinSet,
+            verifyPin = { pin -> viewModel.verifyPin(pin) },
+            onConfirmDelete = {
+                showDeleteAccountDialog = false
+                viewModel.deleteAccount()
+                // Back to Home's place in the back stack; the sign-up screen takes over once the
+                // profile is gone.
+                navController.navigateToTab(BrightNavDestination.HOME)
+            },
+            onDismiss = { showDeleteAccountDialog = false }
         )
     }
 
