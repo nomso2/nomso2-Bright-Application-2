@@ -62,6 +62,7 @@ import com.example.ui.theme.Slate500Text
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import com.example.ui.theme.extendedColors
 
 @Composable
 fun ComplaintCard(
@@ -113,7 +114,7 @@ fun ComplaintCard(
                             Box(
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(6.dp))
-                                    .background(ElegantRedHazard)
+                                    .background(MaterialTheme.colorScheme.error)
                                     .padding(horizontal = 6.dp, vertical = 2.dp)
                             ) {
                                 Row(
@@ -131,7 +132,7 @@ fun ComplaintCard(
                                         style = MaterialTheme.typography.labelSmall.copy(
                                             color = Color.White,
                                             fontWeight = FontWeight.Bold,
-                                            fontSize = 9.sp
+                                            fontSize = 12.sp
                                         )
                                     )
                                 }
@@ -140,7 +141,7 @@ fun ComplaintCard(
                     }
                     Text(
                         text = "Reported: ${dateFormat.format(Date(complaint.reportedAt))}",
-                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp),
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
@@ -161,16 +162,15 @@ fun ComplaintCard(
                                 )
                             },
                             modifier = Modifier
-                                .size(32.dp)
                                 .clip(CircleShape)
                                 .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
-                                .border(1.dp, ElegantGoldPrimary.copy(alpha = 0.5f), CircleShape)
+                                .border(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.5f), CircleShape)
                                 .testTag("export_pdf_complaint_${complaint.id}")
                         ) {
                             Icon(
                                 imageVector = Icons.Default.PictureAsPdf,
                                 contentDescription = "Export NERC PDF Dossier",
-                                tint = ElegantGoldPrimary,
+                                tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(16.dp)
                             )
                         }
@@ -192,7 +192,6 @@ fun ComplaintCard(
                             context.startActivity(shareIntent)
                         },
                         modifier = Modifier
-                            .size(32.dp)
                             .clip(CircleShape)
                             .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
                             .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.4f), CircleShape)
@@ -201,7 +200,7 @@ fun ComplaintCard(
                         Icon(
                             imageVector = Icons.Default.Share,
                             contentDescription = "Share to WhatsApp / Estate Group",
-                            tint = ElegantGoldPrimary,
+                            tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(16.dp)
                         )
                     }
@@ -242,15 +241,15 @@ fun ComplaintCard(
                     Icon(
                         imageVector = if (complaint.isVideo) Icons.Default.Videocam else Icons.Default.PhotoCamera,
                         contentDescription = null,
-                        tint = Color(0xFF38BDF8),
+                        tint = MaterialTheme.extendedColors.info,
                         modifier = Modifier.size(14.dp)
                     )
                     Text(
                         text = if (complaint.isVideo) "Video Evidence Attached" else "Photo Evidence Attached",
                         style = MaterialTheme.typography.labelSmall.copy(
-                            fontSize = 10.sp,
+                            fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF38BDF8)
+                            color = MaterialTheme.extendedColors.info
                         )
                     )
                 }
@@ -275,13 +274,13 @@ fun ComplaintCard(
                         Icon(
                             imageVector = Icons.Default.Group,
                             contentDescription = "Clustered Households",
-                            tint = ElegantGoldPrimary,
+                            tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(16.dp)
                         )
                         Text(
                             text = "${complaint.autoClusteredCount} verified neighbors on ${complaint.transformerId} auto-clustered into this ticket.",
                             style = MaterialTheme.typography.labelSmall.copy(
-                                fontSize = 11.sp,
+                                fontSize = 12.sp,
                                 fontWeight = FontWeight.SemiBold
                             ),
                             color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -314,7 +313,7 @@ fun ComplaintCard(
                                 modifier = Modifier
                                     .size(36.dp)
                                     .clip(RoundedCornerShape(10.dp))
-                                    .background(ElegantGoldPrimary),
+                                    .background(MaterialTheme.colorScheme.primary),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(
@@ -323,7 +322,7 @@ fun ComplaintCard(
                                         fontWeight = FontWeight.ExtraBold,
                                         fontSize = 12.sp
                                     ),
-                                    color = Color(0xFF0A0C10)
+                                    color = MaterialTheme.colorScheme.onPrimary
                                 )
                             }
                             Column {
@@ -336,7 +335,7 @@ fun ComplaintCard(
                                 )
                                 Text(
                                     text = "ETA: ~${complaint.etaMinutes ?: 30} mins • Contact: ${complaint.assignedCrewPhone ?: "Direct Hotline"}",
-                                    style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
+                                    style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp),
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
@@ -372,7 +371,7 @@ fun ComplaintCard(
                     Icon(
                         imageVector = Icons.Default.ThumbUp,
                         contentDescription = "Upvote Fault Priority",
-                        tint = ElegantGoldPrimary,
+                        tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(16.dp)
                     )
                     Spacer(modifier = Modifier.width(6.dp))
@@ -392,15 +391,15 @@ fun ComplaintCard(
                         .height(44.dp)
                         .testTag("confirm_resolution_button_${complaint.id}"),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = ElegantGoldPrimary,
-                        contentColor = Color(0xFF0A0C10)
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
                     ),
                     shape = RoundedCornerShape(12.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.CheckCircle,
                         contentDescription = "Confirm Light Restored",
-                        tint = Color(0xFF0A0C10),
+                        tint = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier.size(16.dp)
                     )
                     Spacer(modifier = Modifier.width(6.dp))
@@ -408,7 +407,7 @@ fun ComplaintCard(
                         text = "Light Restored",
                         style = MaterialTheme.typography.labelSmall.copy(
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF0A0C10)
+                            color = MaterialTheme.colorScheme.onPrimary
                         )
                     )
                 }
@@ -421,12 +420,12 @@ fun ComplaintCard(
 fun StatusBadge(status: ComplaintStatus) {
     val (bgColor, textColor, borderColor) = when (status) {
         ComplaintStatus.LOGGED -> Triple(Color(0x1A94A3B8), Slate300Text, Color(0x3394A3B8))
-        ComplaintStatus.ASSIGNED -> Triple(Color(0x1A60A5FA), Color(0xFF60A5FA), Color(0x3360A5FA))
-        ComplaintStatus.DISPATCHED -> Triple(Color(0x1AFACC15), ElegantGoldPrimary, Color(0x33FACC15))
-        ComplaintStatus.WORK_IN_PROGRESS -> Triple(Color(0x26FACC15), ElegantGoldPrimary, Color(0x4DFACC15))
-        ComplaintStatus.TESTING -> Triple(Color(0x1A22C55E), Color(0xFF4ADE80), Color(0x3322C55E))
-        ComplaintStatus.RESOLVED -> Triple(Color(0x1A22C55E), Color(0xFF4ADE80), Color(0x3322C55E))
-        ComplaintStatus.ESCALATED -> Triple(Color(0x26EF4444), ElegantRedHazard, Color(0x4DEF4444))
+        ComplaintStatus.ASSIGNED -> Triple(MaterialTheme.colorScheme.tertiary.copy(alpha = 0.1f), MaterialTheme.colorScheme.tertiary, MaterialTheme.colorScheme.tertiary.copy(alpha = 0.2f))
+        ComplaintStatus.DISPATCHED -> Triple(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f), MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.primary.copy(alpha = 0.2f))
+        ComplaintStatus.WORK_IN_PROGRESS -> Triple(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f), MaterialTheme.colorScheme.primary, Color(0x4DFACC15))
+        ComplaintStatus.TESTING -> Triple(MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f), MaterialTheme.colorScheme.secondary, MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f))
+        ComplaintStatus.RESOLVED -> Triple(MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f), MaterialTheme.colorScheme.secondary, MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f))
+        ComplaintStatus.ESCALATED -> Triple(MaterialTheme.colorScheme.error.copy(alpha = 0.15f), MaterialTheme.colorScheme.error, MaterialTheme.colorScheme.error.copy(alpha = 0.3f))
     }
 
     Box(
@@ -440,7 +439,7 @@ fun StatusBadge(status: ComplaintStatus) {
             text = status.displayName.uppercase(),
             style = MaterialTheme.typography.labelSmall.copy(
                 fontWeight = FontWeight.ExtraBold,
-                fontSize = 10.sp,
+                fontSize = 12.sp,
                 letterSpacing = 0.5.sp
             ),
             color = textColor

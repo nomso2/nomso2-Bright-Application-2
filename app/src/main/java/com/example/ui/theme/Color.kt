@@ -91,3 +91,19 @@ val LightTextSecondary = Slate600Text
 
 val DarkCharcoal = Color(0xFF1E293B)
 val MutedSlateText = Color(0xFF94A3B8)
+
+// Named semantic accents (use MaterialTheme.colorScheme / MaterialTheme.extendedColors inside
+// composables; these constants are for non-composable code such as Canvas drawing and models).
+val SuccessEmerald = Color(0xFF10B981)
+val WarningAmber = Color(0xFFF59E0B)
+val InfoSky = Color(0xFF38BDF8)
+val InfoSkyDark = Color(0xFF0284C7)
+val InfoBlue = Color(0xFF2563EB)
+val InfoBlueBright = Color(0xFF3B82F6)
+val HazardRedDeep = Color(0xFFDC2626)
+val GreenDeep = Color(0xFF16A34A)
+val GreenSoft = Color(0xFF4ADE80)
+
+// Always-dark "console" panels (gateway / telemetry screens are designed dark in both themes)
+val ConsoleDarkBackground = Color(0xFF0F172A)
+val ConsoleDarkSurface = Color(0xFF1E293B)

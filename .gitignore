@@ -16,3 +16,9 @@
 local.properties
 .env
 debug.keystore
+
+# Signing keys and build artifacts (never commit these)
+*.jks
+*.keystore
+*.apk
+*.aab

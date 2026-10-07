@@ -314,7 +314,7 @@ data class SmartMeterServerConfig(
     val serverUrl: String = "https://ami.brightgrid.ng/api/v1",
     val protocol: String = "REST_MQTT_HYBRID", // "REST_MQTT_HYBRID", "DLMS_COSEM_HDLC", "STS6_CELLULAR_APN", "WEBSOCKET_STREAM"
     val mqttBrokerHost: String = "mqtt.brightgrid.ng:8883",
-    val apiKey: String = "ami_live_ng_98fa01c27e",
+    val apiKey: String = "", // Never hardcode a live key; the user/operator enters it in the gateway settings.
     val webhookEndpoint: String = "/api/v1/telemetry/webhook",
     val syncIntervalSeconds: Int = 15,
     val isConnected: Boolean = true,

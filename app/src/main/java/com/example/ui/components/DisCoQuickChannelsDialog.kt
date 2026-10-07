@@ -132,7 +132,7 @@ fun DisCoQuickChannelsDialog(
                     Text(
                         text = "WhatsApp Bot, Voice Care & USSD Codes",
                         style = MaterialTheme.typography.labelSmall,
-                        color = ElegantGoldPrimary
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
             }
@@ -240,13 +240,13 @@ fun DisCoQuickChannelsDialog(
                                 modifier = Modifier
                                     .size(36.dp)
                                     .clip(CircleShape)
-                                    .background(ElegantGoldPrimary.copy(alpha = 0.2f)),
+                                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Call,
                                     contentDescription = null,
-                                    tint = ElegantGoldPrimary,
+                                    tint = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.size(18.dp)
                                 )
                             }
@@ -260,14 +260,14 @@ fun DisCoQuickChannelsDialog(
                                     text = currentDisCo.customerCarePhone,
                                     fontFamily = FontFamily.Monospace,
                                     style = MaterialTheme.typography.labelSmall,
-                                    color = ElegantGoldPrimary
+                                    color = MaterialTheme.colorScheme.primary
                                 )
                             }
                         }
                         Icon(
                             imageVector = Icons.Default.Call,
                             contentDescription = null,
-                            tint = ElegantGoldPrimary,
+                            tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(18.dp)
                         )
                     }
@@ -280,7 +280,7 @@ fun DisCoQuickChannelsDialog(
                         fontWeight = FontWeight.ExtraBold,
                         letterSpacing = 0.5.sp
                     ),
-                    color = ElegantGoldPrimary
+                    color = MaterialTheme.colorScheme.primary
                 )
 
                 ussdCodes.forEach { ussd ->
@@ -318,7 +318,7 @@ fun DisCoQuickChannelsDialog(
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(6.dp))
-                                .background(ElegantGoldPrimary.copy(alpha = 0.15f))
+                                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f))
                                 .padding(horizontal = 8.dp, vertical = 6.dp)
                         ) {
                             Text(
@@ -326,7 +326,7 @@ fun DisCoQuickChannelsDialog(
                                 fontFamily = FontFamily.Monospace,
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 12.sp,
-                                color = ElegantGoldPrimary
+                                color = MaterialTheme.colorScheme.primary
                             )
                         }
                     }
@@ -337,8 +337,8 @@ fun DisCoQuickChannelsDialog(
             Button(
                 onClick = onDismiss,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = ElegantGoldPrimary,
-                    contentColor = Color.Black
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
                 ),
                 shape = RoundedCornerShape(8.dp)
             ) {

@@ -52,6 +52,7 @@ import com.example.model.VandalismReport
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import com.example.ui.theme.extendedColors
 
 @Composable
 fun VandalismScreen(
@@ -92,13 +93,13 @@ fun VandalismScreen(
                         modifier = Modifier
                             .size(38.dp)
                             .clip(CircleShape)
-                            .background(Color(0xFFDC2626).copy(alpha = 0.15f)),
+                            .background(MaterialTheme.colorScheme.error.copy(alpha = 0.15f)),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = Icons.Default.Shield,
                             contentDescription = "Vandalism Shield",
-                            tint = Color(0xFFDC2626),
+                            tint = MaterialTheme.colorScheme.error,
                             modifier = Modifier.size(22.dp)
                         )
                     }
@@ -146,7 +147,7 @@ fun VandalismScreen(
                         )
                         Text(
                             text = "DisCo & Police Rapid Response Hotline: 0800-POWER-SEC",
-                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
@@ -334,7 +335,7 @@ fun VandalismScreen(
                                 .fillMaxWidth()
                                 .height(48.dp)
                                 .testTag("submit_vandalism_report_btn"),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFDC2626)),
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
                             shape = RoundedCornerShape(10.dp)
                         ) {
                             Text("DISPATCH SECURITY ALERT", fontWeight = FontWeight.Bold, color = Color.White)
@@ -375,7 +376,7 @@ fun VandalismScreen(
                         Icon(
                             imageVector = Icons.Default.Shield,
                             contentDescription = null,
-                            tint = Color(0xFF10B981),
+                            tint = MaterialTheme.extendedColors.success,
                             modifier = Modifier.size(40.dp)
                         )
                         Spacer(modifier = Modifier.height(10.dp))
@@ -430,7 +431,7 @@ fun VandalismScreen(
                                 style = MaterialTheme.typography.labelSmall.copy(
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.error,
-                                    fontSize = 10.sp
+                                    fontSize = 12.sp
                                 )
                             )
                         }
@@ -477,12 +478,12 @@ fun VandalismScreen(
                     ) {
                         Text(
                             text = if (report.isAnonymous) "Reported Anonymously" else "Reported by Resident",
-                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp),
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Text(
                             text = dateFormat.format(Date(report.reportedAt)),
-                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp),
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }

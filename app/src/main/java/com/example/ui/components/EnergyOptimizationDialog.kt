@@ -106,7 +106,7 @@ fun EnergyOptimizationDialog(
                             Icon(
                                 imageVector = Icons.Default.FlashOn,
                                 contentDescription = null,
-                                tint = ElegantGoldPrimary,
+                                tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(16.dp)
                             )
                             Spacer(modifier = Modifier.width(6.dp))
@@ -116,7 +116,7 @@ fun EnergyOptimizationDialog(
                                     fontWeight = FontWeight.ExtraBold,
                                     letterSpacing = 1.sp
                                 ),
-                                color = ElegantGoldPrimary
+                                color = MaterialTheme.colorScheme.primary
                             )
                         }
                         Text(
@@ -138,8 +138,8 @@ fun EnergyOptimizationDialog(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(14.dp))
-                        .background(Color(0x1AEF4444))
-                        .border(1.dp, Color(0x33EF4444), RoundedCornerShape(14.dp))
+                        .background(MaterialTheme.colorScheme.error.copy(alpha = 0.1f))
+                        .border(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.2f), RoundedCornerShape(14.dp))
                         .padding(12.dp)
                 ) {
                     Column {
@@ -152,7 +152,7 @@ fun EnergyOptimizationDialog(
                                 Icon(
                                     imageVector = Icons.Default.Warning,
                                     contentDescription = null,
-                                    tint = Color(0xFFEF4444),
+                                    tint = MaterialTheme.colorScheme.error,
                                     modifier = Modifier.size(18.dp)
                                 )
                                 Spacer(modifier = Modifier.width(6.dp))
@@ -162,19 +162,19 @@ fun EnergyOptimizationDialog(
                                         fontWeight = FontWeight.Bold,
                                         letterSpacing = 0.5.sp
                                     ),
-                                    color = Color(0xFFDC2626)
+                                    color = MaterialTheme.colorScheme.error
                                 )
                             }
                             Text(
                                 text = "T-5 MIN ALERT",
-                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 9.sp, fontWeight = FontWeight.ExtraBold),
-                                color = Color(0xFFEF4444)
+                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp, fontWeight = FontWeight.ExtraBold),
+                                color = MaterialTheme.colorScheme.error
                             )
                         }
                         Spacer(modifier = Modifier.height(6.dp))
                         Text(
                             text = "High-priority pre-warning dispatched 5 minutes before line re-energization to disconnect sensitive appliances (fridges, inverters, TVs) and prevent voltage spike burnout.",
-                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Spacer(modifier = Modifier.height(8.dp))
@@ -182,14 +182,14 @@ fun EnergyOptimizationDialog(
                             onClick = onTriggerSurgeWarning,
                             modifier = Modifier.height(36.dp),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0x26EF4444),
-                                contentColor = Color(0xFFEF4444)
+                                containerColor = MaterialTheme.colorScheme.error.copy(alpha = 0.15f),
+                                contentColor = MaterialTheme.colorScheme.error
                             ),
                             shape = RoundedCornerShape(8.dp)
                         ) {
                             Icon(imageVector = Icons.Default.NotificationsActive, contentDescription = null, modifier = Modifier.size(14.dp))
                             Spacer(modifier = Modifier.width(6.dp))
-                            Text(text = "Test 5-Min Surge Warning Alert", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                            Text(text = "Test 5-Min Surge Warning Alert", fontSize = 12.sp, fontWeight = FontWeight.Bold)
                         }
                     }
                 }
@@ -201,8 +201,8 @@ fun EnergyOptimizationDialog(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(14.dp))
-                        .background(Color(0x1A22C55E))
-                        .border(1.dp, Color(0x3322C55E), RoundedCornerShape(14.dp))
+                        .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f))
+                        .border(1.dp, MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f), RoundedCornerShape(14.dp))
                         .padding(12.dp)
                 ) {
                     Row(
@@ -214,7 +214,7 @@ fun EnergyOptimizationDialog(
                             Icon(
                                 imageVector = Icons.Default.VolumeUp,
                                 contentDescription = null,
-                                tint = ElegantGreenLive,
+                                tint = MaterialTheme.colorScheme.secondary,
                                 modifier = Modifier.size(20.dp)
                             )
                             Spacer(modifier = Modifier.width(8.dp))
@@ -222,11 +222,11 @@ fun EnergyOptimizationDialog(
                                 Text(
                                     text = "Acoustic Grid-Return Siren",
                                     style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                                    color = Color(0xFF16A34A)
+                                    color = MaterialTheme.colorScheme.secondary
                                 )
                                 Text(
                                     text = "Audible device alarm upon power return to switch off generator immediately",
-                                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp),
+                                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
@@ -234,14 +234,14 @@ fun EnergyOptimizationDialog(
 
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             IconButton(onClick = onPlaySirenTest) {
-                                Icon(imageVector = Icons.Default.VolumeUp, contentDescription = "Test Siren", tint = ElegantGoldPrimary)
+                                Icon(imageVector = Icons.Default.VolumeUp, contentDescription = "Test Siren", tint = MaterialTheme.colorScheme.primary)
                             }
                             Switch(
                                 checked = isAlarmEnabled,
                                 onCheckedChange = { onToggleAlarm() },
                                 colors = SwitchDefaults.colors(
-                                    checkedThumbColor = ElegantGreenLive,
-                                    checkedTrackColor = Color(0x3322C55E)
+                                    checkedThumbColor = MaterialTheme.colorScheme.secondary,
+                                    checkedTrackColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f)
                                 )
                             )
                         }
@@ -256,23 +256,23 @@ fun EnergyOptimizationDialog(
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(14.dp))
                         .background(Color(0x1460A5FA))
-                        .border(1.dp, Color(0x3360A5FA), RoundedCornerShape(14.dp))
+                        .border(1.dp, MaterialTheme.colorScheme.tertiary.copy(alpha = 0.2f), RoundedCornerShape(14.dp))
                         .padding(12.dp)
                 ) {
                     Column {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(imageVector = Icons.Default.BatteryChargingFull, contentDescription = null, tint = Color(0xFF60A5FA), modifier = Modifier.size(18.dp))
+                            Icon(imageVector = Icons.Default.BatteryChargingFull, contentDescription = null, tint = MaterialTheme.colorScheme.tertiary, modifier = Modifier.size(18.dp))
                             Spacer(modifier = Modifier.width(6.dp))
                             Text(
                                 text = "HYBRID INVERTER / STORAGE BALANCER",
                                 style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                                color = Color(0xFF2563EB)
+                                color = MaterialTheme.colorScheme.tertiary
                             )
                         }
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
                             text = "Grid Availability: 74% • Recommended Strategy: DRAW GRID NOW for cooling & water pump. Reserve battery storage for 8:00 PM – 11:00 PM peak tariff window.",
-                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                             color = MaterialTheme.colorScheme.onSurface
                         )
                     }
@@ -294,14 +294,14 @@ fun EnergyOptimizationDialog(
                         )
                         Text(
                             text = "Daily: ${Math.round(totalDailyKwh * 10.0) / 10.0} kWh • Est. ₦${totalMonthlyCost.toInt()}/mo",
-                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
-                            color = ElegantGoldPrimary
+                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
+                            color = MaterialTheme.colorScheme.primary
                         )
                     }
 
                     Text(
                         text = "Band A: ₦209.50/kWh",
-                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp),
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
@@ -328,7 +328,7 @@ fun EnergyOptimizationDialog(
                             )
                             Text(
                                 text = "${app.wattage}W • ${app.hoursDaily} hrs/day • ₦${app.monthlyCostNgn.toInt()}/month",
-                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp),
+                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
@@ -336,16 +336,16 @@ fun EnergyOptimizationDialog(
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(6.dp))
-                                .background(if (app.isEcoMode) Color(0x2622C55E) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f))
+                                .background(if (app.isEcoMode) MaterialTheme.colorScheme.secondary.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f))
                                 .clickable { onToggleEco(app.id) }
                                 .padding(horizontal = 8.dp, vertical = 4.dp)
                         ) {
                             Text(
                                 text = if (app.isEcoMode) "ECO ACTIVE" else "STANDARD",
                                 style = MaterialTheme.typography.labelSmall.copy(
-                                    fontSize = 9.sp,
+                                    fontSize = 12.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = if (app.isEcoMode) ElegantGreenLive else MaterialTheme.colorScheme.onSurfaceVariant
+                                    color = if (app.isEcoMode) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             )
                         }
@@ -372,7 +372,7 @@ fun EnergyOptimizationDialog(
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
                             text = "• FX Benchmark: ₦1,595 / USD\n• US CPI Inflation factor applied: 3.1%\n• Gas-to-Power Price: $2.42/MMBtu\n• Band A Tariff capped at ₦209.50/kWh until next bi-annual review",
-                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp, lineHeight = 14.sp),
+                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp, lineHeight = 14.sp),
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }

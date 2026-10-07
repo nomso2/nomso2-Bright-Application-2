@@ -73,6 +73,7 @@ import com.example.model.FaultType
 import com.example.model.UserProfile
 import java.io.File
 import java.io.FileOutputStream
+import com.example.ui.theme.extendedColors
 
 @Composable
 fun ReportFaultScreen(
@@ -218,7 +219,7 @@ fun ReportFaultScreen(
                     )
                     Text(
                         text = userProfile.streetAddress,
-                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
@@ -337,7 +338,7 @@ fun ReportFaultScreen(
                     }
                     Text(
                         text = "Bypasses regular queue, dispatches safety sirens and rapid isolators.",
-                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
+                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp),
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
@@ -405,7 +406,7 @@ fun ReportFaultScreen(
                     text = if (isVideoMedia) "1 Video Clip Attached" else "1 Photo Attached",
                     style = MaterialTheme.typography.labelSmall.copy(
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF10B981)
+                        color = MaterialTheme.extendedColors.success
                     )
                 )
             }
@@ -414,7 +415,7 @@ fun ReportFaultScreen(
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = "Attach photo or short video clip (burnt transformer, downed cable, sparking feeder) to help engineers arrive with exact replacement gear.",
-            style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+            style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
 
@@ -430,7 +431,7 @@ fun ReportFaultScreen(
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surface
                 ),
-                border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF10B981).copy(alpha = 0.5f))
+                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.extendedColors.success.copy(alpha = 0.5f))
             ) {
                 Row(
                     modifier = Modifier
@@ -489,15 +490,15 @@ fun ReportFaultScreen(
                                 Box(
                                     modifier = Modifier
                                         .clip(RoundedCornerShape(4.dp))
-                                        .background(if (isVideoMedia) Color(0xFFEF4444).copy(alpha = 0.15f) else Color(0xFF10B981).copy(alpha = 0.15f))
+                                        .background(if (isVideoMedia) MaterialTheme.colorScheme.error.copy(alpha = 0.15f) else MaterialTheme.extendedColors.success.copy(alpha = 0.15f))
                                         .padding(horizontal = 6.dp, vertical = 2.dp)
                                 ) {
                                     Text(
                                         text = if (isVideoMedia) "VIDEO CLIP (0:15s)" else "HIGH-RES PHOTO",
                                         style = MaterialTheme.typography.labelSmall.copy(
-                                            fontSize = 9.sp,
+                                            fontSize = 12.sp,
                                             fontWeight = FontWeight.Bold,
-                                            color = if (isVideoMedia) Color(0xFFEF4444) else Color(0xFF10B981)
+                                            color = if (isVideoMedia) MaterialTheme.colorScheme.error else MaterialTheme.extendedColors.success
                                         )
                                     )
                                 }
@@ -511,7 +512,7 @@ fun ReportFaultScreen(
                             )
                             Text(
                                 text = "Attached to fault ticket • Ready to upload",
-                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
@@ -581,7 +582,7 @@ fun ReportFaultScreen(
                             )
                             Text(
                                 text = "Launch camera to take real-time photo of burnt meter or vandalized cable",
-                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
+                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
@@ -626,7 +627,7 @@ fun ReportFaultScreen(
                             )
                             Text(
                                 text = "Select stored photo or short video clip from device storage",
-                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
@@ -678,7 +679,7 @@ fun ReportFaultScreen(
                             imageVector = Icons.Default.Videocam,
                             contentDescription = null,
                             modifier = Modifier.size(16.dp),
-                            tint = Color(0xFFEF4444)
+                            tint = MaterialTheme.colorScheme.error
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(

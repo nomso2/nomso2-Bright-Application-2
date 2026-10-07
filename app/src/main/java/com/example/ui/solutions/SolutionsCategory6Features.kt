@@ -103,27 +103,27 @@ fun SurgeReturnWarningFeature(
                     ) {
                         Icon(Icons.Default.Timer, contentDescription = null, tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(22.dp))
                         Column {
-                            Text("5-MINUTE PRE-RESTORATION WARNING", fontWeight = FontWeight.Black, fontSize = 11.sp, color = MaterialTheme.colorScheme.error)
-                            Text("Lines energizing shortly. Unplug delicate electronics now.", fontSize = 10.sp)
+                            Text("5-MINUTE PRE-RESTORATION WARNING", fontWeight = FontWeight.Black, fontSize = 12.sp, color = MaterialTheme.colorScheme.error)
+                            Text("Lines energizing shortly. Unplug delicate electronics now.", fontSize = 12.sp)
                         }
                     }
                 }
 
-                Text("Appliance Safety Isolation Checklist:", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                Text("Appliance Safety Isolation Checklist:", fontSize = 12.sp, fontWeight = FontWeight.Bold)
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Checkbox(checked = isFridgeUnplugged, onCheckedChange = { isFridgeUnplugged = it }, colors = CheckboxDefaults.colors(checkedColor = GoldPrimary))
-                    Text("Refrigerator / Deep Freezer Compressor Isolated", fontSize = 11.sp)
+                    Checkbox(checked = isFridgeUnplugged, onCheckedChange = { isFridgeUnplugged = it }, colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colorScheme.primary))
+                    Text("Refrigerator / Deep Freezer Compressor Isolated", fontSize = 12.sp)
                 }
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Checkbox(checked = isTvUnplugged, onCheckedChange = { isTvUnplugged = it }, colors = CheckboxDefaults.colors(checkedColor = GoldPrimary))
-                    Text("Smart TV & Home Theater System Unplugged", fontSize = 11.sp)
+                    Checkbox(checked = isTvUnplugged, onCheckedChange = { isTvUnplugged = it }, colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colorScheme.primary))
+                    Text("Smart TV & Home Theater System Unplugged", fontSize = 12.sp)
                 }
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Checkbox(checked = isAcUnplugged, onCheckedChange = { isAcUnplugged = it }, colors = CheckboxDefaults.colors(checkedColor = GoldPrimary))
-                    Text("Inverter AC / Split Units Switched Off", fontSize = 11.sp)
+                    Checkbox(checked = isAcUnplugged, onCheckedChange = { isAcUnplugged = it }, colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colorScheme.primary))
+                    Text("Inverter AC / Split Units Switched Off", fontSize = 12.sp)
                 }
 
                 Row(
@@ -138,7 +138,7 @@ fun SurgeReturnWarningFeature(
                     ) {
                         Icon(Icons.Default.VolumeUp, contentDescription = null, modifier = Modifier.size(15.dp))
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text("Test Surge Siren", fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                        Text("Test Surge Siren", fontSize = 12.sp, fontWeight = FontWeight.Bold)
                     }
 
                     Button(
@@ -146,11 +146,11 @@ fun SurgeReturnWarningFeature(
                             isConfirmedSafe = true
                             Toast.makeText(context, "Appliances confirmed isolated from voltage spikes!", Toast.LENGTH_SHORT).show()
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = EmeraldAccent, contentColor = Color.White),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary, contentColor = Color.White),
                         shape = RoundedCornerShape(8.dp),
                         modifier = Modifier.weight(1f)
                     ) {
-                        Text(if (isConfirmedSafe) "Confirmed Safe ✓" else "Appliances Safe", fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                        Text(if (isConfirmedSafe) "Confirmed Safe ✓" else "Appliances Safe", fontSize = 12.sp, fontWeight = FontWeight.Bold)
                     }
                 }
             }
@@ -197,27 +197,27 @@ fun GridIsBackAudioSirenFeature(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text("Generator Consumption:", fontSize = 11.sp)
-                    Text("${String.format("%.1f", fuelBurnLitersPerHour)} Liters / Hour", fontWeight = FontWeight.Bold, color = GoldPrimary, fontSize = 12.sp)
+                    Text("Generator Consumption:", fontSize = 12.sp)
+                    Text("${String.format("%.1f", fuelBurnLitersPerHour)} Liters / Hour", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary, fontSize = 12.sp)
                 }
 
                 Slider(
                     value = fuelBurnLitersPerHour,
                     onValueChange = { fuelBurnLitersPerHour = it },
                     valueRange = 0.8f..8f,
-                    colors = SliderDefaults.colors(thumbColor = GoldPrimary, activeTrackColor = GoldPrimary)
+                    colors = SliderDefaults.colors(thumbColor = MaterialTheme.colorScheme.primary, activeTrackColor = MaterialTheme.colorScheme.primary)
                 )
 
                 Surface(
-                    color = EmeraldAccent.copy(alpha = 0.12f),
+                    color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.12f),
                     shape = RoundedCornerShape(10.dp)
                 ) {
                     Column(modifier = Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                            Text("Fuel Money Saved When Turned Off:", fontSize = 11.sp, color = EmeraldAccent, fontWeight = FontWeight.Bold)
-                            Text("₦$hourlyFuelCost / Hour", fontWeight = FontWeight.Black, fontSize = 13.sp, color = EmeraldAccent)
+                            Text("Fuel Money Saved When Turned Off:", fontSize = 12.sp, color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.Bold)
+                            Text("₦$hourlyFuelCost / Hour", fontWeight = FontWeight.Black, fontSize = 13.sp, color = MaterialTheme.colorScheme.secondary)
                         }
-                        Text("Every 15 minutes you turn off the gen earlier saves ₦${hourlyFuelCost / 4}.", fontSize = 10.sp)
+                        Text("Every 15 minutes you turn off the gen earlier saves ₦${hourlyFuelCost / 4}.", fontSize = 12.sp)
                     }
                 }
 
@@ -226,7 +226,7 @@ fun GridIsBackAudioSirenFeature(
                         onPlaySiren()
                         Toast.makeText(context, "Playing generator shut-off chime!", Toast.LENGTH_SHORT).show()
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = GoldPrimary, contentColor = Color.Black),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary),
                     shape = RoundedCornerShape(10.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -290,20 +290,20 @@ fun ApplianceLoadBudgeterFeature(
         ) {
             Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                    Text("Deep Freezer (300W)", fontSize = 11.sp)
-                    Checkbox(checked = hasFridge, onCheckedChange = { hasFridge = it }, colors = CheckboxDefaults.colors(checkedColor = GoldPrimary))
+                    Text("Deep Freezer (300W)", fontSize = 12.sp)
+                    Checkbox(checked = hasFridge, onCheckedChange = { hasFridge = it }, colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colorScheme.primary))
                 }
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                    Text("1.5HP Inverter AC (1,200W)", fontSize = 11.sp)
-                    Checkbox(checked = hasAc, onCheckedChange = { hasAc = it }, colors = CheckboxDefaults.colors(checkedColor = GoldPrimary))
+                    Text("1.5HP Inverter AC (1,200W)", fontSize = 12.sp)
+                    Checkbox(checked = hasAc, onCheckedChange = { hasAc = it }, colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colorScheme.primary))
                 }
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                    Text("3x Standing Fans (210W)", fontSize = 11.sp)
-                    Checkbox(checked = hasFans, onCheckedChange = { hasFans = it }, colors = CheckboxDefaults.colors(checkedColor = GoldPrimary))
+                    Text("3x Standing Fans (210W)", fontSize = 12.sp)
+                    Checkbox(checked = hasFans, onCheckedChange = { hasFans = it }, colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colorScheme.primary))
                 }
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                    Text("Smart TV & Soundbar (120W)", fontSize = 11.sp)
-                    Checkbox(checked = hasTv, onCheckedChange = { hasTv = it }, colors = CheckboxDefaults.colors(checkedColor = GoldPrimary))
+                    Text("Smart TV & Soundbar (120W)", fontSize = 12.sp)
+                    Checkbox(checked = hasTv, onCheckedChange = { hasTv = it }, colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colorScheme.primary))
                 }
 
                 Surface(
@@ -313,15 +313,15 @@ fun ApplianceLoadBudgeterFeature(
                 ) {
                     Column(modifier = Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                            Text("Total Continuous Load:", fontSize = 11.sp, color = Color.Gray)
-                            Text("$totalWatts Watts", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = GoldPrimary)
+                            Text("Total Continuous Load:", fontSize = 12.sp, color = Color.Gray)
+                            Text("$totalWatts Watts", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                         }
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                            Text("Recommended Inverter Size:", fontSize = 11.sp, color = Color.Gray)
-                            Text(recommendedInverterKva, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = EmeraldAccent)
+                            Text("Recommended Inverter Size:", fontSize = 12.sp, color = Color.Gray)
+                            Text(recommendedInverterKva, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.secondary)
                         }
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                            Text("Est. 2x200Ah Battery Runtime:", fontSize = 11.sp, color = Color.Gray)
+                            Text("Est. 2x200Ah Battery Runtime:", fontSize = 12.sp, color = Color.Gray)
                             Text("$batteryRuntimeHours Hours", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color.White)
                         }
                     }
@@ -364,24 +364,24 @@ fun HybridEnergyOptimizerFeature(
         ) {
             Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text("Today's Weather:", fontSize = 11.sp)
-                    Text("33°C Sunny (85% Solar Irradiance)", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = GoldPrimary)
+                    Text("Today's Weather:", fontSize = 12.sp)
+                    Text("33°C Sunny (85% Solar Irradiance)", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                 }
 
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text("Feeder Tripping Risk (Afternoon):", fontSize = 11.sp)
-                    Text("72% Likelihood at 2:00 PM", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.error)
+                    Text("Feeder Tripping Risk (Afternoon):", fontSize = 12.sp)
+                    Text("72% Likelihood at 2:00 PM", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.error)
                 }
 
                 Surface(
-                    color = EmeraldAccent.copy(alpha = 0.12f),
+                    color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.12f),
                     shape = RoundedCornerShape(8.dp)
                 ) {
                     Column(modifier = Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Text("AI ACTIONABLE STRATEGY:", fontWeight = FontWeight.Bold, fontSize = 10.sp, color = EmeraldAccent)
-                        Text("1. Top up inverter batteries from the grid before 1:00 PM.", fontSize = 10.sp)
-                        Text("2. Run water pumping machine on free solar between 11 AM - 1 PM.", fontSize = 10.sp)
-                        Text("3. Switch heavy ACs to eco mode by 2 PM before grid cut.", fontSize = 10.sp)
+                        Text("AI ACTIONABLE STRATEGY:", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = MaterialTheme.colorScheme.secondary)
+                        Text("1. Top up inverter batteries from the grid before 1:00 PM.", fontSize = 12.sp)
+                        Text("2. Run water pumping machine on free solar between 11 AM - 1 PM.", fontSize = 12.sp)
+                        Text("3. Switch heavy ACs to eco mode by 2 PM before grid cut.", fontSize = 12.sp)
                     }
                 }
 
@@ -390,7 +390,7 @@ fun HybridEnergyOptimizerFeature(
                         isScheduleApplied = true
                         Toast.makeText(context, "Applied hybrid solar-grid optimization profile!", Toast.LENGTH_SHORT).show()
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = GoldPrimary, contentColor = Color.Black),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary),
                     shape = RoundedCornerShape(10.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -447,10 +447,10 @@ fun TariffFlashNewsFeature(
                     ) {
                         Column(modifier = Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                                Text(title, fontWeight = FontWeight.Bold, fontSize = 11.sp, color = GoldPrimary)
-                                Icon(Icons.Default.Newspaper, contentDescription = null, tint = GoldPrimary, modifier = Modifier.size(14.dp))
+                                Text(title, fontWeight = FontWeight.Bold, fontSize = 12.sp, color = MaterialTheme.colorScheme.primary)
+                                Icon(Icons.Default.Newspaper, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(14.dp))
                             }
-                            Text(summary, fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurface)
+                            Text(summary, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface)
                         }
                     }
                 }
@@ -459,7 +459,7 @@ fun TariffFlashNewsFeature(
                     onClick = {
                         Toast.makeText(context, "Shared NERC Rights Bulletin to WhatsApp Estate Group!", Toast.LENGTH_SHORT).show()
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = GoldPrimary, contentColor = Color.Black),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary),
                     shape = RoundedCornerShape(10.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {

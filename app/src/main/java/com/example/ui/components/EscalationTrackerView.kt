@@ -48,6 +48,7 @@ import com.example.ui.theme.ElegantGoldPrimary
 import com.example.ui.theme.Slate100Text
 import com.example.ui.theme.Slate400Text
 import com.example.ui.theme.Slate500Text
+import com.example.ui.theme.extendedColors
 
 @Composable
 fun EscalationTrackerView(
@@ -90,14 +91,14 @@ fun EscalationTrackerView(
                     Icon(
                         imageVector = Icons.Default.Shield,
                         contentDescription = "Escalation Protection",
-                        tint = ElegantGoldPrimary,
+                        tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(16.dp)
                     )
                     Text(
                         text = "NERC SLA ESCALATION",
                         style = MaterialTheme.typography.labelSmall.copy(
                             fontWeight = FontWeight.ExtraBold,
-                            fontSize = 11.sp,
+                            fontSize = 12.sp,
                             letterSpacing = 1.sp
                         ),
                         color = MaterialTheme.colorScheme.onSurface
@@ -108,9 +109,9 @@ fun EscalationTrackerView(
                     text = "ESCALATED LEVEL $currentLevel",
                     style = MaterialTheme.typography.labelSmall.copy(
                         fontWeight = FontWeight.ExtraBold,
-                        fontSize = 10.sp,
+                        fontSize = 12.sp,
                         letterSpacing = 0.5.sp,
-                        color = ElegantGoldPrimary
+                        color = MaterialTheme.colorScheme.primary
                     )
                 )
             }
@@ -133,9 +134,9 @@ fun EscalationTrackerView(
                         .background(
                             Brush.horizontalGradient(
                                 listOf(
-                                    Color(0xFFEAB308),
-                                    Color(0xFFF59E0B),
-                                    Color(0xFF10B981)
+                                    MaterialTheme.colorScheme.primary,
+                                    MaterialTheme.extendedColors.warning,
+                                    MaterialTheme.extendedColors.success
                                 )
                             )
                         )
@@ -165,7 +166,7 @@ fun EscalationTrackerView(
                                 .background(
                                     when {
                                         isPast -> ElegantGoldDark
-                                        isCurrent -> ElegantGoldPrimary
+                                        isCurrent -> MaterialTheme.colorScheme.primary
                                         else -> MaterialTheme.colorScheme.surfaceVariant
                                     }
                                 )
@@ -180,7 +181,7 @@ fun EscalationTrackerView(
                                 Icon(
                                     imageVector = Icons.Default.Check,
                                     contentDescription = "Step Completed",
-                                    tint = Color(0xFF0A0C10),
+                                    tint = MaterialTheme.colorScheme.onPrimary,
                                     modifier = Modifier.size(14.dp)
                                 )
                             } else {
@@ -188,8 +189,8 @@ fun EscalationTrackerView(
                                     text = "${tier.level}",
                                     style = MaterialTheme.typography.labelSmall.copy(
                                         fontWeight = FontWeight.Bold,
-                                        fontSize = 10.sp,
-                                        color = if (isCurrent) Color(0xFF0A0C10) else MaterialTheme.colorScheme.onSurfaceVariant
+                                        fontSize = 12.sp,
+                                        color = if (isCurrent) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 )
                             }
@@ -205,7 +206,7 @@ fun EscalationTrackerView(
                                 EscalationTier.LEVEL_4 -> "NERC"
                             },
                             style = MaterialTheme.typography.labelSmall.copy(
-                                fontSize = 10.sp,
+                                fontSize = 12.sp,
                                 fontWeight = if (isCurrent) FontWeight.Bold else FontWeight.Medium
                             ),
                             color = if (isCurrent) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
@@ -219,7 +220,7 @@ fun EscalationTrackerView(
                                 .weight(0.6f)
                                 .height(2.dp)
                                 .background(
-                                    if (tier.level < currentLevel) ElegantGoldPrimary
+                                    if (tier.level < currentLevel) MaterialTheme.colorScheme.primary
                                     else MaterialTheme.colorScheme.surfaceVariant
                                 )
                         )
@@ -241,7 +242,7 @@ fun EscalationTrackerView(
                 Column {
                     Text(
                         text = "Current Authority Handling Ticket:",
-                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp),
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Text(
@@ -254,8 +255,8 @@ fun EscalationTrackerView(
                     Text(
                         text = "Standard SLA window: ${complaint.escalationTier.maxSlaHours} hours before auto-escalation",
                         style = MaterialTheme.typography.labelSmall.copy(
-                            fontSize = 10.sp,
-                            color = ElegantGoldPrimary
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.primary
                         )
                     )
                 }
@@ -275,7 +276,7 @@ fun EscalationTrackerView(
                     Icon(
                         imageVector = Icons.Default.NotificationsActive,
                         contentDescription = "Trigger Escalation",
-                        tint = ElegantGoldPrimary,
+                        tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(16.dp)
                     )
                     Spacer(modifier = Modifier.width(6.dp))

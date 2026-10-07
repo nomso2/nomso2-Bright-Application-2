@@ -56,6 +56,8 @@ import com.example.ui.theme.ElegantDarkBorder
 import com.example.ui.theme.ElegantGoldPrimary
 import com.example.ui.theme.MutedSlateText
 import com.example.ui.theme.Slate100Text
+import com.example.ui.theme.extendedColors
+import com.example.ui.theme.ConsoleDarkBackground
 
 @Composable
 fun ManufacturerGatewaysLiveTab(
@@ -85,7 +87,7 @@ fun ManufacturerGatewaysLiveTab(
                         Icon(
                             imageVector = Icons.Default.CellTower,
                             contentDescription = null,
-                            tint = ElegantGoldPrimary,
+                            tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(20.dp)
                         )
                         Text(
@@ -130,9 +132,9 @@ private fun ManufacturerGatewayCard(
     meterNumber: String
 ) {
     val accentColor = when (manufacturer) {
-        MeterManufacturer.MOJEC -> Color(0xFFF59E0B) // Amber
-        MeterManufacturer.MOMAS -> Color(0xFF10B981) // Emerald Green
-        MeterManufacturer.CONLOG -> Color(0xFF38BDF8) // Sky Blue
+        MeterManufacturer.MOJEC -> MaterialTheme.extendedColors.warning // Amber
+        MeterManufacturer.MOMAS -> MaterialTheme.extendedColors.success // Emerald Green
+        MeterManufacturer.CONLOG -> MaterialTheme.extendedColors.info // Sky Blue
     }
 
     Card(
@@ -180,7 +182,7 @@ private fun ManufacturerGatewayCard(
                         )
                         Text(
                             text = "Protocol: ${manufacturer.defaultProtocol}",
-                            fontSize = 11.sp,
+                            fontSize = 12.sp,
                             color = MutedSlateText
                         )
                     }
@@ -225,7 +227,7 @@ private fun ManufacturerGatewayCard(
             Text(
                 text = "AMI Gateway Endpoint: ${manufacturer.apiEndpointPrefix}",
                 fontFamily = FontFamily.Monospace,
-                fontSize = 10.sp,
+                fontSize = 12.sp,
                 color = MutedSlateText
             )
 
@@ -241,7 +243,7 @@ private fun ManufacturerGatewayCard(
                         title = "VOLTAGE",
                         value = "${telemetry.voltageV} V",
                         subtitle = if (telemetry.voltageV >= 210.0) "Nominal" else "Low Voltage",
-                        accentColor = if (telemetry.voltageV >= 210.0) Color(0xFF22C55E) else Color(0xFFEF4444),
+                        accentColor = if (telemetry.voltageV >= 210.0) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error,
                         modifier = Modifier.weight(1f)
                     )
                     MetricBox(
@@ -255,7 +257,7 @@ private fun ManufacturerGatewayCard(
                         title = "FREQUENCY",
                         value = "${telemetry.frequencyHz} Hz",
                         subtitle = "PF: ${telemetry.powerFactor}",
-                        accentColor = Color(0xFF38BDF8),
+                        accentColor = MaterialTheme.extendedColors.info,
                         modifier = Modifier.weight(1f)
                     )
                 }
@@ -270,7 +272,7 @@ private fun ManufacturerGatewayCard(
                         title = "ENERGY UNITS",
                         value = "${telemetry.remainingCreditUnitsKwh} kWh",
                         subtitle = "Total: ${telemetry.accumulatedKwh} kWh",
-                        accentColor = Color(0xFFF59E0B),
+                        accentColor = MaterialTheme.extendedColors.warning,
                         modifier = Modifier.weight(1.5f)
                     )
                     MetricBox(
@@ -282,7 +284,7 @@ private fun ManufacturerGatewayCard(
                             MeterRelayState.TAMPER_SUSPENDED -> "TAMPER LOCK"
                         },
                         subtitle = "Cell RSSI: ${telemetry.signalStrengthDbm} dBm",
-                        accentColor = if (telemetry.relayState == MeterRelayState.CONNECTED) Color(0xFF22C55E) else Color(0xFFEF4444),
+                        accentColor = if (telemetry.relayState == MeterRelayState.CONNECTED) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error,
                         modifier = Modifier.weight(1.5f)
                     )
                 }
@@ -295,15 +297,15 @@ private fun ManufacturerGatewayCard(
                 ) {
                     Text(
                         text = "Hardware Model: ${telemetry.model}",
-                        fontSize = 11.sp,
+                        fontSize = 12.sp,
                         color = Slate100Text,
                         fontWeight = FontWeight.Medium
                     )
                     Text(
                         text = "Gateway Latency: ${telemetry.latencyMs} ms",
-                        fontSize = 11.sp,
+                        fontSize = 12.sp,
                         fontFamily = FontFamily.Monospace,
-                        color = Color(0xFF22C55E)
+                        color = MaterialTheme.colorScheme.secondary
                     )
                 }
             } else {
@@ -312,7 +314,7 @@ private fun ManufacturerGatewayCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(8.dp))
-                        .background(Color(0xFF0F172A))
+                        .background(ConsoleDarkBackground)
                         .padding(14.dp),
                     contentAlignment = Alignment.Center
                 ) {
@@ -339,14 +341,14 @@ private fun MetricBox(
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(8.dp))
-            .background(Color(0xFF0F172A))
+            .background(ConsoleDarkBackground)
             .border(1.dp, ElegantDarkBorder.copy(alpha = 0.5f), RoundedCornerShape(8.dp))
             .padding(8.dp)
     ) {
         Column {
             Text(
                 text = title,
-                fontSize = 9.sp,
+                fontSize = 12.sp,
                 fontWeight = FontWeight.Bold,
                 color = MutedSlateText,
                 letterSpacing = 0.5.sp
@@ -361,7 +363,7 @@ private fun MetricBox(
             Spacer(modifier = Modifier.height(2.dp))
             Text(
                 text = subtitle,
-                fontSize = 10.sp,
+                fontSize = 12.sp,
                 color = Slate100Text.copy(alpha = 0.7f)
             )
         }

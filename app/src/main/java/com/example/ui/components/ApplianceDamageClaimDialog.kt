@@ -58,6 +58,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.model.UserProfile
@@ -70,6 +71,7 @@ import com.example.ui.theme.Slate500Text
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import com.example.ui.theme.Slate300Text
 
 /**
  * Feature 4: Appliance Surge Damage Claim Assistant
@@ -166,13 +168,13 @@ fun ApplianceDamageClaimDialog(
                     modifier = Modifier
                         .size(40.dp)
                         .clip(CircleShape)
-                        .background(Color(0x33FACC15)),
+                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = Icons.Default.Gavel,
                         contentDescription = null,
-                        tint = ElegantGoldPrimary,
+                        tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(22.dp)
                     )
                 }
@@ -185,7 +187,7 @@ fun ApplianceDamageClaimDialog(
                     Text(
                         text = "NERC Statutory Compensation Assistant",
                         style = MaterialTheme.typography.labelSmall,
-                        color = ElegantGoldPrimary
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
             }
@@ -211,7 +213,7 @@ fun ApplianceDamageClaimDialog(
                         fontWeight = FontWeight.ExtraBold,
                         letterSpacing = 0.5.sp
                     ),
-                    color = ElegantGoldPrimary
+                    color = MaterialTheme.colorScheme.primary
                 )
 
                 LazyRow(
@@ -223,11 +225,11 @@ fun ApplianceDamageClaimDialog(
                         FilterChip(
                             selected = isSelected,
                             onClick = { selectedAppliance = category },
-                            label = { Text(category, fontSize = 11.sp) },
+                            label = { Text(category, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                             colors = FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = ElegantGoldPrimary,
+                                selectedContainerColor = MaterialTheme.colorScheme.primary,
                                 selectedLabelColor = Color.Black,
-                                containerColor = Color(0xFF1E2430),
+                                containerColor = ElegantDarkBorder,
                                 labelColor = Slate400Text
                             ),
                             modifier = Modifier.testTag("appliance_chip_${category.take(8)}")
@@ -244,7 +246,7 @@ fun ApplianceDamageClaimDialog(
                         .fillMaxWidth()
                         .testTag("claim_brand_model_input"),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = ElegantGoldPrimary,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
                         unfocusedBorderColor = ElegantDarkBorder,
                         focusedTextColor = Slate100Text,
                         unfocusedTextColor = Slate100Text
@@ -261,7 +263,7 @@ fun ApplianceDamageClaimDialog(
                         .fillMaxWidth()
                         .testTag("claim_loss_amount_input"),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = ElegantGoldPrimary,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
                         unfocusedBorderColor = ElegantDarkBorder,
                         focusedTextColor = Slate100Text,
                         unfocusedTextColor = Slate100Text
@@ -277,7 +279,7 @@ fun ApplianceDamageClaimDialog(
                         .fillMaxWidth()
                         .testTag("claim_surge_time_input"),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = ElegantGoldPrimary,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
                         unfocusedBorderColor = ElegantDarkBorder,
                         focusedTextColor = Slate100Text,
                         unfocusedTextColor = Slate100Text
@@ -294,7 +296,7 @@ fun ApplianceDamageClaimDialog(
                         .height(90.dp)
                         .testTag("claim_surge_desc_input"),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = ElegantGoldPrimary,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
                         unfocusedBorderColor = ElegantDarkBorder,
                         focusedTextColor = Slate100Text,
                         unfocusedTextColor = Slate100Text
@@ -322,9 +324,9 @@ fun ApplianceDamageClaimDialog(
                     Text(
                         text = statutoryNotice,
                         fontFamily = FontFamily.Monospace,
-                        fontSize = 10.sp,
+                        fontSize = 12.sp,
                         lineHeight = 14.sp,
-                        color = Color(0xFFCBD5E1)
+                        color = Slate300Text
                     )
                 }
 
@@ -341,14 +343,14 @@ fun ApplianceDamageClaimDialog(
                             clipboardManager.setPrimaryClip(clip)
                             Toast.makeText(context, "Formal Statutory Demand copied!", Toast.LENGTH_SHORT).show()
                         },
-                        colors = ButtonDefaults.outlinedButtonColors(contentColor = ElegantGoldPrimary),
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.primary),
                         modifier = Modifier
                             .weight(1f)
                             .testTag("copy_statutory_claim_btn")
                     ) {
                         Icon(Icons.Default.ContentCopy, contentDescription = null, modifier = Modifier.size(14.dp))
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text("Copy Letter", fontSize = 11.sp)
+                        Text("Copy Letter", fontSize = 12.sp)
                     }
 
                     OutlinedButton(
@@ -367,7 +369,7 @@ fun ApplianceDamageClaimDialog(
                     ) {
                         Icon(Icons.Default.Share, contentDescription = null, modifier = Modifier.size(14.dp))
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text("Share Letter", fontSize = 11.sp)
+                        Text("Share Letter", fontSize = 12.sp)
                     }
                 }
             }
@@ -387,8 +389,8 @@ fun ApplianceDamageClaimDialog(
                     onDismiss()
                 },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = ElegantGoldPrimary,
-                    contentColor = Color.Black
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
                 ),
                 shape = RoundedCornerShape(8.dp),
                 modifier = Modifier.testTag("submit_surge_claim_dialog_btn")

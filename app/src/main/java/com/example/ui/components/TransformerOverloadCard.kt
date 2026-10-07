@@ -49,6 +49,7 @@ import com.example.ui.theme.ElegantGoldPrimary
 import com.example.ui.theme.Slate100Text
 import com.example.ui.theme.Slate400Text
 import com.example.ui.theme.Slate500Text
+import com.example.ui.theme.extendedColors
 
 /**
  * Feature 7: Transformer Overload Alert Indicator
@@ -68,9 +69,9 @@ fun TransformerOverloadCard(
     )
 
     val loadColor = when {
-        telemetry.currentLoadPercent >= 85 -> Color(0xFFEF4444) // Red alert
-        telemetry.currentLoadPercent >= 70 -> Color(0xFFF59E0B) // Amber
-        else -> Color(0xFF10B981) // Green
+        telemetry.currentLoadPercent >= 85 -> MaterialTheme.colorScheme.error // Red alert
+        telemetry.currentLoadPercent >= 70 -> MaterialTheme.extendedColors.warning // Amber
+        else -> MaterialTheme.extendedColors.success // Green
     }
 
     Card(
@@ -116,11 +117,11 @@ fun TransformerOverloadCard(
                         Text(
                             text = "LOCAL TRANSFORMER HEALTH",
                             style = MaterialTheme.typography.labelSmall.copy(
-                                fontSize = 9.sp,
+                                fontSize = 12.sp,
                                 fontWeight = FontWeight.ExtraBold,
                                 letterSpacing = 1.sp
                             ),
-                            color = ElegantGoldPrimary
+                            color = MaterialTheme.colorScheme.primary
                         )
                         Text(
                             text = "${telemetry.transformerId} (${telemetry.transformerCapacityKva} kVA)",
@@ -142,7 +143,7 @@ fun TransformerOverloadCard(
                         text = if (telemetry.isOverloaded) "OVERLOAD RISK" else "NOMINAL LOAD",
                         style = MaterialTheme.typography.labelSmall.copy(
                             fontWeight = FontWeight.Bold,
-                            fontSize = 10.sp
+                            fontSize = 12.sp
                         ),
                         color = loadColor
                     )
@@ -183,7 +184,7 @@ fun TransformerOverloadCard(
                 Text(
                     text = "3-PHASE VOLTAGE BALANCE (STATUTORY: 230V ±6%):",
                     style = MaterialTheme.typography.labelSmall.copy(
-                        fontSize = 9.sp,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
                         letterSpacing = 0.5.sp
                     ),
@@ -234,7 +235,7 @@ fun TransformerOverloadCard(
                     Text(
                         text = "${telemetry.connectedHouseholds} / ${telemetry.designHouseholdCapacity} max threshold",
                         style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                        color = if (telemetry.connectedHouseholds > telemetry.designHouseholdCapacity) Color(0xFFEF4444) else MaterialTheme.colorScheme.onSurface
+                        color = if (telemetry.connectedHouseholds > telemetry.designHouseholdCapacity) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
                     )
                 }
 
@@ -242,13 +243,13 @@ fun TransformerOverloadCard(
                     Icon(
                         imageVector = Icons.Default.Thermostat,
                         contentDescription = null,
-                        tint = if (telemetry.oilTemperatureCelsius > 70) Color(0xFFEF4444) else ElegantGoldPrimary,
+                        tint = if (telemetry.oilTemperatureCelsius > 70) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(16.dp)
                     )
                     Text(
                         text = "${telemetry.oilTemperatureCelsius}°C Coil Temp",
                         style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                        color = if (telemetry.oilTemperatureCelsius > 70) Color(0xFFEF4444) else MaterialTheme.colorScheme.onSurface
+                        color = if (telemetry.oilTemperatureCelsius > 70) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
                     )
                 }
             }
@@ -257,11 +258,11 @@ fun TransformerOverloadCard(
             Button(
                 onClick = onReportHumSpark,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0x33EF4444),
-                    contentColor = Color(0xFFEF4444)
+                    containerColor = MaterialTheme.colorScheme.error.copy(alpha = 0.2f),
+                    contentColor = MaterialTheme.colorScheme.error
                 ),
                 shape = RoundedCornerShape(8.dp),
-                border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFEF4444)),
+                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.error),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(40.dp)
@@ -275,7 +276,7 @@ fun TransformerOverloadCard(
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
                     text = "REPORT ABNORMAL HUM / SPARKING",
-                    fontSize = 11.sp,
+                    fontSize = 12.sp,
                     fontWeight = FontWeight.ExtraBold
                 )
             }
@@ -290,7 +291,7 @@ private fun PhaseVoltageBadge(
     isWarning: Boolean,
     modifier: Modifier = Modifier
 ) {
-    val borderColor = if (isWarning) Color(0xFFEF4444) else MaterialTheme.colorScheme.outline.copy(alpha = 0.4f)
+    val borderColor = if (isWarning) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.outline.copy(alpha = 0.4f)
     val bgColor = if (isWarning) Color(0x22EF4444) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
 
     Box(
@@ -303,7 +304,7 @@ private fun PhaseVoltageBadge(
         Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
             Text(
                 text = phaseLabel,
-                fontSize = 9.sp,
+                fontSize = 12.sp,
                 fontWeight = FontWeight.Medium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1
@@ -314,14 +315,14 @@ private fun PhaseVoltageBadge(
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Bold,
                 fontFamily = FontFamily.Monospace,
-                color = if (isWarning) Color(0xFFEF4444) else Color(0xFF10B981)
+                color = if (isWarning) MaterialTheme.colorScheme.error else MaterialTheme.extendedColors.success
             )
             if (isWarning) {
                 Text(
                     text = "Low Phase!",
-                    fontSize = 8.sp,
+                    fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFFEF4444)
+                    color = MaterialTheme.colorScheme.error
                 )
             }
         }

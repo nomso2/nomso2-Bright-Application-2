@@ -63,6 +63,7 @@ import com.example.ui.theme.Slate500Text
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import com.example.ui.theme.extendedColors
 
 /**
  * Feature 10: Hanging High-Tension Wire & Street Hazard Pinning
@@ -112,13 +113,13 @@ fun PinStreetHazardDialog(
                     modifier = Modifier
                         .size(38.dp)
                         .clip(CircleShape)
-                        .background(Color(0xFFEF4444).copy(alpha = 0.2f)),
+                        .background(MaterialTheme.colorScheme.error.copy(alpha = 0.2f)),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = Icons.Default.Warning,
                         contentDescription = null,
-                        tint = Color(0xFFEF4444),
+                        tint = MaterialTheme.colorScheme.error,
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -131,7 +132,7 @@ fun PinStreetHazardDialog(
                     Text(
                         text = "Broadcast Danger to Community & DisCo",
                         style = MaterialTheme.typography.labelSmall,
-                        color = Color(0xFFEF4444)
+                        color = MaterialTheme.colorScheme.error
                     )
                 }
             }
@@ -153,7 +154,7 @@ fun PinStreetHazardDialog(
                 Text(
                     text = "HAZARD TYPE:",
                     style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                    color = ElegantGoldPrimary
+                    color = MaterialTheme.colorScheme.primary
                 )
 
                 hazardTypes.forEach { type ->
@@ -162,8 +163,8 @@ fun PinStreetHazardDialog(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(8.dp))
-                            .background(if (isSelected) Color(0x33EF4444) else Color(0xFF1E2430))
-                            .border(1.dp, if (isSelected) Color(0xFFEF4444) else Color.Transparent, RoundedCornerShape(8.dp))
+                            .background(if (isSelected) MaterialTheme.colorScheme.error.copy(alpha = 0.2f) else ElegantDarkBorder)
+                            .border(1.dp, if (isSelected) MaterialTheme.colorScheme.error else Color.Transparent, RoundedCornerShape(8.dp))
                             .clickable {
                                 selectedType = type
                                 if (title.isEmpty() || hazardTypes.any { title.startsWith(it.take(15)) }) {
@@ -190,7 +191,7 @@ fun PinStreetHazardDialog(
                     label = { Text("Hazard Summary") },
                     modifier = Modifier.fillMaxWidth().testTag("hazard_title_input"),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color(0xFFEF4444),
+                        focusedBorderColor = MaterialTheme.colorScheme.error,
                         unfocusedBorderColor = ElegantDarkBorder,
                         focusedTextColor = Slate100Text,
                         unfocusedTextColor = Slate100Text
@@ -204,7 +205,7 @@ fun PinStreetHazardDialog(
                     label = { Text("Exact Street / Junction") },
                     modifier = Modifier.fillMaxWidth().testTag("hazard_location_input"),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color(0xFFEF4444),
+                        focusedBorderColor = MaterialTheme.colorScheme.error,
                         unfocusedBorderColor = ElegantDarkBorder,
                         focusedTextColor = Slate100Text,
                         unfocusedTextColor = Slate100Text
@@ -218,7 +219,7 @@ fun PinStreetHazardDialog(
                     label = { Text("Nearby Landmark (e.g. Opposite Access Bank)") },
                     modifier = Modifier.fillMaxWidth().testTag("hazard_landmark_input"),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color(0xFFEF4444),
+                        focusedBorderColor = MaterialTheme.colorScheme.error,
                         unfocusedBorderColor = ElegantDarkBorder,
                         focusedTextColor = Slate100Text,
                         unfocusedTextColor = Slate100Text
@@ -233,7 +234,7 @@ fun PinStreetHazardDialog(
                     onDismiss()
                 },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFEF4444),
+                    containerColor = MaterialTheme.colorScheme.error,
                     contentColor = Color.White
                 ),
                 shape = RoundedCornerShape(8.dp),
@@ -280,7 +281,7 @@ fun StreetHazardsListDialog(
                     Icon(
                         imageVector = Icons.Default.Warning,
                         contentDescription = null,
-                        tint = Color(0xFFEF4444),
+                        tint = MaterialTheme.colorScheme.error,
                         modifier = Modifier.size(24.dp)
                     )
                     Column {
@@ -292,7 +293,7 @@ fun StreetHazardsListDialog(
                         Text(
                             text = "${hazards.size} Live Community Danger Pins",
                             style = MaterialTheme.typography.labelSmall,
-                            color = ElegantGoldPrimary
+                            color = MaterialTheme.colorScheme.primary
                         )
                     }
                 }
@@ -307,7 +308,7 @@ fun StreetHazardsListDialog(
                 Button(
                     onClick = onOpenPinDialog,
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFEF4444),
+                        containerColor = MaterialTheme.colorScheme.error,
                         contentColor = Color.White
                     ),
                     shape = RoundedCornerShape(8.dp),
@@ -351,7 +352,7 @@ fun StreetHazardsListDialog(
         confirmButton = {
             Button(
                 onClick = onDismiss,
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1E2430), contentColor = Color.White),
+                colors = ButtonDefaults.buttonColors(containerColor = ElegantDarkBorder, contentColor = Color.White),
                 shape = RoundedCornerShape(8.dp)
             ) {
                 Text("Close")
@@ -372,7 +373,7 @@ fun HazardCardItem(
             .testTag("hazard_card_${hazard.id}"),
         shape = RoundedCornerShape(10.dp),
         colors = CardDefaults.cardColors(containerColor = Color(0xFF141820)),
-        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFEF4444).copy(alpha = 0.4f))
+        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.4f))
     ) {
         Column(
             modifier = Modifier
@@ -388,14 +389,14 @@ fun HazardCardItem(
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(4.dp))
-                        .background(Color(0xFFEF4444).copy(alpha = 0.2f))
+                        .background(MaterialTheme.colorScheme.error.copy(alpha = 0.2f))
                         .padding(horizontal = 6.dp, vertical = 2.dp)
                 ) {
                     Text(
                         text = hazard.urgency,
-                        fontSize = 9.sp,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFFEF4444)
+                        color = MaterialTheme.colorScheme.error
                     )
                 }
 
@@ -403,14 +404,14 @@ fun HazardCardItem(
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(4.dp))
-                            .background(Color(0xFF10B981).copy(alpha = 0.2f))
+                            .background(MaterialTheme.extendedColors.success.copy(alpha = 0.2f))
                             .padding(horizontal = 6.dp, vertical = 2.dp)
                     ) {
                         Text(
                             text = "CREW DISPATCHED",
-                            fontSize = 8.sp,
+                            fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF10B981)
+                            color = MaterialTheme.extendedColors.success
                         )
                     }
                 }
@@ -423,7 +424,7 @@ fun HazardCardItem(
             )
 
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                Icon(Icons.Default.LocationOn, contentDescription = null, tint = ElegantGoldPrimary, modifier = Modifier.size(14.dp))
+                Icon(Icons.Default.LocationOn, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(14.dp))
                 Text(
                     text = "${hazard.location} (${hazard.landmark})",
                     style = MaterialTheme.typography.bodySmall,
@@ -444,13 +445,13 @@ fun HazardCardItem(
 
                 OutlinedButton(
                     onClick = onUpvote,
-                    colors = ButtonDefaults.outlinedButtonColors(contentColor = ElegantGoldPrimary),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.primary),
                     shape = RoundedCornerShape(6.dp),
                     modifier = Modifier.testTag("upvote_hazard_${hazard.id}")
                 ) {
                     Icon(Icons.Default.ThumbUp, contentDescription = null, modifier = Modifier.size(12.dp))
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text("Verify Danger (${hazard.verifiedCount})", fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                    Text("Verify Danger (${hazard.verifiedCount})", fontSize = 12.sp, fontWeight = FontWeight.Bold)
                 }
             }
         }
