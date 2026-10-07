@@ -71,6 +71,7 @@ import coil.compose.AsyncImage
 import com.example.R
 import com.example.model.FaultType
 import com.example.model.UserProfile
+import com.example.ui.components.DisCoContactSection
 import java.io.File
 import java.io.FileOutputStream
 import com.example.ui.theme.extendedColors
@@ -691,6 +692,14 @@ fun ReportFaultScreen(
                 }
             }
         }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Contact your DisCo: official numbers for the distributor(s) serving the chosen state
+        DisCoContactSection(
+            userProfile = userProfile,
+            faultType = selectedFaultType
+        )
 
         Spacer(modifier = Modifier.height(24.dp))
 

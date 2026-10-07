@@ -1,6 +1,7 @@
 package com.example.ui.components
 
 import android.content.Context
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
@@ -51,6 +52,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.model.DisCo
+import com.example.model.PhoneNumbers
 import com.example.model.UserProfile
 import com.example.ui.theme.ElegantDarkBar
 import com.example.ui.theme.ElegantDarkBorder
@@ -78,20 +80,9 @@ fun DisCoQuickChannelsDialog(
     val context = LocalContext.current
     val currentDisCo = DisCo.fromCode(userProfile.discoCode)
 
-    // DisCo specific WhatsApp contact numbers (clean international format)
-    val whatsappNumber = when (currentDisCo) {
-        DisCo.EKEDC -> "2347080655555"
-        DisCo.IE -> "2349088999900"
-        DisCo.AEDC -> "2348039070070"
-        DisCo.IBEDC -> "2347001239999"
-        DisCo.PHED -> "2348139834000"
-        DisCo.EEDC -> "23484700100"
-        DisCo.BEDC -> "2348035888888"
-        DisCo.KAEDC -> "2348031230000"
-        DisCo.KEDCO -> "2347005555555"
-        DisCo.JED -> "2347000533267"
-        DisCo.YEDC -> "2348031234567"
-    }
+    // Official WhatsApp line from the DisCo's own website (null when the DisCo publishes none)
+    val whatsappNumber: String? = currentDisCo.contacts?.whatsapp
+        ?.firstNotNullOfOrNull { PhoneNumbers.toWhatsAppDigits(it) }
 
     val ussdCodes = listOf(
         UssdQuickCode("Prepaid Token Retrieval", "*389*300#", "Retrieve lost 20-digit token or check vend history"),
@@ -154,6 +145,10 @@ fun DisCoQuickChannelsDialog(
                         .clickable {
                             val msg = "Hello ${userProfile.discoCode}, I am contacting you regarding Meter ${userProfile.meterNumber} on ${userProfile.feederName}."
                             val encodedMsg = Uri.encode(msg)
+                            if (whatsappNumber == null) {
+                                Toast.makeText(context, "${currentDisCo.code} has no official WhatsApp line. Please call instead.", Toast.LENGTH_SHORT).show()
+                                return@clickable
+                            }
                             val url = "https://wa.me/$whatsappNumber?text=$encodedMsg"
                             try {
                                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
@@ -197,7 +192,7 @@ fun DisCoQuickChannelsDialog(
                                     color = Color.White
                                 )
                                 Text(
-                                    text = "Chat with ${userProfile.discoCode} Virtual Assistant",
+                                    text = if (whatsappNumber != null) "Chat with ${userProfile.discoCode} on WhatsApp" else "No official WhatsApp line. Call instead",
                                     style = MaterialTheme.typography.labelSmall,
                                     color = Color(0xFF86EFAC)
                                 )
@@ -219,8 +214,12 @@ fun DisCoQuickChannelsDialog(
                         .clip(RoundedCornerShape(12.dp))
                         .border(1.dp, ElegantDarkBorder, RoundedCornerShape(12.dp))
                         .clickable {
-                            val intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:${currentDisCo.customerCarePhone}"))
-                            context.startActivity(intent)
+                            val intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:${PhoneNumbers.toDialable(currentDisCo.customerCarePhone)}"))
+                            try {
+                                context.startActivity(intent)
+                            } catch (e: ActivityNotFoundException) {
+                                Toast.makeText(context, "No phone app found. Number: ${currentDisCo.customerCarePhone}", Toast.LENGTH_LONG).show()
+                            }
                         }
                         .testTag("dial_customer_care_card"),
                     colors = CardDefaults.cardColors(containerColor = Color(0xFF161B24))
