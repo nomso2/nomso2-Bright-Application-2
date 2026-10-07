@@ -120,9 +120,9 @@ object PowerSector30Registry {
             problemNumber = 12,
             category = SolutionCategory.BILLING_TARIFFS_FINANCIAL,
             problemStatement = "Getting a rebate or credit for prolonged blackouts is a bureaucratic nightmare.",
-            solutionTitle = "Automated Refund Ledger",
-            solutionDetail = "Logs uninterrupted hours of darkness and auto-fills a formal NERC refund claim form when the DisCo violates service level agreements.",
-            regulatoryBadge = "NERC CPR 2023"
+            solutionTitle = "Wasted-Time Refund Tracker",
+            solutionDetail = "Tap Light On / Light Off to log your supply. Bright compares your hours with your band's promise (Band A: 20h/day), estimates what you're owed, files the claim with your DisCo in one tap and drafts the NERC escalation.",
+            regulatoryBadge = "NERC/334/2022"
         ),
         PowerProblemSolution(
             problemNumber = 13,
