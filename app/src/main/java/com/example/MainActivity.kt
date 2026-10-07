@@ -52,7 +52,6 @@ import com.example.ui.BrightViewModel
 import com.example.ui.components.EditMeterDialog
 import com.example.ui.components.EnergyOptimizationDialog
 import com.example.ui.components.EstateExcoAndSlaDossierDialog
-import com.example.ui.components.PhaseOnboardingDialog
 import com.example.ui.components.ProfileAdminDialog
 import com.example.ui.components.DeleteAccountDialog
 import com.example.ui.components.ResolutionRatingDialog
@@ -172,6 +171,7 @@ fun BrightApp(viewModel: BrightViewModel) {
     val gatewayTelemetryMap by viewModel.gatewayTelemetryMap.collectAsState()
     val isPollingGateway by viewModel.isPollingGateway.collectAsState()
     val paidMeterNumbers by viewModel.paidMeterNumbers.collectAsState()
+    val activationPaymentState by viewModel.activationPaymentState.collectAsState()
     val citizenMeterStatus by viewModel.citizenMeterStatus.collectAsState()
 
     // Session Lock & Re-Login State (Auto-Lock on leaving app)
@@ -204,15 +204,16 @@ fun BrightApp(viewModel: BrightViewModel) {
         BackHandler(enabled = canDismissOnboarding) { showOnboardingDialog = false }
         SignUpOnboardingScreen(
             currentProfile = userProfile,
-            initialSignInMode = true,
+            // A phone with an account on it opens on Sign in; otherwise on Register.
+            initialSignInMode = isPinSet,
             isDismissible = canDismissOnboarding,
             paidMeters = paidMeterNumbers,
-            onRecordMeterPayment = { meterNum ->
-                viewModel.markMeterPaid(meterNum)
-            },
+            paymentState = activationPaymentState,
+            onStartPayment = { meterNum -> viewModel.startActivationPayment(meterNum) },
+            onResetPayment = { viewModel.resetActivationPayment() },
             onDismiss = { showOnboardingDialog = false },
-            onCompleteSignUp = { newProfile ->
-                viewModel.completeOnboarding(newProfile)
+            onCompleteSignUp = { newProfile, newPin ->
+                viewModel.completeOnboarding(newProfile, newPin)
                 showOnboardingDialog = false
             },
             onSignIn = { signedInProfile ->
@@ -221,8 +222,7 @@ fun BrightApp(viewModel: BrightViewModel) {
             },
             isPinSet = isPinSet,
             verifyPin = { pin -> viewModel.verifyPin(pin) },
-            // Only used when no PIN exists yet; an existing PIN is never silently replaced.
-            onCreatePin = { newPin -> if (!isPinSet) viewModel.setUserPin(newPin) }
+            onDeleteAccount = { viewModel.deleteAccount() }
         )
         return
     }
@@ -481,17 +481,6 @@ fun BrightApp(viewModel: BrightViewModel) {
             onConfirmResolution = { rating, notes ->
                 viewModel.resolveComplaint(ticketId, rating, notes)
                 resolvingTicketId = null
-            }
-        )
-    }
-
-    // Phase 1: Onboarding & SIM-Authenticated Verification Dialog
-    if (showOnboardingDialog) {
-        PhaseOnboardingDialog(
-            currentProfile = userProfile,
-            onDismiss = { showOnboardingDialog = false },
-            onCompleteOnboarding = { meterNum, disco, band, address, paymentGateway ->
-                viewModel.verifyAndOnboardMeter(meterNum, disco, band, address, paymentGateway)
             }
         )
     }

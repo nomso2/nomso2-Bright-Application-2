@@ -1,297 +1,69 @@
 package com.example.ui.components
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.automirrored.filled.ExitToApp
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Bolt
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.ContentCopy
-import androidx.compose.material.icons.filled.CreditCard
-import androidx.compose.material.icons.filled.ElectricMeter
-import androidx.compose.material.icons.filled.Fingerprint
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Phone
-import androidx.compose.material.icons.filled.Security
-import androidx.compose.material.icons.filled.Speed
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Divider
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalClipboardManager
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.example.model.DisCo
-import com.example.model.FeederBand
+import com.example.data.payment.ActivationPaymentState
 import com.example.model.UserProfile
-import com.example.ui.security.BiometricAuthenticator
-import com.example.ui.security.findFragmentActivity
-import com.example.ui.theme.EmeraldAccent
-import com.example.ui.theme.GoldPrimary
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import com.example.ui.theme.extendedColors
-import com.example.ui.theme.GreenSoft
-import com.example.ui.theme.InfoSky
 
-data class DemoAccount(
-    val profile: UserProfile,
-    val subtitle: String,
-    val badgeColor: Color
-)
-
-val PRESET_ACCOUNTS = listOf(
-    DemoAccount(
-        profile = UserProfile(
-            meterNumber = "01429583192",
-            customerName = "Chuka Obunma",
-            phoneNumber = "+234 803 892 4110",
-            streetAddress = "14 Adeola Odeku Street, Victoria Island",
-            lga = "Eti-Osa",
-            state = "Lagos State",
-            discoCode = "EKEDC",
-            feederName = "Victoria Island 33kV Injection Feeder 4",
-            feederBand = FeederBand.BAND_A,
-            transformerId = "TR-VI-ADEOLA-04B",
-            isPrepaid = true,
-            connectedHouseholdsCount = 184,
-            isOnboarded = true,
-            isGatewayPaid = true
-        ),
-        subtitle = "Prepaid Residential • Band A (20h+ SLA) • Victoria Island",
-        badgeColor = Color(0xFFE5B869)
-    ),
-    DemoAccount(
-        profile = UserProfile(
-            meterNumber = "04821094821",
-            customerName = "Amina Bello",
-            phoneNumber = "+234 802 445 9921",
-            streetAddress = "22 Gana Street, Maitama",
-            lga = "Abuja Municipal",
-            state = "Abuja FCT",
-            discoCode = "AEDC",
-            feederName = "Maitama Central 33kV Feeder",
-            feederBand = FeederBand.BAND_B,
-            transformerId = "TR-ABJ-MAIT-12A",
-            isPrepaid = true,
-            connectedHouseholdsCount = 96,
-            isOnboarded = true,
-            isGatewayPaid = true
-        ),
-        subtitle = "Prepaid Residential • Band B (16h+ SLA) • Abuja FCT",
-        badgeColor = InfoSky
-    ),
-    DemoAccount(
-        profile = UserProfile(
-            meterNumber = "02839104852",
-            customerName = "Babatunde Adeleke",
-            phoneNumber = "+234 805 123 7890",
-            streetAddress = "8 Isaac John Street, GRA Ikeja",
-            lga = "Ikeja",
-            state = "Lagos State",
-            discoCode = "IKEDC",
-            feederName = "Ikeja GRA 11kV Feeder 2",
-            feederBand = FeederBand.BAND_A,
-            transformerId = "TR-LOS-IKJ-08",
-            isPrepaid = false,
-            connectedHouseholdsCount = 210,
-            isOnboarded = true,
-            isGatewayPaid = false
-        ),
-        subtitle = "Postpaid Commercial • Band A (20h+ SLA) • Ikeja GRA",
-        badgeColor = GreenSoft
-    )
-)
-
-@OptIn(ExperimentalMaterial3Api::class)
+/**
+ * Sign in, or register a meter step by step:
+ *   1. Meter & name details  2. Create a PIN (mandatory)  3. One-time ₦1,000 activation  4. Done.
+ *
+ * The pieces live in SignUpSignInForm.kt, SignUpRegistrationFlow.kt, SignUpActivationStep.kt and
+ * SignUpComponents.kt. Payment goes through the ViewModel's ActivationPaymentGateway.
+ */
 @Composable
 fun SignUpOnboardingScreen(
     currentProfile: UserProfile = UserProfile(),
     initialSignInMode: Boolean = true,
     isDismissible: Boolean = false,
-    paidMeters: Set<String> = setOf("01429583192", "04821094821"),
-    onRecordMeterPayment: (String) -> Unit = {},
+    paidMeters: Set<String> = emptySet(),
+    paymentState: ActivationPaymentState = ActivationPaymentState.Idle,
+    onStartPayment: (meter: String) -> Unit = {},
+    onResetPayment: () -> Unit = {},
     onDismiss: () -> Unit = {},
-    onCompleteSignUp: (UserProfile) -> Unit,
-    onSignIn: (UserProfile) -> Unit = onCompleteSignUp,
-    onSkipForNow: () -> Unit = {},
+    onCompleteSignUp: (profile: UserProfile, newPin: String?) -> Unit,
+    onSignIn: (UserProfile) -> Unit = {},
     isPinSet: Boolean = false,
     verifyPin: (String) -> Boolean = { false },
-    onCreatePin: (String) -> Unit = {},
+    onDeleteAccount: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    val scope = rememberCoroutineScope()
-
-    // Mode switcher: true for Sign In, false for Register New Meter / Sign Up
     var isSignInMode by remember { mutableStateOf(initialSignInMode) }
-
-    // Meter Gateway Paid State (Paid Once Per Meter)
-    val localPaidMeters = remember {
-        mutableStateListOf<String>().apply {
-            addAll(paidMeters)
-            if (!contains("01429583192")) add("01429583192")
-            if (!contains("04821094821")) add("04821094821")
-        }
-    }
-
-    LaunchedEffect(paidMeters) {
-        paidMeters.forEach { m ->
-            if (!localPaidMeters.contains(m)) {
-                localPaidMeters.add(m)
-            }
-        }
-    }
-
-    fun isMeterPaid(m: String): Boolean {
-        val trimmed = m.trim()
-        return localPaidMeters.contains(trimmed) || trimmed == "01429583192" || trimmed == "04821094821"
-    }
-
-    // Sign In form fields
-    var signInIdentifier by remember {
-        mutableStateOf(if (currentProfile.meterNumber.isNotBlank()) currentProfile.meterNumber else "01429583192")
-    }
-    var signInPin by remember { mutableStateOf("") }
-    var isPinVisible by remember { mutableStateOf(false) }
-    var signInErrorMessage by remember { mutableStateOf<String?>(null) }
-    var isAuthenticating by remember { mutableStateOf(false) }
-
-    // Blocking Gateway Dialog for Sign In
-    var showSignInGatewayDialog by remember { mutableStateOf(false) }
-    var pendingSignInProfile by remember { mutableStateOf<UserProfile?>(null) }
-    var isProcessingSignInPayment by remember { mutableStateOf(false) }
-    var selectedSignInPaymentMethod by remember { mutableStateOf("Debit Card (Interswitch)") }
-
-    val signInContext = LocalContext.current
-    val signInActivity = remember(signInContext) { signInContext.findFragmentActivity() }
-    val canUseBiometricSignIn = remember(signInContext) { BiometricAuthenticator.canAuthenticate(signInContext) }
-
-    fun attemptSignIn(targetProfile: UserProfile, verifiedByBiometrics: Boolean = false) {
-        // When a PIN exists on this phone, every sign-in path (including "switch account" from the
-        // lock screen) must present it, unless the system BiometricPrompt already succeeded.
-        // Otherwise signing in would bypass the session lock.
-        if (isPinSet && !verifiedByBiometrics && !verifyPin(signInPin)) {
-            signInErrorMessage = if (signInPin.isBlank()) "Enter your PIN to sign in on this phone." else "Incorrect PIN. Please try again."
-            return
-        }
-        val meter = targetProfile.meterNumber.trim()
-        if (!isMeterPaid(meter)) {
-            pendingSignInProfile = targetProfile
-            showSignInGatewayDialog = true
-        } else {
-            onSignIn(targetProfile)
-        }
-    }
-
-    // Forgot PIN dialog state
+    var registrationStep by remember { mutableStateOf(SignUpStep.DETAILS) }
     var showForgotPinDialog by remember { mutableStateOf(false) }
+    var showDeleteAccountDialog by remember { mutableStateOf(false) }
+    var registrationGeneration by remember { mutableStateOf(0) }
 
-    // Register New Meter form fields
-    var meterNumber by remember { mutableStateOf(currentProfile.meterNumber.ifBlank { "01429583192" }) }
-    var customerName by remember { mutableStateOf(currentProfile.customerName.ifBlank { "Chuka Obunma" }) }
-    var phoneNumber by remember { mutableStateOf(currentProfile.phoneNumber.ifBlank { "+234 803 892 4110" }) }
-    var streetAddress by remember { mutableStateOf(currentProfile.streetAddress.ifBlank { "14 Adeola Odeku Street, Victoria Island" }) }
-    var lga by remember { mutableStateOf(currentProfile.lga.ifBlank { "Eti-Osa" }) }
-    var selectedState by remember { mutableStateOf(currentProfile.state.ifBlank { "Lagos State" }) }
-    var selectedDisCo by remember { mutableStateOf(DisCo.fromCode(currentProfile.discoCode)) }
-    var selectedBand by remember { mutableStateOf(currentProfile.feederBand) }
-    var isPrepaid by remember { mutableStateOf(currentProfile.isPrepaid) }
-    var transformerId by remember { mutableStateOf(currentProfile.transformerId.ifBlank { "TR-LOS-VI-04B" }) }
-    var newAccountPin by remember { mutableStateOf("") }
-
-    fun saveNewAccountPinIfValid() {
-        val pin = newAccountPin.trim()
-        if (pin.length in 4..8 && pin.all { it.isDigit() }) {
-            onCreatePin(pin)
-        }
-    }
-
-    var isDisCoDropdownExpanded by remember { mutableStateOf(false) }
-    var isBandDropdownExpanded by remember { mutableStateOf(false) }
-    var isRegistrationSubmitted by remember { mutableStateOf(false) }
-
-    // Register meter payment simulator state (strictly blocking)
-    var selectedRegPaymentMethod by remember { mutableStateOf("Debit Card (Interswitch)") }
-    var isProcessingRegPayment by remember { mutableStateOf(false) }
-
-    val currentConstructedProfile = UserProfile(
-        meterNumber = meterNumber.ifBlank { "01429583192" },
-        customerName = customerName.ifBlank { "Resident User" },
-        phoneNumber = phoneNumber.ifBlank { "+234 800 000 0000" },
-        streetAddress = streetAddress.ifBlank { "Residential Address" },
-        lga = lga.ifBlank { "LGA" },
-        state = selectedState.ifBlank { "Lagos State" },
-        discoCode = selectedDisCo.code,
-        feederName = "${selectedDisCo.code} 33kV Injection Feeder",
-        feederBand = selectedBand,
-        transformerId = transformerId.ifBlank { "TR-AUTO-01" },
-        isPrepaid = isPrepaid,
-        connectedHouseholdsCount = 184,
-        isOnboarded = true
-    )
+    // The Sign in / Register switch is only offered before registration gets going,
+    // so each later step shows just its own content and one primary button.
+    val showModeSwitch = isSignInMode || registrationStep == SignUpStep.DETAILS
 
     Box(
         modifier = modifier
@@ -301,1423 +73,128 @@ fun SignUpOnboardingScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .systemBarsPadding()
+                .imePadding()
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 20.dp, vertical = 20.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(horizontal = 20.dp, vertical = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Top App Bar with optional Dismiss (X) button
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(36.dp)
-                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f), CircleShape)
-                            .border(1.dp, MaterialTheme.colorScheme.primary, CircleShape),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Bolt,
-                            contentDescription = "Bright Power Logo",
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(22.dp)
-                        )
-                    }
-                    Column {
-                        Text(
-                            text = "THE BRIGHT PROJECT",
-                            style = MaterialTheme.typography.labelSmall.copy(
-                                fontWeight = FontWeight.Black,
-                                letterSpacing = 1.5.sp,
-                                fontSize = 12.sp
-                            ),
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                        Text(
-                            text = if (isSignInMode) "Resident Sign In" else "Meter Registration",
-                            style = MaterialTheme.typography.titleSmall.copy(
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 14.sp
-                            ),
-                            color = MaterialTheme.colorScheme.onBackground
-                        )
-                    }
-                }
+            SignUpHeader(
+                title = if (isSignInMode) "Sign in" else "Register your meter",
+                isDismissible = isDismissible,
+                onDismiss = onDismiss
+            )
 
-                if (isDismissible) {
-                    IconButton(
-                        onClick = onDismiss,
-                        modifier = Modifier
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
-                            .testTag("dismiss_auth_screen_button")
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = "Close and return to dashboard",
-                            tint = MaterialTheme.colorScheme.onSurface,
-                            modifier = Modifier.size(18.dp)
-                        )
+            if (showModeSwitch) {
+                AuthModeSwitch(
+                    isSignInMode = isSignInMode,
+                    onSelectSignIn = { isSignInMode = true },
+                    onSelectRegister = {
+                        isSignInMode = false
+                        registrationStep = SignUpStep.DETAILS
                     }
-                }
+                )
             }
 
-            Spacer(modifier = Modifier.height(18.dp))
-
-            // Primary Mode Selector Tabs: [ Sign In ] vs [ Register New Meter ]
-            Surface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .testTag("auth_mode_selector"),
-                shape = RoundedCornerShape(14.dp),
-                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(4.dp),
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    // Sign In Tab
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .clip(RoundedCornerShape(10.dp))
-                            .background(if (isSignInMode) MaterialTheme.colorScheme.primary else Color.Transparent)
-                            .clickable {
-                                isSignInMode = true
-                                signInErrorMessage = null
-                            }
-                            .padding(vertical = 10.dp)
-                            .testTag("tab_sign_in"),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(6.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Lock,
-                                contentDescription = null,
-                                tint = if (isSignInMode) Color.Black else MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.size(15.dp)
-                            )
-                            Text(
-                                text = "Sign In",
-                                style = MaterialTheme.typography.labelMedium.copy(
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 13.sp
-                                ),
-                                color = if (isSignInMode) Color.Black else MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    }
-
-                    // Register Meter Tab
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .clip(RoundedCornerShape(10.dp))
-                            .background(if (!isSignInMode) MaterialTheme.colorScheme.primary else Color.Transparent)
-                            .clickable {
-                                isSignInMode = false
-                                signInErrorMessage = null
-                            }
-                            .padding(vertical = 10.dp)
-                            .testTag("tab_register_meter"),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(6.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.ElectricMeter,
-                                contentDescription = null,
-                                tint = if (!isSignInMode) Color.Black else MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.size(15.dp)
-                            )
-                            Text(
-                                text = "Register Meter",
-                                style = MaterialTheme.typography.labelMedium.copy(
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 13.sp
-                                ),
-                                color = if (!isSignInMode) Color.Black else MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            // ==========================================
-            // MODE 1: SIGN IN (Fast, direct, frictionless)
-            // ==========================================
             if (isSignInMode) {
-                // Sign In Card
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .testTag("sign_in_card"),
-                    shape = RoundedCornerShape(18.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(20.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        Column {
-                            Text(
-                                text = "Sign In to Your Account",
-                                style = MaterialTheme.typography.titleMedium.copy(
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 17.sp
-                                ),
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                            Spacer(modifier = Modifier.height(2.dp))
-                            Text(
-                                text = "Access live feeder monitoring, tariff SLAs, and automated billing disputes.",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-
-                        // Meter Number or Phone Input
-                        OutlinedTextField(
-                            value = signInIdentifier,
-                            onValueChange = {
-                                signInIdentifier = it
-                                signInErrorMessage = null
-                            },
-                            label = { Text("Meter Number or Registered Phone") },
-                            placeholder = { Text("e.g. 01429583192 or +234...") },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Default.ElectricMeter,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.size(20.dp)
-                                )
-                            },
-                            trailingIcon = {
-                                if (signInIdentifier.isNotBlank()) {
-                                    IconButton(onClick = { signInIdentifier = "" }) {
-                                        Icon(
-                                            imageVector = Icons.Default.Close,
-                                            contentDescription = "Clear identifier",
-                                            modifier = Modifier.size(16.dp)
-                                        )
-                                    }
-                                }
-                            },
-                            singleLine = true,
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .testTag("sign_in_identifier_input"),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = MaterialTheme.colorScheme.primary,
-                                unfocusedBorderColor = MaterialTheme.colorScheme.outline
-                            )
-                        )
-
-                        // 4-Digit Security PIN
-                        OutlinedTextField(
-                            value = signInPin,
-                            onValueChange = {
-                                if (it.length <= 8) {
-                                    signInPin = it
-                                    signInErrorMessage = null
-                                }
-                            },
-                            label = { Text("Security PIN") },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Default.Lock,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.size(20.dp)
-                                )
-                            },
-                            trailingIcon = {
-                                IconButton(onClick = { isPinVisible = !isPinVisible }) {
-                                    Icon(
-                                        imageVector = if (isPinVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
-                                        contentDescription = if (isPinVisible) "Hide PIN" else "Show PIN",
-                                        modifier = Modifier.size(18.dp)
-                                    )
-                                }
-                            },
-                            visualTransformation = if (isPinVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
-                            singleLine = true,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .testTag("sign_in_pin_input"),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = MaterialTheme.colorScheme.primary,
-                                unfocusedBorderColor = MaterialTheme.colorScheme.outline
-                            )
-                        )
-
-                        // Error message banner if any
-                        signInErrorMessage?.let { err ->
-                            Text(
-                                text = err,
-                                color = MaterialTheme.colorScheme.error,
-                                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold)
-                            )
-                        }
-
-                        // Forgot PIN link
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.End
-                        ) {
-                            Text(
-                                text = "Forgot PIN? Reset via SMS OTP",
-                                style = MaterialTheme.typography.bodySmall.copy(
-                                    fontWeight = FontWeight.SemiBold,
-                                    fontSize = 12.sp
-                                ),
-                                color = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier
-                                    .clickable { showForgotPinDialog = true }
-                                    .testTag("forgot_pin_button")
-                            )
-                        }
-
-                        // Main Sign In Action Button
-                        Button(
-                            onClick = {
-                                if (signInIdentifier.isBlank()) {
-                                    signInErrorMessage = "Please enter your meter number or phone number"
-                                    return@Button
-                                }
-                                val matched = PRESET_ACCOUNTS.find {
-                                    it.profile.meterNumber == signInIdentifier.trim() ||
-                                            it.profile.phoneNumber == signInIdentifier.trim()
-                                }
-                                val profileToSignIn = matched?.profile ?: currentProfile.copy(
-                                    meterNumber = signInIdentifier.trim(),
-                                    isOnboarded = true
-                                )
-                                attemptSignIn(profileToSignIn)
-                            },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(50.dp)
-                                .testTag("submit_sign_in_button"),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.primary,
-                                contentColor = MaterialTheme.colorScheme.onPrimary
-                            ),
-                            shape = RoundedCornerShape(12.dp)
-                        ) {
-                            if (isAuthenticating) {
-                                CircularProgressIndicator(
-                                    color = Color.Black,
-                                    modifier = Modifier.size(20.dp),
-                                    strokeWidth = 2.dp
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text("Signing In...", fontWeight = FontWeight.Bold)
-                            } else {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(18.dp)
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(
-                                    text = "SIGN IN TO DASHBOARD",
-                                    fontWeight = FontWeight.Black,
-                                    letterSpacing = 0.5.sp
-                                )
-                            }
-                        }
-
-                        // Biometric Quick Unlock Option: real BiometricPrompt, only for the account
-                        // already registered on this phone; signs in only on the success callback.
-                        if (canUseBiometricSignIn && signInActivity != null && isPinSet && currentProfile.meterNumber.isNotBlank()) OutlinedButton(
-                            onClick = {
-                                BiometricAuthenticator.authenticate(
-                                    activity = signInActivity,
-                                    title = "Sign in to Bright",
-                                    subtitle = "Confirm it's you to open Meter #${currentProfile.meterNumber}",
-                                    onSuccess = {
-                                        attemptSignIn(currentProfile.copy(isOnboarded = true), verifiedByBiometrics = true)
-                                    },
-                                    onError = { message -> signInErrorMessage = message }
-                                )
-                            },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(46.dp)
-                                .testTag("biometric_sign_in_button"),
-                            shape = RoundedCornerShape(12.dp),
-                            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.secondary.copy(alpha = 0.6f))
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Fingerprint,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.secondary,
-                                modifier = Modifier.size(18.dp)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                text = "Sign In with Fingerprint / Face",
-                                style = MaterialTheme.typography.bodySmall.copy(
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.secondary
-                                )
-                            )
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(20.dp))
-
-                // One-Tap Verified Resident Accounts Switcher
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "ONE-TAP VERIFIED ACCOUNTS",
-                            style = MaterialTheme.typography.labelSmall.copy(
-                                fontWeight = FontWeight.ExtraBold,
-                                letterSpacing = 1.2.sp,
-                                fontSize = 12.sp
-                            ),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                        Text(
-                            text = "Switch Instantly",
-                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp),
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    }
-
-                    PRESET_ACCOUNTS.forEach { acc ->
-                        val isCurrent = acc.profile.meterNumber == currentProfile.meterNumber
-                        val isAccPaid = isMeterPaid(acc.profile.meterNumber)
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    signInIdentifier = acc.profile.meterNumber
-                                    attemptSignIn(acc.profile)
-                                }
-                                .testTag("preset_account_${acc.profile.meterNumber}"),
-                            shape = RoundedCornerShape(14.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = if (isCurrent) MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f)
-                                else MaterialTheme.colorScheme.surface
-                            ),
-                            border = androidx.compose.foundation.BorderStroke(
-                                1.dp,
-                                if (isCurrent) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)
-                            )
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(14.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                                    modifier = Modifier.weight(1f)
-                                ) {
-                                    Box(
-                                        modifier = Modifier
-                                            .size(40.dp)
-                                            .clip(CircleShape)
-                                            .background(acc.badgeColor.copy(alpha = 0.15f))
-                                            .border(1.dp, acc.badgeColor.copy(alpha = 0.5f), CircleShape),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Text(
-                                            text = acc.profile.discoCode.take(2),
-                                            fontWeight = FontWeight.Black,
-                                            fontSize = 12.sp,
-                                            color = acc.badgeColor
-                                        )
-                                    }
-
-                                    Column {
-                                        Row(
-                                            verticalAlignment = Alignment.CenterVertically,
-                                            horizontalArrangement = Arrangement.spacedBy(6.dp)
-                                        ) {
-                                            Text(
-                                                text = acc.profile.customerName,
-                                                style = MaterialTheme.typography.bodyMedium.copy(
-                                                    fontWeight = FontWeight.Bold,
-                                                    fontSize = 14.sp
-                                                ),
-                                                color = MaterialTheme.colorScheme.onSurface
-                                            )
-                                            if (isCurrent) {
-                                                Surface(
-                                                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
-                                                    shape = RoundedCornerShape(100.dp)
-                                                ) {
-                                                    Text(
-                                                        text = "ACTIVE",
-                                                        fontSize = 12.sp,
-                                                        fontWeight = FontWeight.ExtraBold,
-                                                        color = MaterialTheme.colorScheme.primary,
-                                                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
-                                                    )
-                                                }
-                                            }
-                                            Surface(
-                                                color = if (isAccPaid) MaterialTheme.colorScheme.secondary.copy(alpha = 0.15f) else MaterialTheme.extendedColors.warning.copy(alpha = 0.15f),
-                                                shape = RoundedCornerShape(100.dp)
-                                            ) {
-                                                Text(
-                                                    text = if (isAccPaid) "✓ ₦500 PAID" else "₦500 REQUIRED",
-                                                    fontSize = 12.sp,
-                                                    fontWeight = FontWeight.ExtraBold,
-                                                    color = if (isAccPaid) MaterialTheme.colorScheme.secondary else MaterialTheme.extendedColors.warning,
-                                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
-                                                )
-                                            }
-                                        }
-                                        Spacer(modifier = Modifier.height(2.dp))
-                                        Text(
-                                            text = "Meter #${acc.profile.meterNumber} • ${acc.profile.discoCode}",
-                                            style = MaterialTheme.typography.bodySmall.copy(
-                                                fontWeight = FontWeight.SemiBold,
-                                                fontSize = 12.sp
-                                            ),
-                                            color = MaterialTheme.colorScheme.primary
-                                        )
-                                        Text(
-                                            text = acc.subtitle,
-                                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp),
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis
-                                        )
-                                    }
-                                }
-
-                                Button(
-                                    onClick = {
-                                        attemptSignIn(acc.profile)
-                                    },
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = if (!isAccPaid) MaterialTheme.extendedColors.warning else if (isCurrent) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
-                                        contentColor = if (!isAccPaid || isCurrent) Color.Black else MaterialTheme.colorScheme.onSurface
-                                    ),
-                                    shape = RoundedCornerShape(8.dp),
-                                    modifier = Modifier.testTag("login_account_${acc.profile.meterNumber}")
-                                ) {
-                                    Text(
-                                        text = if (!isAccPaid) "Pay ₦500" else if (isCurrent) "Resume" else "Sign In",
-                                        fontSize = 12.sp,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            // ==========================================
-            // MODE 2: REGISTER NEW METER (Not floppy!)
-            // ==========================================
-            if (!isSignInMode) {
-                // Section 1: Meter & DisCo Setup
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .testTag("register_meter_card"),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(18.dp),
-                        verticalArrangement = Arrangement.spacedBy(14.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.ElectricMeter,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(20.dp)
-                            )
-                            Text(
-                                text = "1. Smart Meter & Utility Feeder",
-                                style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                        }
-
-                        // Meter Number Field
-                        OutlinedTextField(
-                            value = meterNumber,
-                            onValueChange = { meterNumber = it },
-                            label = { Text("11-Digit Meter Number") },
-                            placeholder = { Text("e.g. 01429583192") },
-                            singleLine = true,
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .testTag("new_meter_input"),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = MaterialTheme.colorScheme.primary
-                            )
-                        )
-
-                        // DisCo and Feeder Band Selectors
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(10.dp)
-                        ) {
-                            // DisCo Dropdown
-                            ExposedDropdownMenuBox(
-                                expanded = isDisCoDropdownExpanded,
-                                onExpandedChange = { isDisCoDropdownExpanded = !isDisCoDropdownExpanded },
-                                modifier = Modifier.weight(1f)
-                            ) {
-                                OutlinedTextField(
-                                    value = selectedDisCo.code,
-                                    onValueChange = {},
-                                    readOnly = true,
-                                    label = { Text("DisCo") },
-                                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isDisCoDropdownExpanded) },
-                                    modifier = Modifier
-                                        .menuAnchor()
-                                        .fillMaxWidth()
-                                        .testTag("disco_dropdown_select"),
-                                    colors = OutlinedTextFieldDefaults.colors(
-                                        focusedBorderColor = MaterialTheme.colorScheme.primary
-                                    )
-                                )
-                                ExposedDropdownMenu(
-                                    expanded = isDisCoDropdownExpanded,
-                                    onDismissRequest = { isDisCoDropdownExpanded = false }
-                                ) {
-                                    DisCo.entries.forEach { disco ->
-                                        DropdownMenuItem(
-                                            text = { Text("${disco.code} - ${disco.fullName}") },
-                                            onClick = {
-                                                selectedDisCo = disco
-                                                isDisCoDropdownExpanded = false
-                                            }
-                                        )
-                                    }
-                                }
-                            }
-
-                            // Feeder Band Dropdown
-                            ExposedDropdownMenuBox(
-                                expanded = isBandDropdownExpanded,
-                                onExpandedChange = { isBandDropdownExpanded = !isBandDropdownExpanded },
-                                modifier = Modifier.weight(1f)
-                            ) {
-                                OutlinedTextField(
-                                    value = selectedBand.code,
-                                    onValueChange = {},
-                                    readOnly = true,
-                                    label = { Text("Feeder Band") },
-                                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isBandDropdownExpanded) },
-                                    modifier = Modifier
-                                        .menuAnchor()
-                                        .fillMaxWidth()
-                                        .testTag("band_dropdown_select"),
-                                    colors = OutlinedTextFieldDefaults.colors(
-                                        focusedBorderColor = MaterialTheme.colorScheme.primary
-                                    )
-                                )
-                                ExposedDropdownMenu(
-                                    expanded = isBandDropdownExpanded,
-                                    onDismissRequest = { isBandDropdownExpanded = false }
-                                ) {
-                                    FeederBand.entries.forEach { band ->
-                                        DropdownMenuItem(
-                                            text = { Text("${band.code} (${band.minimumHours}h+ SLA)") },
-                                            onClick = {
-                                                selectedBand = band
-                                                isBandDropdownExpanded = false
-                                            }
-                                        )
-                                    }
-                                }
-                            }
-                        }
-
-                        // Tariff Type (Prepaid vs Postpaid)
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .clip(RoundedCornerShape(8.dp))
-                                    .background(if (isPrepaid) MaterialTheme.colorScheme.primary.copy(alpha = 0.2f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))
-                                    .border(1.dp, if (isPrepaid) MaterialTheme.colorScheme.primary else Color.Transparent, RoundedCornerShape(8.dp))
-                                    .clickable { isPrepaid = true }
-                                    .padding(vertical = 8.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text = "Prepaid Residential",
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = if (isPrepaid) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-
-                            Box(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .clip(RoundedCornerShape(8.dp))
-                                    .background(if (!isPrepaid) MaterialTheme.colorScheme.primary.copy(alpha = 0.2f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))
-                                    .border(1.dp, if (!isPrepaid) MaterialTheme.colorScheme.primary else Color.Transparent, RoundedCornerShape(8.dp))
-                                    .clickable { isPrepaid = false }
-                                    .padding(vertical = 8.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text = "Postpaid Account",
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = if (!isPrepaid) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(14.dp))
-
-                // Section 2: Resident Identity & Location
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .testTag("register_identity_card"),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(18.dp),
-                        verticalArrangement = Arrangement.spacedBy(14.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Person,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(20.dp)
-                            )
-                            Text(
-                                text = "2. Resident Profile & Security PIN",
-                                style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                        }
-
-                        // Full Name
-                        OutlinedTextField(
-                            value = customerName,
-                            onValueChange = { customerName = it },
-                            label = { Text("Full Legal / Resident Name") },
-                            placeholder = { Text("e.g. Chuka Obunma") },
-                            singleLine = true,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .testTag("new_customer_name_input"),
-                            colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = MaterialTheme.colorScheme.primary)
-                        )
-
-                        // Phone Number
-                        OutlinedTextField(
-                            value = phoneNumber,
-                            onValueChange = { phoneNumber = it },
-                            label = { Text("Mobile Phone (+234 SIM)") },
-                            placeholder = { Text("+234 803 892 4110") },
-                            singleLine = true,
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .testTag("new_phone_number_input"),
-                            colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = MaterialTheme.colorScheme.primary)
-                        )
-
-                        // Street Address & LGA
-                        OutlinedTextField(
-                            value = streetAddress,
-                            onValueChange = { streetAddress = it },
-                            label = { Text("Street Address") },
-                            placeholder = { Text("e.g. 14 Adeola Odeku Street, Victoria Island") },
-                            singleLine = true,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .testTag("new_street_address_input"),
-                            colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = MaterialTheme.colorScheme.primary)
-                        )
-
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(10.dp)
-                        ) {
-                            OutlinedTextField(
-                                value = lga,
-                                onValueChange = { lga = it },
-                                label = { Text("LGA") },
-                                singleLine = true,
-                                modifier = Modifier.weight(1f),
-                                colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = MaterialTheme.colorScheme.primary)
-                            )
-                            OutlinedTextField(
-                                value = selectedState,
-                                onValueChange = { selectedState = it },
-                                label = { Text("State") },
-                                singleLine = true,
-                                modifier = Modifier.weight(1f),
-                                colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = MaterialTheme.colorScheme.primary)
-                            )
-                        }
-
-                        // Security PIN for future sign-ins
-                        OutlinedTextField(
-                            value = newAccountPin,
-                            onValueChange = { if (it.length <= 6) newAccountPin = it },
-                            label = { Text("Create a PIN (4 to 6 digits)") },
-                            singleLine = true,
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
-                            visualTransformation = PasswordVisualTransformation(),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .testTag("new_account_pin_input"),
-                            colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = MaterialTheme.colorScheme.primary)
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(14.dp))
-
-                // Auto-Fill sample button
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    OutlinedButton(
-                        onClick = {
-                            meterNumber = "01429583192"
-                            customerName = "Chuka Obunma"
-                            phoneNumber = "+234 803 892 4110"
-                            streetAddress = "14 Adeola Odeku Street, Victoria Island"
-                            lga = "Eti-Osa"
-                            selectedState = "Lagos State"
-                            selectedDisCo = DisCo.EKEDC
-                            selectedBand = FeederBand.BAND_A
-                            transformerId = "TR-LOS-VI-04B"
-                        },
-                        shape = RoundedCornerShape(8.dp),
-                        modifier = Modifier.testTag("autofill_sample_resident")
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Speed,
-                            contentDescription = null,
-                            modifier = Modifier.size(14.dp)
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text("Auto-Fill Sample Resident", fontSize = 12.sp)
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // ====================================================================
-                // SECTION 3: MANDATORY ₦500 METER GATEWAY ACTIVATION (BLOCKING REQUIREMENT)
-                // ====================================================================
-                val isCurrentMeterPaid = isMeterPaid(meterNumber)
-
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .testTag("meter_gateway_activation_card"),
-                    shape = RoundedCornerShape(14.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = if (isCurrentMeterPaid) MaterialTheme.colorScheme.secondary.copy(alpha = 0.08f)
-                        else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f)
-                    ),
-                    border = androidx.compose.foundation.BorderStroke(
-                        1.5.dp,
-                        if (isCurrentMeterPaid) MaterialTheme.colorScheme.secondary.copy(alpha = 0.6f) else MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
+                SignInForm(
+                    currentProfile = currentProfile,
+                    isPinSet = isPinSet,
+                    paidMeters = paidMeters,
+                    verifyPin = verifyPin,
+                    onSignIn = onSignIn,
+                    onGoToRegister = {
+                        isSignInMode = false
+                        registrationStep = SignUpStep.DETAILS
+                    },
+                    onForgotPin = { showForgotPinDialog = true }
+                )
+            } else {
+                // Keyed so the flow starts fresh (empty form, step 1) after an account is deleted.
+                key(registrationGeneration) {
+                    RegistrationFlow(
+                        currentProfile = currentProfile,
+                        // Prefill personal details only from this phone's own account, and never
+                        // after it has just been deleted.
+                        prefillProfile = if (isPinSet && registrationGeneration == 0) currentProfile else null,
+                        isPinSet = isPinSet,
+                        paidMeters = paidMeters,
+                        paymentState = paymentState,
+                        verifyPin = verifyPin,
+                        onStartPayment = onStartPayment,
+                        onResetPayment = onResetPayment,
+                        onCompleteSignUp = onCompleteSignUp,
+                        onForgotPin = { showForgotPinDialog = true },
+                        onStepChanged = { registrationStep = it }
                     )
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(18.dp),
-                        verticalArrangement = Arrangement.spacedBy(14.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                Icon(
-                                    imageVector = if (isCurrentMeterPaid) Icons.Default.CheckCircle else Icons.Default.Lock,
-                                    contentDescription = null,
-                                    tint = if (isCurrentMeterPaid) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.size(20.dp)
-                                )
-                                Text(
-                                    text = "3. Meter Gateway Activation",
-                                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                                    color = MaterialTheme.colorScheme.onSurface
-                                )
-                            }
-
-                            Surface(
-                                color = if (isCurrentMeterPaid) MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f) else MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
-                                shape = RoundedCornerShape(100.dp)
-                            ) {
-                                Text(
-                                    text = if (isCurrentMeterPaid) "PAID ONCE • ACTIVATED" else "BLOCKING • ₦500 REQUIRED",
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.ExtraBold,
-                                    color = if (isCurrentMeterPaid) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-                                )
-                            }
-                        }
-
-                        if (isCurrentMeterPaid) {
-                            // Already paid meter
-                            Surface(
-                                modifier = Modifier.fillMaxWidth(),
-                                color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.12f),
-                                shape = RoundedCornerShape(10.dp),
-                                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.secondary.copy(alpha = 0.3f))
-                            ) {
-                                Row(
-                                    modifier = Modifier.padding(12.dp),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Check,
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.secondary,
-                                        modifier = Modifier.size(18.dp)
-                                    )
-                                    Column {
-                                        Text(
-                                            text = "Meter #$meterNumber is activated!",
-                                            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                                            color = MaterialTheme.colorScheme.secondary
-                                        )
-                                        Text(
-                                            text = "The one-time ₦500 gateway fee has already been paid for this meter. No additional payment required.",
-                                            style = MaterialTheme.typography.labelSmall,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                                        )
-                                    }
-                                }
-                            }
-
-                            Button(
-                                onClick = {
-                                    isRegistrationSubmitted = true
-                                    saveNewAccountPinIfValid()
-                                    onCompleteSignUp(currentConstructedProfile.copy(isGatewayPaid = true))
-                                },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(52.dp)
-                                    .testTag("register_and_enter_dashboard_button"),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = MaterialTheme.colorScheme.secondary,
-                                    contentColor = Color.Black
-                                ),
-                                shape = RoundedCornerShape(12.dp)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.CheckCircle,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(18.dp)
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(
-                                    text = "REGISTER METER & ENTER BRIGHT",
-                                    fontWeight = FontWeight.Black,
-                                    letterSpacing = 0.5.sp,
-                                    fontSize = 13.sp
-                                )
-                            }
-                        } else {
-                            // Unpaid meter - strictly blocking requirement!
-                            Surface(
-                                modifier = Modifier.fillMaxWidth(),
-                                color = MaterialTheme.colorScheme.surface,
-                                shape = RoundedCornerShape(12.dp),
-                                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f))
-                            ) {
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(14.dp),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Column {
-                                        Text(
-                                            text = "METER GATEWAY ACTIVATION FEE",
-                                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, letterSpacing = 1.sp),
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                                        )
-                                        Text(
-                                            text = "Paid Once Per Meter",
-                                            style = MaterialTheme.typography.bodySmall,
-                                            color = MaterialTheme.colorScheme.primary
-                                        )
-                                    }
-                                    Text(
-                                        text = "₦500.00",
-                                        style = MaterialTheme.typography.headlineMedium.copy(
-                                            fontWeight = FontWeight.Black,
-                                            fontSize = 24.sp
-                                        ),
-                                        color = MaterialTheme.colorScheme.primary
-                                    )
-                                }
-                            }
-
-                            // Strict Policy Disclosure
-                            Surface(
-                                modifier = Modifier.fillMaxWidth(),
-                                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                                shape = RoundedCornerShape(10.dp),
-                                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.4f))
-                            ) {
-                                Row(
-                                    modifier = Modifier.padding(12.dp),
-                                    verticalAlignment = Alignment.Top,
-                                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Security,
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.primary,
-                                        modifier = Modifier.size(20.dp)
-                                    )
-                                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                                        Text(
-                                            text = "GATEWAY POLICY (NO TOKENS OR REWARDS)",
-                                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.ExtraBold, letterSpacing = 0.8.sp),
-                                            color = MaterialTheme.colorScheme.primary
-                                        )
-                                        Text(
-                                            text = "This ₦500 payment is strictly a blocking requirement and gateway to the app to verify your meter with the national grid server. No electricity units, tokens, or rewards are given to users for paying this. It is paid once per meter.",
-                                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp, lineHeight = 16.sp),
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                                        )
-                                    }
-                                }
-                            }
-
-                            // Payment Channel Selector
-                            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                                Text(
-                                    text = "Select Payment Channel (Simulator):",
-                                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.spacedBy(6.dp)
-                                ) {
-                                    listOf(
-                                        "Debit Card (Interswitch)",
-                                        "USSD (*737#)",
-                                        "Bank Transfer"
-                                    ).forEach { method ->
-                                        val isSelected = selectedRegPaymentMethod == method
-                                        OutlinedButton(
-                                            onClick = { selectedRegPaymentMethod = method },
-                                            modifier = Modifier.weight(1f),
-                                            shape = RoundedCornerShape(8.dp),
-                                            colors = ButtonDefaults.outlinedButtonColors(
-                                                containerColor = if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.15f) else Color.Transparent
-                                            ),
-                                            border = androidx.compose.foundation.BorderStroke(
-                                                1.dp,
-                                                if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
-                                            ),
-                                            contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 4.dp, vertical = 6.dp)
-                                        ) {
-                                            Text(
-                                                text = method.take(10),
-                                                fontSize = 12.sp,
-                                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                                                color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
-                                                maxLines = 1
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-
-                            if (isProcessingRegPayment) {
-                                Surface(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    color = MaterialTheme.colorScheme.surface,
-                                    shape = RoundedCornerShape(10.dp)
-                                ) {
-                                    Row(
-                                        modifier = Modifier.padding(14.dp),
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-                                    ) {
-                                        CircularProgressIndicator(
-                                            color = MaterialTheme.colorScheme.primary,
-                                            modifier = Modifier.size(22.dp),
-                                            strokeWidth = 2.5.dp
-                                        )
-                                        Column {
-                                            Text(
-                                                text = "Authorizing ₦500 Gateway Fee...",
-                                                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                                                color = MaterialTheme.colorScheme.primary
-                                            )
-                                            Text(
-                                                text = "Connecting to Interswitch / $selectedRegPaymentMethod",
-                                                style = MaterialTheme.typography.labelSmall,
-                                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-
-                            // Blocking Payment Action Button
-                            Button(
-                                onClick = {
-                                    scope.launch {
-                                        isProcessingRegPayment = true
-                                        delay(1200)
-                                        val m = meterNumber.trim().ifBlank { "01429583192" }
-                                        localPaidMeters.add(m)
-                                        onRecordMeterPayment(m)
-                                        isProcessingRegPayment = false
-                                        isRegistrationSubmitted = true
-                                        saveNewAccountPinIfValid()
-                                        onCompleteSignUp(currentConstructedProfile.copy(isGatewayPaid = true))
-                                    }
-                                },
-                                enabled = !isProcessingRegPayment && meterNumber.isNotBlank() && customerName.isNotBlank(),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(52.dp)
-                                    .testTag("pay_gateway_and_enter_button"),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = MaterialTheme.colorScheme.primary,
-                                    contentColor = MaterialTheme.colorScheme.onPrimary
-                                ),
-                                shape = RoundedCornerShape(12.dp)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.CreditCard,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(18.dp)
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(
-                                    text = "PAY ₦500 GATEWAY FEE & ENTER BRIGHT",
-                                    fontWeight = FontWeight.Black,
-                                    letterSpacing = 0.5.sp,
-                                    fontSize = 13.sp
-                                )
-                            }
-                        }
-                    }
                 }
             }
 
-            Spacer(modifier = Modifier.height(28.dp))
+            Spacer(modifier = Modifier.height(8.dp))
         }
     }
 
-    // Forgot PIN Dialog
     if (showForgotPinDialog) {
-        androidx.compose.material3.AlertDialog(
+        // PIN reset by SMS needs a real OTP backend. Until one exists, the only way back in is
+        // deleting this phone's account (which wipes its data) and registering again.
+        AlertDialog(
             onDismissRequest = { showForgotPinDialog = false },
+            modifier = Modifier.testTag("forgot_pin_dialog"),
             title = {
                 Text(
                     text = "Forgot your PIN?",
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
                 )
             },
             text = {
-                // PIN reset by SMS needs a real OTP backend. Until one exists we must not sign the
-                // user in from here (the old flow used a hardcoded code and skipped the PIN entirely).
                 Text(
-                    text = "Resetting your PIN by SMS isn't available yet. If you've forgotten it, sign out on the lock screen and register this meter again to create a new PIN.",
-                    style = MaterialTheme.typography.bodySmall
+                    text = "We can't reset PINs by SMS yet. To start again, delete the account on this phone and register your meter again. Your meter stays activated, so you won't pay twice.",
+                    style = MaterialTheme.typography.bodyMedium
                 )
             },
             confirmButton = {
                 Button(
                     onClick = { showForgotPinDialog = false },
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary)
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    )
                 ) {
                     Text("OK", fontWeight = FontWeight.Bold)
                 }
+            },
+            dismissButton = if (isPinSet) {
+                {
+                    TextButton(
+                        onClick = {
+                            showForgotPinDialog = false
+                            showDeleteAccountDialog = true
+                        },
+                        colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error),
+                        modifier = Modifier.testTag("forgot_pin_delete_account_button")
+                    ) {
+                        Text("Delete account")
+                    }
+                }
+            } else {
+                null
             }
         )
     }
 
-    // Blocking Meter Gateway Payment Dialog for Sign-In attempts
-    if (showSignInGatewayDialog && pendingSignInProfile != null) {
-        val targetProfile = pendingSignInProfile!!
-        val targetMeter = targetProfile.meterNumber.trim()
-        androidx.compose.material3.AlertDialog(
-            onDismissRequest = {
-                if (!isProcessingSignInPayment) {
-                    showSignInGatewayDialog = false
-                    pendingSignInProfile = null
-                }
+    if (showDeleteAccountDialog) {
+        DeleteAccountDialog(
+            meterNumber = currentProfile.meterNumber,
+            isPinSet = isPinSet,
+            verifyPin = verifyPin,
+            onConfirmDelete = {
+                showDeleteAccountDialog = false
+                isSignInMode = false
+                registrationStep = SignUpStep.DETAILS
+                registrationGeneration += 1
+                onDeleteAccount()
             },
-            title = {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Lock,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(24.dp)
-                    )
-                    Text(
-                        text = "₦500 Gateway Activation Required",
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
-                    )
-                }
-            },
-            text = {
-                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Text(
-                        text = "Meter #$targetMeter (${targetProfile.customerName}) has not completed the mandatory one-time ₦500 gateway fee.",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-
-                    Surface(
-                        modifier = Modifier.fillMaxWidth(),
-                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                        shape = RoundedCornerShape(10.dp),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.4f))
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(12.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Column {
-                                Text(
-                                    text = "GRID GATEWAY FEE",
-                                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                                Text(
-                                    text = "Paid Once Per Meter",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.primary
-                                )
-                            }
-                            Text(
-                                text = "₦500.00",
-                                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Black),
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                        }
-                    }
-
-                    // Mandatory Disclosure Box
-                    Surface(
-                        modifier = Modifier.fillMaxWidth(),
-                        color = Color(0xFF1E1B18),
-                        shape = RoundedCornerShape(8.dp),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f))
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(10.dp),
-                            verticalAlignment = Alignment.Top,
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Security,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(16.dp)
-                            )
-                            Text(
-                                text = "IMPORTANT: This ₦500 fee is strictly an access gateway requirement to authenticate your meter hardware on the app. No electricity units, tokens, or rewards are given for paying this. It is paid once per meter.",
-                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp, lineHeight = 15.sp),
-                                color = Color.White.copy(alpha = 0.9f)
-                            )
-                        }
-                    }
-
-                    // Payment Channel Selector
-                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Text(
-                            text = "Select Payment Channel (Simulator):",
-                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(6.dp)
-                        ) {
-                            listOf(
-                                "Debit Card",
-                                "USSD (*737#)",
-                                "Transfer"
-                            ).forEach { method ->
-                                val isSelected = selectedSignInPaymentMethod.startsWith(method.take(5))
-                                OutlinedButton(
-                                    onClick = { selectedSignInPaymentMethod = method },
-                                    modifier = Modifier.weight(1f),
-                                    shape = RoundedCornerShape(8.dp),
-                                    colors = ButtonDefaults.outlinedButtonColors(
-                                        containerColor = if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.15f) else Color.Transparent
-                                    ),
-                                    border = androidx.compose.foundation.BorderStroke(
-                                        1.dp,
-                                        if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
-                                    ),
-                                    contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 4.dp, vertical = 6.dp)
-                                ) {
-                                    Text(
-                                        text = method,
-                                        fontSize = 12.sp,
-                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                                        color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
-                                        maxLines = 1
-                                    )
-                                }
-                            }
-                        }
-                    }
-
-                    if (isProcessingSignInPayment) {
-                        Surface(
-                            modifier = Modifier.fillMaxWidth(),
-                            color = MaterialTheme.colorScheme.surface,
-                            shape = RoundedCornerShape(8.dp)
-                        ) {
-                            Row(
-                                modifier = Modifier.padding(10.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(10.dp)
-                            ) {
-                                CircularProgressIndicator(
-                                    color = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.size(18.dp),
-                                    strokeWidth = 2.dp
-                                )
-                                Text(
-                                    text = "Authorizing ₦500 via Interswitch Gateway...",
-                                    style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
-                                    color = MaterialTheme.colorScheme.primary
-                                )
-                            }
-                        }
-                    }
-                }
-            },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        scope.launch {
-                            isProcessingSignInPayment = true
-                            delay(1200)
-                            val m = targetMeter.trim()
-                            localPaidMeters.add(m)
-                            onRecordMeterPayment(m)
-                            isProcessingSignInPayment = false
-                            showSignInGatewayDialog = false
-                            pendingSignInProfile = null
-                            onSignIn(targetProfile.copy(isGatewayPaid = true))
-                        }
-                    },
-                    enabled = !isProcessingSignInPayment,
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary),
-                    shape = RoundedCornerShape(8.dp),
-                    modifier = Modifier.testTag("pay_sign_in_gateway_fee_button")
-                ) {
-                    if (isProcessingSignInPayment) {
-                        Text("Authorizing...", fontWeight = FontWeight.Bold)
-                    } else {
-                        Text("PAY ₦500 GATEWAY FEE", fontWeight = FontWeight.Bold, fontSize = 12.sp)
-                    }
-                }
-            },
-            dismissButton = {
-                OutlinedButton(
-                    onClick = {
-                        showSignInGatewayDialog = false
-                        pendingSignInProfile = null
-                    },
-                    enabled = !isProcessingSignInPayment
-                ) {
-                    Text("Cancel")
-                }
-            }
+            onDismiss = { showDeleteAccountDialog = false }
         )
     }
 }
