@@ -70,8 +70,9 @@ class BrightRepository(
         prefs?.edit()?.putBoolean("require_login_on_leave", enabled)?.apply()
     }
 
+    // Empty string means "no PIN set yet". There is deliberately no default PIN.
     private val _userPin = MutableStateFlow(
-        prefs?.getString("user_pin", "1234") ?: "1234"
+        prefs?.getString("user_pin", "") ?: ""
     )
     val userPin: StateFlow<String> = _userPin.asStateFlow()
 

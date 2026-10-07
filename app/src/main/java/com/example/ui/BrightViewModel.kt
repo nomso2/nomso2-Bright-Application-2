@@ -323,7 +323,11 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
             repository.markMeterPaid(profile.meterNumber)
             repository.saveUserProfile(profile.copy(isOnboarded = true, isGatewayPaid = true))
             _isOnboardingCompleted.value = true
-            _isAppLocked.value = false
+            // Registering a new meter must not bypass an existing session lock: if a PIN is set and
+            // the session is locked, the user still has to unlock with the PIN or biometrics.
+            if (!(isPinSet && _isAppLocked.value)) {
+                _isAppLocked.value = false
+            }
             _userMessage.value = "₦500 Gateway Fee Confirmed! Meter ${profile.meterNumber} activated on BRIGHT."
         }
     }
@@ -341,6 +345,8 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
         viewModelScope.launch {
             _isOnboardingCompleted.value = false
             _isAppLocked.value = false
+            // Signing out removes this phone's PIN so the next sign-up can create its own.
+            repository.setUserPin("")
             val current = userProfile.value
             repository.saveUserProfile(current.copy(isOnboarded = false))
             showNotification("Logged out successfully. You can sign back in anytime.")
@@ -362,11 +368,40 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
         )
     }
 
+    /** True once the user has created a security PIN on this device. */
+    val isPinSet: Boolean
+        get() = repository.userPin.value.isNotBlank()
+
+    /** A valid PIN is 4 to 8 digits. */
+    fun isValidPinFormat(pin: String): Boolean {
+        val trimmed = pin.trim()
+        return trimmed.length in 4..8 && trimmed.all { it.isDigit() }
+    }
+
     fun setUserPin(newPin: String) {
-        if (newPin.isNotBlank()) {
+        if (isValidPinFormat(newPin)) {
             repository.setUserPin(newPin.trim())
             showNotification("Security PIN updated successfully.")
         }
+    }
+
+    /** Checks [enteredPin] against the stored PIN. Always false when no PIN has been set. */
+    fun verifyPin(enteredPin: String): Boolean {
+        val stored = repository.userPin.value.trim()
+        return stored.isNotEmpty() && enteredPin.trim() == stored
+    }
+
+    /**
+     * Used by the lock screen when no PIN exists yet (e.g. accounts created before PINs were
+     * required). Saves the new PIN and unlocks. Returns false if the PIN format is invalid or a
+     * PIN already exists (an existing PIN must be entered, not replaced, to unlock).
+     */
+    fun createPinAndUnlock(newPin: String): Boolean {
+        if (isPinSet || !isValidPinFormat(newPin)) return false
+        repository.setUserPin(newPin.trim())
+        _isAppLocked.value = false
+        showNotification("PIN created. Welcome back, ${userProfile.value.customerName.ifBlank { "Resident" }}.")
+        return true
     }
 
     fun lockAppSession() {
@@ -376,7 +411,9 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     fun unlockAppSessionWithPin(enteredPin: String): Boolean {
-        val valid = enteredPin.trim() == repository.userPin.value.trim() || enteredPin.trim() == "1234"
+        // No hardcoded fallback PIN: only the PIN the user created can unlock the session.
+        // If no PIN is set yet, the lock screen asks the user to create one (createPinAndUnlock).
+        val valid = verifyPin(enteredPin)
         if (valid) {
             _isAppLocked.value = false
             showNotification("Session unlocked! Welcome back, ${userProfile.value.customerName.ifBlank { "Resident" }}.")
@@ -385,13 +422,13 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
         return false
     }
 
+    /**
+     * Call ONLY from the BiometricPrompt onAuthenticationSucceeded callback
+     * (see com.example.ui.security.BiometricAuthenticator). Never call it directly from a button.
+     */
     fun unlockAppSessionBiometric() {
         _isAppLocked.value = false
         showNotification("Biometrics confirmed. Welcome back, ${userProfile.value.customerName.ifBlank { "Resident" }}!")
-    }
-
-    fun unlockAppSession() {
-        _isAppLocked.value = false
     }
 
     fun resetToOnboarding() {

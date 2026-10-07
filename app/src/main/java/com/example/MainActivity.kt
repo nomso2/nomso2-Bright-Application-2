@@ -1,7 +1,6 @@
 package com.example
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -39,6 +38,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -75,7 +75,9 @@ enum class BrightNavDestination(val label: String, val icon: androidx.compose.ui
     GRID_HUB("Grid Hub", Icons.Default.Bolt)
 }
 
-class MainActivity : ComponentActivity() {
+// FragmentActivity (a ComponentActivity subclass) is required by androidx.biometric's BiometricPrompt.
+// setContent from activity-compose still works because it is an extension on ComponentActivity.
+class MainActivity : FragmentActivity() {
 
     private val viewModel: BrightViewModel by viewModels()
 
@@ -154,6 +156,8 @@ fun BrightApp(viewModel: BrightViewModel) {
     val isAppLocked by viewModel.isAppLocked.collectAsState()
     val requireLoginOnLeave by viewModel.requireLoginOnLeave.collectAsState()
     val pendingSyncCount by viewModel.pendingSyncCount.collectAsState()
+    val storedPin by viewModel.userPin.collectAsState()
+    val isPinSet = storedPin.isNotBlank()
 
     // Auto-lock when user leaves the app (presses Home, switches apps, locks screen)
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -189,7 +193,11 @@ fun BrightApp(viewModel: BrightViewModel) {
             onSignIn = { signedInProfile ->
                 viewModel.signIn(signedInProfile)
                 showOnboardingDialog = false
-            }
+            },
+            isPinSet = isPinSet,
+            verifyPin = { pin -> viewModel.verifyPin(pin) },
+            // Only used when no PIN exists yet; an existing PIN is never silently replaced.
+            onCreatePin = { newPin -> if (!isPinSet) viewModel.setUserPin(newPin) }
         )
         return
     }
@@ -206,8 +214,11 @@ fun BrightApp(viewModel: BrightViewModel) {
                 viewModel.unlockAppSessionWithPin(pin)
             },
             onUnlockBiometric = {
+                // Invoked only from BiometricPrompt's onAuthenticationSucceeded callback.
                 viewModel.unlockAppSessionBiometric()
             },
+            isPinSet = isPinSet,
+            onCreatePin = { newPin -> viewModel.createPinAndUnlock(newPin) },
             onSwitchAccount = {
                 showOnboardingDialog = true
             },

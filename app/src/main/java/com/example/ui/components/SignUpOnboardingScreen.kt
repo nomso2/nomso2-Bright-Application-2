@@ -73,6 +73,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -86,6 +87,8 @@ import androidx.compose.ui.unit.sp
 import com.example.model.DisCo
 import com.example.model.FeederBand
 import com.example.model.UserProfile
+import com.example.ui.security.BiometricAuthenticator
+import com.example.ui.security.findFragmentActivity
 import com.example.ui.theme.EmeraldAccent
 import com.example.ui.theme.GoldPrimary
 import kotlinx.coroutines.delay
@@ -172,6 +175,9 @@ fun SignUpOnboardingScreen(
     onCompleteSignUp: (UserProfile) -> Unit,
     onSignIn: (UserProfile) -> Unit = onCompleteSignUp,
     onSkipForNow: () -> Unit = {},
+    isPinSet: Boolean = false,
+    verifyPin: (String) -> Boolean = { false },
+    onCreatePin: (String) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val scope = rememberCoroutineScope()
@@ -205,7 +211,7 @@ fun SignUpOnboardingScreen(
     var signInIdentifier by remember {
         mutableStateOf(if (currentProfile.meterNumber.isNotBlank()) currentProfile.meterNumber else "01429583192")
     }
-    var signInPin by remember { mutableStateOf("1234") }
+    var signInPin by remember { mutableStateOf("") }
     var isPinVisible by remember { mutableStateOf(false) }
     var signInErrorMessage by remember { mutableStateOf<String?>(null) }
     var isAuthenticating by remember { mutableStateOf(false) }
@@ -216,7 +222,18 @@ fun SignUpOnboardingScreen(
     var isProcessingSignInPayment by remember { mutableStateOf(false) }
     var selectedSignInPaymentMethod by remember { mutableStateOf("Debit Card (Interswitch)") }
 
-    fun attemptSignIn(targetProfile: UserProfile) {
+    val signInContext = LocalContext.current
+    val signInActivity = remember(signInContext) { signInContext.findFragmentActivity() }
+    val canUseBiometricSignIn = remember(signInContext) { BiometricAuthenticator.canAuthenticate(signInContext) }
+
+    fun attemptSignIn(targetProfile: UserProfile, verifiedByBiometrics: Boolean = false) {
+        // When a PIN exists on this phone, every sign-in path (including "switch account" from the
+        // lock screen) must present it, unless the system BiometricPrompt already succeeded.
+        // Otherwise signing in would bypass the session lock.
+        if (isPinSet && !verifiedByBiometrics && !verifyPin(signInPin)) {
+            signInErrorMessage = if (signInPin.isBlank()) "Enter your PIN to sign in on this phone." else "Incorrect PIN. Please try again."
+            return
+        }
         val meter = targetProfile.meterNumber.trim()
         if (!isMeterPaid(meter)) {
             pendingSignInProfile = targetProfile
@@ -228,8 +245,6 @@ fun SignUpOnboardingScreen(
 
     // Forgot PIN dialog state
     var showForgotPinDialog by remember { mutableStateOf(false) }
-    var forgotPinOtpInput by remember { mutableStateOf("") }
-    var isOtpSent by remember { mutableStateOf(false) }
 
     // Register New Meter form fields
     var meterNumber by remember { mutableStateOf(currentProfile.meterNumber.ifBlank { "01429583192" }) }
@@ -242,7 +257,14 @@ fun SignUpOnboardingScreen(
     var selectedBand by remember { mutableStateOf(currentProfile.feederBand) }
     var isPrepaid by remember { mutableStateOf(currentProfile.isPrepaid) }
     var transformerId by remember { mutableStateOf(currentProfile.transformerId.ifBlank { "TR-LOS-VI-04B" }) }
-    var newAccountPin by remember { mutableStateOf("1234") }
+    var newAccountPin by remember { mutableStateOf("") }
+
+    fun saveNewAccountPinIfValid() {
+        val pin = newAccountPin.trim()
+        if (pin.length in 4..8 && pin.all { it.isDigit() }) {
+            onCreatePin(pin)
+        }
+    }
 
     var isDisCoDropdownExpanded by remember { mutableStateOf(false) }
     var isBandDropdownExpanded by remember { mutableStateOf(false) }
@@ -520,8 +542,7 @@ fun SignUpOnboardingScreen(
                                     signInErrorMessage = null
                                 }
                             },
-                            label = { Text("4-Digit Security PIN") },
-                            placeholder = { Text("1234") },
+                            label = { Text("Security PIN") },
                             leadingIcon = {
                                 Icon(
                                     imageVector = Icons.Default.Lock,
@@ -628,10 +649,19 @@ fun SignUpOnboardingScreen(
                             }
                         }
 
-                        // Biometric Quick Unlock Option
-                        OutlinedButton(
+                        // Biometric Quick Unlock Option: real BiometricPrompt, only for the account
+                        // already registered on this phone; signs in only on the success callback.
+                        if (canUseBiometricSignIn && signInActivity != null && isPinSet && currentProfile.meterNumber.isNotBlank()) OutlinedButton(
                             onClick = {
-                                attemptSignIn(currentProfile.copy(isOnboarded = true))
+                                BiometricAuthenticator.authenticate(
+                                    activity = signInActivity,
+                                    title = "Sign in to Bright",
+                                    subtitle = "Confirm it's you to open Meter #${currentProfile.meterNumber}",
+                                    onSuccess = {
+                                        attemptSignIn(currentProfile.copy(isOnboarded = true), verifiedByBiometrics = true)
+                                    },
+                                    onError = { message -> signInErrorMessage = message }
+                                )
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -648,7 +678,7 @@ fun SignUpOnboardingScreen(
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                text = "Instant Biometric / Fingerprint Unlock",
+                                text = "Sign In with Fingerprint / Face",
                                 style = MaterialTheme.typography.bodySmall.copy(
                                     fontWeight = FontWeight.Bold,
                                     color = EmeraldAccent
@@ -694,7 +724,6 @@ fun SignUpOnboardingScreen(
                                 .fillMaxWidth()
                                 .clickable {
                                     signInIdentifier = acc.profile.meterNumber
-                                    signInPin = "1234"
                                     attemptSignIn(acc.profile)
                                 }
                                 .testTag("preset_account_${acc.profile.meterNumber}"),
@@ -1094,8 +1123,7 @@ fun SignUpOnboardingScreen(
                         OutlinedTextField(
                             value = newAccountPin,
                             onValueChange = { if (it.length <= 6) newAccountPin = it },
-                            label = { Text("Create 4-Digit PIN for Sign In") },
-                            placeholder = { Text("1234") },
+                            label = { Text("Create a PIN (4 to 6 digits)") },
                             singleLine = true,
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
                             visualTransformation = PasswordVisualTransformation(),
@@ -1125,7 +1153,6 @@ fun SignUpOnboardingScreen(
                             selectedDisCo = DisCo.EKEDC
                             selectedBand = FeederBand.BAND_A
                             transformerId = "TR-LOS-VI-04B"
-                            newAccountPin = "1234"
                         },
                         shape = RoundedCornerShape(8.dp),
                         modifier = Modifier.testTag("autofill_sample_resident")
@@ -1240,6 +1267,7 @@ fun SignUpOnboardingScreen(
                             Button(
                                 onClick = {
                                     isRegistrationSubmitted = true
+                                    saveNewAccountPinIfValid()
                                     onCompleteSignUp(currentConstructedProfile.copy(isGatewayPaid = true))
                                 },
                                 modifier = Modifier
@@ -1421,6 +1449,7 @@ fun SignUpOnboardingScreen(
                                         onRecordMeterPayment(m)
                                         isProcessingRegPayment = false
                                         isRegistrationSubmitted = true
+                                        saveNewAccountPinIfValid()
                                         onCompleteSignUp(currentConstructedProfile.copy(isGatewayPaid = true))
                                     }
                                 },
@@ -1463,60 +1492,24 @@ fun SignUpOnboardingScreen(
             onDismissRequest = { showForgotPinDialog = false },
             title = {
                 Text(
-                    text = "Reset PIN via SMS OTP",
+                    text = "Forgot your PIN?",
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
                 )
             },
             text = {
-                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Text(
-                        text = "We will dispatch a 6-digit one-time code to your registered mobile SIM line:",
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                    if (!isOtpSent) {
-                        Button(
-                            onClick = {
-                                isOtpSent = true
-                                forgotPinOtpInput = "849201"
-                            },
-                            colors = ButtonDefaults.buttonColors(containerColor = GoldPrimary, contentColor = Color.Black),
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text("Send OTP to Phone", fontWeight = FontWeight.Bold)
-                        }
-                    } else {
-                        OutlinedTextField(
-                            value = forgotPinOtpInput,
-                            onValueChange = { forgotPinOtpInput = it },
-                            label = { Text("Enter 6-Digit OTP Code") },
-                            singleLine = true,
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                        Text(
-                            text = "✓ Simulated Code Dispatched: 849201",
-                            color = EmeraldAccent,
-                            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold)
-                        )
-                    }
-                }
+                // PIN reset by SMS needs a real OTP backend. Until one exists we must not sign the
+                // user in from here (the old flow used a hardcoded code and skipped the PIN entirely).
+                Text(
+                    text = "Resetting your PIN by SMS isn't available yet. If you've forgotten it, sign out on the lock screen and register this meter again to create a new PIN.",
+                    style = MaterialTheme.typography.bodySmall
+                )
             },
             confirmButton = {
                 Button(
-                    onClick = {
-                        showForgotPinDialog = false
-                        signInPin = "1234"
-                        onSignIn(currentProfile.copy(isOnboarded = true))
-                    },
-                    enabled = isOtpSent,
+                    onClick = { showForgotPinDialog = false },
                     colors = ButtonDefaults.buttonColors(containerColor = GoldPrimary, contentColor = Color.Black)
                 ) {
-                    Text("Verify & Sign In", fontWeight = FontWeight.Bold)
-                }
-            },
-            dismissButton = {
-                OutlinedButton(onClick = { showForgotPinDialog = false }) {
-                    Text("Cancel")
+                    Text("OK", fontWeight = FontWeight.Bold)
                 }
             }
         )

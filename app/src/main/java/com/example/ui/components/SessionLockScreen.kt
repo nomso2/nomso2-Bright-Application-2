@@ -53,6 +53,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -63,6 +64,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.model.UserProfile
+import com.example.ui.security.BiometricAuthenticator
+import com.example.ui.security.findFragmentActivity
 import com.example.ui.theme.ElegantGoldPrimary
 
 @Composable
@@ -72,24 +75,61 @@ fun SessionLockScreen(
     onToggleRequireLoginOnLeave: (Boolean) -> Unit,
     onUnlockWithPin: (String) -> Boolean,
     onUnlockBiometric: () -> Unit,
+    isPinSet: Boolean,
+    onCreatePin: (String) -> Boolean,
     onSwitchAccount: () -> Unit,
     onLogOut: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var enteredPin by remember { mutableStateOf("") }
     var isPinVisible by remember { mutableStateOf(false) }
+    var confirmPin by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf<String?>(null) }
-    var showBiometricModal by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val hostActivity = remember(context) { context.findFragmentActivity() }
+    val canUseBiometrics = remember(context) { BiometricAuthenticator.canAuthenticate(context) }
 
     fun submitPin() {
-        if (enteredPin.isBlank()) {
-            errorMessage = "Please enter your 4-digit PIN"
+        val pin = enteredPin.trim()
+        if (!isPinSet) {
+            // No PIN exists yet: ask the user to create one instead of accepting a default.
+            if (pin.length !in 4..8 || !pin.all { it.isDigit() }) {
+                errorMessage = "Choose a PIN of 4 to 8 digits."
+                return
+            }
+            if (pin != confirmPin.trim()) {
+                errorMessage = "The two PINs don't match."
+                return
+            }
+            if (!onCreatePin(pin)) {
+                errorMessage = "Couldn't save your PIN. Please try again."
+            }
             return
         }
-        val success = onUnlockWithPin(enteredPin)
-        if (!success) {
-            errorMessage = "Incorrect PIN. Default is 1234 or your registered PIN."
+        if (pin.isBlank()) {
+            errorMessage = "Please enter your PIN"
+            return
         }
+        val success = onUnlockWithPin(pin)
+        if (!success) {
+            errorMessage = "Incorrect PIN. Please try again."
+            enteredPin = ""
+        }
+    }
+
+    fun launchBiometricPrompt() {
+        val activity = hostActivity
+        if (activity == null || !canUseBiometrics) {
+            errorMessage = "Biometric unlock isn't available on this phone. Use your PIN."
+            return
+        }
+        BiometricAuthenticator.authenticate(
+            activity = activity,
+            title = "Unlock Bright",
+            subtitle = "Confirm it's you to open Meter #${userProfile.meterNumber}",
+            onSuccess = { onUnlockBiometric() },
+            onError = { message -> errorMessage = message }
+        )
     }
 
     Box(
@@ -226,7 +266,7 @@ fun SessionLockScreen(
                     verticalArrangement = Arrangement.spacedBy(14.dp)
                 ) {
                     Text(
-                        text = "Enter Security PIN to Unlock",
+                        text = if (isPinSet) "Enter Security PIN to Unlock" else "Create a Security PIN",
                         style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
                         color = MaterialTheme.colorScheme.onSurface
                     )
@@ -239,8 +279,7 @@ fun SessionLockScreen(
                                 errorMessage = null
                             }
                         },
-                        label = { Text("4-Digit Security PIN (Default: 1234)") },
-                        placeholder = { Text("1234") },
+                        label = { Text(if (isPinSet) "Security PIN" else "New PIN (4 to 8 digits)") },
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Default.Lock,
@@ -274,6 +313,38 @@ fun SessionLockScreen(
                         )
                     )
 
+                    if (!isPinSet) {
+                        Text(
+                            text = "You haven't set a PIN yet. Create one now to protect your account on this phone.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        OutlinedTextField(
+                            value = confirmPin,
+                            onValueChange = {
+                                if (it.length <= 8) {
+                                    confirmPin = it
+                                    errorMessage = null
+                                }
+                            },
+                            label = { Text("Confirm new PIN") },
+                            visualTransformation = if (isPinVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.NumberPassword,
+                                imeAction = ImeAction.Done
+                            ),
+                            keyboardActions = KeyboardActions(onDone = { submitPin() }),
+                            singleLine = true,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .testTag("relogin_pin_confirm_input"),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = ElegantGoldPrimary,
+                                unfocusedBorderColor = MaterialTheme.colorScheme.outline
+                            )
+                        )
+                    }
+
                     errorMessage?.let { err ->
                         Text(
                             text = err,
@@ -296,13 +367,11 @@ fun SessionLockScreen(
                     ) {
                         Icon(imageVector = Icons.Default.Lock, contentDescription = null, modifier = Modifier.size(16.dp))
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text(text = "Re-Login / Unlock Session", fontWeight = FontWeight.Bold)
+                        Text(text = if (isPinSet) "Unlock" else "Save PIN and Unlock", fontWeight = FontWeight.Bold)
                     }
 
-                    OutlinedButton(
-                        onClick = {
-                            showBiometricModal = true
-                        },
+                    if (canUseBiometrics && hostActivity != null) OutlinedButton(
+                        onClick = { launchBiometricPrompt() },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(46.dp)
@@ -408,18 +477,5 @@ fun SessionLockScreen(
                 )
             }
         }
-    }
-
-    if (showBiometricModal) {
-        BiometricVerificationDialog(
-            initialMode = BiometricAuthMode.FINGERPRINT,
-            title = "Biometric Re-Login",
-            subtitle = "Place your registered finger or authenticate to unlock session for Meter #${userProfile.meterNumber}",
-            onVerificationSuccess = {
-                showBiometricModal = false
-                onUnlockBiometric()
-            },
-            onDismiss = { showBiometricModal = false }
-        )
     }
 }
