@@ -130,6 +130,7 @@ fun HomeScreen(
     onNavigateVandalism: () -> Unit = {},
     onNavigateHistory: () -> Unit = {},
     onNavigateHub: () -> Unit = {},
+    onNavigateMore: () -> Unit = {},
     onOpenRedDangerSOS: () -> Unit = {},
     diagnosticStatus: String = "LOAD_SHEDDING",
     onToggleDiagnosticStatus: () -> Unit = {},
@@ -691,7 +692,7 @@ fun HomeScreen(
                                 onReportFaultClicked()
                             }
                         },
-                        onNavigateOthers = onNavigateHub
+                        onNavigateOthers = onNavigateMore
                     )
                 }
 
@@ -819,7 +820,7 @@ fun HomeScreen(
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable(onClick = onNavigateHub)
+                            .clickable(onClick = onNavigateMore)
                             .testTag("more_tools_section_card"),
                         shape = RoundedCornerShape(16.dp),
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),

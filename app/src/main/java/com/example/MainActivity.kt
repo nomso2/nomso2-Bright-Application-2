@@ -1,20 +1,19 @@
 package com.example
 
 import android.os.Bundle
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Map
-import androidx.compose.material.icons.filled.Security
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -32,10 +31,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.FragmentActivity
@@ -58,6 +64,7 @@ import com.example.ui.screens.GridHubScreen
 import com.example.ui.screens.HistoryScreen
 import com.example.ui.screens.HomeScreen
 import com.example.ui.screens.LiveMapScreen
+import com.example.ui.screens.MoreScreen
 import com.example.ui.screens.ReportFaultScreen
 import com.example.ui.screens.VandalismScreen
 import com.example.ui.theme.BrightTheme
@@ -66,13 +73,23 @@ import com.example.ui.theme.ElegantDarkBorder
 import com.example.ui.theme.ElegantGoldPrimary
 import com.example.ui.theme.Slate500Text
 
-enum class BrightNavDestination(val label: String, val icon: androidx.compose.ui.graphics.vector.ImageVector) {
-    HOME("Home", Icons.Default.Home),
-    MAP("Outage Map", Icons.Default.Map),
-    REPORT("Report", Icons.Default.Add),
-    VANDALISM("Anti-Theft", Icons.Default.Security),
-    HISTORY("History", Icons.Default.History),
-    GRID_HUB("Grid Hub", Icons.Default.Bolt)
+/** The five bottom-bar tabs (Material 3 recommends at most five). */
+enum class BrightNavDestination(
+    val route: String,
+    val label: String,
+    val icon: androidx.compose.ui.graphics.vector.ImageVector
+) {
+    HOME("home", "Home", Icons.Default.Home),
+    MAP("map", "Map", Icons.Default.Map),
+    REPORT("report", "Report", Icons.Default.Add),
+    HISTORY("history", "History", Icons.Default.History),
+    MORE("more", "More", Icons.Default.Menu)
+}
+
+/** Screens reached from the More tab; they keep the More tab highlighted. */
+object BrightSubRoutes {
+    const val ANTI_THEFT = "more/anti_theft"
+    const val GRID_HUB = "more/grid_hub"
 }
 
 // FragmentActivity (a ComponentActivity subclass) is required by androidx.biometric's BiometricPrompt.
@@ -95,7 +112,8 @@ class MainActivity : FragmentActivity() {
 
 @Composable
 fun BrightApp(viewModel: BrightViewModel) {
-    var currentDestination by remember { mutableStateOf(BrightNavDestination.HOME) }
+    // Navigation Compose back stack: system back pops sub-screens, then returns to Home.
+    val navController = rememberNavController()
     val snackbarHostState = remember { SnackbarHostState() }
 
     // Dialog states
@@ -177,10 +195,13 @@ fun BrightApp(viewModel: BrightViewModel) {
 
     // If new user (not onboarded yet) or opened from menu, show the interactive sign-in / sign-up flow
     if ((!isOnboardingCompleted && !userProfile.isOnboarded) || showOnboardingDialog) {
+        val canDismissOnboarding = showOnboardingDialog && (isOnboardingCompleted || userProfile.isOnboarded)
+        // System back closes the sign-in / switch-meter screen when it was opened from the app.
+        BackHandler(enabled = canDismissOnboarding) { showOnboardingDialog = false }
         SignUpOnboardingScreen(
             currentProfile = userProfile,
             initialSignInMode = true,
-            isDismissible = showOnboardingDialog && (isOnboardingCompleted || userProfile.isOnboarded),
+            isDismissible = canDismissOnboarding,
             paidMeters = paidMeterNumbers,
             onRecordMeterPayment = { meterNum ->
                 viewModel.markMeterPaid(meterNum)
@@ -242,6 +263,13 @@ fun BrightApp(viewModel: BrightViewModel) {
         containerColor = MaterialTheme.colorScheme.background,
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         bottomBar = {
+            val backStackEntry by navController.currentBackStackEntryAsState()
+            val currentRoute = backStackEntry?.destination?.route
+            val selectedTab = when {
+                currentRoute == null -> BrightNavDestination.HOME
+                currentRoute.startsWith("more") -> BrightNavDestination.MORE
+                else -> BrightNavDestination.entries.firstOrNull { it.route == currentRoute } ?: BrightNavDestination.HOME
+            }
             NavigationBar(
                 modifier = Modifier
                     .testTag("bright_bottom_nav_bar")
@@ -250,20 +278,23 @@ fun BrightApp(viewModel: BrightViewModel) {
                 tonalElevation = 2.dp
             ) {
                 BrightNavDestination.entries.forEach { destination ->
+                    val isSelected = selectedTab == destination
                     NavigationBarItem(
-                        selected = currentDestination == destination,
-                        onClick = { currentDestination = destination },
+                        selected = isSelected,
+                        onClick = { navController.navigateToTab(destination) },
                         icon = {
                             Icon(
                                 imageVector = destination.icon,
-                                contentDescription = destination.label
+                                contentDescription = null // the visible label already names the tab
                             )
                         },
                         label = {
                             Text(
                                 text = destination.label,
-                                fontSize = 10.sp,
-                                fontWeight = if (currentDestination == destination) FontWeight.Bold else FontWeight.Normal
+                                fontSize = 12.sp,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         },
                         colors = NavigationBarItemDefaults.colors(
@@ -279,124 +310,145 @@ fun BrightApp(viewModel: BrightViewModel) {
             }
         }
     ) { innerPadding ->
-        Box(
+        NavHost(
+            navController = navController,
+            startDestination = BrightNavDestination.HOME.route,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            when (currentDestination) {
-                BrightNavDestination.HOME -> {
-                    HomeScreen(
-                        userProfile = userProfile,
-                        personalComplaints = personalComplaints,
-                        telemetry = gridTelemetry,
-                        isDarkMode = isDarkMode,
-                        auditingRecords = auditingRecords,
-                        transformerTelemetry = transformerTelemetry,
-                        isRestorationAlarmEnabled = isRestorationAlarmEnabled,
-                        onToggleThemeMode = { viewModel.toggleThemeMode() },
-                        onReportFaultClicked = { currentDestination = BrightNavDestination.REPORT },
-                        onEmergencyHazardTriggered = { hazardName ->
-                            viewModel.reportQuickEmergencyHazard(hazardName)
-                        },
-                        onEscalateComplaint = { id -> viewModel.escalateComplaint(id) },
-                        onUpvoteComplaint = { id -> viewModel.upvoteComplaint(id) },
-                        onConfirmResolution = { id -> resolvingTicketId = id },
-                        onEditProfileClicked = { showEditProfileDialog = true },
-                        onOpenOnboarding = { showOnboardingDialog = true },
-                        onOpenClearinghouse = { showClearinghouseDialog = true },
-                        onOpenTransformerForum = { showTransformerForumDialog = true },
-                        onOpenEnergyOptimization = { showEnergyOptimizationDialog = true },
-                        onOpenProfileAdmin = { showProfileAdminDialog = true },
-                        onReportTransformerHumSpark = { viewModel.reportTransformerHumSpark() },
-                        onToggleRestorationAlarm = { viewModel.toggleRestorationAlarm() },
-                        onPlayRestorationChime = { viewModel.playRestorationChime() },
-                        onNavigateMap = { currentDestination = BrightNavDestination.MAP },
-                        onNavigateVandalism = { currentDestination = BrightNavDestination.VANDALISM },
-                        onNavigateHistory = { currentDestination = BrightNavDestination.HISTORY },
-                        onNavigateHub = { currentDestination = BrightNavDestination.GRID_HUB },
-                        onOpenRedDangerSOS = { viewModel.triggerRedDangerEmergency() },
-                        diagnosticStatus = diagnosticStatus,
-                        onToggleDiagnosticStatus = { viewModel.toggleDiagnosticStatus() },
-                        userTrustScore = userTrustScore,
-                        onOpenEstateExcoDossier = { showEstateExcoDialog = true },
-                        onOpenSmartMeterGateway = { showSmartMeterGatewayDialog = true },
-                        citizenMeterStatus = citizenMeterStatus,
-                        onAutoDetectSmartMeter = { viewModel.autoDetectCitizenMeter() },
-                        onLockApp = { viewModel.lockAppSession() },
-                        onLogOut = { viewModel.logOut() },
-                        surgeWarningActive = surgeWarningActive,
-                        surgeCountdownSeconds = surgeCountdownSeconds,
-                        onTriggerSurgeSiren = { viewModel.triggerSurgeSafetySiren() },
-                        onDismissSurgeWarning = { viewModel.dismissSurgeWarning() },
-                        pendingSyncCount = pendingSyncCount,
-                        onSyncNow = { viewModel.syncOfflineQueue() }
-                    )
-                }
+            composable(BrightNavDestination.HOME.route) {
+                HomeScreen(
+                    userProfile = userProfile,
+                    personalComplaints = personalComplaints,
+                    telemetry = gridTelemetry,
+                    isDarkMode = isDarkMode,
+                    auditingRecords = auditingRecords,
+                    transformerTelemetry = transformerTelemetry,
+                    isRestorationAlarmEnabled = isRestorationAlarmEnabled,
+                    onToggleThemeMode = { viewModel.toggleThemeMode() },
+                    onReportFaultClicked = { navController.navigateToTab(BrightNavDestination.REPORT) },
+                    onEmergencyHazardTriggered = { hazardName ->
+                        viewModel.reportQuickEmergencyHazard(hazardName)
+                    },
+                    onEscalateComplaint = { id -> viewModel.escalateComplaint(id) },
+                    onUpvoteComplaint = { id -> viewModel.upvoteComplaint(id) },
+                    onConfirmResolution = { id -> resolvingTicketId = id },
+                    onEditProfileClicked = { showEditProfileDialog = true },
+                    onOpenOnboarding = { showOnboardingDialog = true },
+                    onOpenClearinghouse = { showClearinghouseDialog = true },
+                    onOpenTransformerForum = { showTransformerForumDialog = true },
+                    onOpenEnergyOptimization = { showEnergyOptimizationDialog = true },
+                    onOpenProfileAdmin = { showProfileAdminDialog = true },
+                    onReportTransformerHumSpark = { viewModel.reportTransformerHumSpark() },
+                    onToggleRestorationAlarm = { viewModel.toggleRestorationAlarm() },
+                    onPlayRestorationChime = { viewModel.playRestorationChime() },
+                    onNavigateMap = { navController.navigateToTab(BrightNavDestination.MAP) },
+                    onNavigateVandalism = { navController.navigateToMoreSubScreen(BrightSubRoutes.ANTI_THEFT) },
+                    onNavigateHistory = { navController.navigateToTab(BrightNavDestination.HISTORY) },
+                    onNavigateHub = { navController.navigateToMoreSubScreen(BrightSubRoutes.GRID_HUB) },
+                    onNavigateMore = { navController.navigateToTab(BrightNavDestination.MORE) },
+                    onOpenRedDangerSOS = { viewModel.triggerRedDangerEmergency() },
+                    diagnosticStatus = diagnosticStatus,
+                    onToggleDiagnosticStatus = { viewModel.toggleDiagnosticStatus() },
+                    userTrustScore = userTrustScore,
+                    onOpenEstateExcoDossier = { showEstateExcoDialog = true },
+                    onOpenSmartMeterGateway = { showSmartMeterGatewayDialog = true },
+                    citizenMeterStatus = citizenMeterStatus,
+                    onAutoDetectSmartMeter = { viewModel.autoDetectCitizenMeter() },
+                    onLockApp = { viewModel.lockAppSession() },
+                    onLogOut = { viewModel.logOut() },
+                    surgeWarningActive = surgeWarningActive,
+                    surgeCountdownSeconds = surgeCountdownSeconds,
+                    onTriggerSurgeSiren = { viewModel.triggerSurgeSafetySiren() },
+                    onDismissSurgeWarning = { viewModel.dismissSurgeWarning() },
+                    pendingSyncCount = pendingSyncCount,
+                    onSyncNow = { viewModel.syncOfflineQueue() }
+                )
+            }
 
-                BrightNavDestination.MAP -> {
-                    LiveMapScreen(
-                        userProfile = userProfile,
-                        outageNodes = outageNodes,
-                        onRefreshMap = {
-                            viewModel.showNotification("Refreshing SCADA transmission lines and transformer statuses...")
+            composable(BrightNavDestination.MAP.route) {
+                LiveMapScreen(
+                    userProfile = userProfile,
+                    outageNodes = outageNodes,
+                    onRefreshMap = {
+                        viewModel.showNotification("Refreshing outage map...")
+                    }
+                )
+            }
+
+            composable(BrightNavDestination.REPORT.route) {
+                ReportFaultScreen(
+                    userProfile = userProfile,
+                    onBack = {
+                        if (!navController.popBackStack()) {
+                            navController.navigateToTab(BrightNavDestination.HOME)
                         }
-                    )
-                }
+                    },
+                    onSubmit = { title, desc, faultType, isHazard, mediaUri, isVideo ->
+                        viewModel.reportFault(title, desc, faultType, isHazard, mediaUri, isVideo)
+                        navController.navigateToTab(BrightNavDestination.HISTORY)
+                    }
+                )
+            }
 
-                BrightNavDestination.REPORT -> {
-                    ReportFaultScreen(
-                        userProfile = userProfile,
-                        onBack = { currentDestination = BrightNavDestination.HOME },
-                        onSubmit = { title, desc, faultType, isHazard, mediaUri, isVideo ->
-                            viewModel.reportFault(title, desc, faultType, isHazard, mediaUri, isVideo)
-                            currentDestination = BrightNavDestination.HISTORY
-                        }
-                    )
-                }
+            composable(BrightNavDestination.HISTORY.route) {
+                HistoryScreen(
+                    userProfile = userProfile,
+                    historicalComplaints = historyComplaints,
+                    billingDisputes = billingDisputes,
+                    onEscalateClicked = { id -> viewModel.escalateComplaint(id) },
+                    onAdvanceLifecycle = { id, nextStatus -> viewModel.advanceComplaintLifecycle(id, nextStatus) }
+                )
+            }
 
-                BrightNavDestination.VANDALISM -> {
-                    VandalismScreen(
-                        userProfile = userProfile,
-                        reports = vandalismReports,
-                        onSubmitReport = { incident, loc, land, isAnon, desc, suspects ->
-                            viewModel.reportVandalism(incident, loc, land, isAnon, desc, suspects)
-                        }
-                    )
-                }
+            composable(BrightNavDestination.MORE.route) {
+                MoreScreen(
+                    onOpenAntiTheft = { navController.navigateToMoreSubScreen(BrightSubRoutes.ANTI_THEFT) },
+                    onOpenGridHub = { navController.navigateToMoreSubScreen(BrightSubRoutes.GRID_HUB) },
+                    onOpenSmartMeterGateway = { showSmartMeterGatewayDialog = true },
+                    onOpenEstateExcoDossier = { showEstateExcoDialog = true },
+                    onOpenClearinghouse = { showClearinghouseDialog = true },
+                    onOpenTransformerForum = { showTransformerForumDialog = true },
+                    onOpenEnergyOptimization = { showEnergyOptimizationDialog = true },
+                    onOpenProfileAdmin = { showProfileAdminDialog = true },
+                    onOpenOnboarding = { showOnboardingDialog = true },
+                    onLockApp = { viewModel.lockAppSession() },
+                    onLogOut = { viewModel.logOut() }
+                )
+            }
 
-                BrightNavDestination.HISTORY -> {
-                    HistoryScreen(
-                        userProfile = userProfile,
-                        historicalComplaints = historyComplaints,
-                        billingDisputes = billingDisputes,
-                        onEscalateClicked = { id -> viewModel.escalateComplaint(id) },
-                        onAdvanceLifecycle = { id, nextStatus -> viewModel.advanceComplaintLifecycle(id, nextStatus) }
-                    )
-                }
+            composable(BrightSubRoutes.ANTI_THEFT) {
+                VandalismScreen(
+                    userProfile = userProfile,
+                    reports = vandalismReports,
+                    onSubmitReport = { incident, loc, land, isAnon, desc, suspects ->
+                        viewModel.reportVandalism(incident, loc, land, isAnon, desc, suspects)
+                    }
+                )
+            }
 
-                BrightNavDestination.GRID_HUB -> {
-                    GridHubScreen(
-                        userProfile = userProfile,
-                        maintenanceAlerts = maintenanceAlerts,
-                        currentLanguage = currentLanguage,
-                        isLowDataMode = isLowDataMode,
-                        onLanguageSelected = { viewModel.setLanguage(it) },
-                        onToggleLowData = { viewModel.toggleLowDataMode() },
-                        onSubmitBillingDispute = { type, amount, month, desc ->
-                            viewModel.submitBillingDispute(type, amount, month, desc)
-                        },
-                        isBatSignalMode = isBatSignalMode,
-                        onToggleBatSignalMode = { viewModel.toggleBatSignalMode(it) },
-                        onOpenRedDangerSOS = { viewModel.triggerRedDangerEmergency() },
-                        onOpenForum = { showTransformerForumDialog = true },
-                        onPlaySirenAlarm = { viewModel.playRestorationChime() },
-                        onOpenEstateExco = { showEstateExcoDialog = true },
-                        onOpenSmartMeterGateway = { showSmartMeterGatewayDialog = true },
-                        citizenMeterStatus = citizenMeterStatus,
-                        onAutoDetectSmartMeter = { viewModel.autoDetectCitizenMeter() }
-                    )
-                }
+            composable(BrightSubRoutes.GRID_HUB) {
+                GridHubScreen(
+                    userProfile = userProfile,
+                    maintenanceAlerts = maintenanceAlerts,
+                    currentLanguage = currentLanguage,
+                    isLowDataMode = isLowDataMode,
+                    onLanguageSelected = { viewModel.setLanguage(it) },
+                    onToggleLowData = { viewModel.toggleLowDataMode() },
+                    onSubmitBillingDispute = { type, amount, month, desc ->
+                        viewModel.submitBillingDispute(type, amount, month, desc)
+                    },
+                    isBatSignalMode = isBatSignalMode,
+                    onToggleBatSignalMode = { viewModel.toggleBatSignalMode(it) },
+                    onOpenRedDangerSOS = { viewModel.triggerRedDangerEmergency() },
+                    onOpenForum = { showTransformerForumDialog = true },
+                    onPlaySirenAlarm = { viewModel.playRestorationChime() },
+                    onOpenEstateExco = { showEstateExcoDialog = true },
+                    onOpenSmartMeterGateway = { showSmartMeterGatewayDialog = true },
+                    citizenMeterStatus = citizenMeterStatus,
+                    onAutoDetectSmartMeter = { viewModel.autoDetectCitizenMeter() }
+                )
             }
         }
     }
@@ -544,5 +596,33 @@ fun BrightApp(viewModel: BrightViewModel) {
             onPingMeter = { meterNum -> viewModel.pingSmartMeterInstantRead(meterNum) },
             onDismiss = { showSmartMeterGatewayDialog = false }
         )
+    }
+}
+
+/**
+ * Switches bottom-bar tabs the standard Material way: one copy of each tab, Home kept at the root
+ * so system back from any tab returns to Home, and tab state saved/restored.
+ */
+private fun NavHostController.navigateToTab(destination: BrightNavDestination) {
+    navigate(destination.route) {
+        popUpTo(graph.findStartDestination().id) {
+            saveState = true
+        }
+        launchSingleTop = true
+        restoreState = true
+    }
+}
+
+/** Opens a screen that lives under the More tab, so back returns to More. */
+private fun NavHostController.navigateToMoreSubScreen(route: String) {
+    navigate(BrightNavDestination.MORE.route) {
+        popUpTo(graph.findStartDestination().id) {
+            saveState = true
+        }
+        launchSingleTop = true
+        restoreState = true
+    }
+    navigate(route) {
+        launchSingleTop = true
     }
 }
