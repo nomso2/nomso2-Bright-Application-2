@@ -1,30 +1,39 @@
 package com.example.model
 
 /**
- * 11 Nigerian Distribution Companies (DisCos)
+ * The 11 legacy Nigerian Distribution Companies (DisCos) used for onboarding, rankings and
+ * escalation. Contact channels are NOT stored here: [customerCarePhone] and friends read
+ * from [DisCoContacts], which holds the numbers published on each DisCo's official website
+ * (checked Oct 2026). Distributors outside this enum (MainPower in Enugu, Aba Power) are
+ * contact-only entries in [DisCoContacts] / [StateDisCoMap].
  */
 enum class DisCo(
     val code: String,
     val fullName: String,
     val statesCovered: String,
-    val customerCarePhone: String,
     val headOffice: String,
     val averageResolutionHours: Double,
     val resolvedRatePercent: Int,
     val customerRating: Double,
     val gridAvailabilityPercent: Int
 ) {
-    AEDC("AEDC", "Abuja Electricity Distribution Company", "FCT, Kogi, Nasarawa, Niger", "08039070070", "Abuja", 6.2, 86, 3.8, 72),
-    BEDC("BEDC", "Benin Electricity Distribution Company", "Edo, Delta, Ondo, Ekiti", "08035888888", "Benin City", 10.4, 71, 3.1, 58),
-    EKEDC("EKEDC", "Eko Electricity Distribution Company", "Lagos South & Island, Agbara", "07080655555", "Marina, Lagos", 3.8, 92, 4.3, 84),
-    EEDC("EEDC", "Enugu Electricity Distribution Company", "Abia, Anambra, Ebonyi, Enugu, Imo", "084700100", "Enugu", 11.5, 68, 2.9, 54),
-    IBEDC("IBEDC", "Ibadan Electricity Distribution Company", "Oyo, Ogun, Osun, Kwara, Niger (part)", "07001239999", "Ibadan", 7.8, 79, 3.5, 66),
-    IE("IE", "Ikeja Electric", "Lagos North & Mainland, Ikorodu", "01-7000-250", "Alausa, Ikeja", 4.1, 91, 4.2, 82),
-    JED("JED", "Jos Electricity Distribution Company", "Plateau, Bauchi, Benue, Gombe", "07000533267", "Jos", 12.8, 64, 2.8, 51),
-    KAEDC("KAEDC", "Kaduna Electricity Distribution Company", "Kaduna, Kebbi, Sokoto, Zamfara", "08031230000", "Kaduna", 14.2, 60, 2.6, 48),
-    KEDCO("KEDCO", "Kano Electricity Distribution Company", "Kano, Katsina, Jigawa", "07005555555", "Kano", 9.6, 74, 3.3, 62),
-    PHED("PHED", "Port Harcourt Electricity Distribution Company", "Rivers, Bayelsa, Cross River, Akwa Ibom", "08139834000", "Port Harcourt", 8.9, 75, 3.4, 64),
-    YEDC("YEDC", "Yola Electricity Distribution Company", "Adamawa, Borno, Taraba, Yobe", "08031234567", "Yola", 15.0, 58, 2.5, 45);
+    AEDC("AEDC", "Abuja Electricity Distribution Company", "FCT, Kogi, Nasarawa, Niger", "Abuja", 6.2, 86, 3.8, 72),
+    BEDC("BEDC", "Benin Electricity Distribution Company", "Edo, Delta, Ondo, Ekiti", "Benin City", 10.4, 71, 3.1, 58),
+    EKEDC("EKEDC", "Eko Electricity Distribution Company", "Lagos South & Island, Agbara", "Marina, Lagos", 3.8, 92, 4.3, 84),
+    EEDC("EEDC", "Enugu Electricity Distribution Company", "Abia (outside Aba), Anambra, Ebonyi, Imo", "Enugu", 11.5, 68, 2.9, 54),
+    IBEDC("IBEDC", "Ibadan Electricity Distribution Company", "Oyo, Ogun, Osun, Kwara, parts of Niger, Kogi & Ekiti", "Ibadan", 7.8, 79, 3.5, 66),
+    IE("IE", "Ikeja Electric", "Lagos North & Mainland, Ikorodu, Ogun border", "Alausa, Ikeja", 4.1, 91, 4.2, 82),
+    JED("JED", "Jos Electricity Distribution Company", "Plateau, Bauchi, Benue, Gombe", "Jos", 12.8, 64, 2.8, 51),
+    KAEDC("KAEDC", "Kaduna Electricity Distribution Company", "Kaduna, Kebbi, Sokoto, Zamfara", "Kaduna", 14.2, 60, 2.6, 48),
+    KEDCO("KEDCO", "Kano Electricity Distribution Company", "Kano, Katsina, Jigawa", "Kano", 9.6, 74, 3.3, 62),
+    PHED("PHED", "Port Harcourt Electricity Distribution Company", "Rivers, Bayelsa, Cross River, Akwa Ibom", "Port Harcourt", 8.9, 75, 3.4, 64),
+    YEDC("YEDC", "Yola Electricity Distribution Company", "Adamawa, Borno, Taraba, Yobe", "Yola", 15.0, 58, 2.5, 45);
+
+    /** Official contact channels for this DisCo (never null for the 11 enum entries). */
+    val contacts: DisCoContact? get() = DisCoContacts.forCode(code)
+
+    /** Primary official customer-care line, local format (e.g. "08039070070"). */
+    val customerCarePhone: String get() = contacts?.primaryPhone.orEmpty()
 
     companion object {
         fun fromCode(code: String): DisCo {

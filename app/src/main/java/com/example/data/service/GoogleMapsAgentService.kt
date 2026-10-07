@@ -1,5 +1,6 @@
 package com.example.data.service
 
+import com.example.model.DisCoContacts
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -61,7 +62,7 @@ object GoogleMapsAgentService {
             longitude = 7.4667,
             rating = 4.2,
             isOpen = true,
-            phoneNumber = "0803 907 0070",
+            phoneNumber = DisCoContacts.forCode("AEDC")?.primaryPhone.orEmpty(),
             operatingHours = "Mon - Fri: 8:00 AM - 5:00 PM (Emergency Faults: 24/7)",
             discoAffiliation = "AEDC"
         ),
@@ -75,7 +76,7 @@ object GoogleMapsAgentService {
             longitude = 3.3958,
             rating = 4.3,
             isOpen = true,
-            phoneNumber = "0708 065 5555",
+            phoneNumber = DisCoContacts.forCode("EKEDC")?.primaryPhone.orEmpty(),
             operatingHours = "Mon - Fri: 8:00 AM - 5:00 PM (Emergency Faults: 24/7)",
             discoAffiliation = "EKEDC"
         ),
@@ -89,7 +90,7 @@ object GoogleMapsAgentService {
             longitude = 3.3578,
             rating = 4.2,
             isOpen = true,
-            phoneNumber = "01 7000 250",
+            phoneNumber = DisCoContacts.forCode("IE")?.primaryPhone.orEmpty(),
             operatingHours = "Mon - Fri: 8:00 AM - 5:00 PM (Emergency Faults: 24/7)",
             discoAffiliation = "IE"
         ),
@@ -103,7 +104,7 @@ object GoogleMapsAgentService {
             longitude = 5.6037,
             rating = 3.9,
             isOpen = true,
-            phoneNumber = "0803 588 8888",
+            phoneNumber = DisCoContacts.forCode("BEDC")?.primaryPhone.orEmpty(),
             operatingHours = "Mon - Fri: 8:00 AM - 5:00 PM (Emergency Faults: 24/7)",
             discoAffiliation = "BEDC"
         ),
@@ -117,7 +118,7 @@ object GoogleMapsAgentService {
             longitude = 3.9470,
             rating = 4.0,
             isOpen = true,
-            phoneNumber = "0700 123 9999",
+            phoneNumber = DisCoContacts.forCode("IBEDC")?.primaryPhone.orEmpty(),
             operatingHours = "Mon - Fri: 8:00 AM - 5:00 PM (Emergency Faults: 24/7)",
             discoAffiliation = "IBEDC"
         ),
@@ -131,7 +132,7 @@ object GoogleMapsAgentService {
             longitude = 7.4988,
             rating = 3.8,
             isOpen = true,
-            phoneNumber = "084 700 100",
+            phoneNumber = DisCoContacts.forCode("EEDC")?.primaryPhone.orEmpty(),
             operatingHours = "Mon - Fri: 8:00 AM - 5:00 PM (Emergency Faults: 24/7)",
             discoAffiliation = "EEDC"
         ),
@@ -145,7 +146,7 @@ object GoogleMapsAgentService {
             longitude = 7.0125,
             rating = 4.1,
             isOpen = true,
-            phoneNumber = "0813 983 4000",
+            phoneNumber = DisCoContacts.forCode("PHED")?.primaryPhone.orEmpty(),
             operatingHours = "Mon - Fri: 8:00 AM - 5:00 PM (Emergency Faults: 24/7)",
             discoAffiliation = "PHED"
         ),
@@ -159,7 +160,7 @@ object GoogleMapsAgentService {
             longitude = 7.4165,
             rating = 3.7,
             isOpen = true,
-            phoneNumber = "0803 123 0000",
+            phoneNumber = DisCoContacts.forCode("KAEDC")?.primaryPhone.orEmpty(),
             operatingHours = "Mon - Fri: 8:00 AM - 5:00 PM (Emergency Faults: 24/7)",
             discoAffiliation = "KAEDC"
         ),
@@ -173,7 +174,7 @@ object GoogleMapsAgentService {
             longitude = 8.5919,
             rating = 3.8,
             isOpen = true,
-            phoneNumber = "0700 555 5555",
+            phoneNumber = DisCoContacts.forCode("KEDCO")?.primaryPhone.orEmpty(),
             operatingHours = "Mon - Fri: 8:00 AM - 5:00 PM (Emergency Faults: 24/7)",
             discoAffiliation = "KEDCO"
         ),
@@ -187,7 +188,7 @@ object GoogleMapsAgentService {
             longitude = 8.8583,
             rating = 3.7,
             isOpen = true,
-            phoneNumber = "0700 053 3267",
+            phoneNumber = DisCoContacts.forCode("JED")?.primaryPhone.orEmpty(),
             operatingHours = "Mon - Fri: 8:00 AM - 5:00 PM (Emergency Faults: 24/7)",
             discoAffiliation = "JED"
         ),
@@ -201,7 +202,7 @@ object GoogleMapsAgentService {
             longitude = 12.4818,
             rating = 3.6,
             isOpen = true,
-            phoneNumber = "0803 123 4567",
+            phoneNumber = DisCoContacts.forCode("YEDC")?.primaryPhone.orEmpty(),
             operatingHours = "Mon - Fri: 8:00 AM - 5:00 PM (Emergency Faults: 24/7)",
             discoAffiliation = "YEDC"
         ),
