@@ -105,51 +105,55 @@ import com.example.ui.theme.extendedColors
 
 @Composable
 fun HomeScreen(
-    userProfile: UserProfile,
-    personalComplaints: List<Complaint>,
-    telemetry: GridTelemetry,
-    isDarkMode: Boolean = true,
-    auditingRecords: List<AuditingHourRecord> = emptyList(),
-    transformerTelemetry: TransformerOverloadTelemetry = TransformerOverloadTelemetry(),
-    isRestorationAlarmEnabled: Boolean = true,
-    onToggleThemeMode: () -> Unit = {},
-    onReportFaultClicked: () -> Unit,
-    onEmergencyHazardTriggered: (String) -> Unit,
-    onEscalateComplaint: (String) -> Unit,
-    onUpvoteComplaint: (String) -> Unit,
-    onConfirmResolution: (String) -> Unit,
-    onEditProfileClicked: () -> Unit,
-    onOpenOnboarding: () -> Unit = {},
-    onOpenClearinghouse: () -> Unit = {},
-    onOpenTransformerForum: () -> Unit = {},
-    onOpenEnergyOptimization: () -> Unit = {},
-    onOpenProfileAdmin: () -> Unit = {},
-    onReportTransformerHumSpark: () -> Unit = {},
-    onToggleRestorationAlarm: () -> Unit = {},
-    onPlayRestorationChime: () -> Unit = {},
-    onNavigateMap: () -> Unit = {},
-    onNavigateVandalism: () -> Unit = {},
-    onNavigateHistory: () -> Unit = {},
-    onNavigateHub: () -> Unit = {},
-    onNavigateMore: () -> Unit = {},
-    onOpenRedDangerSOS: () -> Unit = {},
-    diagnosticStatus: String = "LOAD_SHEDDING",
-    onToggleDiagnosticStatus: () -> Unit = {},
-    userTrustScore: Int = 98,
-    onOpenEstateExcoDossier: () -> Unit = {},
-    onOpenSmartMeterGateway: () -> Unit = {},
-    citizenMeterStatus: CitizenMeterStatus? = null,
-    onAutoDetectSmartMeter: () -> Unit = {},
-    onLockApp: () -> Unit = {},
-    onLogOut: () -> Unit = {},
-    surgeWarningActive: Boolean = false,
-    surgeCountdownSeconds: Int = 180,
-    onTriggerSurgeSiren: () -> Unit = {},
-    onDismissSurgeWarning: () -> Unit = {},
-    pendingSyncCount: Int = 0,
-    onSyncNow: () -> Unit = {},
+    state: HomeUiState,
+    actions: HomeActions,
     modifier: Modifier = Modifier
 ) {
+    // Local aliases keep the body below unchanged after collapsing ~45 parameters into
+    // HomeUiState + HomeActions.
+    val userProfile = state.userProfile
+    val personalComplaints = state.personalComplaints
+    val telemetry = state.telemetry
+    val isDarkMode = state.isDarkMode
+    val auditingRecords = state.auditingRecords
+    val transformerTelemetry = state.transformerTelemetry
+    val isRestorationAlarmEnabled = state.isRestorationAlarmEnabled
+    val diagnosticStatus = state.diagnosticStatus
+    val userTrustScore = state.userTrustScore
+    val citizenMeterStatus = state.citizenMeterStatus
+    val surgeWarningActive = state.surgeWarningActive
+    val surgeCountdownSeconds = state.surgeCountdownSeconds
+    val pendingSyncCount = state.pendingSyncCount
+    val onToggleThemeMode = actions.onToggleThemeMode
+    val onReportFaultClicked = actions.onReportFaultClicked
+    val onEmergencyHazardTriggered = actions.onEmergencyHazardTriggered
+    val onEscalateComplaint = actions.onEscalateComplaint
+    val onUpvoteComplaint = actions.onUpvoteComplaint
+    val onConfirmResolution = actions.onConfirmResolution
+    val onEditProfileClicked = actions.onEditProfileClicked
+    val onOpenOnboarding = actions.onOpenOnboarding
+    val onOpenClearinghouse = actions.onOpenClearinghouse
+    val onOpenTransformerForum = actions.onOpenTransformerForum
+    val onOpenEnergyOptimization = actions.onOpenEnergyOptimization
+    val onOpenProfileAdmin = actions.onOpenProfileAdmin
+    val onReportTransformerHumSpark = actions.onReportTransformerHumSpark
+    val onToggleRestorationAlarm = actions.onToggleRestorationAlarm
+    val onPlayRestorationChime = actions.onPlayRestorationChime
+    val onNavigateMap = actions.onNavigateMap
+    val onNavigateVandalism = actions.onNavigateVandalism
+    val onNavigateHistory = actions.onNavigateHistory
+    val onNavigateHub = actions.onNavigateHub
+    val onNavigateMore = actions.onNavigateMore
+    val onOpenRedDangerSOS = actions.onOpenRedDangerSOS
+    val onToggleDiagnosticStatus = actions.onToggleDiagnosticStatus
+    val onOpenEstateExcoDossier = actions.onOpenEstateExcoDossier
+    val onOpenSmartMeterGateway = actions.onOpenSmartMeterGateway
+    val onAutoDetectSmartMeter = actions.onAutoDetectSmartMeter
+    val onLockApp = actions.onLockApp
+    val onLogOut = actions.onLogOut
+    val onTriggerSurgeSiren = actions.onTriggerSurgeSiren
+    val onDismissSurgeWarning = actions.onDismissSurgeWarning
+    val onSyncNow = actions.onSyncNow
     var showLogoutConfirmDialog by remember { mutableStateOf(false) }
     var showToolsDropdown by remember { mutableStateOf(false) }
 

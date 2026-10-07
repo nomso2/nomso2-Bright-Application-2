@@ -62,7 +62,9 @@ import com.example.ui.components.TokenEscrowClearinghouseDialog
 import com.example.ui.components.TransformerForumDialog
 import com.example.ui.screens.GridHubScreen
 import com.example.ui.screens.HistoryScreen
+import com.example.ui.screens.HomeActions
 import com.example.ui.screens.HomeScreen
+import com.example.ui.screens.HomeUiState
 import com.example.ui.screens.LiveMapScreen
 import com.example.ui.screens.MoreScreen
 import com.example.ui.screens.ReportFaultScreen
@@ -319,51 +321,55 @@ fun BrightApp(viewModel: BrightViewModel) {
         ) {
             composable(BrightNavDestination.HOME.route) {
                 HomeScreen(
-                    userProfile = userProfile,
-                    personalComplaints = personalComplaints,
-                    telemetry = gridTelemetry,
-                    isDarkMode = isDarkMode,
-                    auditingRecords = auditingRecords,
-                    transformerTelemetry = transformerTelemetry,
-                    isRestorationAlarmEnabled = isRestorationAlarmEnabled,
-                    onToggleThemeMode = { viewModel.toggleThemeMode() },
-                    onReportFaultClicked = { navController.navigateToTab(BrightNavDestination.REPORT) },
-                    onEmergencyHazardTriggered = { hazardName ->
-                        viewModel.reportQuickEmergencyHazard(hazardName)
-                    },
-                    onEscalateComplaint = { id -> viewModel.escalateComplaint(id) },
-                    onUpvoteComplaint = { id -> viewModel.upvoteComplaint(id) },
-                    onConfirmResolution = { id -> resolvingTicketId = id },
-                    onEditProfileClicked = { showEditProfileDialog = true },
-                    onOpenOnboarding = { showOnboardingDialog = true },
-                    onOpenClearinghouse = { showClearinghouseDialog = true },
-                    onOpenTransformerForum = { showTransformerForumDialog = true },
-                    onOpenEnergyOptimization = { showEnergyOptimizationDialog = true },
-                    onOpenProfileAdmin = { showProfileAdminDialog = true },
-                    onReportTransformerHumSpark = { viewModel.reportTransformerHumSpark() },
-                    onToggleRestorationAlarm = { viewModel.toggleRestorationAlarm() },
-                    onPlayRestorationChime = { viewModel.playRestorationChime() },
-                    onNavigateMap = { navController.navigateToTab(BrightNavDestination.MAP) },
-                    onNavigateVandalism = { navController.navigateToMoreSubScreen(BrightSubRoutes.ANTI_THEFT) },
-                    onNavigateHistory = { navController.navigateToTab(BrightNavDestination.HISTORY) },
-                    onNavigateHub = { navController.navigateToMoreSubScreen(BrightSubRoutes.GRID_HUB) },
-                    onNavigateMore = { navController.navigateToTab(BrightNavDestination.MORE) },
-                    onOpenRedDangerSOS = { viewModel.triggerRedDangerEmergency() },
-                    diagnosticStatus = diagnosticStatus,
-                    onToggleDiagnosticStatus = { viewModel.toggleDiagnosticStatus() },
-                    userTrustScore = userTrustScore,
-                    onOpenEstateExcoDossier = { showEstateExcoDialog = true },
-                    onOpenSmartMeterGateway = { showSmartMeterGatewayDialog = true },
-                    citizenMeterStatus = citizenMeterStatus,
-                    onAutoDetectSmartMeter = { viewModel.autoDetectCitizenMeter() },
-                    onLockApp = { viewModel.lockAppSession() },
-                    onLogOut = { viewModel.logOut() },
-                    surgeWarningActive = surgeWarningActive,
-                    surgeCountdownSeconds = surgeCountdownSeconds,
-                    onTriggerSurgeSiren = { viewModel.triggerSurgeSafetySiren() },
-                    onDismissSurgeWarning = { viewModel.dismissSurgeWarning() },
-                    pendingSyncCount = pendingSyncCount,
-                    onSyncNow = { viewModel.syncOfflineQueue() }
+                    state = HomeUiState(
+                        userProfile = userProfile,
+                        personalComplaints = personalComplaints,
+                        telemetry = gridTelemetry,
+                        isDarkMode = isDarkMode,
+                        auditingRecords = auditingRecords,
+                        transformerTelemetry = transformerTelemetry,
+                        isRestorationAlarmEnabled = isRestorationAlarmEnabled,
+                        diagnosticStatus = diagnosticStatus,
+                        userTrustScore = userTrustScore,
+                        citizenMeterStatus = citizenMeterStatus,
+                        surgeWarningActive = surgeWarningActive,
+                        surgeCountdownSeconds = surgeCountdownSeconds,
+                        pendingSyncCount = pendingSyncCount
+                    ),
+                    actions = HomeActions(
+                        onToggleThemeMode = { viewModel.toggleThemeMode() },
+                        onReportFaultClicked = { navController.navigateToTab(BrightNavDestination.REPORT) },
+                        onEmergencyHazardTriggered = { hazardName ->
+                            viewModel.reportQuickEmergencyHazard(hazardName)
+                        },
+                        onEscalateComplaint = { id -> viewModel.escalateComplaint(id) },
+                        onUpvoteComplaint = { id -> viewModel.upvoteComplaint(id) },
+                        onConfirmResolution = { id -> resolvingTicketId = id },
+                        onEditProfileClicked = { showEditProfileDialog = true },
+                        onOpenOnboarding = { showOnboardingDialog = true },
+                        onOpenClearinghouse = { showClearinghouseDialog = true },
+                        onOpenTransformerForum = { showTransformerForumDialog = true },
+                        onOpenEnergyOptimization = { showEnergyOptimizationDialog = true },
+                        onOpenProfileAdmin = { showProfileAdminDialog = true },
+                        onReportTransformerHumSpark = { viewModel.reportTransformerHumSpark() },
+                        onToggleRestorationAlarm = { viewModel.toggleRestorationAlarm() },
+                        onPlayRestorationChime = { viewModel.playRestorationChime() },
+                        onNavigateMap = { navController.navigateToTab(BrightNavDestination.MAP) },
+                        onNavigateVandalism = { navController.navigateToMoreSubScreen(BrightSubRoutes.ANTI_THEFT) },
+                        onNavigateHistory = { navController.navigateToTab(BrightNavDestination.HISTORY) },
+                        onNavigateHub = { navController.navigateToMoreSubScreen(BrightSubRoutes.GRID_HUB) },
+                        onNavigateMore = { navController.navigateToTab(BrightNavDestination.MORE) },
+                        onOpenRedDangerSOS = { viewModel.triggerRedDangerEmergency() },
+                        onToggleDiagnosticStatus = { viewModel.toggleDiagnosticStatus() },
+                        onOpenEstateExcoDossier = { showEstateExcoDialog = true },
+                        onOpenSmartMeterGateway = { showSmartMeterGatewayDialog = true },
+                        onAutoDetectSmartMeter = { viewModel.autoDetectCitizenMeter() },
+                        onLockApp = { viewModel.lockAppSession() },
+                        onLogOut = { viewModel.logOut() },
+                        onTriggerSurgeSiren = { viewModel.triggerSurgeSafetySiren() },
+                        onDismissSurgeWarning = { viewModel.dismissSurgeWarning() },
+                        onSyncNow = { viewModel.syncOfflineQueue() }
+                    )
                 )
             }
 
