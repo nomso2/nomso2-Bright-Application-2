@@ -377,7 +377,7 @@ fun TransformerForumDialog(
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
-                                text = "Transforms recorded native voice descriptions into standardized operational SCADA tickets:",
+                                text = "Turns voice notes in your own language into standard fault reports:",
                                 style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )

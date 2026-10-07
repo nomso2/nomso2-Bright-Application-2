@@ -453,7 +453,7 @@ data class GridTelemetryEntity(
         systemStatus = systemStatus,
         spinningReserveMw = spinningReserveMw,
         activeGenCos = activeGenCos,
-        lastUpdatedText = "$lastUpdatedText (Cached locally)"
+        lastUpdatedText = "$lastUpdatedText (saved on this phone)"
     )
 
     companion object {

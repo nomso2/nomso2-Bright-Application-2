@@ -511,7 +511,7 @@ fun BrightApp(viewModel: BrightViewModel) {
                 viewModel.showNotification("📢 Geofenced outage broadcast dispatched to ${userProfile.connectedHouseholdsCount} neighbor meters on ${userProfile.transformerId}!")
             },
             onSimulateVoiceReport = { lang ->
-                viewModel.showNotification("🎙️ $lang speech audio converted to SCADA fault ticket #TR-VOC-${(1000..9999).random()}")
+                viewModel.showNotification("🎙️ Your $lang voice note was turned into fault report #TR-VOC-${(1000..9999).random()}")
             },
             onDismiss = { showTransformerForumDialog = false }
         )

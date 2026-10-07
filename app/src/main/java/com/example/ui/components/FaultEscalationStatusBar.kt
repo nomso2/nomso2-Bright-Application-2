@@ -483,7 +483,7 @@ fun FaultEscalationStatusBar(
                                 modifier = Modifier.size(12.dp)
                             )
                             Text(
-                                text = "Live SCADA Sync",
+                                text = "Live grid status",
                                 style = MaterialTheme.typography.labelSmall.copy(fontSize = 9.sp),
                                 color = Color(0xFF10B981)
                             )

@@ -236,84 +236,33 @@ fun HomeScreen(
                     )
                 }
 
-                // Header Tool Options: Clean, unclustered tool options without circular coverings or empty circles
+                // Header actions: at most two icons (theme toggle + overflow menu).
+                // Report lives in the big gold button and the bottom bar; other tools live in More.
                 Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // 1. Report Outage / Fault Quick Action (+)
-                    IconButton(
-                        onClick = onReportFaultClicked,
-                        modifier = Modifier
-                            .size(36.dp)
-                            .testTag("header_report_button")
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = "Report Outage or Fault",
-                            tint = ElegantGoldPrimary,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-
-                    // 2. Theme Switcher (Sun / Moon)
                     IconButton(
                         onClick = onToggleThemeMode,
-                        modifier = Modifier
-                            .size(36.dp)
-                            .testTag("theme_toggle_button")
+                        modifier = Modifier.testTag("theme_toggle_button")
                     ) {
                         Icon(
                             imageVector = if (isDarkMode) Icons.Default.LightMode else Icons.Default.DarkMode,
-                            contentDescription = "Toggle Light/Dark Theme",
+                            contentDescription = if (isDarkMode) "Switch to light theme" else "Switch to dark theme",
                             tint = ElegantGoldPrimary,
-                            modifier = Modifier.size(19.dp)
+                            modifier = Modifier.size(22.dp)
                         )
                     }
 
-                    // 3. Estate Exco & Dossier (Gavel)
-                    IconButton(
-                        onClick = onOpenEstateExcoDossier,
-                        modifier = Modifier
-                            .size(36.dp)
-                            .testTag("header_estate_exco_button")
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Gavel,
-                            contentDescription = "Estate Exco & Dossier",
-                            tint = ElegantGoldPrimary,
-                            modifier = Modifier.size(19.dp)
-                        )
-                    }
-
-                    // 4. Security Protocols & Admin (Shield)
-                    IconButton(
-                        onClick = onOpenProfileAdmin,
-                        modifier = Modifier
-                            .size(36.dp)
-                            .testTag("header_security_protocols_button")
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Security,
-                            contentDescription = "Security Protocols & Admin",
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.size(19.dp)
-                        )
-                    }
-
-                    // 5. More Tools & Gateway Menu (Clean, no circular coverings, no empty circle outlines)
                     Box {
                         IconButton(
                             onClick = { showToolsDropdown = true },
-                            modifier = Modifier
-                                .size(36.dp)
-                                .testTag("header_tools_menu_button")
+                            modifier = Modifier.testTag("header_tools_menu_button")
                         ) {
                             Icon(
                                 imageVector = Icons.Default.MoreVert,
-                                contentDescription = "More Tools and Options",
+                                contentDescription = "More options",
                                 tint = MaterialTheme.colorScheme.onSurface,
-                                modifier = Modifier.size(20.dp)
+                                modifier = Modifier.size(22.dp)
                             )
                         }
 
@@ -323,22 +272,7 @@ fun HomeScreen(
                             modifier = Modifier.background(MaterialTheme.colorScheme.surface)
                         ) {
                             DropdownMenuItem(
-                                text = { Text("Smart Meter Gateway", color = MaterialTheme.colorScheme.onSurface) },
-                                leadingIcon = {
-                                    Icon(
-                                        imageVector = Icons.Default.Router,
-                                        contentDescription = null,
-                                        tint = Color(0xFF38BDF8),
-                                        modifier = Modifier.size(18.dp)
-                                    )
-                                },
-                                onClick = {
-                                    showToolsDropdown = false
-                                    onOpenSmartMeterGateway()
-                                }
-                            )
-                            DropdownMenuItem(
-                                text = { Text("Lock Session / Re-Login", color = MaterialTheme.colorScheme.onSurface) },
+                                text = { Text("Lock App", color = MaterialTheme.colorScheme.onSurface) },
                                 leadingIcon = {
                                     Icon(
                                         imageVector = Icons.Default.Lock,
@@ -350,10 +284,27 @@ fun HomeScreen(
                                 onClick = {
                                     showToolsDropdown = false
                                     onLockApp()
-                                }
+                                },
+                                modifier = Modifier.testTag("header_menu_lock")
                             )
                             DropdownMenuItem(
-                                text = { Text("Estate Exco & Dossier", color = MaterialTheme.colorScheme.onSurface) },
+                                text = { Text("Profile & Security", color = MaterialTheme.colorScheme.onSurface) },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Default.Security,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                },
+                                onClick = {
+                                    showToolsDropdown = false
+                                    onOpenProfileAdmin()
+                                },
+                                modifier = Modifier.testTag("header_security_protocols_button")
+                            )
+                            DropdownMenuItem(
+                                text = { Text("Estate & Dossier", color = MaterialTheme.colorScheme.onSurface) },
                                 leadingIcon = {
                                     Icon(
                                         imageVector = Icons.Default.Gavel,
@@ -365,6 +316,22 @@ fun HomeScreen(
                                 onClick = {
                                     showToolsDropdown = false
                                     onOpenEstateExcoDossier()
+                                },
+                                modifier = Modifier.testTag("header_estate_exco_button")
+                            )
+                            DropdownMenuItem(
+                                text = { Text("Smart Meter", color = MaterialTheme.colorScheme.onSurface) },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Default.Router,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                },
+                                onClick = {
+                                    showToolsDropdown = false
+                                    onOpenSmartMeterGateway()
                                 }
                             )
                             DropdownMenuItem(
@@ -383,34 +350,20 @@ fun HomeScreen(
                                 }
                             )
                             DropdownMenuItem(
-                                text = { Text("Profile & Protocols", color = MaterialTheme.colorScheme.onSurface) },
-                                leadingIcon = {
-                                    Icon(
-                                        imageVector = Icons.Default.Security,
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                        modifier = Modifier.size(18.dp)
-                                    )
-                                },
-                                onClick = {
-                                    showToolsDropdown = false
-                                    onOpenProfileAdmin()
-                                }
-                            )
-                            DropdownMenuItem(
-                                text = { Text("Log Out", color = Color(0xFFEF4444)) },
+                                text = { Text("Log Out", color = MaterialTheme.colorScheme.error) },
                                 leadingIcon = {
                                     Icon(
                                         imageVector = Icons.AutoMirrored.Filled.ExitToApp,
                                         contentDescription = null,
-                                        tint = Color(0xFFEF4444),
+                                        tint = MaterialTheme.colorScheme.error,
                                         modifier = Modifier.size(18.dp)
                                     )
                                 },
                                 onClick = {
                                     showToolsDropdown = false
                                     showLogoutConfirmDialog = true
-                                }
+                                },
+                                modifier = Modifier.testTag("header_menu_logout")
                             )
                         }
                     }
@@ -426,7 +379,7 @@ fun HomeScreen(
                 contentPadding = PaddingValues(top = 14.dp, bottom = 96.dp),
                 verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {
-                // High-Pitch Grid Surge Warning Banner (Audio & 3-Min Countdown)
+                // 1. High-Pitch Grid Surge Warning Banner (Audio & 3-Min Countdown)
                 if (surgeWarningActive) {
                     item {
                         GridSurgeWarningBanner(
@@ -436,70 +389,7 @@ fun HomeScreen(
                     }
                 }
 
-                // Room Database Offline-Ready Status Banner
-                item {
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .testTag("offline_cache_status_card"),
-                        colors = CardDefaults.cardColors(
-                            containerColor = if (pendingSyncCount > 0) Color(0xFF1E293B) else Color(0xFF0F172A)
-                        ),
-                        shape = RoundedCornerShape(12.dp),
-                        border = BorderStroke(
-                            1.dp,
-                            if (pendingSyncCount > 0) ElegantGoldPrimary.copy(alpha = 0.5f) else Color(0xFF22C55E).copy(alpha = 0.3f)
-                        )
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 14.dp, vertical = 10.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(10.dp),
-                                modifier = Modifier.weight(1f)
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(10.dp)
-                                        .background(
-                                            if (pendingSyncCount > 0) ElegantGoldPrimary else Color(0xFF22C55E),
-                                            shape = CircleShape
-                                        )
-                                )
-                                Column {
-                                    Text(
-                                        text = if (pendingSyncCount > 0) "Room Database: $pendingSyncCount Cached Actions Pending Sync" else "Room Cache: 100% Offline-Ready & Active",
-                                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                                        color = MaterialTheme.colorScheme.onSurface
-                                    )
-                                    Text(
-                                        text = "All fault reports, grid telemetry, and statuses are stored locally in Room SQLite.",
-                                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                }
-                            }
-                            TextButton(
-                                onClick = onSyncNow,
-                                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
-                                modifier = Modifier.testTag("offline_sync_button")
-                            ) {
-                                Text(
-                                    text = "Sync Now",
-                                    color = ElegantGoldPrimary,
-                                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold)
-                                )
-                            }
-                        }
-                    }
-                }
-
-                // 1. Personal Meter Profile & Connection Identity
+                // 2. Personal Meter Profile & Connection Identity
                 item {
                     MeterProfileHeader(
                         profile = userProfile,
@@ -507,7 +397,7 @@ fun HomeScreen(
                     )
                 }
 
-                // 2. Direct Action: Report Power Outage / Fault
+                // 3. Direct Action: Report Power Outage / Fault
                 item {
                     Button(
                         onClick = onReportFaultClicked,
@@ -535,7 +425,14 @@ fun HomeScreen(
                     }
                 }
 
-                // 3. Section Title: "MY ACTIVE COMPLAINTS"
+                // Offline queue status: shown high up only when reports are waiting to send
+                if (pendingSyncCount > 0) {
+                    item {
+                        OfflineSyncStatusCard(pendingSyncCount = pendingSyncCount, onSyncNow = onSyncNow)
+                    }
+                }
+
+                // 4. Section Title: "MY ACTIVE COMPLAINTS"
                 item {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -578,7 +475,7 @@ fun HomeScreen(
                     }
                 }
 
-                // 4. Personal Complaints List / Clean WhatsApp-like empty card
+                // 4b. Personal complaints list or empty state (the Report button above is the single entry point)
                 if (personalComplaints.isEmpty()) {
                     item {
                         Card(
@@ -621,34 +518,11 @@ fun HomeScreen(
                                 )
                                 Spacer(modifier = Modifier.height(6.dp))
                                 Text(
-                                    text = "No active faults logged for Meter #${userProfile.meterNumber} on ${userProfile.transformerId}. If power drops, lodge complaint instantly below.",
+                                    text = "No active faults logged for Meter #${userProfile.meterNumber} on ${userProfile.transformerId}. If your power goes off, tap Report Outage above.",
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     textAlign = TextAlign.Center
                                 )
-                                Spacer(modifier = Modifier.height(16.dp))
-                                Button(
-                                    onClick = onReportFaultClicked,
-                                    modifier = Modifier
-                                        .height(44.dp)
-                                        .testTag("report_fault_empty_state_button"),
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = ElegantGoldPrimary,
-                                        contentColor = Color(0xFF0A0C10)
-                                    ),
-                                    shape = RoundedCornerShape(12.dp)
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.PowerOff,
-                                        contentDescription = null,
-                                        modifier = Modifier.size(18.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(6.dp))
-                                    Text(
-                                        text = "Report Outage / Fault",
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                }
                             }
                         }
                     }
@@ -665,10 +539,10 @@ fun HomeScreen(
                     }
                 }
 
-                // 5. Quick Action Grid
+                // 5. Compact Tools grid
                 item {
                     Text(
-                        text = "GRID & UTILITY SERVICES",
+                        text = "TOOLS",
                         style = MaterialTheme.typography.labelMedium.copy(
                             fontWeight = FontWeight.ExtraBold,
                             letterSpacing = 0.5.sp
@@ -696,7 +570,14 @@ fun HomeScreen(
                     )
                 }
 
-                // 6. Citizen Smart Meter Gateway Card (Auto-Connected or Standard STS)
+                // 6. Emergency Hazard Fast-Track (1-Tap SOS), kept on Home because it is safety-critical
+                item {
+                    HazardFastTrackCard(
+                        onQuickHazardSelected = onEmergencyHazardTriggered
+                    )
+                }
+
+                // 7. Citizen Smart Meter Gateway Card (Auto-Connected or Standard STS)
                 item {
                     val meterStatus = citizenMeterStatus ?: remember(userProfile) {
                         NigeriaSmartMeterDiscoveryService.checkSmartMeterAccess(userProfile)
@@ -793,29 +674,7 @@ fun HomeScreen(
                     }
                 }
 
-                // 7. Real-Time National Grid Telemetry Bar
-                item {
-                    RealTimeTicker(telemetry = telemetry)
-                }
-
-                // 8. Power Restoration Alert Chime (Feature 9)
-                item {
-                    PowerRestorationAlertCard(
-                        isAlarmEnabled = isRestorationAlarmEnabled,
-                        transformerId = userProfile.transformerId,
-                        onToggleAlarm = onToggleRestorationAlarm,
-                        onTestChime = onPlayRestorationChime
-                    )
-                }
-
-                // 9. Emergency Hazard Fast-Track (1-Tap SOS)
-                item {
-                    HazardFastTrackCard(
-                        onQuickHazardSelected = onEmergencyHazardTriggered
-                    )
-                }
-
-                // 10. More Tools & Comprehensive Utilities
+                // 8. More Tools (opens the More tab) & Comprehensive Utilities
                 item {
                     Card(
                         modifier = Modifier
@@ -876,6 +735,103 @@ fun HomeScreen(
                             )
                         }
                     }
+                }
+
+                // 9. Offline status when nothing is waiting (low priority)
+                if (pendingSyncCount == 0) {
+                    item {
+                        OfflineSyncStatusCard(pendingSyncCount = 0, onSyncNow = onSyncNow)
+                    }
+                }
+
+                // 10. Real-Time National Grid Telemetry Bar
+                item {
+                    RealTimeTicker(telemetry = telemetry)
+                }
+
+                // 11. Power Restoration Alert Chime (Feature 9)
+                item {
+                    PowerRestorationAlertCard(
+                        isAlarmEnabled = isRestorationAlarmEnabled,
+                        transformerId = userProfile.transformerId,
+                        onToggleAlarm = onToggleRestorationAlarm,
+                        onTestChime = onPlayRestorationChime
+                    )
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Plain-language status of reports saved on the phone that haven't reached the server yet.
+ */
+@Composable
+private fun OfflineSyncStatusCard(
+    pendingSyncCount: Int,
+    onSyncNow: () -> Unit
+) {
+    val hasPending = pendingSyncCount > 0
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .testTag("offline_cache_status_card"),
+        colors = CardDefaults.cardColors(
+            containerColor = if (hasPending) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.surface
+        ),
+        shape = RoundedCornerShape(12.dp),
+        border = BorderStroke(
+            1.dp,
+            if (hasPending) MaterialTheme.colorScheme.primary.copy(alpha = 0.5f) else MaterialTheme.colorScheme.secondary.copy(alpha = 0.3f)
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 14.dp, vertical = 10.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                modifier = Modifier.weight(1f)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(10.dp)
+                        .background(
+                            if (hasPending) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,
+                            shape = CircleShape
+                        )
+                )
+                Column {
+                    Text(
+                        text = when {
+                            pendingSyncCount == 1 -> "1 report waiting to send"
+                            hasPending -> "$pendingSyncCount reports waiting to send"
+                            else -> "All caught up"
+                        },
+                        style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Text(
+                        text = "Your reports are saved on this phone and send when you're back online.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+            if (hasPending) {
+                TextButton(
+                    onClick = onSyncNow,
+                    modifier = Modifier.testTag("offline_sync_button")
+                ) {
+                    Text(
+                        text = "Send now",
+                        color = MaterialTheme.colorScheme.primary,
+                        style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
+                    )
                 }
             }
         }

@@ -220,7 +220,7 @@ fun LiveOutageCanvasMap(
                         .padding(horizontal = 8.dp, vertical = 4.dp)
                 ) {
                     Text(
-                        text = "NIGERIA SCADA GRID INTERCONNECT",
+                        text = "NIGERIA POWER GRID MAP",
                         style = MaterialTheme.typography.labelSmall.copy(
                             color = Color(0xFFFACC15),
                             fontWeight = FontWeight.Bold,

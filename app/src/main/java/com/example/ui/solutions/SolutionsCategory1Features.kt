@@ -579,7 +579,7 @@ fun CriticalDangerRedButtonFeature(
             onClick = {
                 emergencyTriggered = true
                 onTriggerEmergency()
-                Toast.makeText(context, "EMERGENCY: SCADA Feeder Trip Request sent for $selectedHazard!", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, "EMERGENCY: Request to cut power on the line sent for $selectedHazard!", Toast.LENGTH_LONG).show()
             },
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error, contentColor = Color.White),
             shape = RoundedCornerShape(12.dp),
@@ -587,7 +587,7 @@ fun CriticalDangerRedButtonFeature(
         ) {
             Icon(Icons.Default.Emergency, contentDescription = null)
             Spacer(modifier = Modifier.width(8.dp))
-            Text(if (emergencyTriggered) "EMERGENCY TRIP SIGNAL SENT" else "TRIGGER SCADA LINE TRIP SOS", fontWeight = FontWeight.Black)
+            Text(if (emergencyTriggered) "EMERGENCY TRIP SIGNAL SENT" else "REQUEST EMERGENCY POWER CUT", fontWeight = FontWeight.Black)
         }
     }
 }
@@ -683,7 +683,7 @@ fun DiagnosticStatusTrackerFeature(
 
                 Button(
                     onClick = {
-                        Toast.makeText(context, "Subscribed to live SCADA Feeder restoration alert!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "You'll get an alert when power is back on your feeder!", Toast.LENGTH_SHORT).show()
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = GoldPrimary, contentColor = Color.Black),
                     shape = RoundedCornerShape(8.dp),

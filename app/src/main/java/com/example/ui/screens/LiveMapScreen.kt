@@ -469,7 +469,7 @@ fun LiveMapScreen(
                                 ) {
                                     Icon(
                                         imageVector = Icons.Default.Bolt,
-                                        contentDescription = "SCADA",
+                                        contentDescription = "Grid operator map style",
                                         tint = if (mapStyle == MapStyleMode.DARK_SCADA) GoldPrimary else Color.LightGray,
                                         modifier = Modifier.size(16.dp)
                                     )

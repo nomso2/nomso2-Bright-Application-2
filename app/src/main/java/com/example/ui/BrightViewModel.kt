@@ -652,7 +652,10 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
     fun syncOfflineQueue() {
         viewModelScope.launch {
             val flushed = repository.flushOfflineSyncQueue()
-            showNotification("Offline cache verified! Grid status and local reports synchronized.")
+            showNotification(
+                if (flushed > 0) "Sent $flushed waiting report(s). You're all caught up."
+                else "All caught up. Your reports are up to date."
+            )
         }
     }
 
@@ -921,7 +924,7 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
         viewModelScope.launch {
             repository.saveUserProfile(UserProfile(meterNumber = "UNLINKED", customerName = "Anonymous Resident", phoneNumber = "REDACTED"))
             _whistleblowerReports.value = emptyList()
-            showNotification("🔒 All cached local records, location metadata, and meter indexes purged from device memory.")
+            showNotification("🔒 Your saved reports, location data and meter details were removed from this phone.")
         }
     }
 
