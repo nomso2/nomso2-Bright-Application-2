@@ -54,6 +54,7 @@ import com.example.ui.components.EnergyOptimizationDialog
 import com.example.ui.components.EstateExcoAndSlaDossierDialog
 import com.example.ui.components.PhaseOnboardingDialog
 import com.example.ui.components.ProfileAdminDialog
+import com.example.ui.components.DeleteAccountDialog
 import com.example.ui.components.ResolutionRatingDialog
 import com.example.ui.components.SessionLockScreen
 import com.example.ui.components.SignUpOnboardingScreen
@@ -128,6 +129,7 @@ fun BrightApp(viewModel: BrightViewModel) {
     var showProfileAdminDialog by remember { mutableStateOf(false) }
     var showEstateExcoDialog by remember { mutableStateOf(false) }
     var showSmartMeterGatewayDialog by remember { mutableStateOf(false) }
+    var showDeleteAccountDialog by remember { mutableStateOf(false) }
 
     // State collections
     val userProfile by viewModel.userProfile.collectAsState()
@@ -420,7 +422,8 @@ fun BrightApp(viewModel: BrightViewModel) {
                     onOpenProfileAdmin = { showProfileAdminDialog = true },
                     onOpenOnboarding = { showOnboardingDialog = true },
                     onLockApp = { viewModel.lockAppSession() },
-                    onLogOut = { viewModel.logOut() }
+                    onLogOut = { viewModel.logOut() },
+                    onDeleteAccount = { showDeleteAccountDialog = true }
                 )
             }
 
@@ -549,7 +552,10 @@ fun BrightApp(viewModel: BrightViewModel) {
             onSubmitWhistleblower = { target, extType, amt, desc ->
                 viewModel.submitWhistleblowerReport(target, extType, amt, desc)
             },
-            onPurgeDataDeindexing = { viewModel.purgeUserDataDeindexing() },
+            onRequestDeleteAccount = {
+                showProfileAdminDialog = false
+                showDeleteAccountDialog = true
+            },
             onSessionTokenClearance = { viewModel.sessionTokenClearance() },
             onExportLedger = {
                 viewModel.showNotification("📄 Transactional Accounting Ledger exported: BRIGHT_LEDGER_${userProfile.meterNumber}.csv downloaded")
@@ -559,6 +565,23 @@ fun BrightApp(viewModel: BrightViewModel) {
             onToggleRequireLoginOnLeave = { enabled -> viewModel.setRequireLoginOnLeave(enabled) },
             onLockSession = { viewModel.lockAppSession() },
             onDismiss = { showProfileAdminDialog = false }
+        )
+    }
+
+    // Delete account (from More > Account or Profile & Security)
+    if (showDeleteAccountDialog) {
+        DeleteAccountDialog(
+            meterNumber = userProfile.meterNumber,
+            isPinSet = isPinSet,
+            verifyPin = { pin -> viewModel.verifyPin(pin) },
+            onConfirmDelete = {
+                showDeleteAccountDialog = false
+                viewModel.deleteAccount()
+                // Back to Home's place in the back stack; the sign-up screen takes over once the
+                // profile is gone.
+                navController.navigateToTab(BrightNavDestination.HOME)
+            },
+            onDismiss = { showDeleteAccountDialog = false }
         )
     }
 

@@ -85,7 +85,7 @@ fun ProfileAdminDialog(
     whistleblowerReports: List<WhistleblowerReport>,
     onSwitchMeter: (String) -> Unit,
     onSubmitWhistleblower: (target: String, extortionType: String, amount: Double, desc: String) -> Unit,
-    onPurgeDataDeindexing: () -> Unit,
+    onRequestDeleteAccount: () -> Unit,
     onSessionTokenClearance: () -> Unit,
     onExportLedger: () -> Unit,
     onUpdateBiometrics: (fingerprint: Boolean, facial: Boolean) -> Unit = { _, _ -> },
@@ -705,30 +705,28 @@ fun ProfileAdminDialog(
                                         Icon(imageVector = Icons.Default.DeleteSweep, contentDescription = null, tint = MaterialTheme.colorScheme.error)
                                         Spacer(modifier = Modifier.width(8.dp))
                                         Text(
-                                            text = "Compliance Data De-indexing Switch",
-                                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                                            color = MaterialTheme.colorScheme.onSurface
+                                            text = "Delete account",
+                                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                                            color = MaterialTheme.colorScheme.error
                                         )
                                     }
                                     Spacer(modifier = Modifier.height(6.dp))
                                     Text(
-                                        text = "Purge your phone records, registered addresses, and historical telemetry metadata from this active client node.",
-                                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
+                                        text = "Permanently removes your profile, PIN, complaints and history, and saved data from this phone. Your meter stays activated, so registering it again is free.",
+                                        style = MaterialTheme.typography.bodyMedium,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                     Spacer(modifier = Modifier.height(10.dp))
                                     Button(
-                                        onClick = {
-                                            onPurgeDataDeindexing()
-                                            onDismiss()
-                                        },
+                                        onClick = onRequestDeleteAccount,
                                         colors = ButtonDefaults.buttonColors(
-                                            containerColor = MaterialTheme.colorScheme.error.copy(alpha = 0.15f),
-                                            contentColor = MaterialTheme.colorScheme.error
+                                            containerColor = MaterialTheme.colorScheme.error,
+                                            contentColor = MaterialTheme.colorScheme.onError
                                         ),
-                                        shape = RoundedCornerShape(8.dp)
+                                        shape = RoundedCornerShape(8.dp),
+                                        modifier = Modifier.testTag("profile_delete_account_button")
                                     ) {
-                                        Text(text = "Purge & De-index Node", fontWeight = FontWeight.Bold)
+                                        Text(text = "Delete account", fontWeight = FontWeight.Bold)
                                     }
                                 }
                             }
