@@ -96,7 +96,7 @@ fun VisualProofOverrideFeature(
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
         ) {
             Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                Text("Select Visible Physical Damage:", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                Text("Select Visible Physical Damage:", fontSize = 12.sp, fontWeight = FontWeight.Bold)
 
                 proofTypes.forEach { type ->
                     val isSelected = selectedProofType == type
@@ -112,7 +112,7 @@ fun VisualProofOverrideFeature(
                         ) {
                             Text(
                                 text = type,
-                                fontSize = 11.sp,
+                                fontSize = 12.sp,
                                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
                                 color = if (isSelected) GoldPrimary else MaterialTheme.colorScheme.onSurface
                             )
@@ -129,13 +129,13 @@ fun VisualProofOverrideFeature(
                         if (proofAttached) {
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                 Icon(Icons.Default.CheckCircle, contentDescription = null, tint = EmeraldAccent, modifier = Modifier.size(24.dp))
-                                Text("Cryptographic EXIF Validated • GPS: 6.5244°N, 3.3792°E", fontSize = 10.sp, color = Color.White)
-                                Text("3-Neighbor Co-Signature Requirement: BYPASSED", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = EmeraldAccent)
+                                Text("Cryptographic EXIF Validated • GPS: 6.5244°N, 3.3792°E", fontSize = 12.sp, color = Color.White)
+                                Text("3-Neighbor Co-Signature Requirement: BYPASSED", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = EmeraldAccent)
                             }
                         } else {
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                 Icon(Icons.Default.CameraAlt, contentDescription = null, tint = GoldPrimary, modifier = Modifier.size(22.dp))
-                                Text("Tap Below to Attach Real-Time Camera Proof", fontSize = 11.sp, color = Color.LightGray)
+                                Text("Tap Below to Attach Real-Time Camera Proof", fontSize = 12.sp, color = Color.LightGray)
                             }
                         }
                     }
@@ -195,12 +195,12 @@ fun WakeUpStreetAlertsFeature(
         ) {
             Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text("Transformer ID:", fontSize = 11.sp)
+                    Text("Transformer ID:", fontSize = 12.sp)
                     Text(userProfile.transformerId, fontWeight = FontWeight.Bold, color = GoldPrimary, fontSize = 12.sp)
                 }
 
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text("Co-Signers on Transformer:", fontSize = 11.sp)
+                    Text("Co-Signers on Transformer:", fontSize = 12.sp)
                     Text("$coSignersCount / $threshold Required", fontWeight = FontWeight.Bold, color = EmeraldAccent, fontSize = 12.sp)
                 }
 
@@ -220,7 +220,7 @@ fun WakeUpStreetAlertsFeature(
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Icon(Icons.Default.CheckCircle, contentDescription = null, tint = EmeraldAccent, modifier = Modifier.size(16.dp))
-                        Text("AUTOMATIC NERC ESCALATION: Threshold reached! Outage officially flagged as critical feeder priority.", fontSize = 10.sp, color = EmeraldAccent, fontWeight = FontWeight.Bold)
+                        Text("AUTOMATIC NERC ESCALATION: Threshold reached! Outage officially flagged as critical feeder priority.", fontSize = 12.sp, color = EmeraldAccent, fontWeight = FontWeight.Bold)
                     }
                 }
 
@@ -283,22 +283,22 @@ fun UserTrustScoreFeature(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column {
-                        Text("Citizen Reputation Score", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text("Citizen Reputation Score", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         Text("$currentScore / 100", fontSize = 24.sp, fontWeight = FontWeight.Black, color = GoldPrimary)
                     }
                     Surface(
                         color = EmeraldAccent.copy(alpha = 0.2f),
                         shape = RoundedCornerShape(8.dp)
                     ) {
-                        Text("VIP LEVEL 3 GUARDIAN", color = EmeraldAccent, fontWeight = FontWeight.Bold, fontSize = 10.sp, modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp))
+                        Text("VIP LEVEL 3 GUARDIAN", color = EmeraldAccent, fontWeight = FontWeight.Bold, fontSize = 12.sp, modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp))
                     }
                 }
 
-                Text("Recent Points Ledger:", fontWeight = FontWeight.Bold, fontSize = 11.sp)
+                Text("Recent Points Ledger:", fontWeight = FontWeight.Bold, fontSize = 12.sp)
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text("• +20 Pts: Reported fallen conductor hazard (Confirmed by DisCo)", fontSize = 10.sp, color = EmeraldAccent)
-                    Text("• +10 Pts: Provided verified photo proof of blown jumper", fontSize = 10.sp, color = EmeraldAccent)
-                    Text("• +5 Pts: Co-signed street outage ticket", fontSize = 10.sp, color = EmeraldAccent)
+                    Text("• +20 Pts: Reported fallen conductor hazard (Confirmed by DisCo)", fontSize = 12.sp, color = EmeraldAccent)
+                    Text("• +10 Pts: Provided verified photo proof of blown jumper", fontSize = 12.sp, color = EmeraldAccent)
+                    Text("• +5 Pts: Co-signed street outage ticket", fontSize = 12.sp, color = EmeraldAccent)
                 }
 
                 Button(
@@ -372,8 +372,8 @@ fun NeighborhoodGridForumFeature(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Column(modifier = Modifier.padding(10.dp)) {
-                            Text(author, fontWeight = FontWeight.Bold, fontSize = 11.sp, color = GoldPrimary)
-                            Text(text, fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurface)
+                            Text(author, fontWeight = FontWeight.Bold, fontSize = 12.sp, color = GoldPrimary)
+                            Text(text, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface)
                         }
                     }
                 }
@@ -386,7 +386,7 @@ fun NeighborhoodGridForumFeature(
                     OutlinedTextField(
                         value = newPostText,
                         onValueChange = { newPostText = it },
-                        placeholder = { Text("Post update to transformer neighbors...", fontSize = 10.sp) },
+                        placeholder = { Text("Post update to transformer neighbors...", fontSize = 12.sp) },
                         modifier = Modifier.weight(1f),
                         singleLine = true,
                         colors = OutlinedTextFieldDefaults.colors(
@@ -464,7 +464,7 @@ fun MultiLingualVoiceReportingFeature(
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text(lang, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                    Text(lang, fontSize = 12.sp, fontWeight = FontWeight.Bold)
                 }
             }
         }
@@ -475,7 +475,7 @@ fun MultiLingualVoiceReportingFeature(
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
         ) {
             Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                Text("Spoken Voice Note ($selectedLanguage):", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text("Spoken Voice Note ($selectedLanguage):", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Surface(
                     color = Color.Black.copy(alpha = 0.5f),
                     shape = RoundedCornerShape(8.dp),
@@ -494,10 +494,10 @@ fun MultiLingualVoiceReportingFeature(
                     shape = RoundedCornerShape(8.dp)
                 ) {
                     Column(modifier = Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Text("AI Formal NERC Technical Translation:", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = EmeraldAccent)
-                        Text("• Fault Category: Unplanned Distribution Feeder Outage", fontSize = 10.sp)
-                        Text("• Hazard Code: Active Overhead Conductor Arcing on Ground", fontSize = 10.sp)
-                        Text("• Substation: Transformer ${userProfile.transformerId}", fontSize = 10.sp)
+                        Text("AI Formal NERC Technical Translation:", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = EmeraldAccent)
+                        Text("• Fault Category: Unplanned Distribution Feeder Outage", fontSize = 12.sp)
+                        Text("• Hazard Code: Active Overhead Conductor Arcing on Ground", fontSize = 12.sp)
+                        Text("• Substation: Transformer ${userProfile.transformerId}", fontSize = 12.sp)
                     }
                 }
 

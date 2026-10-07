@@ -73,6 +73,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -299,7 +300,7 @@ fun HistoryScreen(
                 FilterChip(
                     selected = selectedFilter == HistoryFilter.ALL,
                     onClick = { selectedFilter = HistoryFilter.ALL },
-                    label = { Text("All Logs (${historicalComplaints.size})", fontSize = 11.sp) },
+                    label = { Text("All Logs (${historicalComplaints.size})", fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                     shape = RoundedCornerShape(8.dp),
                     colors = FilterChipDefaults.filterChipColors(
                         selectedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
@@ -311,7 +312,7 @@ fun HistoryScreen(
                 FilterChip(
                     selected = selectedFilter == HistoryFilter.RESOLVED_ONLY,
                     onClick = { selectedFilter = HistoryFilter.RESOLVED_ONLY },
-                    label = { Text("Resolved ($resolvedCount)", fontSize = 11.sp) },
+                    label = { Text("Resolved ($resolvedCount)", fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                     shape = RoundedCornerShape(8.dp),
                     colors = FilterChipDefaults.filterChipColors(
                         selectedContainerColor = Color(0xFF10B981).copy(alpha = 0.2f),
@@ -323,7 +324,7 @@ fun HistoryScreen(
                 FilterChip(
                     selected = selectedFilter == HistoryFilter.IN_PROGRESS,
                     onClick = { selectedFilter = HistoryFilter.IN_PROGRESS },
-                    label = { Text("Active / Pending ($activeCount)", fontSize = 11.sp) },
+                    label = { Text("Active / Pending ($activeCount)", fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                     shape = RoundedCornerShape(8.dp),
                     colors = FilterChipDefaults.filterChipColors(
                         selectedContainerColor = Color(0xFFF59E0B).copy(alpha = 0.2f),
@@ -335,7 +336,7 @@ fun HistoryScreen(
                 FilterChip(
                     selected = selectedFilter == HistoryFilter.BILLING_DISPUTES,
                     onClick = { selectedFilter = HistoryFilter.BILLING_DISPUTES },
-                    label = { Text("Disputes (${billingDisputes.size})", fontSize = 11.sp) },
+                    label = { Text("Disputes (${billingDisputes.size})", fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                     shape = RoundedCornerShape(8.dp),
                     colors = FilterChipDefaults.filterChipColors(
                         selectedContainerColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f),
@@ -586,7 +587,7 @@ fun HistoricalComplaintCard(
                         Text(
                             text = complaint.discoCode,
                             style = MaterialTheme.typography.labelSmall.copy(
-                                fontSize = 9.sp,
+                                fontSize = 12.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.primary
                             )
@@ -618,7 +619,7 @@ fun HistoricalComplaintCard(
                         text = if (isResolved) "RESOLVED" else complaint.status.displayName.uppercase(),
                         style = MaterialTheme.typography.labelSmall.copy(
                             fontWeight = FontWeight.ExtraBold,
-                            fontSize = 11.sp,
+                            fontSize = 12.sp,
                             color = if (isResolved) Color(0xFF10B981) else Color(0xFFF59E0B)
                         )
                     )
@@ -642,7 +643,7 @@ fun HistoricalComplaintCard(
                         text = complaint.faultType.displayName,
                         style = MaterialTheme.typography.labelSmall.copy(
                             fontWeight = FontWeight.Bold,
-                            fontSize = 10.sp,
+                            fontSize = 12.sp,
                             color = Color(0xFF60A5FA)
                         )
                     )
@@ -659,7 +660,7 @@ fun HistoricalComplaintCard(
                             text = "EMERGENCY HAZARD",
                             style = MaterialTheme.typography.labelSmall.copy(
                                 fontWeight = FontWeight.Bold,
-                                fontSize = 10.sp,
+                                fontSize = 12.sp,
                                 color = Color(0xFFEF4444)
                             )
                         )
@@ -750,7 +751,7 @@ fun HistoricalComplaintCard(
                             }
                             Text(
                                 text = "Tap to inspect high-resolution asset",
-                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
@@ -857,7 +858,7 @@ fun HistoricalComplaintCard(
                                 text = "${hours}h ${minutes}m (Complies with NERC SLA)",
                                 style = MaterialTheme.typography.labelSmall.copy(
                                     fontWeight = FontWeight.Bold,
-                                    fontSize = 11.sp
+                                    fontSize = 12.sp
                                 ),
                                 color = Color(0xFF38BDF8)
                             )
@@ -891,7 +892,7 @@ fun HistoricalComplaintCard(
                                 text = "DisCo Technical Resolution Sign-Off:",
                                 style = MaterialTheme.typography.labelSmall.copy(
                                     fontWeight = FontWeight.Bold,
-                                    fontSize = 10.sp
+                                    fontSize = 12.sp
                                 ),
                                 color = MaterialTheme.colorScheme.primary
                             )
@@ -906,7 +907,7 @@ fun HistoricalComplaintCard(
                             Spacer(modifier = Modifier.height(3.dp))
                             Text(
                                 text = "Field Lead: ${complaint.assignedCrewName}",
-                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
@@ -969,7 +970,7 @@ fun HistoricalComplaintCard(
                         text = "Escalation: ${complaint.escalationTier.title} • Tier ${complaint.escalationTier.level}/4",
                         style = MaterialTheme.typography.labelSmall.copy(
                             fontWeight = FontWeight.Bold,
-                            fontSize = 11.sp
+                            fontSize = 12.sp
                         ),
                         color = Color(0xFFF59E0B)
                     )
@@ -980,7 +981,7 @@ fun HistoricalComplaintCard(
                         text = if (showEscalationTracker) "Hide Pipeline" else "View Status Bar",
                         style = MaterialTheme.typography.labelSmall.copy(
                             fontWeight = FontWeight.Bold,
-                            fontSize = 10.sp
+                            fontSize = 12.sp
                         ),
                         color = MaterialTheme.colorScheme.primary
                     )
@@ -1190,14 +1191,14 @@ fun HistoryKpiCard(
             Text(
                 text = title,
                 style = MaterialTheme.typography.labelSmall.copy(
-                    fontSize = 10.sp,
+                    fontSize = 12.sp,
                     fontWeight = FontWeight.Bold
                 ),
                 color = MaterialTheme.colorScheme.onSurface
             )
             Text(
                 text = subtitle,
-                style = MaterialTheme.typography.labelSmall.copy(fontSize = 9.sp),
+                style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp),
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }

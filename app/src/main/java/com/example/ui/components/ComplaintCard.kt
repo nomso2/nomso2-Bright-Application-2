@@ -131,7 +131,7 @@ fun ComplaintCard(
                                         style = MaterialTheme.typography.labelSmall.copy(
                                             color = Color.White,
                                             fontWeight = FontWeight.Bold,
-                                            fontSize = 9.sp
+                                            fontSize = 12.sp
                                         )
                                     )
                                 }
@@ -140,7 +140,7 @@ fun ComplaintCard(
                     }
                     Text(
                         text = "Reported: ${dateFormat.format(Date(complaint.reportedAt))}",
-                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp),
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
@@ -248,7 +248,7 @@ fun ComplaintCard(
                     Text(
                         text = if (complaint.isVideo) "Video Evidence Attached" else "Photo Evidence Attached",
                         style = MaterialTheme.typography.labelSmall.copy(
-                            fontSize = 10.sp,
+                            fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color(0xFF38BDF8)
                         )
@@ -281,7 +281,7 @@ fun ComplaintCard(
                         Text(
                             text = "${complaint.autoClusteredCount} verified neighbors on ${complaint.transformerId} auto-clustered into this ticket.",
                             style = MaterialTheme.typography.labelSmall.copy(
-                                fontSize = 11.sp,
+                                fontSize = 12.sp,
                                 fontWeight = FontWeight.SemiBold
                             ),
                             color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -336,7 +336,7 @@ fun ComplaintCard(
                                 )
                                 Text(
                                     text = "ETA: ~${complaint.etaMinutes ?: 30} mins • Contact: ${complaint.assignedCrewPhone ?: "Direct Hotline"}",
-                                    style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
+                                    style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp),
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
@@ -440,7 +440,7 @@ fun StatusBadge(status: ComplaintStatus) {
             text = status.displayName.uppercase(),
             style = MaterialTheme.typography.labelSmall.copy(
                 fontWeight = FontWeight.ExtraBold,
-                fontSize = 10.sp,
+                fontSize = 12.sp,
                 letterSpacing = 0.5.sp
             ),
             color = textColor

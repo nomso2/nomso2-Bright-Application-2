@@ -98,7 +98,7 @@ fun PowerRestorationAlertCard(
                         Text(
                             text = "POWER RESTORATION CHIME",
                             style = MaterialTheme.typography.labelSmall.copy(
-                                fontSize = 9.sp,
+                                fontSize = 12.sp,
                                 fontWeight = FontWeight.ExtraBold,
                                 letterSpacing = 1.sp
                             ),
@@ -153,7 +153,7 @@ fun PowerRestorationAlertCard(
                         text = if (isAlarmEnabled) "● ALARM ARMED" else "○ ALARM MUTED",
                         style = MaterialTheme.typography.labelSmall.copy(
                             fontWeight = FontWeight.Bold,
-                            fontSize = 10.sp
+                            fontSize = 12.sp
                         ),
                         color = if (isAlarmEnabled) Color(0xFF10B981) else Slate500Text
                     )
@@ -175,7 +175,7 @@ fun PowerRestorationAlertCard(
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
                         text = "Test Chime ⚡",
-                        fontSize = 11.sp,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.Bold
                     )
                 }

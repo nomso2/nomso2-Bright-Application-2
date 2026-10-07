@@ -146,7 +146,7 @@ fun VandalismScreen(
                         )
                         Text(
                             text = "DisCo & Police Rapid Response Hotline: 0800-POWER-SEC",
-                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
@@ -430,7 +430,7 @@ fun VandalismScreen(
                                 style = MaterialTheme.typography.labelSmall.copy(
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.error,
-                                    fontSize = 10.sp
+                                    fontSize = 12.sp
                                 )
                             )
                         }
@@ -477,12 +477,12 @@ fun VandalismScreen(
                     ) {
                         Text(
                             text = if (report.isAnonymous) "Reported Anonymously" else "Reported by Resident",
-                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp),
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Text(
                             text = dateFormat.format(Date(report.reportedAt)),
-                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp),
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }

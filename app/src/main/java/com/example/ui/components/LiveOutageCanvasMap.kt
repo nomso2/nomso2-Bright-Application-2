@@ -46,6 +46,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.model.OutageGridNode
@@ -75,13 +76,13 @@ fun LiveOutageCanvasMap(
             FilterChip(
                 selected = filterStatus == null,
                 onClick = { filterStatus = null },
-                label = { Text("All Nodes (${nodes.size})", fontSize = 11.sp) },
+                label = { Text("All Nodes (${nodes.size})", fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                 modifier = Modifier.testTag("filter_chip_all")
             )
             FilterChip(
                 selected = filterStatus == OutageStatus.FAULT_DOWN,
                 onClick = { filterStatus = if (filterStatus == OutageStatus.FAULT_DOWN) null else OutageStatus.FAULT_DOWN },
-                label = { Text("Blackouts", fontSize = 11.sp) },
+                label = { Text("Blackouts", fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                 colors = FilterChipDefaults.filterChipColors(
                     selectedContainerColor = MaterialTheme.colorScheme.error.copy(alpha = 0.2f),
                     selectedLabelColor = MaterialTheme.colorScheme.error
@@ -91,13 +92,13 @@ fun LiveOutageCanvasMap(
             FilterChip(
                 selected = filterStatus == OutageStatus.MAINTENANCE,
                 onClick = { filterStatus = if (filterStatus == OutageStatus.MAINTENANCE) null else OutageStatus.MAINTENANCE },
-                label = { Text("Maintenance", fontSize = 11.sp) },
+                label = { Text("Maintenance", fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                 modifier = Modifier.testTag("filter_chip_maintenance")
             )
             FilterChip(
                 selected = filterStatus == OutageStatus.ACTIVE,
                 onClick = { filterStatus = if (filterStatus == OutageStatus.ACTIVE) null else OutageStatus.ACTIVE },
-                label = { Text("Power ON", fontSize = 11.sp) },
+                label = { Text("Power ON", fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                 modifier = Modifier.testTag("filter_chip_active")
             )
         }
@@ -224,7 +225,7 @@ fun LiveOutageCanvasMap(
                         style = MaterialTheme.typography.labelSmall.copy(
                             color = Color(0xFFFACC15),
                             fontWeight = FontWeight.Bold,
-                            fontSize = 9.sp,
+                            fontSize = 12.sp,
                             letterSpacing = 0.5.sp
                         )
                     )
@@ -299,7 +300,7 @@ fun LiveOutageCanvasMap(
                                 text = selectedNode.status.label,
                                 style = MaterialTheme.typography.labelSmall.copy(
                                     fontWeight = FontWeight.Bold,
-                                    fontSize = 11.sp
+                                    fontSize = 12.sp
                                 ),
                                 color = Color(selectedNode.status.colorHex)
                             )
@@ -315,7 +316,7 @@ fun LiveOutageCanvasMap(
                         Column {
                             Text(
                                 text = "Reported Faults",
-                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Text(
@@ -328,7 +329,7 @@ fun LiveOutageCanvasMap(
                         Column {
                             Text(
                                 text = "Affected Consumers",
-                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Text(
@@ -341,7 +342,7 @@ fun LiveOutageCanvasMap(
                         Column {
                             Text(
                                 text = "Restoration ETA",
-                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Text(
@@ -375,7 +376,7 @@ fun LegendDot(color: Color, text: String) {
             text = text,
             style = MaterialTheme.typography.labelSmall.copy(
                 color = Color.White,
-                fontSize = 9.sp,
+                fontSize = 12.sp,
                 fontWeight = FontWeight.SemiBold
             )
         )

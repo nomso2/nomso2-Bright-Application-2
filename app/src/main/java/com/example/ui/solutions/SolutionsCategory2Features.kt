@@ -111,7 +111,7 @@ fun OfflineUssdBridgeFeature(
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text(label, fontSize = 10.sp, fontWeight = FontWeight.Bold, maxLines = 1)
+                    Text(label, fontSize = 12.sp, fontWeight = FontWeight.Bold, maxLines = 1)
                 }
             }
         }
@@ -123,7 +123,7 @@ fun OfflineUssdBridgeFeature(
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
         ) {
             Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text("Generated Offline USSD String:", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text("Generated Offline USSD String:", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Surface(
                     color = Color.Black.copy(alpha = 0.6f),
                     shape = RoundedCornerShape(8.dp),
@@ -155,7 +155,7 @@ fun OfflineUssdBridgeFeature(
                     ) {
                         Icon(Icons.Default.Call, contentDescription = null, modifier = Modifier.size(15.dp))
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text("Dial USSD Now", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                        Text("Dial USSD Now", fontSize = 12.sp, fontWeight = FontWeight.Bold)
                     }
 
                     OutlinedButton(
@@ -168,13 +168,13 @@ fun OfflineUssdBridgeFeature(
                     ) {
                         Icon(Icons.Default.ContentCopy, contentDescription = null, modifier = Modifier.size(15.dp))
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text("Copy String", fontSize = 11.sp)
+                        Text("Copy String", fontSize = 12.sp)
                     }
                 }
 
                 Text(
                     text = "SMS Fallback Gateway: Text '$smsString' to shortcode 38455.",
-                    fontSize = 10.sp,
+                    fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
@@ -228,13 +228,13 @@ fun TamperCrowdsourcingFeature(
                 }
 
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text("Cell Tower GSM Signal:", fontSize = 11.sp)
-                    Text("100% (Normal)", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = EmeraldAccent)
+                    Text("Cell Tower GSM Signal:", fontSize = 12.sp)
+                    Text("100% (Normal)", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = EmeraldAccent)
                 }
 
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text("Meter Telemetry Heartbeat:", fontSize = 11.sp)
-                    Text("Dropped to 0% (Instant)", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.error)
+                    Text("Meter Telemetry Heartbeat:", fontSize = 12.sp)
+                    Text("Dropped to 0% (Instant)", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.error)
                 }
 
                 Surface(
@@ -248,7 +248,7 @@ fun TamperCrowdsourcingFeature(
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Icon(Icons.Default.Warning, contentDescription = null, tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
-                        Text("THEFT SIGNATURE: Power severed while telecom is normal indicates physical cable cutting.", fontSize = 11.sp, color = MaterialTheme.colorScheme.error, fontWeight = FontWeight.Bold)
+                        Text("THEFT SIGNATURE: Power severed while telecom is normal indicates physical cable cutting.", fontSize = 12.sp, color = MaterialTheme.colorScheme.error, fontWeight = FontWeight.Bold)
                     }
                 }
 
@@ -313,7 +313,7 @@ fun LowPowerBatSignalFeature(
                 ) {
                     Column {
                         Text("AMOLED Bat-Signal Mode", fontWeight = FontWeight.Bold, fontSize = 13.sp, color = if (isBatSignalMode) GoldPrimary else MaterialTheme.colorScheme.onSurface)
-                        Text(if (isBatSignalMode) "Active: 92% screen energy conserved" else "Inactive", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(if (isBatSignalMode) "Active: 92% screen energy conserved" else "Inactive", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                     Switch(
                         checked = isBatSignalMode,
@@ -328,11 +328,11 @@ fun LowPowerBatSignalFeature(
                     border = androidx.compose.foundation.BorderStroke(1.dp, if (isBatSignalMode) GoldPrimary else Color.DarkGray)
                 ) {
                     Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                        Text("140-Byte Last Gasp Ping Payload:", fontSize = 10.sp, color = Color.Gray)
+                        Text("140-Byte Last Gasp Ping Payload:", fontSize = 12.sp, color = Color.Gray)
                         Text(
                             text = "PING:MTR=${userProfile.meterNumber}&TR=${userProfile.transformerId}&BATT=4%&SIG=SOS",
                             fontFamily = FontFamily.Monospace,
-                            fontSize = 11.sp,
+                            fontSize = 12.sp,
                             color = if (isBatSignalMode) GoldPrimary else EmeraldAccent
                         )
                     }
@@ -411,7 +411,7 @@ fun UniversalMeterSyncFeature(
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text(brand, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    Text(brand, fontSize = 12.sp, fontWeight = FontWeight.Bold)
                 }
             }
         }
@@ -427,7 +427,7 @@ fun UniversalMeterSyncFeature(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("Optical Barcode Readout:", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text("Optical Barcode Readout:", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     Icon(Icons.Default.QrCode, contentDescription = null, tint = GoldPrimary, modifier = Modifier.size(20.dp))
                 }
 
@@ -438,13 +438,13 @@ fun UniversalMeterSyncFeature(
                 ) {
                     Column(modifier = Modifier.padding(10.dp)) {
                         Text(simulatedBarcode, fontFamily = FontFamily.Monospace, fontSize = 15.sp, fontWeight = FontWeight.Bold, color = GoldPrimary)
-                        Text(selectedManufacturer, fontSize = 10.sp, color = Color.LightGray)
+                        Text(selectedManufacturer, fontSize = 12.sp, color = Color.LightGray)
                     }
                 }
 
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text("Feeder Classification:", fontSize = 11.sp)
-                    Text("${userProfile.feederBand.code} (${userProfile.discoCode})", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = EmeraldAccent)
+                    Text("Feeder Classification:", fontSize = 12.sp)
+                    Text("${userProfile.feederBand.code} (${userProfile.discoCode})", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = EmeraldAccent)
                 }
 
                 Button(
@@ -513,7 +513,7 @@ fun NationalGridPulseMonitorFeature(
                     }
                     Text(
                         text = if (isFrequencyHealthy) "GRID STABLE" else if (isFrequencyCritical) "COLLAPSE THREAT" else "UNDER-FREQUENCY",
-                        fontSize = 10.sp,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
                         color = if (isFrequencyHealthy) EmeraldAccent else if (isFrequencyCritical) MaterialTheme.colorScheme.error else Color(0xFFF59E0B)
                     )
@@ -535,17 +535,17 @@ fun NationalGridPulseMonitorFeature(
                             fontWeight = FontWeight.Black,
                             color = if (isFrequencyHealthy) EmeraldAccent else if (isFrequencyCritical) MaterialTheme.colorScheme.error else Color(0xFFF59E0B)
                         )
-                        Text("Target: 50.00 Hz • Statutory Band: 49.75 - 50.25 Hz", fontSize = 10.sp, color = Color.Gray)
+                        Text("Target: 50.00 Hz • Statutory Band: 49.75 - 50.25 Hz", fontSize = 12.sp, color = Color.Gray)
                     }
                 }
 
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     Column {
-                        Text("Active Generation:", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text("Active Generation:", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         Text("$generationMw MW", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = GoldPrimary)
                     }
                     Column(horizontalAlignment = Alignment.End) {
-                        Text("Spinning Reserve:", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text("Spinning Reserve:", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         Text("$spinningReserveMw MW", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = EmeraldAccent)
                     }
                 }
@@ -564,7 +564,7 @@ fun NationalGridPulseMonitorFeature(
                         shape = RoundedCornerShape(8.dp),
                         modifier = Modifier.weight(1f)
                     ) {
-                        Text("Simulate Collapse Risk", fontSize = 10.sp, color = MaterialTheme.colorScheme.error)
+                        Text("Simulate Collapse Risk", fontSize = 12.sp, color = MaterialTheme.colorScheme.error)
                     }
 
                     Button(
@@ -580,7 +580,7 @@ fun NationalGridPulseMonitorFeature(
                     ) {
                         Icon(Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(15.dp))
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text("Live NCC Sync", fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                        Text("Live NCC Sync", fontSize = 12.sp, fontWeight = FontWeight.Bold)
                     }
                 }
             }

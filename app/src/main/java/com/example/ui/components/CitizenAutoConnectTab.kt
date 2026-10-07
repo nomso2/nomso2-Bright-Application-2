@@ -175,7 +175,7 @@ fun CitizenAutoConnectTab(
                                 )
                                 Text(
                                     text = "Inject 20-digit token directly via cellular APN without touching your wall keypad",
-                                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
@@ -305,7 +305,7 @@ fun CitizenAutoConnectTab(
                         ) {
                             Text(
                                 text = if (showHowItWorks) "Hide" else "Read",
-                                fontSize = 11.sp,
+                                fontSize = 12.sp,
                                 color = ElegantGoldPrimary
                             )
                         }
@@ -324,7 +324,7 @@ fun CitizenAutoConnectTab(
                             )
                             Text(
                                 text = "Under NERC's Meter Asset Provider (MAP) and the National Mass Metering Programme (NMMP), DisCos deploy smart AMI meters in phases. Priority is given to Band A and urban feeders first. Other areas use standard STS keypad meters.",
-                                fontSize = 11.sp,
+                                fontSize = 12.sp,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
 
@@ -336,7 +336,7 @@ fun CitizenAutoConnectTab(
                             )
                             Text(
                                 text = "100% yes! Outage reports, billing disputes, transformer overload monitors, and tariff auditing work for all Nigerian electricity consumers regardless of meter model.",
-                                fontSize = 11.sp,
+                                fontSize = 12.sp,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
 
@@ -348,7 +348,7 @@ fun CitizenAutoConnectTab(
                             )
                             Text(
                                 text = "Major licensed Nigerian manufacturers include Mojec International, Momas Electricity Meters (MEMCOL), and Conlog Nigeria.",
-                                fontSize = 11.sp,
+                                fontSize = 12.sp,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
@@ -397,7 +397,7 @@ private fun SmartMeterConnectedHeroCard(
                     )
                     Text(
                         text = "AUTO-CONNECTED ONCE",
-                        fontSize = 11.sp,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.ExtraBold,
                         letterSpacing = 0.5.sp,
                         color = Color(0xFF22C55E)
@@ -416,7 +416,7 @@ private fun SmartMeterConnectedHeroCard(
                         tint = Color(0xFF0284C7)
                     )
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text("Re-scan", fontSize = 11.sp, color = Color(0xFF0284C7))
+                    Text("Re-scan", fontSize = 12.sp, color = Color(0xFF0284C7))
                 }
             }
 
@@ -452,7 +452,7 @@ private fun SmartMeterConnectedHeroCard(
                         .padding(horizontal = 10.dp, vertical = 8.dp)
                 ) {
                     Column {
-                        Text("Meter Number", fontSize = 10.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text("Meter Number", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         Text(userProfile.meterNumber, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
                     }
                 }
@@ -465,7 +465,7 @@ private fun SmartMeterConnectedHeroCard(
                         .padding(horizontal = 10.dp, vertical = 8.dp)
                 ) {
                     Column {
-                        Text("Feeder Band", fontSize = 10.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text("Feeder Band", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         Text(userProfile.feederBand.label, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color(0xFF22C55E))
                     }
                 }
@@ -478,7 +478,7 @@ private fun SmartMeterConnectedHeroCard(
                         .padding(horizontal = 10.dp, vertical = 8.dp)
                 ) {
                     Column {
-                        Text("DisCo", fontSize = 10.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text("DisCo", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         Text(userProfile.discoCode, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
                     }
                 }
@@ -524,7 +524,7 @@ private fun StandardMeterNonSmartHeroCard(
                     )
                     Text(
                         text = "STANDARD STS AREA (NO GATEWAY NEEDED)",
-                        fontSize = 11.sp,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.ExtraBold,
                         letterSpacing = 0.5.sp,
                         color = Color(0xFFD97706)
@@ -544,7 +544,7 @@ private fun StandardMeterNonSmartHeroCard(
                         modifier = Modifier.size(12.dp)
                     )
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text("Check Upgrade", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    Text("Check Upgrade", fontSize = 12.sp, fontWeight = FontWeight.Bold)
                 }
             }
 
@@ -586,7 +586,7 @@ private fun StandardMeterNonSmartHeroCard(
                     )
                     Text(
                         text = "You do NOT need a smart meter server to use Bright. All fault reporting, tariff auditing, and outage alerts work normally for your meter #${userProfile.meterNumber}.",
-                        fontSize = 11.sp,
+                        fontSize = 12.sp,
                         lineHeight = 16.sp,
                         color = MaterialTheme.colorScheme.onSurface
                     )
@@ -628,7 +628,7 @@ private fun LiveCitizenTelemetryGrid(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("Line Voltage", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text("Line Voltage", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         Icon(
                             imageVector = Icons.Default.Speed,
                             contentDescription = null,
@@ -643,7 +643,7 @@ private fun LiveCitizenTelemetryGrid(
                     )
                     Text(
                         text = "Nominal (220V - 240V)",
-                        fontSize = 10.sp,
+                        fontSize = 12.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
@@ -666,7 +666,7 @@ private fun LiveCitizenTelemetryGrid(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("Active Load", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text("Active Load", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         Icon(
                             imageVector = Icons.Default.Bolt,
                             contentDescription = null,
@@ -681,7 +681,7 @@ private fun LiveCitizenTelemetryGrid(
                     )
                     Text(
                         text = "%.1f A Draw".format(current),
-                        fontSize = 10.sp,
+                        fontSize = 12.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
@@ -704,7 +704,7 @@ private fun LiveCitizenTelemetryGrid(
                     modifier = Modifier.padding(12.dp),
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    Text("Grid Frequency", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text("Grid Frequency", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     Text(
                         text = "%.2f Hz".format(frequency),
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
@@ -712,7 +712,7 @@ private fun LiveCitizenTelemetryGrid(
                     )
                     Text(
                         text = "National 50Hz Standard",
-                        fontSize = 10.sp,
+                        fontSize = 12.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
@@ -735,7 +735,7 @@ private fun LiveCitizenTelemetryGrid(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("Cellular APN", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text("Cellular APN", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         Icon(
                             imageVector = Icons.Default.SignalCellularAlt,
                             contentDescription = null,
@@ -750,7 +750,7 @@ private fun LiveCitizenTelemetryGrid(
                     )
                     Text(
                         text = "Strong DisCo SIM Link",
-                        fontSize = 10.sp,
+                        fontSize = 12.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }

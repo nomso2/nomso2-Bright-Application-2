@@ -219,7 +219,7 @@ fun PhaseOnboardingDialog(
                             )
                             Text(
                                 text = "Native Android App • Data-free USSD Code: *38432#",
-                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
@@ -318,7 +318,7 @@ fun PhaseOnboardingDialog(
                                 )
                                 Text(
                                     text = "Automated carrier-level OTP validation ($otpCode)",
-                                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
@@ -386,7 +386,7 @@ fun PhaseOnboardingDialog(
                 )
                 Text(
                     text = "Amount reading: ₦500.00 • 7.5 kWh STS prepaid token credit demo",
-                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(modifier = Modifier.height(8.dp))
@@ -422,7 +422,7 @@ fun PhaseOnboardingDialog(
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text(
                                     text = gateway,
-                                    style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp, fontWeight = FontWeight.Bold),
+                                    style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp, fontWeight = FontWeight.Bold),
                                     color = if (isSelected) ElegantGoldPrimary else MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
@@ -434,7 +434,7 @@ fun PhaseOnboardingDialog(
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         text = "Carrier VAS Bridge: Direct ₦500 airtime balance deduction on SIM line",
-                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                         color = Color(0xFFFBBF24)
                     )
                 }

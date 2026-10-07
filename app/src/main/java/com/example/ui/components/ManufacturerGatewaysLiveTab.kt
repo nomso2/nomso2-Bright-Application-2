@@ -180,7 +180,7 @@ private fun ManufacturerGatewayCard(
                         )
                         Text(
                             text = "Protocol: ${manufacturer.defaultProtocol}",
-                            fontSize = 11.sp,
+                            fontSize = 12.sp,
                             color = MutedSlateText
                         )
                     }
@@ -225,7 +225,7 @@ private fun ManufacturerGatewayCard(
             Text(
                 text = "AMI Gateway Endpoint: ${manufacturer.apiEndpointPrefix}",
                 fontFamily = FontFamily.Monospace,
-                fontSize = 10.sp,
+                fontSize = 12.sp,
                 color = MutedSlateText
             )
 
@@ -295,13 +295,13 @@ private fun ManufacturerGatewayCard(
                 ) {
                     Text(
                         text = "Hardware Model: ${telemetry.model}",
-                        fontSize = 11.sp,
+                        fontSize = 12.sp,
                         color = Slate100Text,
                         fontWeight = FontWeight.Medium
                     )
                     Text(
                         text = "Gateway Latency: ${telemetry.latencyMs} ms",
-                        fontSize = 11.sp,
+                        fontSize = 12.sp,
                         fontFamily = FontFamily.Monospace,
                         color = Color(0xFF22C55E)
                     )
@@ -346,7 +346,7 @@ private fun MetricBox(
         Column {
             Text(
                 text = title,
-                fontSize = 9.sp,
+                fontSize = 12.sp,
                 fontWeight = FontWeight.Bold,
                 color = MutedSlateText,
                 letterSpacing = 0.5.sp
@@ -361,7 +361,7 @@ private fun MetricBox(
             Spacer(modifier = Modifier.height(2.dp))
             Text(
                 text = subtitle,
-                fontSize = 10.sp,
+                fontSize = 12.sp,
                 color = Slate100Text.copy(alpha = 0.7f)
             )
         }

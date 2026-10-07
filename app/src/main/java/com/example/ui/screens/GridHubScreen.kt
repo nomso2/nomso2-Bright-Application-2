@@ -71,6 +71,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -273,7 +274,7 @@ fun GridHubScreen(
                                 ) {
                                     Text(
                                         text = if (isSmart) "AUTO-LINKED ONCE" else "NON-SMART AREA",
-                                        fontSize = 9.sp,
+                                        fontSize = 12.sp,
                                         fontWeight = FontWeight.Bold,
                                         color = if (isSmart) Color(0xFF22C55E) else Color(0xFFD97706)
                                     )
@@ -284,7 +285,7 @@ fun GridHubScreen(
                                     "✓ Linked to ${meterStatus.manufacturerName} AMI • 228V • OTA Top-up Ready"
                                 else
                                     "Standard STS Keypad Meter • Manual 20-digit Token Recharge Active",
-                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
@@ -298,7 +299,7 @@ fun GridHubScreen(
                         shape = RoundedCornerShape(8.dp),
                         contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp)
                     ) {
-                        Text(if (isSmart) "View Meter" else "Check Access", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                        Text(if (isSmart) "View Meter" else "Check Access", fontSize = 12.sp, fontWeight = FontWeight.Bold)
                     }
                 }
             }
@@ -348,7 +349,7 @@ fun GridHubScreen(
                             )
                             Text(
                                 text = "PDF Export • Dues Ledger • ₦ SLA Refund Calculator",
-                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
@@ -360,7 +361,7 @@ fun GridHubScreen(
                         shape = RoundedCornerShape(8.dp),
                         contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp)
                     ) {
-                        Text("Open", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                        Text("Open", fontSize = 12.sp, fontWeight = FontWeight.Bold)
                     }
                 }
             }
@@ -385,7 +386,7 @@ fun GridHubScreen(
                     FilterChip(
                         selected = isSelected,
                         onClick = { selectedSection = section },
-                        label = { Text(label, fontSize = 11.sp) },
+                        label = { Text(label, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                         shape = RoundedCornerShape(8.dp),
                         colors = FilterChipDefaults.filterChipColors(
                             selectedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
@@ -786,7 +787,7 @@ fun GridHubScreen(
                                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
                                 shape = RoundedCornerShape(8.dp)
                             ) {
-                                Text(if (showDisputeForm) "Close" else "Lodge Dispute", fontSize = 11.sp)
+                                Text(if (showDisputeForm) "Close" else "Lodge Dispute", fontSize = 12.sp)
                             }
                         }
 
@@ -887,7 +888,7 @@ fun GridHubScreen(
                                 text = policy.regulationCode,
                                 style = MaterialTheme.typography.labelSmall.copy(
                                     fontWeight = FontWeight.Bold,
-                                    fontSize = 10.sp
+                                    fontSize = 12.sp
                                 ),
                                 color = MaterialTheme.colorScheme.primary
                             )
@@ -939,7 +940,7 @@ fun GridHubScreen(
                                     )
                                     Text(
                                         text = point,
-                                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                                         color = MaterialTheme.colorScheme.onSurface
                                     )
                                 }
@@ -953,7 +954,7 @@ fun GridHubScreen(
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(8.dp)
                         ) {
-                            Text("View Full Regulatory Framework & Rights", fontSize = 11.sp)
+                            Text("View Full Regulatory Framework & Rights", fontSize = 12.sp)
                         }
                     }
                 }
@@ -1005,7 +1006,7 @@ fun GridHubScreen(
                             }
                             Text(
                                 text = "HQ: ${disco.headOffice} • Coverage: ${disco.statesCovered}",
-                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
+                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
@@ -1013,7 +1014,7 @@ fun GridHubScreen(
                         Column(horizontalAlignment = Alignment.End) {
                             Text(
                                 text = "NERC Rating",
-                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 9.sp),
+                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Text(
@@ -1155,7 +1156,7 @@ fun TariffBandRow(
                         style = MaterialTheme.typography.labelSmall.copy(
                             fontWeight = FontWeight.ExtraBold,
                             color = badgeColor,
-                            fontSize = 10.sp
+                            fontSize = 12.sp
                         )
                     )
                 }
@@ -1169,7 +1170,7 @@ fun TariffBandRow(
             Spacer(modifier = Modifier.height(2.dp))
             Text(
                 text = description,
-                style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp),
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }

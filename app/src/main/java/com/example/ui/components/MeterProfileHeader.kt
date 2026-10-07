@@ -97,7 +97,7 @@ fun MeterProfileHeader(
                         Text(
                             text = if (profile.isPrepaid) "METER ID • PREPAID RESIDENTIAL" else "METER ID • POSTPAID ACCOUNT",
                             style = MaterialTheme.typography.labelSmall.copy(
-                                fontSize = 10.sp,
+                                fontSize = 12.sp,
                                 fontWeight = FontWeight.Bold,
                                 letterSpacing = 1.5.sp
                             ),
@@ -148,7 +148,7 @@ fun MeterProfileHeader(
                                 Text(
                                     text = "LIVE FEED • VERIFIED ACTIVE",
                                     style = MaterialTheme.typography.labelSmall.copy(
-                                        fontSize = 11.sp,
+                                        fontSize = 12.sp,
                                         fontWeight = FontWeight.ExtraBold,
                                         letterSpacing = 0.5.sp
                                     ),
@@ -241,7 +241,7 @@ fun MeterProfileHeader(
                                     text = profile.feederBand.code,
                                     style = MaterialTheme.typography.labelSmall.copy(
                                         fontWeight = FontWeight.ExtraBold,
-                                        fontSize = 11.sp,
+                                        fontSize = 12.sp,
                                         letterSpacing = 0.5.sp
                                     ),
                                     color = ElegantGoldPrimary,
@@ -251,7 +251,7 @@ fun MeterProfileHeader(
                             }
                             Text(
                                 text = "• Min ${profile.feederBand.minimumHours} hrs/day guaranteed daily power supply",
-                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
@@ -328,7 +328,7 @@ fun MeterProfileHeader(
                     ) {
                         Text(
                             text = "Households:",
-                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp),
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             softWrap = false,
                             maxLines = 1
@@ -337,7 +337,7 @@ fun MeterProfileHeader(
                             text = "${profile.connectedHouseholdsCount} Connected Consumers on Local Feeder",
                             style = MaterialTheme.typography.labelSmall.copy(
                                 fontWeight = FontWeight.Bold,
-                                fontSize = 11.sp
+                                fontSize = 12.sp
                             ),
                             color = Color(0xFF38BDF8),
                             softWrap = false,
@@ -372,7 +372,7 @@ fun InfoPill(
         ) {
             Text(
                 text = "$label:",
-                style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 softWrap = false,
                 maxLines = 1
@@ -381,7 +381,7 @@ fun InfoPill(
                 text = value,
                 style = MaterialTheme.typography.labelSmall.copy(
                     fontWeight = FontWeight.Bold,
-                    fontSize = 11.sp
+                    fontSize = 12.sp
                 ),
                 color = contentColor,
                 softWrap = false,

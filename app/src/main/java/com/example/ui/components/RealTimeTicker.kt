@@ -69,7 +69,7 @@ fun RealTimeTicker(
                     text = "LIVE GRID",
                     style = MaterialTheme.typography.labelSmall.copy(
                         fontWeight = FontWeight.ExtraBold,
-                        fontSize = 11.sp,
+                        fontSize = 12.sp,
                         letterSpacing = 0.5.sp
                     ),
                     color = Color(0xFF16A34A)
@@ -129,7 +129,7 @@ fun RealTimeTicker(
                 Text(
                     text = telemetry.systemStatus,
                     style = MaterialTheme.typography.labelSmall.copy(
-                        fontSize = 10.sp,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.Bold
                     ),
                     color = Color(0xFF4ADE80)

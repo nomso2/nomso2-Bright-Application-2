@@ -132,8 +132,8 @@ fun TieredUrgencyCategoriserFeature(
                     modifier = Modifier.weight(1f)
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(title, fontSize = 11.sp, fontWeight = FontWeight.Bold)
-                        Text(desc, fontSize = 8.sp, maxLines = 1)
+                        Text(title, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                        Text(desc, fontSize = 12.sp, maxLines = 1)
                     }
                 }
             }
@@ -145,8 +145,8 @@ fun TieredUrgencyCategoriserFeature(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text("Estimated Affected Households:", fontSize = 11.sp, fontWeight = FontWeight.Medium)
-                Text("${affectedHouseholds.toInt()} Homes", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = GoldPrimary)
+                Text("Estimated Affected Households:", fontSize = 12.sp, fontWeight = FontWeight.Medium)
+                Text("${affectedHouseholds.toInt()} Homes", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = GoldPrimary)
             }
             Slider(
                 value = affectedHouseholds,
@@ -157,14 +157,14 @@ fun TieredUrgencyCategoriserFeature(
         }
 
         // Critical Facilities
-        Text("Critical Public Infrastructure Nearby:", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+        Text("Critical Public Infrastructure Nearby:", fontSize = 12.sp, fontWeight = FontWeight.Bold)
         Row(verticalAlignment = Alignment.CenterVertically) {
             Checkbox(
                 checked = hasHospitalOrClinic,
                 onCheckedChange = { hasHospitalOrClinic = it },
                 colors = CheckboxDefaults.colors(checkedColor = GoldPrimary)
             )
-            Text("Hospital / Primary Health Clinic (+15 Priority)", fontSize = 11.sp)
+            Text("Hospital / Primary Health Clinic (+15 Priority)", fontSize = 12.sp)
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
             Checkbox(
@@ -172,7 +172,7 @@ fun TieredUrgencyCategoriserFeature(
                 onCheckedChange = { hasWaterBoard = it },
                 colors = CheckboxDefaults.colors(checkedColor = GoldPrimary)
             )
-            Text("State Water Board / Public Pumping Station (+10 Priority)", fontSize = 11.sp)
+            Text("State Water Board / Public Pumping Station (+10 Priority)", fontSize = 12.sp)
         }
 
         // Results Card
@@ -199,7 +199,7 @@ fun TieredUrgencyCategoriserFeature(
                     Text(
                         text = "Max SLA: $slaHours Hours",
                         fontWeight = FontWeight.Bold,
-                        fontSize = 11.sp,
+                        fontSize = 12.sp,
                         color = MaterialTheme.colorScheme.onSurface
                     )
                 }
@@ -214,7 +214,7 @@ fun TieredUrgencyCategoriserFeature(
                         2 -> "Street distribution fault affecting ${affectedHouseholds.toInt()} homes on transformer ${userProfile.transformerId}. Dispatches Line Crew with 2hr SLA."
                         else -> "Critical 33kV bulk feeder tripping. Mandatory escalation to DisCo Head of Operations and NERC Grid Monitoring Desk (1hr SLA)."
                     },
-                    fontSize = 11.sp,
+                    fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
@@ -233,7 +233,7 @@ fun TieredUrgencyCategoriserFeature(
                     Icon(Icons.Default.CheckCircle, contentDescription = null, tint = EmeraldAccent)
                     Column {
                         Text("Categorized Dispatch Active: $generatedTicketId", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = EmeraldAccent)
-                        Text("Dispatched to ${userProfile.discoCode} Dispatch NOC with Tier $selectedTier priority.", fontSize = 11.sp)
+                        Text("Dispatched to ${userProfile.discoCode} Dispatch NOC with Tier $selectedTier priority.", fontSize = 12.sp)
                     }
                 }
             }
@@ -306,7 +306,7 @@ fun GpsFaultGeofencingFeature(
                         Icon(Icons.Default.LocationOn, contentDescription = null, tint = GoldPrimary, modifier = Modifier.size(18.dp))
                         Text("Substation Epicenter:", fontWeight = FontWeight.Bold, fontSize = 12.sp)
                     }
-                    Text("${userProfile.transformerId} (Zone 4)", fontSize = 11.sp, color = GoldPrimary, fontWeight = FontWeight.Bold)
+                    Text("${userProfile.transformerId} (Zone 4)", fontSize = 12.sp, color = GoldPrimary, fontWeight = FontWeight.Bold)
                 }
 
                 Text(
@@ -333,7 +333,7 @@ fun GpsFaultGeofencingFeature(
                         )
                         Text(
                             text = "$clusterCount Reports Clustered in ${geofenceRadiusMeters.toInt()}m Radius",
-                            fontSize = 9.sp,
+                            fontSize = 12.sp,
                             color = Color.White,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 6.dp)
@@ -345,8 +345,8 @@ fun GpsFaultGeofencingFeature(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text("Geofence Radius:", fontSize = 11.sp)
-                    Text("${geofenceRadiusMeters.toInt()} Meters", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = GoldPrimary)
+                    Text("Geofence Radius:", fontSize = 12.sp)
+                    Text("${geofenceRadiusMeters.toInt()} Meters", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = GoldPrimary)
                 }
                 Slider(
                     value = geofenceRadiusMeters,
@@ -370,7 +370,7 @@ fun GpsFaultGeofencingFeature(
                 shape = RoundedCornerShape(10.dp),
                 modifier = Modifier.weight(1f)
             ) {
-                Text(if (isBroadcasting) "Broadcasted ✓" else "Send GPS to Crew", fontWeight = FontWeight.Bold, fontSize = 11.sp)
+                Text(if (isBroadcasting) "Broadcasted ✓" else "Send GPS to Crew", fontWeight = FontWeight.Bold, fontSize = 12.sp)
             }
             OutlinedButton(
                 onClick = {
@@ -380,7 +380,7 @@ fun GpsFaultGeofencingFeature(
                 shape = RoundedCornerShape(10.dp),
                 modifier = Modifier.weight(1f)
             ) {
-                Text("Open in Maps", fontSize = 11.sp)
+                Text("Open in Maps", fontSize = 12.sp)
             }
         }
     }
@@ -428,13 +428,13 @@ fun AutomatedDispatchRouterFeature(
                 ) {
                     Column {
                         Text("Engr. Babatunde Alabi", fontWeight = FontWeight.Black, fontSize = 14.sp)
-                        Text("Senior Linesman • ID: ${userProfile.discoCode}-8821", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text("Senior Linesman • ID: ${userProfile.discoCode}-8821", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                     Surface(
                         color = EmeraldAccent.copy(alpha = 0.2f),
                         shape = RoundedCornerShape(6.dp)
                     ) {
-                        Text("DISPATCHED", color = EmeraldAccent, fontWeight = FontWeight.Bold, fontSize = 10.sp, modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp))
+                        Text("DISPATCHED", color = EmeraldAccent, fontWeight = FontWeight.Bold, fontSize = 12.sp, modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp))
                     }
                 }
 
@@ -442,8 +442,8 @@ fun AutomatedDispatchRouterFeature(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text("Service Vehicle: White Toyota Hilux (LAG-441-XY)", fontSize = 11.sp)
-                    Text("Rating: 4.8 ★", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = GoldPrimary)
+                    Text("Service Vehicle: White Toyota Hilux (LAG-441-XY)", fontSize = 12.sp)
+                    Text("Rating: 4.8 ★", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = GoldPrimary)
                 }
 
                 Surface(
@@ -456,11 +456,11 @@ fun AutomatedDispatchRouterFeature(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column {
-                            Text("Current Assignment Status:", fontSize = 10.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text("Current Assignment Status:", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             Text(crewStatus, fontWeight = FontWeight.Bold, fontSize = 12.sp)
                         }
                         Column(horizontalAlignment = Alignment.End) {
-                            Text("Live ETA:", fontSize = 10.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text("Live ETA:", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             Text("$etaMinutes Mins", fontWeight = FontWeight.Black, fontSize = 14.sp, color = GoldPrimary)
                         }
                     }
@@ -481,7 +481,7 @@ fun AutomatedDispatchRouterFeature(
                     ) {
                         Icon(Icons.Default.Call, contentDescription = null, modifier = Modifier.size(15.dp))
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text("Call Crew", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                        Text("Call Crew", fontSize = 12.sp, fontWeight = FontWeight.Bold)
                     }
 
                     OutlinedButton(
@@ -495,7 +495,7 @@ fun AutomatedDispatchRouterFeature(
                     ) {
                         Icon(Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(15.dp))
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text("Refresh ETA", fontSize = 11.sp)
+                        Text("Refresh ETA", fontSize = 12.sp)
                     }
                 }
             }
@@ -571,7 +571,7 @@ fun CriticalDangerRedButtonFeature(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Icon(Icons.Default.Warning, contentDescription = null, tint = Color.Red, modifier = Modifier.size(20.dp))
-                Text("MANDATORY SAFETY: Maintain 10-meter perimeter. Do NOT touch wet ground near conductors.", fontSize = 11.sp, color = Color.Red, fontWeight = FontWeight.Bold)
+                Text("MANDATORY SAFETY: Maintain 10-meter perimeter. Do NOT touch wet ground near conductors.", fontSize = 12.sp, color = Color.Red, fontWeight = FontWeight.Bold)
             }
         }
 
@@ -635,7 +635,7 @@ fun DiagnosticStatusTrackerFeature(
                 shape = RoundedCornerShape(8.dp),
                 modifier = Modifier.weight(1f)
             ) {
-                Text("TCN Load-Shedding", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                Text("TCN Load-Shedding", fontSize = 12.sp, fontWeight = FontWeight.Bold)
             }
             Button(
                 onClick = { diagnosticState = "FAULT" },
@@ -646,7 +646,7 @@ fun DiagnosticStatusTrackerFeature(
                 shape = RoundedCornerShape(8.dp),
                 modifier = Modifier.weight(1f)
             ) {
-                Text("Unplanned Fault", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                Text("Unplanned Fault", fontSize = 12.sp, fontWeight = FontWeight.Bold)
             }
         }
 
@@ -661,10 +661,10 @@ fun DiagnosticStatusTrackerFeature(
                         Icon(Icons.Default.Timeline, contentDescription = null, tint = Color(0xFF8B5CF6))
                         Text("TCN Grid Allocation Quota Deficit", fontWeight = FontWeight.Bold, fontSize = 13.sp, color = Color(0xFF8B5CF6))
                     }
-                    Text("Your injection feeder is shedding load to prevent national grid frequency collapse.", fontSize = 11.sp)
+                    Text("Your injection feeder is shedding load to prevent national grid frequency collapse.", fontSize = 12.sp)
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                        Text("Feeder Demand: ${peakDemandMw}MW", fontSize = 11.sp)
-                        Text("Allocated: ${allocatedMw}MW (50.7%)", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                        Text("Feeder Demand: ${peakDemandMw}MW", fontSize = 12.sp)
+                        Text("Allocated: ${allocatedMw}MW (50.7%)", fontSize = 12.sp, fontWeight = FontWeight.Bold)
                     }
                     LinearProgressIndicator(
                         progress = { (allocatedMw / peakDemandMw).toFloat() },
@@ -677,8 +677,8 @@ fun DiagnosticStatusTrackerFeature(
                         Icon(Icons.Default.Warning, contentDescription = null, tint = MaterialTheme.colorScheme.error)
                         Text("Physical Distribution Fault Detected", fontWeight = FontWeight.Bold, fontSize = 13.sp, color = MaterialTheme.colorScheme.error)
                     }
-                    Text("Protective relay trip code: OCR-51 (Phase B Overcurrent). DisCo field team notified.", fontSize = 11.sp)
-                    Text("Transformer: ${userProfile.transformerId} • Estimated Repair: 1hr 15m", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    Text("Protective relay trip code: OCR-51 (Phase B Overcurrent). DisCo field team notified.", fontSize = 12.sp)
+                    Text("Transformer: ${userProfile.transformerId} • Estimated Repair: 1hr 15m", fontSize = 12.sp, fontWeight = FontWeight.Bold)
                 }
 
                 Button(

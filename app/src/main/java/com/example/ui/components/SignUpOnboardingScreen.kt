@@ -332,7 +332,7 @@ fun SignUpOnboardingScreen(
                             style = MaterialTheme.typography.labelSmall.copy(
                                 fontWeight = FontWeight.Black,
                                 letterSpacing = 1.5.sp,
-                                fontSize = 10.sp
+                                fontSize = 12.sp
                             ),
                             color = GoldPrimary
                         )
@@ -705,13 +705,13 @@ fun SignUpOnboardingScreen(
                             style = MaterialTheme.typography.labelSmall.copy(
                                 fontWeight = FontWeight.ExtraBold,
                                 letterSpacing = 1.2.sp,
-                                fontSize = 11.sp
+                                fontSize = 12.sp
                             ),
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Text(
                             text = "Switch Instantly",
-                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
+                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp),
                             color = GoldPrimary
                         )
                     }
@@ -785,7 +785,7 @@ fun SignUpOnboardingScreen(
                                                 ) {
                                                     Text(
                                                         text = "ACTIVE",
-                                                        fontSize = 9.sp,
+                                                        fontSize = 12.sp,
                                                         fontWeight = FontWeight.ExtraBold,
                                                         color = GoldPrimary,
                                                         modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
@@ -798,7 +798,7 @@ fun SignUpOnboardingScreen(
                                             ) {
                                                 Text(
                                                     text = if (isAccPaid) "✓ ₦500 PAID" else "₦500 REQUIRED",
-                                                    fontSize = 9.sp,
+                                                    fontSize = 12.sp,
                                                     fontWeight = FontWeight.ExtraBold,
                                                     color = if (isAccPaid) EmeraldAccent else Color(0xFFF59E0B),
                                                     modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
@@ -816,7 +816,7 @@ fun SignUpOnboardingScreen(
                                         )
                                         Text(
                                             text = acc.subtitle,
-                                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp),
                                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                                             maxLines = 1,
                                             overflow = TextOverflow.Ellipsis
@@ -837,7 +837,7 @@ fun SignUpOnboardingScreen(
                                 ) {
                                     Text(
                                         text = if (!isAccPaid) "Pay ₦500" else if (isCurrent) "Resume" else "Sign In",
-                                        fontSize = 11.sp,
+                                        fontSize = 12.sp,
                                         fontWeight = FontWeight.Bold
                                     )
                                 }
@@ -1163,7 +1163,7 @@ fun SignUpOnboardingScreen(
                             modifier = Modifier.size(14.dp)
                         )
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text("Auto-Fill Sample Resident", fontSize = 11.sp)
+                        Text("Auto-Fill Sample Resident", fontSize = 12.sp)
                     }
                 }
 
@@ -1222,7 +1222,7 @@ fun SignUpOnboardingScreen(
                             ) {
                                 Text(
                                     text = if (isCurrentMeterPaid) "PAID ONCE • ACTIVATED" else "BLOCKING • ₦500 REQUIRED",
-                                    fontSize = 9.sp,
+                                    fontSize = 12.sp,
                                     fontWeight = FontWeight.ExtraBold,
                                     color = if (isCurrentMeterPaid) EmeraldAccent else GoldPrimary,
                                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
@@ -1357,7 +1357,7 @@ fun SignUpOnboardingScreen(
                                         )
                                         Text(
                                             text = "This ₦500 payment is strictly a blocking requirement and gateway to the app to verify your meter with the national grid server. No electricity units, tokens, or rewards are given to users for paying this. It is paid once per meter.",
-                                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp, lineHeight = 16.sp),
+                                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp, lineHeight = 16.sp),
                                             color = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
                                     }
@@ -1396,7 +1396,7 @@ fun SignUpOnboardingScreen(
                                         ) {
                                             Text(
                                                 text = method.take(10),
-                                                fontSize = 10.sp,
+                                                fontSize = 12.sp,
                                                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
                                                 color = if (isSelected) GoldPrimary else MaterialTheme.colorScheme.onSurface,
                                                 maxLines = 1
@@ -1604,7 +1604,7 @@ fun SignUpOnboardingScreen(
                             )
                             Text(
                                 text = "IMPORTANT: This ₦500 fee is strictly an access gateway requirement to authenticate your meter hardware on the app. No electricity units, tokens, or rewards are given for paying this. It is paid once per meter.",
-                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp, lineHeight = 15.sp),
+                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp, lineHeight = 15.sp),
                                 color = Color.White.copy(alpha = 0.9f)
                             )
                         }
@@ -1642,7 +1642,7 @@ fun SignUpOnboardingScreen(
                                 ) {
                                     Text(
                                         text = method,
-                                        fontSize = 10.sp,
+                                        fontSize = 12.sp,
                                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
                                         color = if (isSelected) GoldPrimary else MaterialTheme.colorScheme.onSurface,
                                         maxLines = 1

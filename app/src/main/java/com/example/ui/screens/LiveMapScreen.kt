@@ -73,6 +73,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -315,7 +316,7 @@ fun LiveMapScreen(
                             horizontalArrangement = Arrangement.spacedBy(6.dp)
                         ) {
                             Icon(Icons.Default.Map, contentDescription = null, modifier = Modifier.size(16.dp))
-                            Text("Google Map View (${filteredTransformers.size})", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                            Text("Google Map View (${filteredTransformers.size})", fontSize = 12.sp, fontWeight = FontWeight.Bold)
                         }
                     }
                 )
@@ -328,7 +329,7 @@ fun LiveMapScreen(
                             horizontalArrangement = Arrangement.spacedBy(6.dp)
                         ) {
                             Icon(Icons.Default.Navigation, contentDescription = null, modifier = Modifier.size(16.dp))
-                            Text("DisCo Care Router", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                            Text("DisCo Care Router", fontSize = 12.sp, fontWeight = FontWeight.Bold)
                         }
                     }
                 )
@@ -384,7 +385,7 @@ fun LiveMapScreen(
                                 selectedTransformer = allTransformers.firstOrNull()
                                 webViewRef?.evaluateJavascript("if (window.recenterMap) { window.recenterMap(9.0820, 8.6753, 6); }", null)
                             },
-                            label = { Text("All Nigeria (${allTransformers.size})", fontSize = 11.sp) },
+                            label = { Text("All Nigeria (${allTransformers.size})", fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                             modifier = Modifier.testTag("filter_all_nigeria")
                         )
                     }
@@ -400,7 +401,7 @@ fun LiveMapScreen(
                                     selectedTransformer = firstInCity
                                 }
                             },
-                            label = { Text(city, fontSize = 11.sp) },
+                            label = { Text(city, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                             colors = FilterChipDefaults.filterChipColors(
                                 selectedContainerColor = GoldPrimary.copy(alpha = 0.2f),
                                 selectedLabelColor = GoldPrimary
@@ -589,7 +590,7 @@ fun LiveMapScreen(
                         FilterChip(
                             selected = selectedDiscoFilter == null,
                             onClick = { selectedDiscoFilter = null },
-                            label = { Text("All DisCos", fontSize = 11.sp) }
+                            label = { Text("All DisCos", fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis) }
                         )
                     }
                     val discoChips = listOf(
@@ -610,7 +611,7 @@ fun LiveMapScreen(
                         FilterChip(
                             selected = isSelected,
                             onClick = { selectedDiscoFilter = if (isSelected) null else code },
-                            label = { Text(label, fontSize = 11.sp) },
+                            label = { Text(label, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                             colors = FilterChipDefaults.filterChipColors(
                                 selectedContainerColor = GoldPrimary.copy(alpha = 0.2f),
                                 selectedLabelColor = GoldPrimary
@@ -690,7 +691,7 @@ private fun DisCoFacilityCard(
                     )
                     Text(
                         text = place.category,
-                        fontSize = 11.sp,
+                        fontSize = 12.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
@@ -702,7 +703,7 @@ private fun DisCoFacilityCard(
                     ) {
                         Text(
                             text = aff,
-                            fontSize = 11.sp,
+                            fontSize = 12.sp,
                             fontWeight = FontWeight.Black,
                             color = GoldPrimary,
                             modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
@@ -750,7 +751,7 @@ private fun DisCoFacilityCard(
                     Column {
                         Text(
                             text = "WORKING & FAULT DESK HOURS",
-                            fontSize = 9.sp,
+                            fontSize = 12.sp,
                             fontWeight = FontWeight.Black,
                             color = EmeraldAccent.copy(alpha = 0.8f),
                             letterSpacing = 0.5.sp
@@ -799,7 +800,7 @@ private fun DisCoFacilityCard(
                         Column {
                             Text(
                                 text = "Official Citizen Contact Line",
-                                fontSize = 10.sp,
+                                fontSize = 12.sp,
                                 fontWeight = FontWeight.Medium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -823,7 +824,7 @@ private fun DisCoFacilityCard(
                     ) {
                         Icon(Icons.Default.Call, contentDescription = null, modifier = Modifier.size(14.dp))
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text("Call DisCo", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                        Text("Call DisCo", fontSize = 12.sp, fontWeight = FontWeight.Bold)
                     }
                 }
             }
@@ -1139,7 +1140,7 @@ private fun TransformerInspectorCard(
                         Text(
                             text = transformer.status.label,
                             color = Color(transformer.status.colorHex),
-                            fontSize = 10.sp,
+                            fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
                         )
@@ -1168,7 +1169,7 @@ private fun TransformerInspectorCard(
                     Text(
                         text = "${transformer.capacityKva} kVA",
                         fontWeight = FontWeight.Black,
-                        fontSize = 11.sp,
+                        fontSize = 12.sp,
                         color = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
                     )
@@ -1181,7 +1182,7 @@ private fun TransformerInspectorCard(
                     Text(
                         text = "Distribution Substation Unit",
                         fontWeight = FontWeight.Medium,
-                        fontSize = 10.sp,
+                        fontSize = 12.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(horizontal = 7.dp, vertical = 3.dp)
                     )
@@ -1190,7 +1191,7 @@ private fun TransformerInspectorCard(
 
             Text(
                 text = "${transformer.street}, ${transformer.city}, ${transformer.state} (${transformer.discoCode})",
-                fontSize = 11.sp,
+                fontSize = 12.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
@@ -1202,12 +1203,12 @@ private fun TransformerInspectorCard(
             ) {
                 Text(
                     text = "Load: ${transformer.loadPercent}% (${transformer.connectedHouseholds} Households)",
-                    fontSize = 11.sp,
+                    fontSize = 12.sp,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
                     text = "Phase A: ${transformer.phaseAVolts}V | B: ${transformer.phaseBVolts}V | C: ${transformer.phaseCVolts}V",
-                    fontSize = 10.sp,
+                    fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.outline
                 )
             }
@@ -1237,7 +1238,7 @@ private fun TransformerInspectorCard(
                     Spacer(modifier = Modifier.width(6.dp))
                     Column(horizontalAlignment = Alignment.Start) {
                         Text("Google Maps Directions", fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                        Text("Pinpointing ${transformer.id}", fontSize = 10.sp, fontWeight = FontWeight.Normal)
+                        Text("Pinpointing ${transformer.id}", fontSize = 12.sp, fontWeight = FontWeight.Normal)
                     }
                 }
 
@@ -1250,7 +1251,7 @@ private fun TransformerInspectorCard(
                 ) {
                     Icon(Icons.Default.LocationOn, contentDescription = null, modifier = Modifier.size(15.dp))
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text("Pinpoint Map", fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+                    Text("Pinpoint Map", fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
                 }
             }
         }

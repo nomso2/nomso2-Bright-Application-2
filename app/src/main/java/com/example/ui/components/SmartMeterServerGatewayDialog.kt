@@ -234,13 +234,13 @@ fun SmartMeterServerGatewayDialog(
                                     )
                                     Text(
                                         text = if (headerStatus.hasSmartAccess) "AUTO-LINKED ONCE (${headerStatus.manufacturerName})" else "NON-SMART AREA (KEYPAD ONLY)",
-                                        fontSize = 11.sp,
+                                        fontSize = 12.sp,
                                         fontWeight = FontWeight.Bold,
                                         color = if (headerStatus.hasSmartAccess) Color(0xFF22C55E) else Color(0xFFD97706)
                                     )
                                     Text(
                                         text = "• #${userProfile.meterNumber}",
-                                        fontSize = 11.sp,
+                                        fontSize = 12.sp,
                                         color = MutedSlateText
                                     )
                                 }
@@ -513,7 +513,7 @@ private fun MetersCatalogTab(
                 ) {
                     Text(
                         text = disco,
-                        fontSize = 11.sp,
+                        fontSize = 12.sp,
                         fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.Medium,
                         color = if (isSelected) Color.Black else Slate100Text
                     )
@@ -589,7 +589,7 @@ private fun SmartMeterDeviceCard(
                     ) {
                         Text(
                             text = "${meter.discoCode} • ${meter.locationState}",
-                            fontSize = 10.sp,
+                            fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
                             color = ElegantGoldPrimary
                         )
@@ -604,7 +604,7 @@ private fun SmartMeterDeviceCard(
                         ) {
                             Text(
                                 text = "TAMPER ALERT",
-                                fontSize = 10.sp,
+                                fontSize = 12.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = Color(0xFFEF4444)
                             )
@@ -618,12 +618,12 @@ private fun SmartMeterDeviceCard(
             // Subtitle: Manufacturer & Model
             Text(
                 text = "${meter.manufacturer} (${meter.modelNumber}) • ${meter.protocol}",
-                fontSize = 11.sp,
+                fontSize = 12.sp,
                 color = MutedSlateText
             )
             Text(
                 text = "Feeder: ${meter.feederName} | APN: ${meter.ipOrSimImei}",
-                fontSize = 10.sp,
+                fontSize = 12.sp,
                 color = MutedSlateText
             )
 
@@ -679,7 +679,7 @@ private fun SmartMeterDeviceCard(
                     )
                     Text(
                         text = if (meter.relayStatusClosed) "Relay Closed (Supply ON)" else "Relay Tripped (Supply CUT)",
-                        fontSize = 11.sp,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = if (meter.relayStatusClosed) Color(0xFF22C55E) else Color(0xFFEF4444)
                     )
@@ -733,7 +733,7 @@ private fun SmartMeterDeviceCard(
                     ) {
                         Text(
                             text = if (meter.relayStatusClosed) "Cut Supply" else "Restore",
-                            fontSize = 10.sp,
+                            fontSize = 12.sp,
                             fontWeight = FontWeight.Bold
                         )
                     }
@@ -746,7 +746,7 @@ private fun SmartMeterDeviceCard(
 @Composable
 private fun TelemetryMetricItem(label: String, value: String, color: Color) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(text = label, fontSize = 9.sp, color = MutedSlateText, fontWeight = FontWeight.Bold)
+        Text(text = label, fontSize = 12.sp, color = MutedSlateText, fontWeight = FontWeight.Bold)
         Text(text = value, fontSize = 12.sp, color = color, fontWeight = FontWeight.ExtraBold)
     }
 }
@@ -814,7 +814,7 @@ private fun ServerConfigTab(
                         )
                         Text(
                             text = "Last Handshake: ${serverConfig.lastHeartbeatTime}",
-                            fontSize = 11.sp,
+                            fontSize = 12.sp,
                             color = MutedSlateText
                         )
                     }
@@ -830,7 +830,7 @@ private fun ServerConfigTab(
                     ) {
                         Icon(Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(14.dp))
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text("Test Ping", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                        Text("Test Ping", fontSize = 12.sp, fontWeight = FontWeight.Bold)
                     }
                 }
             }
@@ -897,7 +897,7 @@ private fun ServerConfigTab(
                         Spacer(modifier = Modifier.width(10.dp))
                         Column {
                             Text(text = code, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color.White)
-                            Text(text = label, fontSize = 10.sp, color = MutedSlateText)
+                            Text(text = label, fontSize = 12.sp, color = MutedSlateText)
                         }
                     }
                 }
@@ -963,7 +963,7 @@ private fun ServerConfigTab(
                     )
                     Text(
                         text = "Requires valid CA certificate for meter communication",
-                        fontSize = 10.sp,
+                        fontSize = 12.sp,
                         color = MutedSlateText
                     )
                 }
@@ -1011,7 +1011,7 @@ private fun CommandsLogTab(commands: List<SmartMeterCommand>) {
         )
         Text(
             text = "Cryptographically timestamped commands sent to Nigerian smart meters",
-            fontSize = 11.sp,
+            fontSize = 12.sp,
             color = MutedSlateText
         )
 
@@ -1051,16 +1051,16 @@ private fun CommandsLogTab(commands: List<SmartMeterCommand>) {
                                             .background(Color(0xFF22C55E).copy(alpha = 0.2f))
                                             .padding(horizontal = 4.dp, vertical = 1.dp)
                                     ) {
-                                        Text(text = cmd.status, fontSize = 9.sp, color = Color(0xFF22C55E), fontWeight = FontWeight.Bold)
+                                        Text(text = cmd.status, fontSize = 12.sp, color = Color(0xFF22C55E), fontWeight = FontWeight.Bold)
                                     }
                                 }
                                 Text(
                                     text = "Meter #${cmd.meterNumber} • Payload: ${cmd.payload}",
-                                    fontSize = 11.sp,
+                                    fontSize = 12.sp,
                                     color = MutedSlateText
                                 )
                             }
-                            Text(text = cmd.timestampText, fontSize = 10.sp, color = MutedSlateText)
+                            Text(text = cmd.timestampText, fontSize = 12.sp, color = MutedSlateText)
                         }
                     }
                 }
@@ -1129,7 +1129,7 @@ app.listen(8080, () => console.log('Smart Meter Gateway running on port 8080'));
             )
             Text(
                 text = "Connect your backend server to receive live telemetry from Mojec, Momas, Conlog, and Hexing smart meters across Nigerian DisCos.",
-                fontSize = 11.sp,
+                fontSize = 12.sp,
                 color = MutedSlateText
             )
         }
@@ -1162,7 +1162,7 @@ app.listen(8080, () => console.log('Smart Meter Gateway running on port 8080'));
                     Text(
                         text = curlExample,
                         fontFamily = FontFamily.Monospace,
-                        fontSize = 10.sp,
+                        fontSize = 12.sp,
                         color = Color(0xFF38BDF8),
                         modifier = Modifier
                             .fillMaxWidth()
@@ -1201,7 +1201,7 @@ app.listen(8080, () => console.log('Smart Meter Gateway running on port 8080'));
                     Text(
                         text = nodeJsExample,
                         fontFamily = FontFamily.Monospace,
-                        fontSize = 10.sp,
+                        fontSize = 12.sp,
                         color = Color(0xFF4ADE80),
                         modifier = Modifier
                             .fillMaxWidth()
@@ -1258,7 +1258,7 @@ private fun AddSmartMeterModal(
                 item {
                     Text(
                         text = "Register a Nigerian smart meter into the AMI Head-End server gateway.",
-                        fontSize = 11.sp,
+                        fontSize = 12.sp,
                         color = MutedSlateText
                     )
                 }
@@ -1280,7 +1280,7 @@ private fun AddSmartMeterModal(
                 }
 
                 item {
-                    Text("Manufacturer Brand", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Slate100Text)
+                    Text("Manufacturer Brand", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Slate100Text)
                     LazyRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                         items(manufacturers) { mfg ->
                             val isSel = manufacturer == mfg
@@ -1293,7 +1293,7 @@ private fun AddSmartMeterModal(
                             ) {
                                 Text(
                                     text = mfg,
-                                    fontSize = 10.sp,
+                                    fontSize = 12.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = if (isSel) Color.Black else Color.White
                                 )
@@ -1303,7 +1303,7 @@ private fun AddSmartMeterModal(
                 }
 
                 item {
-                    Text("Assigned DisCo", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Slate100Text)
+                    Text("Assigned DisCo", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Slate100Text)
                     LazyRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                         items(discos) { d ->
                             val isSel = discoCode == d
@@ -1316,7 +1316,7 @@ private fun AddSmartMeterModal(
                             ) {
                                 Text(
                                     text = d,
-                                    fontSize = 10.sp,
+                                    fontSize = 12.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = if (isSel) Color.Black else Color.White
                                 )

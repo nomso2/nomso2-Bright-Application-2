@@ -36,6 +36,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.ui.theme.ElegantDarkBorder
@@ -134,15 +135,17 @@ private fun QuickActionCell(
             }
             Spacer(modifier = Modifier.height(6.dp))
             Text(
-                text = item.title.uppercase(),
+                // Sentence case and no extra tracking so 12sp labels fit 4-across on small phones.
+                text = item.title,
                 style = MaterialTheme.typography.labelSmall.copy(
-                    fontSize = 9.sp,
+                    fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
-                    letterSpacing = 0.5.sp
+                    letterSpacing = 0.sp
                 ),
                 color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Center,
-                maxLines = 1
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         }
     }

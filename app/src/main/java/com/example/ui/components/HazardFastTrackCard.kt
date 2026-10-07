@@ -95,7 +95,7 @@ fun HazardFastTrackCard(
                         )
                         Text(
                             text = "Life safety emergency? Bypasses queue instantly.",
-                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
+                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp),
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
@@ -160,7 +160,7 @@ fun EmergencyButton(
                 text = label,
                 style = MaterialTheme.typography.labelSmall.copy(
                     fontWeight = FontWeight.Bold,
-                    fontSize = 10.sp
+                    fontSize = 12.sp
                 ),
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1

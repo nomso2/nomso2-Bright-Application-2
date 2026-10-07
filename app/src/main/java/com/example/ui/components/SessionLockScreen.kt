@@ -169,7 +169,7 @@ fun SessionLockScreen(
                 style = MaterialTheme.typography.labelSmall.copy(
                     fontWeight = FontWeight.Black,
                     letterSpacing = 2.sp,
-                    fontSize = 11.sp
+                    fontSize = 12.sp
                 ),
                 color = ElegantGoldPrimary
             )
@@ -242,7 +242,7 @@ fun SessionLockScreen(
                         )
                         Text(
                             text = "${userProfile.feederBand.code} Feeder (${userProfile.feederName})",
-                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp, fontWeight = FontWeight.SemiBold),
+                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp, fontWeight = FontWeight.SemiBold),
                             color = ElegantGoldPrimary
                         )
                     }
@@ -433,7 +433,7 @@ fun SessionLockScreen(
                         )
                         Text(
                             text = "Locks session whenever app is closed, minimized, or switched away.",
-                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }

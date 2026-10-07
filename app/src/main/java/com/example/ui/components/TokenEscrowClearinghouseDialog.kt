@@ -164,7 +164,7 @@ fun TokenEscrowClearinghouseDialog(
                             }
                             Text(
                                 text = "INSTITUTIONAL AGGREGATOR",
-                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 9.sp, fontWeight = FontWeight.ExtraBold),
+                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp, fontWeight = FontWeight.ExtraBold),
                                 color = ElegantGreenLive
                             )
                         }
@@ -176,7 +176,7 @@ fun TokenEscrowClearinghouseDialog(
                         )
                         Text(
                             text = "Wholesale utility liquidity pre-funded for automated compensatory rebates",
-                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
@@ -209,7 +209,7 @@ fun TokenEscrowClearinghouseDialog(
                                 Spacer(modifier = Modifier.width(4.dp))
                                 Text(
                                     text = "SLA MONITOR",
-                                    style = MaterialTheme.typography.labelSmall.copy(fontSize = 9.sp, fontWeight = FontWeight.Bold),
+                                    style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp, fontWeight = FontWeight.Bold),
                                     color = Color(0xFF2563EB)
                                 )
                             }
@@ -224,7 +224,7 @@ fun TokenEscrowClearinghouseDialog(
                             )
                             Text(
                                 text = "NERC Resolution Cap",
-                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 9.sp),
+                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
@@ -250,7 +250,7 @@ fun TokenEscrowClearinghouseDialog(
                                 Spacer(modifier = Modifier.width(4.dp))
                                 Text(
                                     text = "TRUST METRICS",
-                                    style = MaterialTheme.typography.labelSmall.copy(fontSize = 9.sp, fontWeight = FontWeight.Bold),
+                                    style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp, fontWeight = FontWeight.Bold),
                                     color = ElegantGoldPrimary
                                 )
                             }
@@ -262,7 +262,7 @@ fun TokenEscrowClearinghouseDialog(
                             )
                             Text(
                                 text = "Cross-Node Verified",
-                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 9.sp),
+                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
@@ -284,7 +284,7 @@ fun TokenEscrowClearinghouseDialog(
                     )
                     Text(
                         text = "${escrowTokens.size} Issued",
-                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                         color = ElegantGoldPrimary
                     )
                 }
@@ -374,7 +374,7 @@ fun TokenEscrowClearinghouseDialog(
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(
                                 text = token.reason,
-                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp),
+                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
@@ -440,7 +440,7 @@ fun TokenEscrowClearinghouseDialog(
                             text = report,
                             style = MaterialTheme.typography.bodySmall.copy(
                                 fontFamily = FontFamily.Monospace,
-                                fontSize = 10.sp,
+                                fontSize = 12.sp,
                                 lineHeight = 14.sp
                             ),
                             color = Color(0xFF16A34A)

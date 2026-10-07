@@ -202,14 +202,14 @@ fun AuditingMatrixCard(
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
                             text = "Geofenced Isolation: ${userProfile.transformerId}",
-                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                             color = MaterialTheme.colorScheme.onSurface
                         )
                     }
 
                     Text(
                         text = "Radius 850m LV Feeder",
-                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     )
                 }
             }
@@ -233,7 +233,7 @@ fun AuditingMatrixCard(
                     Column {
                         Text(
                             text = "7-DAY SHORTFALL",
-                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 9.sp, fontWeight = FontWeight.Bold),
+                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp, fontWeight = FontWeight.Bold),
                             color = Color(0xFFFCA5A5)
                         )
                         Spacer(modifier = Modifier.height(2.dp))
@@ -244,7 +244,7 @@ fun AuditingMatrixCard(
                         )
                         Text(
                             text = "Verified DisCo Default",
-                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp),
+                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
@@ -263,7 +263,7 @@ fun AuditingMatrixCard(
                     Column {
                         Text(
                             text = "ESCROW REBATE DUE",
-                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 9.sp, fontWeight = FontWeight.Bold),
+                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp, fontWeight = FontWeight.Bold),
                             color = Color(0xFF86EFAC)
                         )
                         Spacer(modifier = Modifier.height(2.dp))
@@ -274,7 +274,7 @@ fun AuditingMatrixCard(
                         )
                         Text(
                             text = "Tap to Claim Escrow Token ›",
-                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp, fontWeight = FontWeight.Bold),
+                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp, fontWeight = FontWeight.Bold),
                             color = ElegantGoldPrimary
                         )
                     }
@@ -329,7 +329,7 @@ fun AuditingMatrixCard(
                                 )
                                 Text(
                                     text = "Target: 20.0h • Delivered: ${record.actualDeliveredHours}h",
-                                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp),
+                                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }

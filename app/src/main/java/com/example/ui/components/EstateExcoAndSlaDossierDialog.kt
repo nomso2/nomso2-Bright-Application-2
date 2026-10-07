@@ -509,7 +509,7 @@ private fun NercDossierTabContent(
                         ) {
                             Icon(Icons.Default.Visibility, contentDescription = null, modifier = Modifier.size(15.dp))
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text("Open PDF", fontSize = 11.sp, maxLines = 1)
+                            Text("Open PDF", fontSize = 12.sp, maxLines = 1)
                         }
 
                         OutlinedButton(
@@ -523,7 +523,7 @@ private fun NercDossierTabContent(
                         ) {
                             Icon(Icons.Default.Share, contentDescription = null, modifier = Modifier.size(15.dp))
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text("Share", fontSize = 11.sp, maxLines = 1)
+                            Text("Share", fontSize = 12.sp, maxLines = 1)
                         }
 
                         OutlinedButton(
@@ -537,7 +537,7 @@ private fun NercDossierTabContent(
                         ) {
                             Icon(Icons.Default.ContentCopy, contentDescription = null, modifier = Modifier.size(15.dp))
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text("Copy", fontSize = 11.sp, maxLines = 1)
+                            Text("Copy", fontSize = 12.sp, maxLines = 1)
                         }
                     }
                 }
@@ -563,7 +563,7 @@ private fun NercDossierTabContent(
                     ) {
                         Text(
                             text = "OFFICIAL DOCUMENT PREVIEW",
-                            fontSize = 11.sp,
+                            fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
                             color = ElegantGoldPrimary,
                             modifier = Modifier.weight(1f, fill = false)
@@ -579,7 +579,7 @@ private fun NercDossierTabContent(
                                     .background(ElegantGreenLive, CircleShape)
                             )
                             Spacer(modifier = Modifier.width(5.dp))
-                            Text("NERC COMPLIANT", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = ElegantGreenLive)
+                            Text("NERC COMPLIANT", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = ElegantGreenLive)
                         }
                     }
 
@@ -588,7 +588,7 @@ private fun NercDossierTabContent(
                     Text(
                         text = formattedDossier,
                         fontFamily = FontFamily.Monospace,
-                        fontSize = 11.sp,
+                        fontSize = 12.sp,
                         color = Color(0xFFE2E8F0),
                         lineHeight = 16.sp
                     )
@@ -639,7 +639,7 @@ private fun TransformerDuesTabContent(
                 ) {
                     Text(
                         text = "TRANSFORMER TRUST LEDGER",
-                        fontSize = 11.sp,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
                         color = ElegantGoldPrimary,
                         letterSpacing = 1.sp
@@ -683,11 +683,11 @@ private fun TransformerDuesTabContent(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column {
-                            Text("Total Verified Collections", fontSize = 11.sp, color = MutedSlateText)
+                            Text("Total Verified Collections", fontSize = 12.sp, color = MutedSlateText)
                             Text("₦${String.format("%,.2f", totalCollected)}", fontSize = 18.sp, fontWeight = FontWeight.ExtraBold, color = ElegantGreenLive)
                         }
                         Column(horizontalAlignment = Alignment.End) {
-                            Text("Verified Households", fontSize = 11.sp, color = MutedSlateText)
+                            Text("Verified Households", fontSize = 12.sp, color = MutedSlateText)
                             Text("${duesEntries.size} Recorded", fontSize = 15.sp, fontWeight = FontWeight.Bold, color = Slate100Text)
                         }
                     }
@@ -798,7 +798,7 @@ private fun TransformerDuesTabContent(
         item {
             Text(
                 text = "TRANSPARENCY AUDIT LOG",
-                fontSize = 11.sp,
+                fontSize = 12.sp,
                 fontWeight = FontWeight.Bold,
                 color = ElegantGoldPrimary,
                 letterSpacing = 1.sp
@@ -833,13 +833,13 @@ private fun TransformerDuesTabContent(
                                         .background(ElegantGreenLive.copy(alpha = 0.2f))
                                         .padding(horizontal = 4.dp, vertical = 2.dp)
                                 ) {
-                                    Text("VERIFIED", fontSize = 9.sp, fontWeight = FontWeight.Bold, color = ElegantGreenLive)
+                                    Text("VERIFIED", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = ElegantGreenLive)
                                 }
                             }
                         }
                         Text(
                             text = "${entry.houseAddress} • ${entry.paymentMethod}",
-                            fontSize = 11.sp,
+                            fontSize = 12.sp,
                             color = MutedSlateText
                         )
                         Spacer(modifier = Modifier.height(2.dp))
@@ -859,7 +859,7 @@ private fun TransformerDuesTabContent(
                         )
                         Text(
                             text = entry.dateText,
-                            fontSize = 10.sp,
+                            fontSize = 12.sp,
                             color = MutedSlateText
                         )
                     }
@@ -900,7 +900,7 @@ private fun SlaRefundCalculatorTabContent(
                         Column {
                             Text(
                                 text = "AUTOMATED METER REFUND CALCULATOR",
-                                fontSize = 11.sp,
+                                fontSize = 12.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = ElegantGoldPrimary,
                                 letterSpacing = 1.sp
@@ -920,7 +920,7 @@ private fun SlaRefundCalculatorTabContent(
                         ) {
                             Text(
                                 text = "SLA BREACHED",
-                                fontSize = 10.sp,
+                                fontSize = 12.sp,
                                 fontWeight = FontWeight.ExtraBold,
                                 color = Color(0xFFEF4444)
                             )
@@ -1001,7 +1001,7 @@ private fun SlaRefundCalculatorTabContent(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Column {
-                                    Text("MANDATORY RECHARGE CREDIT DUE:", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = ElegantGreenLive)
+                                    Text("MANDATORY RECHARGE CREDIT DUE:", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = ElegantGreenLive)
                                     Text("₦${String.format("%,.2f", assessment.totalCompensationPayableNgn)}", fontSize = 22.sp, fontWeight = FontWeight.ExtraBold, color = ElegantGreenLive)
                                 }
 
@@ -1037,7 +1037,7 @@ private fun SlaRefundCalculatorTabContent(
                     ) {
                         Text(
                             text = "STATUTORY DEMAND LETTER PREVIEW",
-                            fontSize = 11.sp,
+                            fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
                             color = ElegantGoldPrimary
                         )
@@ -1057,7 +1057,7 @@ private fun SlaRefundCalculatorTabContent(
                     Text(
                         text = assessment.demandLetterText,
                         fontFamily = FontFamily.Monospace,
-                        fontSize = 11.sp,
+                        fontSize = 12.sp,
                         color = Color(0xFFCBD5E1),
                         lineHeight = 16.sp
                     )
@@ -1159,7 +1159,7 @@ fun GridSurgeWarningBanner(
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
                         text = "SAFE VOLTAGE STABILIZATION IN:",
-                        fontSize = 11.sp,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFFFDE047)
                     )

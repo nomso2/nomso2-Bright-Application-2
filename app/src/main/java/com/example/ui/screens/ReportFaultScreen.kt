@@ -218,7 +218,7 @@ fun ReportFaultScreen(
                     )
                     Text(
                         text = userProfile.streetAddress,
-                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
@@ -337,7 +337,7 @@ fun ReportFaultScreen(
                     }
                     Text(
                         text = "Bypasses regular queue, dispatches safety sirens and rapid isolators.",
-                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
+                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp),
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
@@ -414,7 +414,7 @@ fun ReportFaultScreen(
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = "Attach photo or short video clip (burnt transformer, downed cable, sparking feeder) to help engineers arrive with exact replacement gear.",
-            style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+            style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
 
@@ -495,7 +495,7 @@ fun ReportFaultScreen(
                                     Text(
                                         text = if (isVideoMedia) "VIDEO CLIP (0:15s)" else "HIGH-RES PHOTO",
                                         style = MaterialTheme.typography.labelSmall.copy(
-                                            fontSize = 9.sp,
+                                            fontSize = 12.sp,
                                             fontWeight = FontWeight.Bold,
                                             color = if (isVideoMedia) Color(0xFFEF4444) else Color(0xFF10B981)
                                         )
@@ -511,7 +511,7 @@ fun ReportFaultScreen(
                             )
                             Text(
                                 text = "Attached to fault ticket • Ready to upload",
-                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
@@ -581,7 +581,7 @@ fun ReportFaultScreen(
                             )
                             Text(
                                 text = "Launch camera to take real-time photo of burnt meter or vandalized cable",
-                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
+                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
@@ -626,7 +626,7 @@ fun ReportFaultScreen(
                             )
                             Text(
                                 text = "Select stored photo or short video clip from device storage",
-                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }

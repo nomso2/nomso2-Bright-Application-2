@@ -203,7 +203,7 @@ fun ProfileAdminDialog(
                         )
                         Text(
                             text = "Switch active monitoring between primary residence, workspace, or family properties:",
-                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
 
@@ -242,7 +242,7 @@ fun ProfileAdminDialog(
                                                 Text(
                                                     text = "ACTIVE",
                                                     style = MaterialTheme.typography.labelSmall.copy(
-                                                        fontSize = 9.sp,
+                                                        fontSize = 12.sp,
                                                         fontWeight = FontWeight.ExtraBold,
                                                         color = Color(0xFF16A34A)
                                                     )
@@ -253,14 +253,14 @@ fun ProfileAdminDialog(
                                         Text(
                                             text = "Meter #${asset.meterNumber} • ${asset.discoCode} (${asset.feederBand.code})",
                                             style = MaterialTheme.typography.bodySmall.copy(
-                                                fontSize = 11.sp,
+                                                fontSize = 12.sp,
                                                 fontFamily = FontFamily.Monospace
                                             ),
                                             color = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
                                         Text(
                                             text = asset.address,
-                                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp),
+                                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                                             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
                                         )
                                     }
@@ -321,7 +321,7 @@ fun ProfileAdminDialog(
                                         )
                                         Text(
                                             text = "End-to-end encrypted evidence pipeline directly to NERC Compliance Directorate. Bypasses DisCo channels.",
-                                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                                             color = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
                                     }
@@ -426,7 +426,7 @@ fun ProfileAdminDialog(
                                     Spacer(modifier = Modifier.height(4.dp))
                                     Text(
                                         text = "Enable hardware biometric authentication for quick, tamper-proof verification during fault ticket escalation and high-tier statutory filings.",
-                                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
@@ -471,7 +471,7 @@ fun ProfileAdminDialog(
                                                 )
                                                 Text(
                                                     text = if (fingerprintEnabled) "Active & Enrolled" else "Not Configured",
-                                                    style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                                                    style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp),
                                                     color = if (fingerprintEnabled) Color(0xFF16A34A) else MaterialTheme.colorScheme.onSurfaceVariant
                                                 )
                                             }
@@ -496,7 +496,7 @@ fun ProfileAdminDialog(
                                     Spacer(modifier = Modifier.height(8.dp))
                                     Text(
                                         text = "Uses on-device capacitive/optical fingerprint sensor to cryptographically sign fast-track fault escalations.",
-                                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
 
@@ -556,7 +556,7 @@ fun ProfileAdminDialog(
                                                 )
                                                 Text(
                                                     text = if (facialEnabled) "Active & Enrolled" else "Not Configured",
-                                                    style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                                                    style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp),
                                                     color = if (facialEnabled) Color(0xFF16A34A) else MaterialTheme.colorScheme.onSurfaceVariant
                                                 )
                                             }
@@ -581,7 +581,7 @@ fun ProfileAdminDialog(
                                     Spacer(modifier = Modifier.height(8.dp))
                                     Text(
                                         text = "Validates 3D facial mesh points via device front optics for touchless authentication.",
-                                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
 
@@ -614,7 +614,7 @@ fun ProfileAdminDialog(
                                     Row(verticalAlignment = Alignment.CenterVertically) {
                                         Icon(imageVector = Icons.Default.CheckCircle, contentDescription = null, tint = Color(0xFF10B981), modifier = Modifier.size(16.dp))
                                         Spacer(modifier = Modifier.width(8.dp))
-                                        Text(text = msg, style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp, fontWeight = FontWeight.Bold), color = Color(0xFF10B981))
+                                        Text(text = msg, style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp, fontWeight = FontWeight.Bold), color = Color(0xFF10B981))
                                     }
                                 }
                             }
@@ -653,7 +653,7 @@ fun ProfileAdminDialog(
                                                 )
                                                 Text(
                                                     text = "Locks session when minimized or switched",
-                                                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp),
+                                                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                                 )
                                             }
@@ -712,7 +712,7 @@ fun ProfileAdminDialog(
                                     Spacer(modifier = Modifier.height(6.dp))
                                     Text(
                                         text = "Purge your phone records, registered addresses, and historical telemetry metadata from this active client node.",
-                                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                     Spacer(modifier = Modifier.height(10.dp))
@@ -753,7 +753,7 @@ fun ProfileAdminDialog(
                                     Spacer(modifier = Modifier.height(6.dp))
                                     Text(
                                         text = "Terminates temporary cryptographic session tokens from device memory and returns to unauthenticated gateway state.",
-                                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                     Spacer(modifier = Modifier.height(10.dp))

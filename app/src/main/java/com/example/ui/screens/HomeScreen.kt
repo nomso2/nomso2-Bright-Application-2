@@ -217,7 +217,7 @@ fun HomeScreen(
                         text = "THE BRIGHT PROJECT",
                         style = MaterialTheme.typography.labelSmall.copy(
                             fontWeight = FontWeight.ExtraBold,
-                            fontSize = 11.sp,
+                            fontSize = 12.sp,
                             letterSpacing = 1.sp
                         ),
                         color = ElegantGoldPrimary,
@@ -450,7 +450,7 @@ fun HomeScreen(
                             )
                             Text(
                                 text = "Tracked directly with Meter #${userProfile.meterNumber}",
-                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                                 color = ElegantGoldPrimary
                             )
                         }
@@ -641,7 +641,7 @@ fun HomeScreen(
                                         ) {
                                             Text(
                                                 text = if (isSmart) "AUTO-LINKED" else "STS KEYPAD",
-                                                fontSize = 9.sp,
+                                                fontSize = 12.sp,
                                                 fontWeight = FontWeight.Bold,
                                                 color = if (isSmart) Color(0xFF22C55E) else Color(0xFFD97706)
                                             )
@@ -652,7 +652,7 @@ fun HomeScreen(
                                             "✓ Auto-connected to ${meterStatus.manufacturerName} • 228V"
                                         else
                                             "Non-Smart Area • Standard 20-digit token keypad meter",
-                                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
@@ -668,7 +668,7 @@ fun HomeScreen(
                                 contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp),
                                 modifier = Modifier.testTag("open_smart_meter_gateway_btn")
                             ) {
-                                Text(if (isSmart) "View" else "Status", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                                Text(if (isSmart) "View" else "Status", fontSize = 12.sp, fontWeight = FontWeight.Bold)
                             }
                         }
                     }
@@ -721,7 +721,7 @@ fun HomeScreen(
                                     )
                                     Text(
                                         text = "Tariffs, diagnostics, escrow rebates, forums & policies",
-                                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }

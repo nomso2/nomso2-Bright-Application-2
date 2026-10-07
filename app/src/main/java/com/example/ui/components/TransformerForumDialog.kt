@@ -125,7 +125,7 @@ fun TransformerForumDialog(
                         )
                         Text(
                             text = "Line: ${userProfile.transformerId} • ${userProfile.connectedHouseholdsCount} Houses",
-                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
@@ -197,7 +197,7 @@ fun TransformerForumDialog(
                                     )
                                     Text(
                                         text = "Ping ${userProfile.connectedHouseholdsCount} nearby meters on this transformer to co-sign active outage",
-                                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
@@ -305,7 +305,7 @@ fun TransformerForumDialog(
                                             Spacer(modifier = Modifier.width(6.dp))
                                             Text(
                                                 text = "• ${post.timestampText}",
-                                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp),
+                                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                                             )
                                         }
@@ -320,7 +320,7 @@ fun TransformerForumDialog(
                                                 Text(
                                                     text = "EXTORTION ALERT",
                                                     style = MaterialTheme.typography.labelSmall.copy(
-                                                        fontSize = 9.sp,
+                                                        fontSize = 12.sp,
                                                         fontWeight = FontWeight.ExtraBold,
                                                         color = Color(0xFFEF4444)
                                                     )
@@ -357,7 +357,7 @@ fun TransformerForumDialog(
                                         Text(
                                             text = "${post.upvotes} verified",
                                             style = MaterialTheme.typography.labelSmall.copy(
-                                                fontSize = 10.sp,
+                                                fontSize = 12.sp,
                                                 color = ElegantGoldPrimary,
                                                 fontWeight = FontWeight.Bold
                                             )
@@ -378,7 +378,7 @@ fun TransformerForumDialog(
                             )
                             Text(
                                 text = "Turns voice notes in your own language into standard fault reports:",
-                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
 
@@ -410,7 +410,7 @@ fun TransformerForumDialog(
                                             )
                                             Text(
                                                 text = sample,
-                                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                                             )
                                         }
@@ -455,7 +455,7 @@ fun TransformerForumDialog(
                                     Spacer(modifier = Modifier.height(6.dp))
                                     Text(
                                         text = "Under NERC CPR 2023, DisCo field crew cannot mark a blackout ticket 'RESOLVED' until randomized resident meters on ${userProfile.transformerId} digitally attest that steady current has returned.",
-                                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                                         color = MaterialTheme.colorScheme.onSurface
                                     )
                                 }
@@ -492,7 +492,7 @@ fun TransformerForumDialog(
                                         )
                                         Text(
                                             text = stepDesc,
-                                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp),
+                                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                                             color = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
                                     }

@@ -94,6 +94,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -177,7 +178,7 @@ fun Solutions30ComprehensiveHub(
                     Text(
                         text = "30/30 READY",
                         color = GoldPrimary,
-                        fontSize = 11.sp,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                     )
@@ -195,7 +196,7 @@ fun Solutions30ComprehensiveHub(
                     FilterChip(
                         selected = selectedCategoryFilter == null,
                         onClick = { selectedCategoryFilter = null },
-                        label = { Text("All 30 (${PowerSector30Registry.ALL_30_SOLUTIONS.size})", fontSize = 11.sp) },
+                        label = { Text("All 30 (${PowerSector30Registry.ALL_30_SOLUTIONS.size})", fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                         modifier = Modifier.testTag("filter_all_solutions")
                     )
                 }
@@ -209,7 +210,7 @@ fun Solutions30ComprehensiveHub(
                         label = {
                             Text(
                                 text = "${category.id}. ${category.title.take(22)}...",
-                                fontSize = 11.sp
+                                fontSize = 12.sp
                             )
                         },
                         colors = FilterChipDefaults.filterChipColors(
@@ -308,7 +309,7 @@ fun Solutions30ComprehensiveHub(
                                 Text(
                                     text = "GRID PROBLEM:",
                                     color = MaterialTheme.colorScheme.error,
-                                    fontSize = 10.sp,
+                                    fontSize = 12.sp,
                                     fontWeight = FontWeight.Black
                                 )
                                 Spacer(modifier = Modifier.height(4.dp))
@@ -329,7 +330,7 @@ fun Solutions30ComprehensiveHub(
                                 Text(
                                     text = "BRIGHT SOFTWARE SOLUTION:",
                                     color = EmeraldAccent,
-                                    fontSize = 10.sp,
+                                    fontSize = 12.sp,
                                     fontWeight = FontWeight.Black
                                 )
                                 Spacer(modifier = Modifier.height(4.dp))
@@ -455,7 +456,7 @@ private fun SolutionCardItem(
                     ) {
                         Text(
                             text = badge,
-                            fontSize = 9.sp,
+                            fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
@@ -484,7 +485,7 @@ private fun SolutionCardItem(
                     )
                     Text(
                         text = item.problemStatement,
-                        fontSize = 11.sp,
+                        fontSize = 12.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
@@ -506,7 +507,7 @@ private fun SolutionCardItem(
             ) {
                 Text(
                     text = item.category.title,
-                    fontSize = 10.sp,
+                    fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f)
                 )
 
@@ -517,7 +518,7 @@ private fun SolutionCardItem(
                     contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
                     modifier = Modifier.height(32.dp)
                 ) {
-                    Text("Launch Feature #${item.problemNumber}", fontSize = 11.sp, fontWeight = FontWeight.Black)
+                    Text("Launch Feature #${item.problemNumber}", fontSize = 12.sp, fontWeight = FontWeight.Black)
                 }
             }
         }

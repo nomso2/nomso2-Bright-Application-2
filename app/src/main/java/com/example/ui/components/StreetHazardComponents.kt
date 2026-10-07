@@ -393,7 +393,7 @@ fun HazardCardItem(
                 ) {
                     Text(
                         text = hazard.urgency,
-                        fontSize = 9.sp,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFFEF4444)
                     )
@@ -408,7 +408,7 @@ fun HazardCardItem(
                     ) {
                         Text(
                             text = "CREW DISPATCHED",
-                            fontSize = 8.sp,
+                            fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color(0xFF10B981)
                         )
@@ -450,7 +450,7 @@ fun HazardCardItem(
                 ) {
                     Icon(Icons.Default.ThumbUp, contentDescription = null, modifier = Modifier.size(12.dp))
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text("Verify Danger (${hazard.verifiedCount})", fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                    Text("Verify Danger (${hazard.verifiedCount})", fontSize = 12.sp, fontWeight = FontWeight.Bold)
                 }
             }
         }

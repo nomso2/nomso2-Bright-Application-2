@@ -210,7 +210,7 @@ fun FaultEscalationStatusBar(
                         style = MaterialTheme.typography.labelSmall.copy(
                             fontWeight = FontWeight.ExtraBold,
                             letterSpacing = 1.2.sp,
-                            fontSize = 11.sp
+                            fontSize = 12.sp
                         ),
                         color = ElegantGoldPrimary
                     )
@@ -226,7 +226,7 @@ fun FaultEscalationStatusBar(
                         text = "${activeComplaint.discoCode} • ${activeComplaint.status.displayName.uppercase()}",
                         style = MaterialTheme.typography.labelSmall.copy(
                             fontWeight = FontWeight.Bold,
-                            fontSize = 9.5.sp
+                            fontSize = 12.sp
                         ),
                         color = if (activeComplaint.status == ComplaintStatus.RESOLVED) Color(0xFF10B981) else ElegantGoldPrimary,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
@@ -277,7 +277,7 @@ fun FaultEscalationStatusBar(
                                             text = {
                                                 Column {
                                                     Text("#${c.id} - ${c.title}", fontWeight = FontWeight.Bold)
-                                                    Text("Tier ${c.escalationTier.level}: ${c.escalationTier.title}", fontSize = 11.sp, color = Color.Gray)
+                                                    Text("Tier ${c.escalationTier.level}: ${c.escalationTier.title}", fontSize = 12.sp, color = Color.Gray)
                                                 }
                                             },
                                             onClick = {
@@ -319,7 +319,7 @@ fun FaultEscalationStatusBar(
                             text = "TIER $currentLevel / 4",
                             style = MaterialTheme.typography.labelSmall.copy(
                                 fontWeight = FontWeight.Black,
-                                fontSize = 11.sp
+                                fontSize = 12.sp
                             ),
                             color = ElegantGoldPrimary
                         )
@@ -410,7 +410,7 @@ fun FaultEscalationStatusBar(
                                     Text(
                                         text = "${tier.level}",
                                         style = MaterialTheme.typography.labelSmall.copy(
-                                            fontSize = 10.sp,
+                                            fontSize = 12.sp,
                                             fontWeight = FontWeight.Bold
                                         ),
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -429,7 +429,7 @@ fun FaultEscalationStatusBar(
                                     EscalationTier.LEVEL_4 -> "NERC"
                                 },
                                 style = MaterialTheme.typography.labelSmall.copy(
-                                    fontSize = 10.sp,
+                                    fontSize = 12.sp,
                                     fontWeight = if (isCurrent) FontWeight.ExtraBold else FontWeight.Medium
                                 ),
                                 color = if (isCurrent) ElegantGoldPrimary else if (isPast) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
@@ -438,7 +438,7 @@ fun FaultEscalationStatusBar(
                             // SLA label
                             Text(
                                 text = "${tier.maxSlaHours}h SLA",
-                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 8.5.sp),
+                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
@@ -466,7 +466,7 @@ fun FaultEscalationStatusBar(
                         Text(
                             text = "CURRENT HANDLING AUTHORITY:",
                             style = MaterialTheme.typography.labelSmall.copy(
-                                fontSize = 9.5.sp,
+                                fontSize = 12.sp,
                                 fontWeight = FontWeight.Bold,
                                 letterSpacing = 0.5.sp
                             ),
@@ -484,7 +484,7 @@ fun FaultEscalationStatusBar(
                             )
                             Text(
                                 text = "Live grid status",
-                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 9.sp),
+                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp),
                                 color = Color(0xFF10B981)
                             )
                         }
@@ -504,13 +504,13 @@ fun FaultEscalationStatusBar(
                     ) {
                         Text(
                             text = "Standard Window: ${activeComplaint.escalationTier.maxSlaHours} hrs",
-                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp),
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Text(
                             text = if (currentLevel < 4) "Auto-escalates upon SLA breach" else "Highest Statutory Level",
                             style = MaterialTheme.typography.labelSmall.copy(
-                                fontSize = 10.sp,
+                                fontSize = 12.sp,
                                 fontWeight = FontWeight.SemiBold
                             ),
                             color = ElegantGoldPrimary

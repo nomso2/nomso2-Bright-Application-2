@@ -231,7 +231,7 @@ fun OfflineEmergencySmsDialog(
                     Text(
                         text = formattedSms,
                         fontFamily = FontFamily.Monospace,
-                        fontSize = 11.sp,
+                        fontSize = 12.sp,
                         lineHeight = 15.sp,
                         color = Color(0xFFE2E8F0)
                     )

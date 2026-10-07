@@ -58,6 +58,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.model.UserProfile
@@ -223,7 +224,7 @@ fun ApplianceDamageClaimDialog(
                         FilterChip(
                             selected = isSelected,
                             onClick = { selectedAppliance = category },
-                            label = { Text(category, fontSize = 11.sp) },
+                            label = { Text(category, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                             colors = FilterChipDefaults.filterChipColors(
                                 selectedContainerColor = ElegantGoldPrimary,
                                 selectedLabelColor = Color.Black,
@@ -322,7 +323,7 @@ fun ApplianceDamageClaimDialog(
                     Text(
                         text = statutoryNotice,
                         fontFamily = FontFamily.Monospace,
-                        fontSize = 10.sp,
+                        fontSize = 12.sp,
                         lineHeight = 14.sp,
                         color = Color(0xFFCBD5E1)
                     )
@@ -348,7 +349,7 @@ fun ApplianceDamageClaimDialog(
                     ) {
                         Icon(Icons.Default.ContentCopy, contentDescription = null, modifier = Modifier.size(14.dp))
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text("Copy Letter", fontSize = 11.sp)
+                        Text("Copy Letter", fontSize = 12.sp)
                     }
 
                     OutlinedButton(
@@ -367,7 +368,7 @@ fun ApplianceDamageClaimDialog(
                     ) {
                         Icon(Icons.Default.Share, contentDescription = null, modifier = Modifier.size(14.dp))
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text("Share Letter", fontSize = 11.sp)
+                        Text("Share Letter", fontSize = 12.sp)
                     }
                 }
             }

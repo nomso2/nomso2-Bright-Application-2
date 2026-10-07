@@ -47,6 +47,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.model.UserProfile
@@ -92,7 +93,7 @@ fun AnonymousWhistleblowerFeature(
                 OutlinedTextField(
                     value = staffNameOrVehicle,
                     onValueChange = { staffNameOrVehicle = it },
-                    label = { Text("DisCo Officer Name or Vehicle Plate", fontSize = 11.sp) },
+                    label = { Text("DisCo Officer Name or Vehicle Plate", fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                     colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = GoldPrimary)
@@ -101,7 +102,7 @@ fun AnonymousWhistleblowerFeature(
                 OutlinedTextField(
                     value = bribeAmountDemanded,
                     onValueChange = { bribeAmountDemanded = it },
-                    label = { Text("Extortion Amount Demanded (₦)", fontSize = 11.sp) },
+                    label = { Text("Extortion Amount Demanded (₦)", fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                     colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = GoldPrimary)
@@ -112,8 +113,8 @@ fun AnonymousWhistleblowerFeature(
                     shape = RoundedCornerShape(8.dp)
                 ) {
                     Column(modifier = Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Text("LEGAL NOTICE (NERC Act 2023):", fontWeight = FontWeight.Bold, fontSize = 10.sp, color = MaterialTheme.colorScheme.error)
-                        Text("DisCos are funded through tariffs to provide all cables, transformers, and fuel. Demanding payment from consumers is a criminal offense.", fontSize = 10.sp)
+                        Text("LEGAL NOTICE (NERC Act 2023):", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = MaterialTheme.colorScheme.error)
+                        Text("DisCos are funded through tariffs to provide all cables, transformers, and fuel. Demanding payment from consumers is a criminal offense.", fontSize = 12.sp)
                     }
                 }
 
@@ -191,11 +192,11 @@ fun PizzaStyleDeliveryTrackerFeature(
                                 ),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text("${index + 1}", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = if (isDone || isActive) Color.Black else Color.White)
+                            Text("${index + 1}", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = if (isDone || isActive) Color.Black else Color.White)
                         }
                         Column(modifier = Modifier.weight(1f)) {
-                            Text(stage, fontSize = 11.sp, fontWeight = if (isActive) FontWeight.Bold else FontWeight.Medium, color = if (isActive) GoldPrimary else MaterialTheme.colorScheme.onSurface)
-                            Text(time, fontSize = 10.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text(stage, fontSize = 12.sp, fontWeight = if (isActive) FontWeight.Bold else FontWeight.Medium, color = if (isActive) GoldPrimary else MaterialTheme.colorScheme.onSurface)
+                            Text(time, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     }
                 }
@@ -260,8 +261,8 @@ fun ConsumerClosureVerificationFeature(
                     ) {
                         Icon(Icons.Default.Lock, contentDescription = null, tint = GoldPrimary, modifier = Modifier.size(18.dp))
                         Column {
-                            Text("Ticket #TKT-8902 Pending Customer Confirmation", fontWeight = FontWeight.Bold, fontSize = 11.sp, color = GoldPrimary)
-                            Text("DisCo claimed repair is complete. Please verify actual voltage.", fontSize = 10.sp)
+                            Text("Ticket #TKT-8902 Pending Customer Confirmation", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = GoldPrimary)
+                            Text("DisCo claimed repair is complete. Please verify actual voltage.", fontSize = 12.sp)
                         }
                     }
                 }
@@ -280,7 +281,7 @@ fun ConsumerClosureVerificationFeature(
                         shape = RoundedCornerShape(8.dp),
                         modifier = Modifier.weight(1f)
                     ) {
-                        Text(if (hasVerifiedLight) "Verified ✓" else "Yes, Light is Back!", fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                        Text(if (hasVerifiedLight) "Verified ✓" else "Yes, Light is Back!", fontSize = 12.sp, fontWeight = FontWeight.Bold)
                     }
 
                     Button(
@@ -293,7 +294,7 @@ fun ConsumerClosureVerificationFeature(
                         shape = RoundedCornerShape(8.dp),
                         modifier = Modifier.weight(1f)
                     ) {
-                        Text(if (hasRejectedFakeClosure) "Closure Blocked!" else "No, Still in Darkness", fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                        Text(if (hasRejectedFakeClosure) "Closure Blocked!" else "No, Still in Darkness", fontSize = 12.sp, fontWeight = FontWeight.Bold)
                     }
                 }
             }
@@ -334,11 +335,11 @@ fun FaultHistoryLogFeature(
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
         ) {
             Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text("Recent Breakdowns Log (Past 30 Days):", fontWeight = FontWeight.Bold, fontSize = 11.sp)
+                Text("Recent Breakdowns Log (Past 30 Days):", fontWeight = FontWeight.Bold, fontSize = 12.sp)
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text("• 3 Days Ago: Blown 400A HRC Drop-out fuse (14 hrs outage)", fontSize = 10.sp)
-                    Text("• 11 Days Ago: Transformer oil insulation breakdown (42 hrs outage)", fontSize = 10.sp)
-                    Text("• 22 Days Ago: 33kV jumper burn-off (18 hrs outage)", fontSize = 10.sp)
+                    Text("• 3 Days Ago: Blown 400A HRC Drop-out fuse (14 hrs outage)", fontSize = 12.sp)
+                    Text("• 11 Days Ago: Transformer oil insulation breakdown (42 hrs outage)", fontSize = 12.sp)
+                    Text("• 22 Days Ago: 33kV jumper burn-off (18 hrs outage)", fontSize = 12.sp)
                 }
 
                 Surface(
@@ -347,7 +348,7 @@ fun FaultHistoryLogFeature(
                 ) {
                     Row(modifier = Modifier.fillMaxWidth().padding(8.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                         Icon(Icons.Default.Warning, contentDescription = null, tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(16.dp))
-                        Text("3 Failures in 30 Days: Exceeds NERC Reliability Benchmark. Classified as Obsolete Capital Asset.", fontSize = 10.sp, color = MaterialTheme.colorScheme.error, fontWeight = FontWeight.Bold)
+                        Text("3 Failures in 30 Days: Exceeds NERC Reliability Benchmark. Classified as Obsolete Capital Asset.", fontSize = 12.sp, color = MaterialTheme.colorScheme.error, fontWeight = FontWeight.Bold)
                     }
                 }
 
@@ -414,7 +415,7 @@ fun InventoryRequestMonitorFeature(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Row(modifier = Modifier.fillMaxWidth().padding(10.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                            Text(part, fontSize = 11.sp, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal)
+                            Text(part, fontSize = 12.sp, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal)
                             Button(
                                 onClick = { selectedPart = part },
                                 colors = ButtonDefaults.buttonColors(
@@ -423,7 +424,7 @@ fun InventoryRequestMonitorFeature(
                                 ),
                                 shape = RoundedCornerShape(6.dp)
                             ) {
-                                Text("Inspect", fontSize = 10.sp)
+                                Text("Inspect", fontSize = 12.sp)
                             }
                         }
                     }
@@ -436,10 +437,10 @@ fun InventoryRequestMonitorFeature(
                         shape = RoundedCornerShape(8.dp)
                     ) {
                         Column(modifier = Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                            Text("OFFICIAL DISCO WAREHOUSE AUDIT:", fontWeight = FontWeight.Bold, fontSize = 10.sp, color = EmeraldAccent)
-                            Text("• Location: $warehouse", fontSize = 10.sp)
-                            Text("• Stock Level: $count (IN STOCK)", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = EmeraldAccent)
-                            Text("• Status: False claim by local crew. Report extortion.", fontSize = 10.sp, color = MaterialTheme.colorScheme.error)
+                            Text("OFFICIAL DISCO WAREHOUSE AUDIT:", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = EmeraldAccent)
+                            Text("• Location: $warehouse", fontSize = 12.sp)
+                            Text("• Stock Level: $count (IN STOCK)", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = EmeraldAccent)
+                            Text("• Status: False claim by local crew. Report extortion.", fontSize = 12.sp, color = MaterialTheme.colorScheme.error)
                         }
                     }
                 }

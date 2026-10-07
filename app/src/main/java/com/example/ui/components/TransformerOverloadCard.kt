@@ -116,7 +116,7 @@ fun TransformerOverloadCard(
                         Text(
                             text = "LOCAL TRANSFORMER HEALTH",
                             style = MaterialTheme.typography.labelSmall.copy(
-                                fontSize = 9.sp,
+                                fontSize = 12.sp,
                                 fontWeight = FontWeight.ExtraBold,
                                 letterSpacing = 1.sp
                             ),
@@ -142,7 +142,7 @@ fun TransformerOverloadCard(
                         text = if (telemetry.isOverloaded) "OVERLOAD RISK" else "NOMINAL LOAD",
                         style = MaterialTheme.typography.labelSmall.copy(
                             fontWeight = FontWeight.Bold,
-                            fontSize = 10.sp
+                            fontSize = 12.sp
                         ),
                         color = loadColor
                     )
@@ -183,7 +183,7 @@ fun TransformerOverloadCard(
                 Text(
                     text = "3-PHASE VOLTAGE BALANCE (STATUTORY: 230V ±6%):",
                     style = MaterialTheme.typography.labelSmall.copy(
-                        fontSize = 9.sp,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
                         letterSpacing = 0.5.sp
                     ),
@@ -275,7 +275,7 @@ fun TransformerOverloadCard(
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
                     text = "REPORT ABNORMAL HUM / SPARKING",
-                    fontSize = 11.sp,
+                    fontSize = 12.sp,
                     fontWeight = FontWeight.ExtraBold
                 )
             }
@@ -303,7 +303,7 @@ private fun PhaseVoltageBadge(
         Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
             Text(
                 text = phaseLabel,
-                fontSize = 9.sp,
+                fontSize = 12.sp,
                 fontWeight = FontWeight.Medium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1
@@ -319,7 +319,7 @@ private fun PhaseVoltageBadge(
             if (isWarning) {
                 Text(
                     text = "Low Phase!",
-                    fontSize = 8.sp,
+                    fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFFEF4444)
                 )

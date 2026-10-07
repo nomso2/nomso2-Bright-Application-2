@@ -280,7 +280,7 @@ fun BiometricVerificationDialog(
                                     text = "Fingerprint",
                                     style = MaterialTheme.typography.labelSmall.copy(
                                         fontWeight = FontWeight.Bold,
-                                        fontSize = 11.5.sp
+                                        fontSize = 12.sp
                                     ),
                                     color = if (currentMode == BiometricAuthMode.FINGERPRINT) Color.Black else Slate400Text
                                 )
@@ -314,7 +314,7 @@ fun BiometricVerificationDialog(
                                     text = "Facial ID",
                                     style = MaterialTheme.typography.labelSmall.copy(
                                         fontWeight = FontWeight.Bold,
-                                        fontSize = 11.5.sp
+                                        fontSize = 12.sp
                                     ),
                                     color = if (currentMode == BiometricAuthMode.FACIAL_RECOGNITION) Color.Black else Slate400Text
                                 )
@@ -367,7 +367,7 @@ fun BiometricVerificationDialog(
                             text = statusMessage,
                             style = MaterialTheme.typography.bodySmall.copy(
                                 fontWeight = if (isSuccess) FontWeight.Bold else FontWeight.Medium,
-                                fontSize = 11.5.sp
+                                fontSize = 12.sp
                             ),
                             color = if (isSuccess) Color(0xFF10B981) else Slate100Text,
                             textAlign = TextAlign.Center
@@ -633,7 +633,7 @@ private fun FacialRecognitionScannerVisual(
             Text(
                 text = if (isSuccess) "MATCH: 99.7%" else "3D BIOMETRIC MESH",
                 style = MaterialTheme.typography.labelSmall.copy(
-                    fontSize = 8.5.sp,
+                    fontSize = 12.sp,
                     fontWeight = FontWeight.ExtraBold,
                     letterSpacing = 0.5.sp
                 ),

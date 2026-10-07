@@ -167,14 +167,14 @@ fun EnergyOptimizationDialog(
                             }
                             Text(
                                 text = "T-5 MIN ALERT",
-                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 9.sp, fontWeight = FontWeight.ExtraBold),
+                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp, fontWeight = FontWeight.ExtraBold),
                                 color = Color(0xFFEF4444)
                             )
                         }
                         Spacer(modifier = Modifier.height(6.dp))
                         Text(
                             text = "High-priority pre-warning dispatched 5 minutes before line re-energization to disconnect sensitive appliances (fridges, inverters, TVs) and prevent voltage spike burnout.",
-                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Spacer(modifier = Modifier.height(8.dp))
@@ -189,7 +189,7 @@ fun EnergyOptimizationDialog(
                         ) {
                             Icon(imageVector = Icons.Default.NotificationsActive, contentDescription = null, modifier = Modifier.size(14.dp))
                             Spacer(modifier = Modifier.width(6.dp))
-                            Text(text = "Test 5-Min Surge Warning Alert", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                            Text(text = "Test 5-Min Surge Warning Alert", fontSize = 12.sp, fontWeight = FontWeight.Bold)
                         }
                     }
                 }
@@ -226,7 +226,7 @@ fun EnergyOptimizationDialog(
                                 )
                                 Text(
                                     text = "Audible device alarm upon power return to switch off generator immediately",
-                                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp),
+                                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
@@ -272,7 +272,7 @@ fun EnergyOptimizationDialog(
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
                             text = "Grid Availability: 74% • Recommended Strategy: DRAW GRID NOW for cooling & water pump. Reserve battery storage for 8:00 PM – 11:00 PM peak tariff window.",
-                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                             color = MaterialTheme.colorScheme.onSurface
                         )
                     }
@@ -294,14 +294,14 @@ fun EnergyOptimizationDialog(
                         )
                         Text(
                             text = "Daily: ${Math.round(totalDailyKwh * 10.0) / 10.0} kWh • Est. ₦${totalMonthlyCost.toInt()}/mo",
-                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                             color = ElegantGoldPrimary
                         )
                     }
 
                     Text(
                         text = "Band A: ₦209.50/kWh",
-                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp),
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
@@ -328,7 +328,7 @@ fun EnergyOptimizationDialog(
                             )
                             Text(
                                 text = "${app.wattage}W • ${app.hoursDaily} hrs/day • ₦${app.monthlyCostNgn.toInt()}/month",
-                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp),
+                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
@@ -343,7 +343,7 @@ fun EnergyOptimizationDialog(
                             Text(
                                 text = if (app.isEcoMode) "ECO ACTIVE" else "STANDARD",
                                 style = MaterialTheme.typography.labelSmall.copy(
-                                    fontSize = 9.sp,
+                                    fontSize = 12.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = if (app.isEcoMode) ElegantGreenLive else MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -372,7 +372,7 @@ fun EnergyOptimizationDialog(
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
                             text = "• FX Benchmark: ₦1,595 / USD\n• US CPI Inflation factor applied: 3.1%\n• Gas-to-Power Price: $2.42/MMBtu\n• Band A Tariff capped at ₦209.50/kWh until next bi-annual review",
-                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp, lineHeight = 14.sp),
+                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp, lineHeight = 14.sp),
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
