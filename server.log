@@ -1,0 +1,7 @@
+Bright Web & APK Server listening on http://0.0.0.0:3000
+[2026-09-27T23:33:22.862Z] HEAD /bright-app-debug.apk
+[2026-09-27T23:33:25.297Z] GET /bright-app-debug.apk
+[2026-09-27T23:33:29.592Z] GET /bright-app-debug.apk
+[2026-09-27T23:33:31.516Z] HEAD /
+[2026-09-27T23:40:34.138Z] HEAD /bright-app-debug.apk
+[2026-09-27T23:40:38.016Z] GET /bright-app-debug.apk

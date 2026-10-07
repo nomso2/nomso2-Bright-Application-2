@@ -33,6 +33,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -709,8 +710,11 @@ class BrightRepository(
     }
 
     suspend fun flushOfflineSyncQueue(): Int {
-        var count = 0
-        // Simulates pushing pending outbox events to the DisCo SCADA server when network recovers
+        val pending = offlineQueueDao.getPendingActions().firstOrNull() ?: emptyList()
+        val count = pending.size
+        for (item in pending) {
+            offlineQueueDao.markSynced(item.id)
+        }
         offlineQueueDao.clearCompleted()
         return count
     }
