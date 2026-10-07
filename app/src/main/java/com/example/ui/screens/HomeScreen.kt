@@ -506,7 +506,7 @@ fun HomeScreen(
                                 ) {
                                     Icon(
                                         imageVector = Icons.Default.Lightbulb,
-                                        contentDescription = "Light is Bright",
+                                        contentDescription = null, // decorative: the heading says it
                                         tint = MaterialTheme.colorScheme.primary,
                                         modifier = Modifier.size(32.dp)
                                     )

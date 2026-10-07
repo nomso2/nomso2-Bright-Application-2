@@ -165,7 +165,6 @@ fun MeterProfileHeader(
                     IconButton(
                         onClick = onEditProfileClicked,
                         modifier = Modifier
-                            .size(32.dp)
                             .testTag("edit_meter_profile_button")
                     ) {
                         Icon(

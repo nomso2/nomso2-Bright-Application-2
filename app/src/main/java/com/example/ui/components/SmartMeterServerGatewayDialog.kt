@@ -255,7 +255,6 @@ fun SmartMeterServerGatewayDialog(
                         IconButton(
                             onClick = onDismiss,
                             modifier = Modifier
-                                .size(36.dp)
                                 .clip(CircleShape)
                                 .background(Color(0x22FFFFFF))
                                 .testTag("close_smart_meter_gateway_btn")
@@ -695,7 +694,6 @@ private fun SmartMeterDeviceCard(
                     IconButton(
                         onClick = onPing,
                         modifier = Modifier
-                            .size(32.dp)
                             .clip(CircleShape)
                             .background(ConsoleDarkSurface)
                             .testTag("ping_meter_btn_${meter.meterNumber}")
@@ -712,7 +710,6 @@ private fun SmartMeterDeviceCard(
                     IconButton(
                         onClick = onOpenOtaToken,
                         modifier = Modifier
-                            .size(32.dp)
                             .clip(CircleShape)
                             .background(ConsoleDarkSurface)
                             .testTag("ota_token_btn_${meter.meterNumber}")
@@ -1159,7 +1156,7 @@ app.listen(8080, () => console.log('Smart Meter Gateway running on port 8080'));
                                 clipboard.setPrimaryClip(ClipData.newPlainText("cURL Sample", curlExample))
                                 Toast.makeText(context, "Copied cURL command!", Toast.LENGTH_SHORT).show()
                             },
-                            modifier = Modifier.size(28.dp)
+                            modifier = Modifier
                         ) {
                             Icon(Icons.Default.ContentCopy, contentDescription = "Copy", tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(16.dp))
                         }
@@ -1198,7 +1195,7 @@ app.listen(8080, () => console.log('Smart Meter Gateway running on port 8080'));
                                 clipboard.setPrimaryClip(ClipData.newPlainText("Node.js Sample", nodeJsExample))
                                 Toast.makeText(context, "Copied Node.js code!", Toast.LENGTH_SHORT).show()
                             },
-                            modifier = Modifier.size(28.dp)
+                            modifier = Modifier
                         ) {
                             Icon(Icons.Default.ContentCopy, contentDescription = "Copy", tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(16.dp))
                         }

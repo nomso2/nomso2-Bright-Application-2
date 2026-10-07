@@ -128,7 +128,7 @@ private fun QuickActionCell(
             ) {
                 Icon(
                     imageVector = item.icon,
-                    contentDescription = item.title,
+                    contentDescription = null, // decorative: the label below names the action
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(18.dp)
                 )

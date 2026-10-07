@@ -260,7 +260,7 @@ fun FaultEscalationStatusBar(
                             Box {
                                 IconButton(
                                     onClick = { isSelectorDropdownExpanded = true },
-                                    modifier = Modifier.size(24.dp)
+                                    modifier = Modifier
                                 ) {
                                     Icon(
                                         imageVector = if (isSelectorDropdownExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,

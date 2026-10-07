@@ -224,7 +224,7 @@ fun BiometricVerificationDialog(
 
                     IconButton(
                         onClick = onDismiss,
-                        modifier = Modifier.size(28.dp).testTag("close_biometric_dialog_button")
+                        modifier = Modifier.testTag("close_biometric_dialog_button")
                     ) {
                         Icon(
                             imageVector = Icons.Default.Close,

@@ -206,7 +206,6 @@ fun EstateExcoAndSlaDossierDialog(
                     IconButton(
                         onClick = onDismiss,
                         modifier = Modifier
-                            .size(36.dp)
                             .background(Color.White.copy(alpha = 0.05f), CircleShape)
                     ) {
                         Icon(
@@ -1051,7 +1050,7 @@ private fun SlaRefundCalculatorTabContent(
                             onClick = {
                                 clipboardManager.setText(AnnotatedString(assessment.demandLetterText))
                             },
-                            modifier = Modifier.size(32.dp)
+                            modifier = Modifier
                         ) {
                             Icon(Icons.Default.ContentCopy, contentDescription = "Copy Letter", tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
                         }
@@ -1131,7 +1130,7 @@ fun GridSurgeWarningBanner(
 
                 IconButton(
                     onClick = onDismiss,
-                    modifier = Modifier.size(30.dp)
+                    modifier = Modifier
                 ) {
                     Icon(Icons.Default.Close, contentDescription = "Dismiss", tint = Color.White)
                 }

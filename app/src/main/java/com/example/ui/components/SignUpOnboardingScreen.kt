@@ -354,7 +354,6 @@ fun SignUpOnboardingScreen(
                     IconButton(
                         onClick = onDismiss,
                         modifier = Modifier
-                            .size(36.dp)
                             .clip(CircleShape)
                             .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
                             .testTag("dismiss_auth_screen_button")

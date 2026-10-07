@@ -906,7 +906,7 @@ fun GridHubScreen(
                                         selectedPolicyGuide = policy
                                     }
                                 },
-                                modifier = Modifier.size(24.dp)
+                                modifier = Modifier
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.OpenInNew,

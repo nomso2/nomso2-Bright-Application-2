@@ -288,7 +288,6 @@ fun LiveMapScreen(
                 IconButton(
                     onClick = onRefreshMap,
                     modifier = Modifier
-                        .size(36.dp)
                         .testTag("refresh_outage_map_button")
                 ) {
                     Icon(
@@ -445,7 +444,7 @@ fun LiveMapScreen(
                             Row(modifier = Modifier.padding(4.dp), horizontalArrangement = Arrangement.spacedBy(2.dp)) {
                                 IconButton(
                                     onClick = { mapStyle = MapStyleMode.ROADMAP },
-                                    modifier = Modifier.size(30.dp)
+                                    modifier = Modifier
                                 ) {
                                     Icon(
                                         imageVector = Icons.Default.Map,
@@ -456,7 +455,7 @@ fun LiveMapScreen(
                                 }
                                 IconButton(
                                     onClick = { mapStyle = MapStyleMode.SATELLITE },
-                                    modifier = Modifier.size(30.dp)
+                                    modifier = Modifier
                                 ) {
                                     Icon(
                                         imageVector = Icons.Default.Layers,
@@ -467,7 +466,7 @@ fun LiveMapScreen(
                                 }
                                 IconButton(
                                     onClick = { mapStyle = MapStyleMode.DARK_SCADA },
-                                    modifier = Modifier.size(30.dp)
+                                    modifier = Modifier
                                 ) {
                                     Icon(
                                         imageVector = Icons.Default.Bolt,
@@ -494,7 +493,7 @@ fun LiveMapScreen(
                         ) {
                             IconButton(
                                 onClick = { webViewRef?.evaluateJavascript("if (window.zoomIn) { window.zoomIn(); }", null) },
-                                modifier = Modifier.size(36.dp)
+                                modifier = Modifier
                             ) {
                                 Icon(Icons.Default.Add, contentDescription = "Zoom In", tint = Color.White, modifier = Modifier.size(18.dp))
                             }
@@ -507,7 +506,7 @@ fun LiveMapScreen(
                         ) {
                             IconButton(
                                 onClick = { webViewRef?.evaluateJavascript("if (window.zoomOut) { window.zoomOut(); }", null) },
-                                modifier = Modifier.size(36.dp)
+                                modifier = Modifier
                             ) {
                                 Icon(Icons.Default.Remove, contentDescription = "Zoom Out", tint = Color.White, modifier = Modifier.size(18.dp))
                             }
@@ -529,7 +528,7 @@ fun LiveMapScreen(
                                         webViewRef?.evaluateJavascript("if (window.recenterMap) { window.recenterMap(9.0820, 8.6753, 6); }", null)
                                     }
                                 },
-                                modifier = Modifier.size(36.dp)
+                                modifier = Modifier
                             ) {
                                 Icon(Icons.Default.MyLocation, contentDescription = "Recenter", tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
                             }

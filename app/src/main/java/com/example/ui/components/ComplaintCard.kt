@@ -162,7 +162,6 @@ fun ComplaintCard(
                                 )
                             },
                             modifier = Modifier
-                                .size(32.dp)
                                 .clip(CircleShape)
                                 .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
                                 .border(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.5f), CircleShape)
@@ -193,7 +192,6 @@ fun ComplaintCard(
                             context.startActivity(shareIntent)
                         },
                         modifier = Modifier
-                            .size(32.dp)
                             .clip(CircleShape)
                             .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
                             .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.4f), CircleShape)
