@@ -1,699 +1,421 @@
 package com.example.ui.solutions
 
-import android.content.Context
-import android.content.Intent
-import android.net.Uri
-import android.widget.Toast
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddAPhoto
 import androidx.compose.material.icons.filled.Call
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Emergency
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.NotificationsActive
-import androidx.compose.material.icons.filled.PriorityHigh
-import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.LocalShipping
+import androidx.compose.material.icons.filled.ManageSearch
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Share
-import androidx.compose.material.icons.filled.Timeline
 import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.onClick
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.data.solutions.DemoCrewDirectory
+import com.example.data.solutions.DemoOutageStatusSource
+import com.example.data.solutions.FaultReportEntity
+import com.example.data.solutions.FieldCrew
+import com.example.data.solutions.Geo
+import com.example.data.solutions.OutageDiagnosis
+import com.example.data.solutions.Refs
 import com.example.model.UserProfile
-import com.example.ui.theme.EmeraldAccent
-import com.example.ui.theme.GoldPrimary
+import com.example.ui.solutions.common.ActionButton
+import com.example.ui.solutions.common.BrightPermissions
+import com.example.ui.solutions.common.ChoiceRow
+import com.example.ui.solutions.common.DemoDataBadge
+import com.example.ui.solutions.common.DiscoContactButtons
+import com.example.ui.solutions.common.FeatureHeader
+import com.example.ui.solutions.common.Fmt
+import com.example.ui.solutions.common.InfoNote
+import com.example.ui.solutions.common.LocationFetcher
+import com.example.ui.solutions.common.LocationPinner
+import com.example.ui.solutions.common.PhotoThumb
+import com.example.ui.solutions.common.PinnedLocation
+import com.example.ui.solutions.common.SectionCard
+import com.example.ui.solutions.common.SirenPlayer
+import com.example.ui.solutions.common.SolutionIntents
+import com.example.ui.solutions.common.StatRow
+import com.example.ui.solutions.common.customerBlock
+import com.example.ui.solutions.common.rememberSolutionsDao
+import com.example.ui.solutions.common.rememberTakePhotoAction
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
-// ==========================================
-// SOLUTION 1: TIERED URGENCY CATEGORISER
-// ==========================================
 @Composable
-fun TieredUrgencyCategoriserFeature(
-    userProfile: UserProfile,
-    onDispatchTicket: ((String, String, Int) -> Unit)? = null,
-    modifier: Modifier = Modifier
-) {
-    val context = LocalContext.current
-    var selectedTier by remember { mutableStateOf(2) }
-    var affectedHouseholds by remember { mutableStateOf(85f) }
-    var hasHospitalOrClinic by remember { mutableStateOf(false) }
-    var hasWaterBoard by remember { mutableStateOf(false) }
-    var ticketDispatched by remember { mutableStateOf(false) }
-    var generatedTicketId by remember { mutableStateOf("") }
-
-    val priorityScore = remember(selectedTier, affectedHouseholds, hasHospitalOrClinic, hasWaterBoard) {
-        val base = when (selectedTier) {
-            1 -> 35
-            2 -> 65
-            else -> 85
-        }
-        val houseBonus = (affectedHouseholds / 500f * 20f).toInt()
-        val criticalBonus = (if (hasHospitalOrClinic) 15 else 0) + (if (hasWaterBoard) 10 else 0)
-        (base + houseBonus + criticalBonus).coerceAtMost(100)
+internal fun CheckRow(label: String, checked: Boolean, onChange: (Boolean) -> Unit) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(min = 48.dp)
+            .toggleable(value = checked, role = Role.Checkbox, onValueChange = onChange)
+    ) {
+        Checkbox(checked = checked, onCheckedChange = null)
+        Text(label, fontSize = 16.sp, modifier = Modifier.padding(start = 8.dp))
     }
+}
 
-    val slaHours = when (selectedTier) {
-        1 -> 4
-        2 -> 2
+/** Tier rules shared by the categoriser and the GPS cluster view. */
+internal object TierRules {
+    fun tier(scope: String, neighboursOn: Boolean, bangOrSmoke: Boolean, manyStreets: Boolean, nearbyReports: Int): Int = when {
+        manyStreets || scope == "Whole area" -> 3
+        bangOrSmoke || scope == "My street" || nearbyReports >= 3 -> 2
+        neighboursOn -> 1
         else -> 1
     }
 
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        Text(
-            text = "1. Tiered Urgency Dispatch Evaluator",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-        Text(
-            text = "Select the electrical failure boundary to enforce statutory NERC response SLAs and auto-route field crew teams.",
-            fontSize = 12.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+    fun label(tier: Int): String = when (tier) {
+        3 -> "Whole area is off (level 3)"
+        2 -> "Your street is off (level 2)"
+        else -> "Only your house (level 1)"
+    }
 
-        // Tier Selection
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            listOf(
-                Triple(1, "Tier 1\nHouse", "Single user / Meter trip"),
-                Triple(2, "Tier 2\nStreet", "Transformer / Jumper"),
-                Triple(3, "Tier 3\nDistrict", "33kV Feeder / Substation")
-            ).forEach { (tier, title, desc) ->
-                val isSelected = selectedTier == tier
-                Button(
-                    onClick = { selectedTier = tier },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
-                        contentColor = if (isSelected) Color.Black else MaterialTheme.colorScheme.onSurface
-                    ),
-                    shape = RoundedCornerShape(10.dp),
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(title, fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                        Text(desc, fontSize = 12.sp, maxLines = 1)
-                    }
-                }
-            }
+    fun advice(tier: Int): String = when (tier) {
+        3 -> "Likely a feeder or 33kV injection substation problem. The DisCo control room handles these first."
+        2 -> "Likely a blown transformer fuse or cable fault serving your street. A field crew is needed."
+        else -> "Check your meter credit and the breaker / cut-out in your house first. If they're fine, report it."
+    }
+}
+
+// SOLUTION 1: TIERED URGENCY CATEGORISER
+@Composable
+fun TieredUrgencyCategoriserFeature(userProfile: UserProfile) {
+    val dao = rememberSolutionsDao()
+    val scope = rememberCoroutineScope()
+    val reports by dao.reports().collectAsState(initial = emptyList())
+    var area by remember { mutableStateOf("Only my house") }
+    var neighboursOn by remember { mutableStateOf(false) }
+    var bang by remember { mutableStateOf(false) }
+    var manyStreets by remember { mutableStateOf(false) }
+    var submitted by remember { mutableStateOf<String?>(null) }
+
+    val recentNearby = reports.count {
+        it.transformerId == userProfile.transformerId && it.stage < 4 &&
+            System.currentTimeMillis() - it.createdAt < 2 * 3_600_000L
+    }
+    val tier = TierRules.tier(area, neighboursOn, bang, manyStreets, recentNearby)
+
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        FeatureHeader(1, "Tiered Urgency Categoriser", "Answer three questions. Bright works out how serious it is.")
+        SectionCard {
+            Text("What is out?", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+            ChoiceRow(listOf("Only my house", "My street", "Whole area"), area) { area = it }
+            CheckRow("My neighbours still have light", neighboursOn) { neighboursOn = it }
+            CheckRow("I heard a bang or saw smoke at the transformer", bang) { bang = it }
+            CheckRow("Several streets or the whole estate are dark", manyStreets) { manyStreets = it }
         }
-
-        // Affected Scope
-        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text("Estimated Affected Households:", fontSize = 12.sp, fontWeight = FontWeight.Medium)
-                Text("${affectedHouseholds.toInt()} Homes", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+        SectionCard {
+            Text(TierRules.label(tier), fontWeight = FontWeight.Black, fontSize = 15.sp,
+                color = if (tier == 3) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary)
+            Text(TierRules.advice(tier), fontSize = 16.sp)
+            if (recentNearby >= 3) InfoNote("$recentNearby neighbours reported in the last 2 hours, so this is treated as a street problem.")
+        }
+        ActionButton("Send report", Icons.Default.Send, {
+            val ref = Refs.make("BR")
+            scope.launch {
+                dao.insertReport(FaultReportEntity(
+                    reference = ref, source = "TIER", tier = tier,
+                    title = TierRules.label(tier),
+                    details = "Area: $area; neighbours on: $neighboursOn; bang/smoke: $bang; many streets: $manyStreets",
+                    transformerId = userProfile.transformerId, isHazard = bang
+                ))
+                submitted = ref
             }
-            Slider(
-                value = affectedHouseholds,
-                onValueChange = { affectedHouseholds = it },
-                valueRange = 1f..500f,
-                colors = SliderDefaults.colors(thumbColor = MaterialTheme.colorScheme.primary, activeTrackColor = MaterialTheme.colorScheme.primary)
+        })
+        submitted?.let { InfoNote("Report $it saved. Follow it in #22 Delivery Tracker; send it to your DisCo below.") }
+        if (submitted != null) {
+            DiscoContactButtons(
+                userProfile, "Outage report ${submitted}",
+                "Outage report ${submitted}: ${TierRules.label(tier)}.\n${customerBlock(userProfile)}"
             )
-        }
-
-        // Critical Facilities
-        Text("Critical Public Infrastructure Nearby:", fontSize = 12.sp, fontWeight = FontWeight.Bold)
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Checkbox(
-                checked = hasHospitalOrClinic,
-                onCheckedChange = { hasHospitalOrClinic = it },
-                colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colorScheme.primary)
-            )
-            Text("Hospital / Primary Health Clinic (+15 Priority)", fontSize = 12.sp)
-        }
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Checkbox(
-                checked = hasWaterBoard,
-                onCheckedChange = { hasWaterBoard = it },
-                colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colorScheme.primary)
-            )
-            Text("State Water Board / Public Pumping Station (+10 Priority)", fontSize = 12.sp)
-        }
-
-        // Results Card
-        Surface(
-            color = if (priorityScore > 75) MaterialTheme.colorScheme.error.copy(alpha = 0.12f) else MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
-            shape = RoundedCornerShape(12.dp),
-            border = androidx.compose.foundation.BorderStroke(
-                1.dp,
-                if (priorityScore > 75) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
-            )
-        ) {
-            Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "NERC CALCULATED PRIORITY: $priorityScore / 100",
-                        fontWeight = FontWeight.Black,
-                        fontSize = 12.sp,
-                        color = if (priorityScore > 75) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
-                    )
-                    Text(
-                        text = "Max SLA: $slaHours Hours",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                }
-                LinearProgressIndicator(
-                    progress = { priorityScore / 100f },
-                    modifier = Modifier.fillMaxWidth().height(6.dp),
-                    color = if (priorityScore > 75) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
-                )
-                Text(
-                    text = when (selectedTier) {
-                        1 -> "Individual prepaid meter trip. Routed to District Service Center with 4hr SLA window."
-                        2 -> "Street distribution fault affecting ${affectedHouseholds.toInt()} homes on transformer ${userProfile.transformerId}. Dispatches Line Crew with 2hr SLA."
-                        else -> "Critical 33kV bulk feeder tripping. Mandatory escalation to DisCo Head of Operations and NERC Grid Monitoring Desk (1hr SLA)."
-                    },
-                    fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
-
-        if (ticketDispatched) {
-            Surface(
-                color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.15f),
-                shape = RoundedCornerShape(10.dp)
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth().padding(12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Icon(Icons.Default.CheckCircle, contentDescription = null, tint = MaterialTheme.colorScheme.secondary)
-                    Column {
-                        Text("Categorized Dispatch Active: $generatedTicketId", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = MaterialTheme.colorScheme.secondary)
-                        Text("Dispatched to ${userProfile.discoCode} Dispatch NOC with Tier $selectedTier priority.", fontSize = 12.sp)
-                    }
-                }
-            }
-        } else {
-            Button(
-                onClick = {
-                    val id = "DISP-${(1000..9999).random()}"
-                    generatedTicketId = id
-                    ticketDispatched = true
-                    onDispatchTicket?.invoke(id, "Tier $selectedTier Outage", priorityScore)
-                    Toast.makeText(context, "Dispatched $id to ${userProfile.discoCode} Control Room!", Toast.LENGTH_SHORT).show()
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary),
-                shape = RoundedCornerShape(10.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Icon(Icons.Default.Send, contentDescription = null, modifier = Modifier.size(16.dp))
-                Spacer(modifier = Modifier.width(8.dp))
-                Text("Dispatch Priority Ticket to ${userProfile.discoCode}", fontWeight = FontWeight.Bold)
-            }
         }
     }
 }
 
-// ==========================================
 // SOLUTION 2: GPS GEOFENCING FOR FAULTS
-// ==========================================
 @Composable
-fun GpsFaultGeofencingFeature(
-    userProfile: UserProfile,
-    modifier: Modifier = Modifier
-) {
+fun GpsFaultGeofencingFeature(userProfile: UserProfile) {
     val context = LocalContext.current
-    var geofenceRadiusMeters by remember { mutableStateOf(250f) }
-    var isBroadcasting by remember { mutableStateOf(false) }
+    val dao = rememberSolutionsDao()
+    val scope = rememberCoroutineScope()
+    val reports by dao.reports().collectAsState(initial = emptyList())
+    var pin by remember { mutableStateOf<PinnedLocation?>(null) }
+    var saved by remember { mutableStateOf<String?>(null) }
 
-    val simulatedUserLat = 6.5244
-    val simulatedUserLng = 3.3792
-    val clusterCount = (geofenceRadiusMeters / 30).toInt().coerceAtLeast(3)
+    val p = pin
+    val nearby = if (p?.hasCoordinates == true) reports.filter {
+        it.latitude != null && it.longitude != null &&
+            Geo.distanceKm(p.latitude!!, p.longitude!!, it.latitude, it.longitude) <= 0.5
+    } else emptyList()
 
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        Text(
-            text = "2. GPS Geofencing & Fault Clustering Radar",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-        Text(
-            text = "Aggregates localized mobile reports around transformer coordinates to calculate the exact epicenter of blown fuses or fallen conductors.",
-            fontSize = 12.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-
-        // Radar Box
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(14.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
-        ) {
-            Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                        Icon(Icons.Default.LocationOn, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
-                        Text("Substation Epicenter:", fontWeight = FontWeight.Bold, fontSize = 12.sp)
-                    }
-                    Text("${userProfile.transformerId} (Zone 4)", fontSize = 12.sp, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
-                }
-
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        FeatureHeader(2, "GPS Geofencing for Faults", "Mark where the fault is so the repair team can find it.")
+        LocationPinner(pin) { pin = it }
+        if (p != null) {
+            SectionCard {
+                StatRow("Reports close by", "${nearby.size}")
                 Text(
-                    text = "Coordinates: ${String.format("%.4f", simulatedUserLat)}° N, ${String.format("%.4f", simulatedUserLng)}° E",
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.SemiBold
+                    if (nearby.size >= 2) "Other reports nearby - this looks like the same fault."
+                    else "You are the first to report here.",
+                    fontSize = 16.sp
                 )
-
-                // Simulated Geofence Graphic
-                Surface(
-                    color = Color.Black.copy(alpha = 0.4f),
-                    shape = RoundedCornerShape(8.dp),
-                    modifier = Modifier.fillMaxWidth().height(90.dp)
-                ) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Box(
-                            modifier = Modifier
-                                .size((geofenceRadiusMeters / 1000f * 80f + 25f).dp)
-                                .border(1.5.dp, MaterialTheme.colorScheme.primary, CircleShape)
-                                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f), CircleShape)
-                        )
-                        Box(
-                            modifier = Modifier.size(10.dp).background(Color.Red, CircleShape)
-                        )
-                        Text(
-                            text = "$clusterCount Reports Clustered in ${geofenceRadiusMeters.toInt()}m Radius",
-                            fontSize = 12.sp,
-                            color = Color.White,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 6.dp)
-                        )
-                    }
+                Text("Uses reports saved on this phone for now.", fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+            ActionButton("Send report with this place", Icons.Default.Send, {
+                val ref = Refs.make("GPS")
+                scope.launch {
+                    dao.insertReport(FaultReportEntity(
+                        reference = ref, source = "GPS", tier = if (nearby.size >= 2) 2 else 1,
+                        title = "Fault at a marked place", details = p.describe(),
+                        transformerId = userProfile.transformerId,
+                        latitude = p.latitude, longitude = p.longitude
+                    ))
+                    saved = ref
                 }
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text("Geofence Radius:", fontSize = 12.sp)
-                    Text("${geofenceRadiusMeters.toInt()} Meters", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
-                }
-                Slider(
-                    value = geofenceRadiusMeters,
-                    onValueChange = { geofenceRadiusMeters = it },
-                    valueRange = 50f..1000f,
-                    colors = SliderDefaults.colors(thumbColor = MaterialTheme.colorScheme.primary, activeTrackColor = MaterialTheme.colorScheme.primary)
-                )
+            })
+            saved?.let {
+                InfoNote("Saved as $it.")
+                InviteNeighboursPrompt(userProfile, it)
             }
-        }
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Button(
-                onClick = {
-                    isBroadcasting = true
-                    Toast.makeText(context, "Transmitted geofence centroid to DisCo Field Unit!", Toast.LENGTH_SHORT).show()
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary),
-                shape = RoundedCornerShape(10.dp),
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(if (isBroadcasting) "Broadcasted ✓" else "Send GPS to Crew", fontWeight = FontWeight.Bold, fontSize = 12.sp)
-            }
-            OutlinedButton(
-                onClick = {
-                    val mapIntent = Intent(Intent.ACTION_VIEW, Uri.parse("geo:$simulatedUserLat,$simulatedUserLng?q=$simulatedUserLat,$simulatedUserLng(Transformer+${userProfile.transformerId})"))
-                    context.startActivity(mapIntent)
-                },
-                shape = RoundedCornerShape(10.dp),
-                modifier = Modifier.weight(1f)
-            ) {
-                Text("Open in Maps", fontSize = 12.sp)
-            }
+            ActionButton("Share pin with DisCo / neighbours", Icons.Default.Share, {
+                SolutionIntents.shareText(context, "Fault location",
+                    "Electricity fault here: ${p.mapsLink() ?: p.label}\nMeter ${userProfile.meterNumber}, transformer ${userProfile.transformerId}")
+            }, outlined = true)
         }
     }
 }
 
-// ==========================================
-// SOLUTION 3: AUTOMATED DISPATCH ROUTER ("UBER FOR ELECTRICIANS")
-// ==========================================
+// SOLUTION 3: AUTOMATED DISPATCH ROUTER
 @Composable
-fun AutomatedDispatchRouterFeature(
-    userProfile: UserProfile,
-    modifier: Modifier = Modifier
-) {
+fun AutomatedDispatchRouterFeature(userProfile: UserProfile) {
     val context = LocalContext.current
-    var etaMinutes by remember { mutableStateOf(24) }
-    var crewStatus by remember { mutableStateOf("En Route to Site") }
+    val dao = rememberSolutionsDao()
+    val scope = rememberCoroutineScope()
+    val directory = remember { DemoCrewDirectory() }
+    var pin by remember { mutableStateOf<PinnedLocation?>(null) }
+    var crews by remember { mutableStateOf<List<FieldCrew>>(emptyList()) }
+    var requested by remember { mutableStateOf<String?>(null) }
 
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        Text(
-            text = "3. Automated Dispatch Router (Uber for Line Crews)",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-        Text(
-            text = "Direct telemetry dispatch matching local feeder technicians with live vehicle registration, real-time ETA, and direct communication link.",
-            fontSize = 12.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-
-        // Crew Profile Card
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(14.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
-        ) {
-            Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column {
-                        Text("Engr. Babatunde Alabi", fontWeight = FontWeight.Black, fontSize = 14.sp)
-                        Text("Senior Linesman • ID: ${userProfile.discoCode}-8821", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        FeatureHeader(3, "Automated Dispatch Router", "Pin the fault and Bright picks the nearest field crew, with distance and ETA.")
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) { DemoDataBadge("Demo crews") }
+        LocationPinner(pin) { new ->
+            pin = new
+            if (new?.hasCoordinates == true) {
+                scope.launch { crews = directory.crewsNear(new.latitude!!, new.longitude!!) }
+            } else crews = emptyList()
+        }
+        val p = pin
+        if (p != null && !p.hasCoordinates) InfoNote("Distance needs GPS or typed coordinates. You can still call your DisCo below.")
+        if (p?.hasCoordinates == true && crews.isNotEmpty()) {
+            val ranked = crews.map { it to Geo.distanceKm(p.latitude!!, p.longitude!!, it.latitude, it.longitude) }.sortedBy { it.second }
+            ranked.forEachIndexed { i, (crew, km) ->
+                SectionCard {
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Icon(Icons.Default.LocalShipping, contentDescription = null)
+                        Text(crew.name, fontWeight = FontWeight.Bold, fontSize = 16.sp, modifier = Modifier.weight(1f))
+                        if (i == 0) Text("Nearest", color = MaterialTheme.colorScheme.primary, fontSize = 14.sp, fontWeight = FontWeight.Bold)
                     }
-                    Surface(
-                        color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f),
-                        shape = RoundedCornerShape(6.dp)
-                    ) {
-                        Text("DISPATCHED", color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.Bold, fontSize = 12.sp, modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp))
-                    }
-                }
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text("Service Vehicle: White Toyota Hilux (LAG-441-XY)", fontSize = 12.sp)
-                    Text("Rating: 4.8 ★", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
-                }
-
-                Surface(
-                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
-                    shape = RoundedCornerShape(10.dp)
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth().padding(10.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column {
-                            Text("Current Assignment Status:", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                            Text(crewStatus, fontWeight = FontWeight.Bold, fontSize = 12.sp)
-                        }
-                        Column(horizontalAlignment = Alignment.End) {
-                            Text("Live ETA:", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                            Text("$etaMinutes Mins", fontWeight = FontWeight.Black, fontSize = 14.sp, color = MaterialTheme.colorScheme.primary)
-                        }
-                    }
-                }
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Button(
-                        onClick = {
-                            val intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:08030004921"))
-                            context.startActivity(intent)
-                        },
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary),
-                        shape = RoundedCornerShape(8.dp),
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Icon(Icons.Default.Call, contentDescription = null, modifier = Modifier.size(15.dp))
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text("Call Crew", fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                    }
-
-                    OutlinedButton(
-                        onClick = {
-                            etaMinutes = (etaMinutes - 5).coerceAtLeast(3)
-                            crewStatus = if (etaMinutes <= 5) "Arrived at Transformer ${userProfile.transformerId}" else "Navigating via Ikorodu Road"
-                            Toast.makeText(context, "Updated ETA: $etaMinutes mins ($crewStatus)", Toast.LENGTH_SHORT).show()
-                        },
-                        shape = RoundedCornerShape(8.dp),
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Icon(Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(15.dp))
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text("Refresh ETA", fontSize = 12.sp)
+                    StatRow("Vehicle", crew.vehicleReg)
+                    StatRow("Distance", String.format(java.util.Locale.US, "%.1f km", km))
+                    StatRow("ETA (city traffic)", "${Geo.etaMinutes(km)} min")
+                    if (i == 0) {
+                        ActionButton("Request this crew", Icons.Default.Send, {
+                            val ref = Refs.make("DSP")
+                            scope.launch {
+                                dao.insertReport(FaultReportEntity(
+                                    reference = ref, source = "GPS", tier = 2,
+                                    title = "Crew requested: ${crew.name}",
+                                    details = "Vehicle ${crew.vehicleReg}, ETA ${Geo.etaMinutes(km)} min (demo)",
+                                    transformerId = userProfile.transformerId,
+                                    latitude = p.latitude, longitude = p.longitude, stage = 2
+                                ))
+                                requested = ref
+                            }
+                        })
                     }
                 }
             }
         }
+        requested?.let { InfoNote("Request $it logged at 'Crew dispatched'. Track it in #22.") }
+        SolutionIntents.discoFor(userProfile)?.let { d ->
+            if (d.primaryPhone.isNotBlank()) ActionButton("Call ${d.code} dispatch (${d.primaryPhone})", Icons.Default.Call, {
+                SolutionIntents.dial(context, d.primaryPhone)
+            }, outlined = true)
+        }
     }
 }
 
-// ==========================================
 // SOLUTION 4: CRITICAL DANGER RED BUTTON
-// ==========================================
 @Composable
-fun CriticalDangerRedButtonFeature(
-    onTriggerEmergency: () -> Unit,
-    modifier: Modifier = Modifier
-) {
+fun CriticalDangerRedButtonFeature(userProfile: UserProfile, onOpenHazardForm: () -> Unit) {
     val context = LocalContext.current
-    var selectedHazard by remember { mutableStateOf("Fallen 33kV High-Tension Wire") }
-    var emergencyTriggered by remember { mutableStateOf(false) }
+    val dao = rememberSolutionsDao()
+    val scope = rememberCoroutineScope()
+    var progress by remember { mutableFloatStateOf(0f) }
+    var triggeredRef by remember { mutableStateOf<String?>(null) }
+    var reportId by remember { mutableStateOf<Long?>(null) }
+    var location by remember { mutableStateOf<PinnedLocation?>(null) }
+    var photoPath by remember { mutableStateOf<String?>(null) }
 
-    val hazards = listOf(
-        "Fallen 33kV High-Tension Wire",
-        "Transformer Oil Fire / Explosion",
-        "Submerged Electric Pole in Floodwater",
-        "Vandalized Live Jumper Cable Touching Roof"
-    )
+    fun trigger() {
+        if (triggeredRef != null) return
+        val ref = Refs.make("SOS")
+        triggeredRef = ref
+        SirenPlayer.vibrate(context, longArrayOf(0, 300, 120, 300))
+        scope.launch {
+            reportId = dao.insertReport(FaultReportEntity(
+                reference = ref, source = "SOS", tier = 3, title = "DANGER: live hazard",
+                details = "SOS raised from the red button", transformerId = userProfile.transformerId, isHazard = true
+            ))
+        }
+        if (BrightPermissions.hasAny(context, BrightPermissions.LOCATION)) {
+            LocationFetcher.current(context) { loc ->
+                if (loc != null) location = PinnedLocation(loc.latitude, loc.longitude, "GPS", loc.accuracy)
+            }
+        }
+    }
 
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        Text(
-            text = "4. Critical Danger Red Button (Zero Harm Protocol)",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.error
-        )
-        Text(
-            text = "Bypasses all queues. Triggers immediate automated line tripping protocol at DisCo Substation to prevent electrocution.",
-            fontSize = 12.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+    val takePhoto = rememberTakePhotoAction { file ->
+        if (file != null) {
+            photoPath = file.absolutePath
+            val id = reportId
+            if (id != null) scope.launch {
+                dao.reportById(id)?.let { dao.updateReport(it.copy(photoPath = file.absolutePath)) }
+            }
+        }
+    }
 
-        hazards.forEach { hazard ->
-            val isSelected = selectedHazard == hazard
-            Surface(
-                color = if (isSelected) MaterialTheme.colorScheme.error.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
-                shape = RoundedCornerShape(8.dp),
-                border = androidx.compose.foundation.BorderStroke(1.dp, if (isSelected) MaterialTheme.colorScheme.error else Color.Transparent),
-                modifier = Modifier.fillMaxWidth()
+    val sosText = buildString {
+        appendLine("EMERGENCY ${triggeredRef ?: ""}: live electrical hazard (fallen / sparking line).")
+        location?.let { appendLine("Location: " + (it.mapsLink() ?: it.label)) }
+        append(customerBlock(userProfile))
+    }
+
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        FeatureHeader(4, "Critical Danger Red Button", "For fallen or sparking wires only. Press and hold the red button for 2 seconds.")
+        Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .size(150.dp)
+                    .semantics {
+                        role = Role.Button
+                        contentDescription = "SOS. Hold for two seconds to raise a danger alert"
+                        onClick(label = "Raise danger alert") { trigger(); true }
+                    }
+                    .pointerInput(Unit) {
+                        detectTapGestures(onPress = {
+                            val job = scope.launch {
+                                val steps = 20
+                                for (i in 1..steps) {
+                                    delay(100)
+                                    progress = i / steps.toFloat()
+                                }
+                                trigger()
+                            }
+                            tryAwaitRelease()
+                            if (triggeredRef == null) job.cancel()
+                            progress = 0f
+                        })
+                    }
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth().padding(10.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Checkbox(
-                        checked = isSelected,
-                        onCheckedChange = { selectedHazard = hazard },
-                        colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colorScheme.error)
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(hazard, fontSize = 12.sp, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal)
+                CircularProgressIndicator(progress = { progress }, modifier = Modifier.size(150.dp), strokeWidth = 8.dp,
+                    color = MaterialTheme.colorScheme.onErrorContainer)
+                Surface(shape = CircleShape, color = MaterialTheme.colorScheme.error, modifier = Modifier.size(126.dp)) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Icon(Icons.Default.Warning, contentDescription = null, tint = MaterialTheme.colorScheme.onError, modifier = Modifier.size(36.dp))
+                            Text(if (triggeredRef == null) "HOLD SOS" else "SENT", color = MaterialTheme.colorScheme.onError, fontWeight = FontWeight.Black, fontSize = 18.sp)
+                        }
+                    }
                 }
             }
         }
-
-        Surface(
-            color = Color.Red.copy(alpha = 0.1f),
-            shape = RoundedCornerShape(10.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(10.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Icon(Icons.Default.Warning, contentDescription = null, tint = Color.Red, modifier = Modifier.size(20.dp))
-                Text("MANDATORY SAFETY: Maintain 10-meter perimeter. Do NOT touch wet ground near conductors.", fontSize = 12.sp, color = Color.Red, fontWeight = FontWeight.Bold)
+        val ref = triggeredRef
+        if (ref == null) {
+            InfoNote("Stay at least 10 metres away from any fallen line. Never touch it or anything it touches.", isWarning = true)
+        } else {
+            InfoNote("Saved ($ref). Now please call so they can switch the line off.", isWarning = true)
+            InviteNeighboursPrompt(userProfile, ref)
+            ActionButton("Call 112 (emergency)", Icons.Default.Call, { SolutionIntents.dial(context, SolutionIntents.EMERGENCY_NUMBER) }, danger = true)
+            DiscoContactButtons(userProfile, "EMERGENCY hazard $ref", sosText)
+            ActionButton(if (photoPath == null) "Add a photo for the control room" else "Retake photo", Icons.Default.AddAPhoto, takePhoto, outlined = true)
+            photoPath?.let { path ->
+                PhotoThumb(path, "Hazard photo", Modifier.fillMaxWidth().heightIn(max = 180.dp))
+                ActionButton("Share photo", Icons.Default.Share, {
+                    SolutionIntents.shareFile(context, java.io.File(path), "image/jpeg", "Hazard $ref")
+                }, outlined = true)
             }
-        }
-
-        Button(
-            onClick = {
-                emergencyTriggered = true
-                onTriggerEmergency()
-                Toast.makeText(context, "EMERGENCY: Request to cut power on the line sent for $selectedHazard!", Toast.LENGTH_LONG).show()
-            },
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error, contentColor = Color.White),
-            shape = RoundedCornerShape(12.dp),
-            modifier = Modifier.fillMaxWidth().height(48.dp)
-        ) {
-            Icon(Icons.Default.Emergency, contentDescription = null)
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(if (emergencyTriggered) "EMERGENCY TRIP SIGNAL SENT" else "REQUEST EMERGENCY POWER CUT", fontWeight = FontWeight.Black)
+            ActionButton("Open full hazard form", null, onOpenHazardForm, outlined = true)
         }
     }
 }
 
-// ==========================================
 // SOLUTION 5: DIAGNOSTIC STATUS TRACKER
-// ==========================================
 @Composable
-fun DiagnosticStatusTrackerFeature(
-    userProfile: UserProfile,
-    modifier: Modifier = Modifier
-) {
-    val context = LocalContext.current
-    var diagnosticState by remember { mutableStateOf("LOAD_SHEDDING") }
-    var allocatedMw by remember { mutableStateOf(14.2) }
-    var peakDemandMw by remember { mutableStateOf(28.0) }
-    var restoralTimeText by remember { mutableStateOf("4:30 PM (Scheduled)") }
+fun DiagnosticStatusTrackerFeature(userProfile: UserProfile) {
+    val dao = rememberSolutionsDao()
+    val scope = rememberCoroutineScope()
+    val source = remember { DemoOutageStatusSource() }
+    val events by dao.supplyEvents().collectAsState(initial = emptyList())
+    val reports by dao.reports().collectAsState(initial = emptyList())
+    var result by remember { mutableStateOf<OutageDiagnosis?>(null) }
+    val lightOn = events.lastOrNull()?.isOn
 
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        Text(
-            text = "5. Diagnostic Status Tracker (Load Shed vs Unplanned Fault)",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-        Text(
-            text = "Solves the mystery of whether power was cut intentionally due to national TCN load-shedding quota or an unplanned physical fault on your street.",
-            fontSize = 12.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Button(
-                onClick = { diagnosticState = "LOAD_SHEDDING" },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = if (diagnosticState == "LOAD_SHEDDING") Color(0xFF8B5CF6) else MaterialTheme.colorScheme.surfaceVariant,
-                    contentColor = if (diagnosticState == "LOAD_SHEDDING") Color.White else MaterialTheme.colorScheme.onSurface
-                ),
-                shape = RoundedCornerShape(8.dp),
-                modifier = Modifier.weight(1f)
-            ) {
-                Text("TCN Load-Shedding", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        FeatureHeader(5, "Diagnostic Status Tracker", "Is it load shedding or a fault? Check, and see when supply is expected back.")
+        Row { DemoDataBadge("Demo schedule") }
+        StatRow("Your supply log says", when (lightOn) { true -> "Light ON"; false -> "Light OFF"; null -> "Not logged yet" })
+        ActionButton("Check why my light is out", Icons.Default.ManageSearch, {
+            scope.launch {
+                result = source.diagnose(userProfile.feederName, lightOn, reports.any { it.stage < 4 })
             }
-            Button(
-                onClick = { diagnosticState = "FAULT" },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = if (diagnosticState == "FAULT") MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.surfaceVariant,
-                    contentColor = if (diagnosticState == "FAULT") Color.White else MaterialTheme.colorScheme.onSurface
-                ),
-                shape = RoundedCornerShape(8.dp),
-                modifier = Modifier.weight(1f)
-            ) {
-                Text("Unplanned Fault", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+        })
+        result?.let { r ->
+            SectionCard {
+                Text(r.kind, fontWeight = FontWeight.Black, fontSize = 16.sp,
+                    color = if (r.kind == "Unplanned fault") MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary)
+                Text(r.explanation, fontSize = 16.sp)
+                r.expectedBackAt?.let { StatRow("Expected back", Fmt.time(it)) }
+                if (r.isDemo) Text("Rules-based demo until your DisCo publishes its feeder schedule.", fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
-        }
-
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(14.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
-        ) {
-            Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                if (diagnosticState == "LOAD_SHEDDING") {
-                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Icon(Icons.Default.Timeline, contentDescription = null, tint = Color(0xFF8B5CF6))
-                        Text("TCN Grid Allocation Quota Deficit", fontWeight = FontWeight.Bold, fontSize = 13.sp, color = Color(0xFF8B5CF6))
-                    }
-                    Text("Your injection feeder is shedding load to prevent national grid frequency collapse.", fontSize = 12.sp)
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                        Text("Feeder Demand: ${peakDemandMw}MW", fontSize = 12.sp)
-                        Text("Allocated: ${allocatedMw}MW (50.7%)", fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                    }
-                    LinearProgressIndicator(
-                        progress = { (allocatedMw / peakDemandMw).toFloat() },
-                        color = Color(0xFF8B5CF6),
-                        modifier = Modifier.fillMaxWidth().height(6.dp)
-                    )
-                    Text("Expected Restoration: $restoralTimeText", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = MaterialTheme.colorScheme.primary)
-                } else {
-                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Icon(Icons.Default.Warning, contentDescription = null, tint = MaterialTheme.colorScheme.error)
-                        Text("Physical Distribution Fault Detected", fontWeight = FontWeight.Bold, fontSize = 13.sp, color = MaterialTheme.colorScheme.error)
-                    }
-                    Text("Protective relay trip code: OCR-51 (Phase B Overcurrent). DisCo field team notified.", fontSize = 12.sp)
-                    Text("Transformer: ${userProfile.transformerId} • Estimated Repair: 1hr 15m", fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                }
-
-                Button(
-                    onClick = {
-                        Toast.makeText(context, "You'll get an alert when power is back on your feeder!", Toast.LENGTH_SHORT).show()
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary),
-                    shape = RoundedCornerShape(8.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Icon(Icons.Default.NotificationsActive, contentDescription = null, modifier = Modifier.size(16.dp))
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text("Subscribe to Real-Time Restoral Ping")
-                }
-            }
+            DiscoContactButtons(userProfile, "Outage status query",
+                "Please confirm whether my outage is load shedding or a fault, and when supply returns.\n${customerBlock(userProfile)}")
         }
     }
 }
