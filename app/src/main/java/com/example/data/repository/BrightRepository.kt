@@ -18,7 +18,6 @@ import com.example.model.ComplaintStatus
 import com.example.model.DisCo
 import com.example.model.EscalationTier
 import com.example.model.FaultType
-import com.example.model.FeederBand
 import com.example.model.GridTelemetry
 import com.example.model.MaintenanceAlert
 import com.example.model.OutageGridNode
@@ -36,6 +35,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -61,29 +61,32 @@ class BrightRepository(
 
     // Re-login & Session Lock preferences
     private val _requireLoginOnLeave = MutableStateFlow(
-        prefs?.getBoolean("require_login_on_leave", true) ?: true
+        prefs?.getBoolean(KEY_REQUIRE_LOGIN_ON_LEAVE, true) ?: true
     )
     val requireLoginOnLeave: StateFlow<Boolean> = _requireLoginOnLeave.asStateFlow()
 
     fun setRequireLoginOnLeave(enabled: Boolean) {
         _requireLoginOnLeave.value = enabled
-        prefs?.edit()?.putBoolean("require_login_on_leave", enabled)?.apply()
+        prefs?.edit()?.putBoolean(KEY_REQUIRE_LOGIN_ON_LEAVE, enabled)?.apply()
     }
 
     // Empty string means "no PIN set yet". There is deliberately no default PIN.
     private val _userPin = MutableStateFlow(
-        prefs?.getString("user_pin", "") ?: ""
+        prefs?.getString(KEY_USER_PIN, "") ?: ""
     )
     val userPin: StateFlow<String> = _userPin.asStateFlow()
 
     fun setUserPin(pin: String) {
         _userPin.value = pin
-        prefs?.edit()?.putString("user_pin", pin)?.apply()
+        prefs?.edit()?.putString(KEY_USER_PIN, pin)?.apply()
     }
 
-    // Meter Gateway Activation Tracker (Paid Once Per Meter)
+    // Meter activation tracker: the ₦1,000 activation is paid once per meter, for life.
+    // This record is deliberately kept when an account is deleted, so re-registering the same
+    // meter never charges twice. (No meters are pre-marked as paid.)
+    // TODO(payments): source this from the server once Google Play Billing is verified server-side.
     private val _paidMeterNumbers = MutableStateFlow<Set<String>>(
-        prefs?.getStringSet("paid_meters", null) ?: setOf("01429583192", "04821094821")
+        prefs?.getStringSet(KEY_PAID_METERS, null)?.toSet() ?: emptySet()
     )
     val paidMeterNumbers: StateFlow<Set<String>> = _paidMeterNumbers.asStateFlow()
 
@@ -94,7 +97,7 @@ class BrightRepository(
     fun markMeterPaid(meterNumber: String) {
         val updated = _paidMeterNumbers.value + meterNumber.trim()
         _paidMeterNumbers.value = updated
-        prefs?.edit()?.putStringSet("paid_meters", updated)?.apply()
+        prefs?.edit()?.putStringSet(KEY_PAID_METERS, updated)?.apply()
     }
 
     // Live Outage Map nodes - Persisted & cached in Room database
@@ -158,10 +161,11 @@ class BrightRepository(
     }
 
     suspend fun saveUserProfile(profile: UserProfile) {
-        if (profile.isGatewayPaid) {
-            markMeterPaid(profile.meterNumber)
-        }
-        profileDao.setUserProfile(UserProfileEntity.fromDomain(profile))
+        // isGatewayPaid is derived from the paid-meter record, never the other way round: only a
+        // confirmed activation payment (markMeterPaid) can mark a meter as paid. Previously, editing
+        // or switching the meter number on a paid profile marked the new meter as paid for free.
+        val paid = isMeterPaid(profile.meterNumber)
+        profileDao.setUserProfile(UserProfileEntity.fromDomain(profile.copy(isGatewayPaid = paid)))
     }
 
     fun getActivePersonalComplaints(meterNumber: String): Flow<List<Complaint>> {
@@ -439,29 +443,10 @@ class BrightRepository(
     }
 
     private suspend fun seedDefaultDataIfEmpty() {
-        val existing = profileDao.getUserProfileSync()
-        if (existing == null) {
-            val defaultProfile = UserProfile(
-                meterNumber = "01429583192",
-                customerName = "Chuka Obunma",
-                phoneNumber = "+234 803 892 4110",
-                streetAddress = "14 Adeola Odeku Street, Victoria Island",
-                lga = "Eti-Osa",
-                state = "Lagos State",
-                discoCode = "EKEDC",
-                feederName = "Victoria Island 33kV Injection Feeder 4",
-                feederBand = FeederBand.BAND_A,
-                transformerId = "TR-VI-ADEOLA-04B",
-                isPrepaid = true,
-                connectedHouseholdsCount = 184,
-                isOnboarded = true,
-                isGatewayPaid = true
-            )
-            profileDao.setUserProfile(UserProfileEntity.fromDomain(defaultProfile))
-        }
-
+        // Deliberately no default profile: a fresh install (or a deleted account) must go through
+        // sign-up, which creates the PIN and takes the activation payment. The old seed created an
+        // already-onboarded, already-paid demo profile, which skipped both.
         // Clean slate: 0 fake stranger reports, 0 fake vandalism, 0 fake claims.
-        // User creates and manages their own records, like WhatsApp.
     }
 
     private suspend fun seedLiveOutageData() {
@@ -660,6 +645,49 @@ class BrightRepository(
         maintenanceDao.insertAll(alerts.map { MaintenanceAlertEntity.fromDomain(it) })
     }
 
+    /**
+     * Delete account: permanently removes everything Bright keeps about the user on this phone:
+     * profile, PIN, complaints and history, reports, claims, the offline outbox, cached grid data
+     * and cached files (evidence photos, generated dossiers).
+     *
+     * Kept on purpose: the paid-meter record, so re-registering the same meter isn't charged again.
+     * Public grid data (outage map, maintenance notices) is re-seeded so the map still works.
+     */
+    suspend fun deleteAllLocalUserData() {
+        withContext(Dispatchers.IO) {
+            // PIN and preferences first, so the UI never shows a "signed in" state without data.
+            // Wipe everything except the paid-meter record.
+            val paidMeters = _paidMeterNumbers.value
+            prefs?.edit()
+                ?.clear()
+                ?.putStringSet(KEY_PAID_METERS, paidMeters)
+                ?.commit()
+            _userPin.value = ""
+            _requireLoginOnLeave.value = true
+
+            complaintDao.clearAll()
+            vandalismDao.clearAll()
+            disputeDao.clearAll()
+            applianceClaimDao.clearAll()
+            streetHazardDao.clearAll()
+            offlineQueueDao.clearAll()
+            telemetryDao.clearAll()
+            outageDao.clearAll()
+            maintenanceDao.clearAll()
+            profileDao.clearProfile()
+
+            // Cached files (evidence photos, PDF dossiers).
+            try {
+                context?.cacheDir?.listFiles()?.forEach { it.deleteRecursively() }
+            } catch (e: Exception) {
+                // Best effort: anything left is cleaned up by the system later.
+            }
+
+            seedLiveOutageData()
+            seedMaintenanceAlerts()
+        }
+    }
+
     suspend fun enqueueOfflineSyncAction(actionType: String, referenceId: String, payloadJson: String = "") {
         offlineQueueDao.enqueueAction(
             OfflineSyncQueueEntity(
@@ -678,5 +706,11 @@ class BrightRepository(
         // Simulates pushing pending outbox events to the DisCo SCADA server when network recovers
         offlineQueueDao.clearCompleted()
         return count
+    }
+
+    private companion object {
+        const val KEY_USER_PIN = "user_pin"
+        const val KEY_PAID_METERS = "paid_meters"
+        const val KEY_REQUIRE_LOGIN_ON_LEAVE = "require_login_on_leave"
     }
 }

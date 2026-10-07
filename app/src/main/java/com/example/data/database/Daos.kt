@@ -167,6 +167,9 @@ interface GridTelemetryDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun cacheTelemetry(telemetry: GridTelemetryEntity)
+
+    @Query("DELETE FROM grid_telemetry_cache")
+    suspend fun clearAll()
 }
 
 @Dao
@@ -185,6 +188,9 @@ interface OfflineSyncQueueDao {
 
     @Query("DELETE FROM offline_sync_queue WHERE isSynced = 1")
     suspend fun clearCompleted()
+
+    @Query("DELETE FROM offline_sync_queue")
+    suspend fun clearAll()
 }
 
 
