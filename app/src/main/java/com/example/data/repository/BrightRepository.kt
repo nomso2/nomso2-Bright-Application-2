@@ -676,6 +676,13 @@ class BrightRepository(
             maintenanceDao.clearAll()
             profileDao.clearProfile()
 
+            // The 30-solutions data (supply log, claims, voice notes, evidence photos, reports).
+            context?.let { ctx ->
+                com.example.data.solutions.SolutionsDatabase.wipe(ctx)
+                com.example.ui.solutions.common.SolutionsNotifier.hideQuickLog(ctx)
+                com.example.ui.solutions.common.SolutionsNotifier.cancelSurgeWarning(ctx)
+            }
+
             // Cached files (evidence photos, PDF dossiers).
             try {
                 context?.cacheDir?.listFiles()?.forEach { it.deleteRecursively() }
