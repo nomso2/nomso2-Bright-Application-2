@@ -101,6 +101,7 @@ import com.example.ui.theme.Slate100Text
 import com.example.ui.theme.Slate300Text
 import com.example.ui.theme.Slate400Text
 import com.example.ui.theme.Slate500Text
+import com.example.ui.theme.extendedColors
 
 @Composable
 fun HomeScreen(
@@ -176,7 +177,7 @@ fun HomeScreen(
                         onLogOut()
                     },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFEF4444),
+                        containerColor = MaterialTheme.colorScheme.error,
                         contentColor = Color.White
                     ),
                     shape = RoundedCornerShape(8.dp),
@@ -220,7 +221,7 @@ fun HomeScreen(
                             fontSize = 12.sp,
                             letterSpacing = 1.sp
                         ),
-                        color = ElegantGoldPrimary,
+                        color = MaterialTheme.colorScheme.primary,
                         maxLines = 1
                     )
                     Spacer(modifier = Modifier.height(2.dp))
@@ -248,7 +249,7 @@ fun HomeScreen(
                         Icon(
                             imageVector = if (isDarkMode) Icons.Default.LightMode else Icons.Default.DarkMode,
                             contentDescription = if (isDarkMode) "Switch to light theme" else "Switch to dark theme",
-                            tint = ElegantGoldPrimary,
+                            tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(22.dp)
                         )
                     }
@@ -277,7 +278,7 @@ fun HomeScreen(
                                     Icon(
                                         imageVector = Icons.Default.Lock,
                                         contentDescription = null,
-                                        tint = ElegantGoldPrimary,
+                                        tint = MaterialTheme.colorScheme.primary,
                                         modifier = Modifier.size(18.dp)
                                     )
                                 },
@@ -309,7 +310,7 @@ fun HomeScreen(
                                     Icon(
                                         imageVector = Icons.Default.Gavel,
                                         contentDescription = null,
-                                        tint = ElegantGoldPrimary,
+                                        tint = MaterialTheme.colorScheme.primary,
                                         modifier = Modifier.size(18.dp)
                                     )
                                 },
@@ -340,7 +341,7 @@ fun HomeScreen(
                                     Icon(
                                         imageVector = Icons.Default.AccountCircle,
                                         contentDescription = null,
-                                        tint = ElegantGoldPrimary,
+                                        tint = MaterialTheme.colorScheme.primary,
                                         modifier = Modifier.size(18.dp)
                                     )
                                 },
@@ -406,8 +407,8 @@ fun HomeScreen(
                             .height(52.dp)
                             .testTag("report_fault_banner_button"),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = ElegantGoldPrimary,
-                            contentColor = Color(0xFF0A0C10)
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
                         ),
                         shape = RoundedCornerShape(14.dp)
                     ) {
@@ -451,7 +452,7 @@ fun HomeScreen(
                             Text(
                                 text = "Tracked directly with Meter #${userProfile.meterNumber}",
                                 style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
-                                color = ElegantGoldPrimary
+                                color = MaterialTheme.colorScheme.primary
                             )
                         }
 
@@ -459,8 +460,8 @@ fun HomeScreen(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(8.dp))
                                 .background(
-                                    if (personalComplaints.isNotEmpty()) Color(0x26EF4444)
-                                    else Color(0x1A22C55E)
+                                    if (personalComplaints.isNotEmpty()) MaterialTheme.colorScheme.error.copy(alpha = 0.15f)
+                                    else MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f)
                                 )
                                 .padding(horizontal = 8.dp, vertical = 4.dp)
                         ) {
@@ -468,7 +469,7 @@ fun HomeScreen(
                                 text = "${personalComplaints.size} Active",
                                 style = MaterialTheme.typography.labelSmall.copy(
                                     fontWeight = FontWeight.Bold,
-                                    color = if (personalComplaints.isNotEmpty()) Color(0xFFEF4444) else Color(0xFF4ADE80)
+                                    color = if (personalComplaints.isNotEmpty()) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.secondary
                                 )
                             )
                         }
@@ -500,13 +501,13 @@ fun HomeScreen(
                                     modifier = Modifier
                                         .size(56.dp)
                                         .clip(CircleShape)
-                                        .background(Color(0x26FACC15)),
+                                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Icon(
                                         imageVector = Icons.Default.Lightbulb,
                                         contentDescription = "Light is Bright",
-                                        tint = ElegantGoldPrimary,
+                                        tint = MaterialTheme.colorScheme.primary,
                                         modifier = Modifier.size(32.dp)
                                     )
                                 }
@@ -583,7 +584,7 @@ fun HomeScreen(
                         NigeriaSmartMeterDiscoveryService.checkSmartMeterAccess(userProfile)
                     }
                     val isSmart = meterStatus.hasSmartAccess
-                    val themeColor = if (isSmart) Color(0xFF38BDF8) else Color(0xFFD97706)
+                    val themeColor = if (isSmart) MaterialTheme.extendedColors.info else MaterialTheme.extendedColors.warning
 
                     Card(
                         modifier = Modifier
@@ -636,14 +637,14 @@ fun HomeScreen(
                                         Box(
                                             modifier = Modifier
                                                 .clip(RoundedCornerShape(4.dp))
-                                                .background(if (isSmart) Color(0xFF22C55E).copy(alpha = 0.15f) else Color(0xFFD97706).copy(alpha = 0.15f))
+                                                .background(if (isSmart) MaterialTheme.colorScheme.secondary.copy(alpha = 0.15f) else MaterialTheme.extendedColors.warning.copy(alpha = 0.15f))
                                                 .padding(horizontal = 5.dp, vertical = 1.dp)
                                         ) {
                                             Text(
                                                 text = if (isSmart) "AUTO-LINKED" else "STS KEYPAD",
                                                 fontSize = 12.sp,
                                                 fontWeight = FontWeight.Bold,
-                                                color = if (isSmart) Color(0xFF22C55E) else Color(0xFFD97706)
+                                                color = if (isSmart) MaterialTheme.colorScheme.secondary else MaterialTheme.extendedColors.warning
                                             )
                                         }
                                     }
@@ -700,13 +701,13 @@ fun HomeScreen(
                                     modifier = Modifier
                                         .size(36.dp)
                                         .clip(CircleShape)
-                                        .background(Color(0x1AFACC15)),
+                                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Icon(
                                         imageVector = Icons.Default.Bolt,
                                         contentDescription = null,
-                                        tint = ElegantGoldPrimary,
+                                        tint = MaterialTheme.colorScheme.primary,
                                         modifier = Modifier.size(20.dp)
                                     )
                                 }

@@ -96,7 +96,7 @@ fun AnonymousWhistleblowerFeature(
                     label = { Text("DisCo Officer Name or Vehicle Plate", fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
-                    colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = GoldPrimary)
+                    colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = MaterialTheme.colorScheme.primary)
                 )
 
                 OutlinedTextField(
@@ -105,7 +105,7 @@ fun AnonymousWhistleblowerFeature(
                     label = { Text("Extortion Amount Demanded (₦)", fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
-                    colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = GoldPrimary)
+                    colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = MaterialTheme.colorScheme.primary)
                 )
 
                 Surface(
@@ -187,7 +187,7 @@ fun PizzaStyleDeliveryTrackerFeature(
                             modifier = Modifier
                                 .size(24.dp)
                                 .background(
-                                    if (isDone) EmeraldAccent else if (isActive) GoldPrimary else Color.Gray.copy(alpha = 0.3f),
+                                    if (isDone) MaterialTheme.colorScheme.secondary else if (isActive) MaterialTheme.colorScheme.primary else Color.Gray.copy(alpha = 0.3f),
                                     CircleShape
                                 ),
                             contentAlignment = Alignment.Center
@@ -195,7 +195,7 @@ fun PizzaStyleDeliveryTrackerFeature(
                             Text("${index + 1}", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = if (isDone || isActive) Color.Black else Color.White)
                         }
                         Column(modifier = Modifier.weight(1f)) {
-                            Text(stage, fontSize = 12.sp, fontWeight = if (isActive) FontWeight.Bold else FontWeight.Medium, color = if (isActive) GoldPrimary else MaterialTheme.colorScheme.onSurface)
+                            Text(stage, fontSize = 12.sp, fontWeight = if (isActive) FontWeight.Bold else FontWeight.Medium, color = if (isActive) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface)
                             Text(time, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     }
@@ -205,7 +205,7 @@ fun PizzaStyleDeliveryTrackerFeature(
                     onClick = {
                         Toast.makeText(context, "Pinged DisCo Field Supervisor for progress update!", Toast.LENGTH_SHORT).show()
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = GoldPrimary, contentColor = Color.Black),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary),
                     shape = RoundedCornerShape(10.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -251,7 +251,7 @@ fun ConsumerClosureVerificationFeature(
         ) {
             Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 Surface(
-                    color = GoldPrimary.copy(alpha = 0.15f),
+                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
                     shape = RoundedCornerShape(10.dp)
                 ) {
                     Row(
@@ -259,9 +259,9 @@ fun ConsumerClosureVerificationFeature(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Icon(Icons.Default.Lock, contentDescription = null, tint = GoldPrimary, modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Lock, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
                         Column {
-                            Text("Ticket #TKT-8902 Pending Customer Confirmation", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = GoldPrimary)
+                            Text("Ticket #TKT-8902 Pending Customer Confirmation", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = MaterialTheme.colorScheme.primary)
                             Text("DisCo claimed repair is complete. Please verify actual voltage.", fontSize = 12.sp)
                         }
                     }
@@ -277,7 +277,7 @@ fun ConsumerClosureVerificationFeature(
                             hasRejectedFakeClosure = false
                             Toast.makeText(context, "Restoration verified! Ticket closed with customer approval.", Toast.LENGTH_SHORT).show()
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = EmeraldAccent, contentColor = Color.White),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary, contentColor = Color.White),
                         shape = RoundedCornerShape(8.dp),
                         modifier = Modifier.weight(1f)
                     ) {
@@ -357,7 +357,7 @@ fun FaultHistoryLogFeature(
                         petitionSent = true
                         Toast.makeText(context, "Statutory Demand for Full 500kVA Replacement dispatched to NERC!", Toast.LENGTH_SHORT).show()
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = GoldPrimary, contentColor = Color.Black),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary),
                     shape = RoundedCornerShape(10.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -410,7 +410,7 @@ fun InventoryRequestMonitorFeature(
                 stockInventory.keys.forEach { part ->
                     val isSelected = selectedPart == part
                     Surface(
-                        color = if (isSelected) GoldPrimary.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surface,
+                        color = if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surface,
                         shape = RoundedCornerShape(8.dp),
                         modifier = Modifier.fillMaxWidth()
                     ) {
@@ -419,7 +419,7 @@ fun InventoryRequestMonitorFeature(
                             Button(
                                 onClick = { selectedPart = part },
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = if (isSelected) GoldPrimary else MaterialTheme.colorScheme.surfaceVariant,
+                                    containerColor = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
                                     contentColor = if (isSelected) Color.Black else MaterialTheme.colorScheme.onSurface
                                 ),
                                 shape = RoundedCornerShape(6.dp)
@@ -433,13 +433,13 @@ fun InventoryRequestMonitorFeature(
                 val currentStock = stockInventory[selectedPart]
                 currentStock?.let { (warehouse, count) ->
                     Surface(
-                        color = EmeraldAccent.copy(alpha = 0.12f),
+                        color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.12f),
                         shape = RoundedCornerShape(8.dp)
                     ) {
                         Column(modifier = Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                            Text("OFFICIAL DISCO WAREHOUSE AUDIT:", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = EmeraldAccent)
+                            Text("OFFICIAL DISCO WAREHOUSE AUDIT:", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = MaterialTheme.colorScheme.secondary)
                             Text("• Location: $warehouse", fontSize = 12.sp)
-                            Text("• Stock Level: $count (IN STOCK)", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = EmeraldAccent)
+                            Text("• Stock Level: $count (IN STOCK)", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.secondary)
                             Text("• Status: False claim by local crew. Report extortion.", fontSize = 12.sp, color = MaterialTheme.colorScheme.error)
                         }
                     }
@@ -449,7 +449,7 @@ fun InventoryRequestMonitorFeature(
                     onClick = {
                         Toast.makeText(context, "Inventory report shared to Estate Exco WhatsApp!", Toast.LENGTH_SHORT).show()
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = GoldPrimary, contentColor = Color.Black),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary),
                     shape = RoundedCornerShape(10.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {

@@ -71,6 +71,7 @@ import com.example.ui.theme.ElegantGoldPrimary
 import com.example.ui.theme.Slate100Text
 import com.example.ui.theme.Slate400Text
 import com.example.ui.theme.Slate500Text
+import com.example.ui.theme.extendedColors
 
 /**
  * Real-Time Visual Escalation Status Bar for Submitted Fault Tickets
@@ -105,13 +106,13 @@ fun FaultEscalationStatusBar(
                     modifier = Modifier
                         .size(38.dp)
                         .clip(CircleShape)
-                        .background(Color(0x14FACC15)),
+                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = Icons.Default.Shield,
                         contentDescription = null,
-                        tint = ElegantGoldPrimary,
+                        tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -123,7 +124,7 @@ fun FaultEscalationStatusBar(
                             fontWeight = FontWeight.ExtraBold,
                             letterSpacing = 1.sp
                         ),
-                        color = ElegantGoldPrimary
+                        color = MaterialTheme.colorScheme.primary
                     )
                     Text(
                         text = "No active submitted tickets currently in escalation queue.",
@@ -179,7 +180,7 @@ fun FaultEscalationStatusBar(
             .testTag("fault_escalation_status_bar"),
         shape = RoundedCornerShape(22.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = androidx.compose.foundation.BorderStroke(1.5.dp, ElegantGoldPrimary.copy(alpha = 0.45f)),
+        border = androidx.compose.foundation.BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.45f)),
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
     ) {
         Column(
@@ -203,7 +204,7 @@ fun FaultEscalationStatusBar(
                             .size(10.dp)
                             .scale(pulseScale)
                             .clip(CircleShape)
-                            .background(Color(0xFF10B981).copy(alpha = pulseAlpha))
+                            .background(MaterialTheme.extendedColors.success.copy(alpha = pulseAlpha))
                     )
                     Text(
                         text = "REAL-TIME ESCALATION STATUS",
@@ -212,7 +213,7 @@ fun FaultEscalationStatusBar(
                             letterSpacing = 1.2.sp,
                             fontSize = 12.sp
                         ),
-                        color = ElegantGoldPrimary
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
 
@@ -228,7 +229,7 @@ fun FaultEscalationStatusBar(
                             fontWeight = FontWeight.Bold,
                             fontSize = 12.sp
                         ),
-                        color = if (activeComplaint.status == ComplaintStatus.RESOLVED) Color(0xFF10B981) else ElegantGoldPrimary,
+                        color = if (activeComplaint.status == ComplaintStatus.RESOLVED) MaterialTheme.extendedColors.success else MaterialTheme.colorScheme.primary,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
                     )
                 }
@@ -264,7 +265,7 @@ fun FaultEscalationStatusBar(
                                     Icon(
                                         imageVector = if (isSelectorDropdownExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
                                         contentDescription = "Switch Ticket",
-                                        tint = ElegantGoldPrimary,
+                                        tint = MaterialTheme.colorScheme.primary,
                                         modifier = Modifier.size(18.dp)
                                     )
                                 }
@@ -301,8 +302,8 @@ fun FaultEscalationStatusBar(
                 // Escalation Level Pill
                 Surface(
                     shape = RoundedCornerShape(12.dp),
-                    color = Color(0x26FACC15),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, ElegantGoldPrimary)
+                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
                 ) {
                     Row(
                         modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
@@ -312,7 +313,7 @@ fun FaultEscalationStatusBar(
                         Icon(
                             imageVector = Icons.Default.Speed,
                             contentDescription = null,
-                            tint = ElegantGoldPrimary,
+                            tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(14.dp)
                         )
                         Text(
@@ -321,7 +322,7 @@ fun FaultEscalationStatusBar(
                                 fontWeight = FontWeight.Black,
                                 fontSize = 12.sp
                             ),
-                            color = ElegantGoldPrimary
+                            color = MaterialTheme.colorScheme.primary
                         )
                     }
                 }
@@ -347,9 +348,9 @@ fun FaultEscalationStatusBar(
                             .background(
                                 Brush.horizontalGradient(
                                     colors = listOf(
-                                        Color(0xFFEAB308), // Gold
-                                        Color(0xFFF59E0B), // Amber
-                                        Color(0xFF10B981)  // Emerald
+                                        MaterialTheme.colorScheme.primary, // Gold
+                                        MaterialTheme.extendedColors.warning, // Amber
+                                        MaterialTheme.extendedColors.success  // Emerald
                                     )
                                 )
                             )
@@ -380,8 +381,8 @@ fun FaultEscalationStatusBar(
                                     .clip(CircleShape)
                                     .background(
                                         when {
-                                            isPast -> Color(0xFF10B981)
-                                            isCurrent -> ElegantGoldPrimary
+                                            isPast -> MaterialTheme.extendedColors.success
+                                            isCurrent -> MaterialTheme.colorScheme.primary
                                             else -> MaterialTheme.colorScheme.surfaceVariant
                                         }
                                     )
@@ -432,7 +433,7 @@ fun FaultEscalationStatusBar(
                                     fontSize = 12.sp,
                                     fontWeight = if (isCurrent) FontWeight.ExtraBold else FontWeight.Medium
                                 ),
-                                color = if (isCurrent) ElegantGoldPrimary else if (isPast) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
+                                color = if (isCurrent) MaterialTheme.colorScheme.primary else if (isPast) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
                             )
 
                             // SLA label
@@ -479,13 +480,13 @@ fun FaultEscalationStatusBar(
                             Icon(
                                 imageVector = Icons.Default.Sync,
                                 contentDescription = null,
-                                tint = Color(0xFF10B981),
+                                tint = MaterialTheme.extendedColors.success,
                                 modifier = Modifier.size(12.dp)
                             )
                             Text(
                                 text = "Live grid status",
                                 style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp),
-                                color = Color(0xFF10B981)
+                                color = MaterialTheme.extendedColors.success
                             )
                         }
                     }
@@ -513,7 +514,7 @@ fun FaultEscalationStatusBar(
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.SemiBold
                             ),
-                            color = ElegantGoldPrimary
+                            color = MaterialTheme.colorScheme.primary
                         )
                     }
                 }
@@ -534,8 +535,8 @@ fun FaultEscalationStatusBar(
                             .height(44.dp)
                             .testTag("status_bar_fast_track_escalate_button"),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = ElegantGoldPrimary,
-                            contentColor = Color.Black
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
                         ),
                         shape = RoundedCornerShape(12.dp)
                     ) {
@@ -575,7 +576,7 @@ fun FaultEscalationStatusBar(
                         Icon(
                             imageVector = Icons.Default.Radar,
                             contentDescription = null,
-                            tint = Color(0xFF10B981),
+                            tint = MaterialTheme.extendedColors.success,
                             modifier = Modifier.size(15.dp)
                         )
                         Spacer(modifier = Modifier.width(4.dp))

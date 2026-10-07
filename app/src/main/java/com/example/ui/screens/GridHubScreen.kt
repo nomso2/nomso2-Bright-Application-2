@@ -81,6 +81,9 @@ import com.example.model.MaintenanceAlert
 import com.example.model.UserProfile
 import com.example.ui.AppLanguage
 import com.example.ui.components.Solutions30ComprehensiveHub
+import com.example.ui.theme.extendedColors
+import com.example.ui.theme.Slate400Text
+import com.example.ui.theme.Slate500Text
 
 enum class HubSection {
     SOLUTIONS_30,
@@ -219,7 +222,7 @@ fun GridHubScreen(
                 NigeriaSmartMeterDiscoveryService.checkSmartMeterAccess(userProfile)
             }
             val isSmart = meterStatus.hasSmartAccess
-            val themeColor = if (isSmart) Color(0xFF0284C7) else Color(0xFFD97706)
+            val themeColor = if (isSmart) MaterialTheme.extendedColors.info else MaterialTheme.extendedColors.warning
 
             Card(
                 modifier = Modifier
@@ -269,14 +272,14 @@ fun GridHubScreen(
                                 Box(
                                     modifier = Modifier
                                         .clip(RoundedCornerShape(4.dp))
-                                        .background(if (isSmart) Color(0xFF22C55E).copy(alpha = 0.15f) else Color(0xFFD97706).copy(alpha = 0.15f))
+                                        .background(if (isSmart) MaterialTheme.colorScheme.secondary.copy(alpha = 0.15f) else MaterialTheme.extendedColors.warning.copy(alpha = 0.15f))
                                         .padding(horizontal = 5.dp, vertical = 1.dp)
                                 ) {
                                     Text(
                                         text = if (isSmart) "AUTO-LINKED ONCE" else "NON-SMART AREA",
                                         fontSize = 12.sp,
                                         fontWeight = FontWeight.Bold,
-                                        color = if (isSmart) Color(0xFF22C55E) else Color(0xFFD97706)
+                                        color = if (isSmart) MaterialTheme.colorScheme.secondary else MaterialTheme.extendedColors.warning
                                     )
                                 }
                             }
@@ -314,7 +317,7 @@ fun GridHubScreen(
                     .testTag("hub_estate_exco_card"),
                 shape = RoundedCornerShape(14.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)),
-                border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFD97706))
+                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.extendedColors.warning)
             ) {
                 Row(
                     modifier = Modifier
@@ -331,13 +334,13 @@ fun GridHubScreen(
                             modifier = Modifier
                                 .size(36.dp)
                                 .clip(RoundedCornerShape(8.dp))
-                                .background(Color(0xFFD97706).copy(alpha = 0.15f)),
+                                .background(MaterialTheme.extendedColors.warning.copy(alpha = 0.15f)),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Gavel,
                                 contentDescription = null,
-                                tint = Color(0xFFD97706),
+                                tint = MaterialTheme.extendedColors.warning,
                                 modifier = Modifier.size(20.dp)
                             )
                         }
@@ -345,7 +348,7 @@ fun GridHubScreen(
                             Text(
                                 text = "ESTATE EXCO PORTAL & NERC DOSSIER",
                                 style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.ExtraBold),
-                                color = Color(0xFFD97706)
+                                color = MaterialTheme.extendedColors.warning
                             )
                             Text(
                                 text = "PDF Export • Dues Ledger • ₦ SLA Refund Calculator",
@@ -357,7 +360,7 @@ fun GridHubScreen(
 
                     Button(
                         onClick = onOpenEstateExco,
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD97706), contentColor = Color.White),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.extendedColors.warning, contentColor = Color.White),
                         shape = RoundedCornerShape(8.dp),
                         contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp)
                     ) {
@@ -473,35 +476,35 @@ fun GridHubScreen(
                             hoursText = "Min 20 hrs/day",
                             rateText = "₦206.80 / kWh",
                             description = "High-priority express feeders. Zero subsidy.",
-                            badgeColor = Color(0xFF10B981)
+                            badgeColor = MaterialTheme.extendedColors.success
                         )
                         TariffBandRow(
                             bandName = "Band B",
                             hoursText = "16 – 20 hrs/day",
                             rateText = "₦63.00 / kWh",
                             description = "Subsidized standard commercial/residential.",
-                            badgeColor = Color(0xFF38BDF8)
+                            badgeColor = MaterialTheme.extendedColors.info
                         )
                         TariffBandRow(
                             bandName = "Band C",
                             hoursText = "12 – 16 hrs/day",
                             rateText = "₦50.00 / kWh",
                             description = "Subsidized urban residential corridors.",
-                            badgeColor = Color(0xFFF59E0B)
+                            badgeColor = MaterialTheme.extendedColors.warning
                         )
                         TariffBandRow(
                             bandName = "Band D",
                             hoursText = "8 – 12 hrs/day",
                             rateText = "₦33.00 / kWh",
                             description = "Subsidized sub-urban feeder lines.",
-                            badgeColor = Color(0xFF94A3B8)
+                            badgeColor = Slate400Text
                         )
                         TariffBandRow(
                             bandName = "Band E",
                             hoursText = "4 – 8 hrs/day",
                             rateText = "₦32.00 / kWh",
                             description = "Rural/industrial frontier supply.",
-                            badgeColor = Color(0xFF64748B)
+                            badgeColor = Slate500Text
                         )
                     }
                 }
@@ -687,7 +690,7 @@ fun GridHubScreen(
                             Icon(
                                 imageVector = Icons.Default.ElectricMeter,
                                 contentDescription = null,
-                                tint = Color(0xFF10B981),
+                                tint = MaterialTheme.extendedColors.success,
                                 modifier = Modifier.size(20.dp)
                             )
                             Text(
@@ -713,7 +716,7 @@ fun GridHubScreen(
                             Icon(
                                 imageVector = Icons.Default.ReceiptLong,
                                 contentDescription = null,
-                                tint = Color(0xFFEF4444),
+                                tint = MaterialTheme.colorScheme.error,
                                 modifier = Modifier.size(20.dp)
                             )
                             Text(
@@ -935,7 +938,7 @@ fun GridHubScreen(
                                     Icon(
                                         imageVector = Icons.Default.CheckCircle,
                                         contentDescription = null,
-                                        tint = Color(0xFF10B981),
+                                        tint = MaterialTheme.extendedColors.success,
                                         modifier = Modifier.size(14.dp)
                                     )
                                     Text(
@@ -1021,7 +1024,7 @@ fun GridHubScreen(
                                 text = "${disco.customerRating}/5.0",
                                 style = MaterialTheme.typography.bodyMedium.copy(
                                     fontWeight = FontWeight.Bold,
-                                    color = if (disco.customerRating >= 4.0) Color(0xFF10B981) else MaterialTheme.colorScheme.secondary
+                                    color = if (disco.customerRating >= 4.0) MaterialTheme.extendedColors.success else MaterialTheme.colorScheme.secondary
                                 )
                             )
                         }
@@ -1088,7 +1091,7 @@ fun GridHubScreen(
                             Icon(
                                 imageVector = Icons.Default.Shield,
                                 contentDescription = null,
-                                tint = Color(0xFF10B981),
+                                tint = MaterialTheme.extendedColors.success,
                                 modifier = Modifier.size(16.dp)
                             )
                             Text(

@@ -171,13 +171,13 @@ fun Solutions30ComprehensiveHub(
                 }
 
                 Surface(
-                    color = GoldPrimary.copy(alpha = 0.15f),
+                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
                     shape = RoundedCornerShape(8.dp),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, GoldPrimary)
+                    border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
                 ) {
                     Text(
                         text = "30/30 READY",
-                        color = GoldPrimary,
+                        color = MaterialTheme.colorScheme.primary,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
@@ -214,8 +214,8 @@ fun Solutions30ComprehensiveHub(
                             )
                         },
                         colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = GoldPrimary.copy(alpha = 0.2f),
-                            selectedLabelColor = GoldPrimary
+                            selectedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
+                            selectedLabelColor = MaterialTheme.colorScheme.primary
                         )
                     )
                 }
@@ -278,12 +278,12 @@ fun Solutions30ComprehensiveHub(
                                 Box(
                                     modifier = Modifier
                                         .size(32.dp)
-                                        .background(GoldPrimary.copy(alpha = 0.15f), CircleShape),
+                                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f), CircleShape),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Text(
                                         text = "#${solution.problemNumber}",
-                                        color = GoldPrimary,
+                                        color = MaterialTheme.colorScheme.primary,
                                         fontWeight = FontWeight.Black,
                                         fontSize = 12.sp
                                     )
@@ -323,13 +323,13 @@ fun Solutions30ComprehensiveHub(
 
                         // App Solution
                         Surface(
-                            color = EmeraldAccent.copy(alpha = 0.08f),
+                            color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.08f),
                             shape = RoundedCornerShape(10.dp)
                         ) {
                             Column(modifier = Modifier.padding(12.dp)) {
                                 Text(
                                     text = "BRIGHT SOFTWARE SOLUTION:",
-                                    color = EmeraldAccent,
+                                    color = MaterialTheme.colorScheme.secondary,
                                     fontSize = 12.sp,
                                     fontWeight = FontWeight.Black
                                 )
@@ -431,12 +431,12 @@ private fun SolutionCardItem(
                     Box(
                         modifier = Modifier
                             .size(28.dp)
-                            .background(GoldPrimary.copy(alpha = 0.15f), CircleShape),
+                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f), CircleShape),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = "${item.problemNumber}",
-                            color = GoldPrimary,
+                            color = MaterialTheme.colorScheme.primary,
                             fontWeight = FontWeight.Black,
                             fontSize = 12.sp
                         )
@@ -514,7 +514,7 @@ private fun SolutionCardItem(
                 Button(
                     onClick = onLaunchInteractiveAction,
                     shape = RoundedCornerShape(8.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = GoldPrimary, contentColor = Color.Black),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary),
                     contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
                     modifier = Modifier.height(32.dp)
                 ) {

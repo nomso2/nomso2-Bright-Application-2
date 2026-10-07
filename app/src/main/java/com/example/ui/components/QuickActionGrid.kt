@@ -129,7 +129,7 @@ private fun QuickActionCell(
                 Icon(
                     imageVector = item.icon,
                     contentDescription = item.title,
-                    tint = ElegantGoldPrimary,
+                    tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(18.dp)
                 )
             }

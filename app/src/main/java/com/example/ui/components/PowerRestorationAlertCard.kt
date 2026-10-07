@@ -43,6 +43,7 @@ import com.example.ui.theme.ElegantGoldPrimary
 import com.example.ui.theme.Slate100Text
 import com.example.ui.theme.Slate400Text
 import com.example.ui.theme.Slate500Text
+import com.example.ui.theme.extendedColors
 
 /**
  * Feature 9: Power Restoration Chime / Notification Alert
@@ -84,13 +85,13 @@ fun PowerRestorationAlertCard(
                         modifier = Modifier
                             .size(34.dp)
                             .clip(CircleShape)
-                            .background(Color(0xFF10B981).copy(alpha = 0.2f)),
+                            .background(MaterialTheme.extendedColors.success.copy(alpha = 0.2f)),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = Icons.Default.NotificationsActive,
                             contentDescription = null,
-                            tint = Color(0xFF10B981),
+                            tint = MaterialTheme.extendedColors.success,
                             modifier = Modifier.size(18.dp)
                         )
                     }
@@ -102,7 +103,7 @@ fun PowerRestorationAlertCard(
                                 fontWeight = FontWeight.ExtraBold,
                                 letterSpacing = 1.sp
                             ),
-                            color = ElegantGoldPrimary
+                            color = MaterialTheme.colorScheme.primary
                         )
                         Text(
                             text = "Alert When Light Returns",
@@ -117,7 +118,7 @@ fun PowerRestorationAlertCard(
                     onCheckedChange = { onToggleAlarm() },
                     colors = SwitchDefaults.colors(
                         checkedThumbColor = Color.Black,
-                        checkedTrackColor = ElegantGoldPrimary,
+                        checkedTrackColor = MaterialTheme.colorScheme.primary,
                         uncheckedThumbColor = MaterialTheme.colorScheme.onSurfaceVariant,
                         uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant
                     ),
@@ -144,7 +145,7 @@ fun PowerRestorationAlertCard(
                         .background(if (isAlarmEnabled) Color(0x2210B981) else Color(0x2264748B))
                         .border(
                             1.dp,
-                            if (isAlarmEnabled) Color(0xFF10B981).copy(alpha = 0.5f) else Color.Transparent,
+                            if (isAlarmEnabled) MaterialTheme.extendedColors.success.copy(alpha = 0.5f) else Color.Transparent,
                             RoundedCornerShape(6.dp)
                         )
                         .padding(horizontal = 8.dp, vertical = 4.dp)
@@ -155,16 +156,16 @@ fun PowerRestorationAlertCard(
                             fontWeight = FontWeight.Bold,
                             fontSize = 12.sp
                         ),
-                        color = if (isAlarmEnabled) Color(0xFF10B981) else Slate500Text
+                        color = if (isAlarmEnabled) MaterialTheme.extendedColors.success else Slate500Text
                     )
                 }
 
                 // Test sound button
                 OutlinedButton(
                     onClick = onTestChime,
-                    colors = ButtonDefaults.outlinedButtonColors(contentColor = ElegantGoldPrimary),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.primary),
                     shape = RoundedCornerShape(8.dp),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, ElegantGoldPrimary.copy(alpha = 0.6f)),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)),
                     modifier = Modifier.testTag("test_restoration_sound_btn")
                 ) {
                     Icon(

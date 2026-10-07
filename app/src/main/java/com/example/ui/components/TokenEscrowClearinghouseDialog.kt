@@ -103,7 +103,7 @@ fun TokenEscrowClearinghouseDialog(
                             Icon(
                                 imageVector = Icons.Default.AutoAwesome,
                                 contentDescription = null,
-                                tint = ElegantGoldPrimary,
+                                tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(16.dp)
                             )
                             Spacer(modifier = Modifier.width(6.dp))
@@ -113,7 +113,7 @@ fun TokenEscrowClearinghouseDialog(
                                     fontWeight = FontWeight.ExtraBold,
                                     letterSpacing = 1.sp
                                 ),
-                                color = ElegantGoldPrimary
+                                color = MaterialTheme.colorScheme.primary
                             )
                         }
                         Text(
@@ -135,8 +135,8 @@ fun TokenEscrowClearinghouseDialog(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(16.dp))
-                        .background(Color(0x1A22C55E))
-                        .border(1.dp, Color(0x3322C55E), RoundedCornerShape(16.dp))
+                        .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f))
+                        .border(1.dp, MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f), RoundedCornerShape(16.dp))
                         .padding(14.dp)
                 ) {
                     Column {
@@ -149,7 +149,7 @@ fun TokenEscrowClearinghouseDialog(
                                 Icon(
                                     imageVector = Icons.Default.Lock,
                                     contentDescription = null,
-                                    tint = ElegantGreenLive,
+                                    tint = MaterialTheme.colorScheme.secondary,
                                     modifier = Modifier.size(18.dp)
                                 )
                                 Spacer(modifier = Modifier.width(6.dp))
@@ -159,13 +159,13 @@ fun TokenEscrowClearinghouseDialog(
                                         fontWeight = FontWeight.Bold,
                                         letterSpacing = 0.5.sp
                                     ),
-                                    color = Color(0xFF16A34A)
+                                    color = MaterialTheme.colorScheme.secondary
                                 )
                             }
                             Text(
                                 text = "INSTITUTIONAL AGGREGATOR",
                                 style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp, fontWeight = FontWeight.ExtraBold),
-                                color = ElegantGreenLive
+                                color = MaterialTheme.colorScheme.secondary
                             )
                         }
                         Spacer(modifier = Modifier.height(6.dp))
@@ -203,14 +203,14 @@ fun TokenEscrowClearinghouseDialog(
                                 Icon(
                                     imageVector = Icons.Default.Timer,
                                     contentDescription = null,
-                                    tint = Color(0xFF60A5FA),
+                                    tint = MaterialTheme.colorScheme.tertiary,
                                     modifier = Modifier.size(14.dp)
                                 )
                                 Spacer(modifier = Modifier.width(4.dp))
                                 Text(
                                     text = "SLA MONITOR",
                                     style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp, fontWeight = FontWeight.Bold),
-                                    color = Color(0xFF2563EB)
+                                    color = MaterialTheme.colorScheme.tertiary
                                 )
                             }
                             Spacer(modifier = Modifier.height(4.dp))
@@ -244,21 +244,21 @@ fun TokenEscrowClearinghouseDialog(
                                 Icon(
                                     imageVector = Icons.Default.Security,
                                     contentDescription = null,
-                                    tint = ElegantGoldPrimary,
+                                    tint = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.size(14.dp)
                                 )
                                 Spacer(modifier = Modifier.width(4.dp))
                                 Text(
                                     text = "TRUST METRICS",
                                     style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp, fontWeight = FontWeight.Bold),
-                                    color = ElegantGoldPrimary
+                                    color = MaterialTheme.colorScheme.primary
                                 )
                             }
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(
                                 text = "98.4% Rating",
                                 style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                                color = Color(0xFF16A34A)
+                                color = MaterialTheme.colorScheme.secondary
                             )
                             Text(
                                 text = "Cross-Node Verified",
@@ -285,7 +285,7 @@ fun TokenEscrowClearinghouseDialog(
                     Text(
                         text = "${escrowTokens.size} Issued",
                         style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
-                        color = ElegantGoldPrimary
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
 
@@ -297,10 +297,10 @@ fun TokenEscrowClearinghouseDialog(
                             .fillMaxWidth()
                             .padding(vertical = 4.dp)
                             .clip(RoundedCornerShape(14.dp))
-                            .background(if (token.isRedeemed) MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f) else Color(0x14FACC15))
+                            .background(if (token.isRedeemed) MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f) else MaterialTheme.colorScheme.primary.copy(alpha = 0.08f))
                             .border(
                                 1.dp,
-                                if (token.isRedeemed) MaterialTheme.colorScheme.outline.copy(alpha = 0.3f) else ElegantGoldPrimary,
+                                if (token.isRedeemed) MaterialTheme.colorScheme.outline.copy(alpha = 0.3f) else MaterialTheme.colorScheme.primary,
                                 RoundedCornerShape(14.dp)
                             )
                             .padding(12.dp)
@@ -315,7 +315,7 @@ fun TokenEscrowClearinghouseDialog(
                                     Icon(
                                         imageVector = Icons.Default.Bolt,
                                         contentDescription = null,
-                                        tint = if (token.isRedeemed) MaterialTheme.colorScheme.onSurfaceVariant else ElegantGoldPrimary,
+                                        tint = if (token.isRedeemed) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.primary,
                                         modifier = Modifier.size(16.dp)
                                     )
                                     Spacer(modifier = Modifier.width(6.dp))
@@ -336,7 +336,7 @@ fun TokenEscrowClearinghouseDialog(
                                     Box(
                                         modifier = Modifier
                                             .clip(RoundedCornerShape(6.dp))
-                                            .background(ElegantGoldPrimary)
+                                            .background(MaterialTheme.colorScheme.primary)
                                             .clickable { onClaimToken(token.id) }
                                             .padding(horizontal = 8.dp, vertical = 4.dp)
                                     ) {
@@ -344,14 +344,14 @@ fun TokenEscrowClearinghouseDialog(
                                             Icon(
                                                 imageVector = Icons.Default.ContentCopy,
                                                 contentDescription = null,
-                                                tint = Color(0xFF0A0C10),
+                                                tint = MaterialTheme.colorScheme.onPrimary,
                                                 modifier = Modifier.size(12.dp)
                                             )
                                             Spacer(modifier = Modifier.width(4.dp))
                                             Text(
                                                 text = "Copy Token",
                                                 style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                                                color = Color(0xFF0A0C10)
+                                                color = MaterialTheme.colorScheme.onPrimary
                                             )
                                         }
                                     }
@@ -368,7 +368,7 @@ fun TokenEscrowClearinghouseDialog(
                                     fontFamily = FontFamily.Monospace,
                                     letterSpacing = 1.sp
                                 ),
-                                color = if (token.isRedeemed) MaterialTheme.colorScheme.onSurfaceVariant else ElegantGoldPrimary
+                                color = if (token.isRedeemed) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.primary
                             )
 
                             Spacer(modifier = Modifier.height(4.dp))
@@ -391,11 +391,11 @@ fun TokenEscrowClearinghouseDialog(
                         .height(46.dp)
                         .testTag("trigger_escrow_settlement_button"),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0x1AFACC15),
-                        contentColor = ElegantGoldPrimary
+                        containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                        contentColor = MaterialTheme.colorScheme.primary
                     ),
                     shape = RoundedCornerShape(12.dp),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, ElegantGoldPrimary)
+                    border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
                 ) {
                     Icon(imageVector = Icons.Default.Bolt, contentDescription = null, modifier = Modifier.size(18.dp))
                     Spacer(modifier = Modifier.width(6.dp))
@@ -443,7 +443,7 @@ fun TokenEscrowClearinghouseDialog(
                                 fontSize = 12.sp,
                                 lineHeight = 14.sp
                             ),
-                            color = Color(0xFF16A34A)
+                            color = MaterialTheme.colorScheme.secondary
                         )
                     }
                 }

@@ -68,6 +68,7 @@ import com.example.ui.theme.Slate500Text
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import com.example.ui.theme.ElegantLightBorder
 
 /**
  * Feature 3: Offline SMS / Emergency Dispatcher
@@ -128,13 +129,13 @@ fun OfflineEmergencySmsDialog(
                     modifier = Modifier
                         .size(36.dp)
                         .clip(CircleShape)
-                        .background(Color(0x33EF4444)),
+                        .background(MaterialTheme.colorScheme.error.copy(alpha = 0.2f)),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = Icons.Default.SignalCellularOff,
                         contentDescription = null,
-                        tint = Color(0xFFEF4444),
+                        tint = MaterialTheme.colorScheme.error,
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -147,7 +148,7 @@ fun OfflineEmergencySmsDialog(
                     Text(
                         text = "Zero Data • Works without Internet",
                         style = MaterialTheme.typography.labelSmall,
-                        color = ElegantGoldPrimary
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
             }
@@ -172,7 +173,7 @@ fun OfflineEmergencySmsDialog(
                         fontWeight = FontWeight.ExtraBold,
                         letterSpacing = 0.5.sp
                     ),
-                    color = ElegantGoldPrimary
+                    color = MaterialTheme.colorScheme.primary
                 )
 
                 faultOptions.forEach { option ->
@@ -181,10 +182,10 @@ fun OfflineEmergencySmsDialog(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(8.dp))
-                            .background(if (isSelected) Color(0x33FACC15) else Color(0xFF1E2430))
+                            .background(if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.2f) else ElegantDarkBorder)
                             .border(
                                 1.dp,
-                                if (isSelected) ElegantGoldPrimary else Color.Transparent,
+                                if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent,
                                 RoundedCornerShape(8.dp)
                             )
                             .clickable { selectedFault = option }
@@ -195,7 +196,7 @@ fun OfflineEmergencySmsDialog(
                         Icon(
                             imageVector = if (isSelected) Icons.Default.FlashOn else Icons.Default.Warning,
                             contentDescription = null,
-                            tint = if (isSelected) ElegantGoldPrimary else Slate500Text,
+                            tint = if (isSelected) MaterialTheme.colorScheme.primary else Slate500Text,
                             modifier = Modifier.size(16.dp)
                         )
                         Text(
@@ -233,7 +234,7 @@ fun OfflineEmergencySmsDialog(
                         fontFamily = FontFamily.Monospace,
                         fontSize = 12.sp,
                         lineHeight = 15.sp,
-                        color = Color(0xFFE2E8F0)
+                        color = ElegantLightBorder
                     )
                 }
 
@@ -250,7 +251,7 @@ fun OfflineEmergencySmsDialog(
                             clipboardManager.setPrimaryClip(clip)
                             Toast.makeText(context, "SMS text copied to clipboard!", Toast.LENGTH_SHORT).show()
                         },
-                        colors = ButtonDefaults.outlinedButtonColors(contentColor = ElegantGoldPrimary),
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.primary),
                         modifier = Modifier.testTag("copy_sms_button")
                     ) {
                         Icon(
@@ -288,7 +289,7 @@ fun OfflineEmergencySmsDialog(
                     onDismiss()
                 },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFEF4444),
+                    containerColor = MaterialTheme.colorScheme.error,
                     contentColor = Color.White
                 ),
                 shape = RoundedCornerShape(8.dp),

@@ -60,6 +60,7 @@ import androidx.compose.ui.unit.sp
 import com.example.model.UserProfile
 import com.example.ui.theme.EmeraldAccent
 import com.example.ui.theme.GoldPrimary
+import com.example.ui.theme.extendedColors
 
 // ==========================================
 // SOLUTION 6: OFFLINE USSD / SMS DATA BRIDGE
@@ -105,7 +106,7 @@ fun OfflineUssdBridgeFeature(
                 Button(
                     onClick = { selectedFaultCode = code },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (isSelected) GoldPrimary else MaterialTheme.colorScheme.surfaceVariant,
+                        containerColor = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
                         contentColor = if (isSelected) Color.Black else MaterialTheme.colorScheme.onSurface
                     ),
                     shape = RoundedCornerShape(8.dp),
@@ -133,7 +134,7 @@ fun OfflineUssdBridgeFeature(
                         text = ussdString,
                         fontFamily = FontFamily.Monospace,
                         fontWeight = FontWeight.Bold,
-                        color = GoldPrimary,
+                        color = MaterialTheme.colorScheme.primary,
                         fontSize = 13.sp,
                         modifier = Modifier.padding(10.dp)
                     )
@@ -149,7 +150,7 @@ fun OfflineUssdBridgeFeature(
                             val intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:$encoded"))
                             context.startActivity(intent)
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = GoldPrimary, contentColor = Color.Black),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary),
                         shape = RoundedCornerShape(8.dp),
                         modifier = Modifier.weight(1f)
                     ) {
@@ -221,15 +222,15 @@ fun TamperCrowdsourcingFeature(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                        Icon(Icons.Default.Security, contentDescription = null, tint = EmeraldAccent, modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Security, contentDescription = null, tint = MaterialTheme.colorScheme.secondary, modifier = Modifier.size(18.dp))
                         Text("Transformer Perimeter:", fontWeight = FontWeight.Bold, fontSize = 12.sp)
                     }
-                    Text(userProfile.transformerId, fontWeight = FontWeight.Bold, color = GoldPrimary, fontSize = 12.sp)
+                    Text(userProfile.transformerId, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary, fontSize = 12.sp)
                 }
 
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     Text("Cell Tower GSM Signal:", fontSize = 12.sp)
-                    Text("100% (Normal)", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = EmeraldAccent)
+                    Text("100% (Normal)", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.secondary)
                 }
 
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
@@ -258,7 +259,7 @@ fun TamperCrowdsourcingFeature(
                         Toast.makeText(context, "NSCDC Infrastructure Protection Command alerted with GPS of ${userProfile.transformerId}!", Toast.LENGTH_LONG).show()
                     },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (isSubstationAlarmActive) EmeraldAccent else MaterialTheme.colorScheme.error,
+                        containerColor = if (isSubstationAlarmActive) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error,
                         contentColor = Color.White
                     ),
                     shape = RoundedCornerShape(10.dp),
@@ -312,20 +313,20 @@ fun LowPowerBatSignalFeature(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column {
-                        Text("AMOLED Bat-Signal Mode", fontWeight = FontWeight.Bold, fontSize = 13.sp, color = if (isBatSignalMode) GoldPrimary else MaterialTheme.colorScheme.onSurface)
+                        Text("AMOLED Bat-Signal Mode", fontWeight = FontWeight.Bold, fontSize = 13.sp, color = if (isBatSignalMode) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface)
                         Text(if (isBatSignalMode) "Active: 92% screen energy conserved" else "Inactive", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                     Switch(
                         checked = isBatSignalMode,
                         onCheckedChange = onToggleBatSignal,
-                        colors = SwitchDefaults.colors(checkedThumbColor = GoldPrimary, checkedTrackColor = GoldPrimary.copy(alpha = 0.5f))
+                        colors = SwitchDefaults.colors(checkedThumbColor = MaterialTheme.colorScheme.primary, checkedTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f))
                     )
                 }
 
                 Surface(
                     color = Color.Black,
                     shape = RoundedCornerShape(10.dp),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, if (isBatSignalMode) GoldPrimary else Color.DarkGray)
+                    border = androidx.compose.foundation.BorderStroke(1.dp, if (isBatSignalMode) MaterialTheme.colorScheme.primary else Color.DarkGray)
                 ) {
                     Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                         Text("140-Byte Last Gasp Ping Payload:", fontSize = 12.sp, color = Color.Gray)
@@ -333,7 +334,7 @@ fun LowPowerBatSignalFeature(
                             text = "PING:MTR=${userProfile.meterNumber}&TR=${userProfile.transformerId}&BATT=4%&SIG=SOS",
                             fontFamily = FontFamily.Monospace,
                             fontSize = 12.sp,
-                            color = if (isBatSignalMode) GoldPrimary else EmeraldAccent
+                            color = if (isBatSignalMode) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
                         )
                     }
                 }
@@ -343,7 +344,7 @@ fun LowPowerBatSignalFeature(
                         lastGaspTransmitted = true
                         Toast.makeText(context, "Last Gasp Outage Ping transmitted to DisCo Gateway before shutdown!", Toast.LENGTH_SHORT).show()
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = GoldPrimary, contentColor = Color.Black),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary),
                     shape = RoundedCornerShape(10.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -405,7 +406,7 @@ fun UniversalMeterSyncFeature(
                         }
                     },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (isSelected) GoldPrimary else MaterialTheme.colorScheme.surfaceVariant,
+                        containerColor = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
                         contentColor = if (isSelected) Color.Black else MaterialTheme.colorScheme.onSurface
                     ),
                     shape = RoundedCornerShape(8.dp),
@@ -428,7 +429,7 @@ fun UniversalMeterSyncFeature(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text("Optical Barcode Readout:", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    Icon(Icons.Default.QrCode, contentDescription = null, tint = GoldPrimary, modifier = Modifier.size(20.dp))
+                    Icon(Icons.Default.QrCode, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
                 }
 
                 Surface(
@@ -437,14 +438,14 @@ fun UniversalMeterSyncFeature(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(modifier = Modifier.padding(10.dp)) {
-                        Text(simulatedBarcode, fontFamily = FontFamily.Monospace, fontSize = 15.sp, fontWeight = FontWeight.Bold, color = GoldPrimary)
+                        Text(simulatedBarcode, fontFamily = FontFamily.Monospace, fontSize = 15.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                         Text(selectedManufacturer, fontSize = 12.sp, color = Color.LightGray)
                     }
                 }
 
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     Text("Feeder Classification:", fontSize = 12.sp)
-                    Text("${userProfile.feederBand.code} (${userProfile.discoCode})", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = EmeraldAccent)
+                    Text("${userProfile.feederBand.code} (${userProfile.discoCode})", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.secondary)
                 }
 
                 Button(
@@ -452,7 +453,7 @@ fun UniversalMeterSyncFeature(
                         isSynced = true
                         Toast.makeText(context, "Meter $simulatedBarcode bound to ${userProfile.discoCode} cloud registry!", Toast.LENGTH_SHORT).show()
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = GoldPrimary, contentColor = Color.Black),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary),
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -508,14 +509,14 @@ fun NationalGridPulseMonitorFeature(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                        Icon(Icons.Default.Speed, contentDescription = null, tint = GoldPrimary, modifier = Modifier.size(20.dp))
+                        Icon(Icons.Default.Speed, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
                         Text("System Frequency Dial:", fontWeight = FontWeight.Bold, fontSize = 13.sp)
                     }
                     Text(
                         text = if (isFrequencyHealthy) "GRID STABLE" else if (isFrequencyCritical) "COLLAPSE THREAT" else "UNDER-FREQUENCY",
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
-                        color = if (isFrequencyHealthy) EmeraldAccent else if (isFrequencyCritical) MaterialTheme.colorScheme.error else Color(0xFFF59E0B)
+                        color = if (isFrequencyHealthy) MaterialTheme.colorScheme.secondary else if (isFrequencyCritical) MaterialTheme.colorScheme.error else MaterialTheme.extendedColors.warning
                     )
                 }
 
@@ -533,7 +534,7 @@ fun NationalGridPulseMonitorFeature(
                             text = "${String.format("%.2f", frequencyHz)} Hz",
                             fontSize = 32.sp,
                             fontWeight = FontWeight.Black,
-                            color = if (isFrequencyHealthy) EmeraldAccent else if (isFrequencyCritical) MaterialTheme.colorScheme.error else Color(0xFFF59E0B)
+                            color = if (isFrequencyHealthy) MaterialTheme.colorScheme.secondary else if (isFrequencyCritical) MaterialTheme.colorScheme.error else MaterialTheme.extendedColors.warning
                         )
                         Text("Target: 50.00 Hz • Statutory Band: 49.75 - 50.25 Hz", fontSize = 12.sp, color = Color.Gray)
                     }
@@ -542,11 +543,11 @@ fun NationalGridPulseMonitorFeature(
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     Column {
                         Text("Active Generation:", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        Text("$generationMw MW", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = GoldPrimary)
+                        Text("$generationMw MW", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                     }
                     Column(horizontalAlignment = Alignment.End) {
                         Text("Spinning Reserve:", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        Text("$spinningReserveMw MW", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = EmeraldAccent)
+                        Text("$spinningReserveMw MW", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.secondary)
                     }
                 }
 
@@ -574,7 +575,7 @@ fun NationalGridPulseMonitorFeature(
                             spinningReserveMw = 310
                             Toast.makeText(context, "Grid telemetry refreshed from Osogbo NCC!", Toast.LENGTH_SHORT).show()
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = GoldPrimary, contentColor = Color.Black),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary),
                         shape = RoundedCornerShape(8.dp),
                         modifier = Modifier.weight(1f)
                     ) {

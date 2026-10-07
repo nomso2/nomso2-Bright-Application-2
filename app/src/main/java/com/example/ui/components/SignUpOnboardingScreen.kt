@@ -93,6 +93,9 @@ import com.example.ui.theme.EmeraldAccent
 import com.example.ui.theme.GoldPrimary
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import com.example.ui.theme.extendedColors
+import com.example.ui.theme.GreenSoft
+import com.example.ui.theme.InfoSky
 
 data class DemoAccount(
     val profile: UserProfile,
@@ -139,7 +142,7 @@ val PRESET_ACCOUNTS = listOf(
             isGatewayPaid = true
         ),
         subtitle = "Prepaid Residential • Band B (16h+ SLA) • Abuja FCT",
-        badgeColor = Color(0xFF38BDF8)
+        badgeColor = InfoSky
     ),
     DemoAccount(
         profile = UserProfile(
@@ -159,7 +162,7 @@ val PRESET_ACCOUNTS = listOf(
             isGatewayPaid = false
         ),
         subtitle = "Postpaid Commercial • Band A (20h+ SLA) • Ikeja GRA",
-        badgeColor = Color(0xFF4ADE80)
+        badgeColor = GreenSoft
     )
 )
 
@@ -315,14 +318,14 @@ fun SignUpOnboardingScreen(
                     Box(
                         modifier = Modifier
                             .size(36.dp)
-                            .background(GoldPrimary.copy(alpha = 0.15f), CircleShape)
-                            .border(1.dp, GoldPrimary, CircleShape),
+                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f), CircleShape)
+                            .border(1.dp, MaterialTheme.colorScheme.primary, CircleShape),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = Icons.Default.Bolt,
                             contentDescription = "Bright Power Logo",
-                            tint = GoldPrimary,
+                            tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(22.dp)
                         )
                     }
@@ -334,7 +337,7 @@ fun SignUpOnboardingScreen(
                                 letterSpacing = 1.5.sp,
                                 fontSize = 12.sp
                             ),
-                            color = GoldPrimary
+                            color = MaterialTheme.colorScheme.primary
                         )
                         Text(
                             text = if (isSignInMode) "Resident Sign In" else "Meter Registration",
@@ -388,7 +391,7 @@ fun SignUpOnboardingScreen(
                         modifier = Modifier
                             .weight(1f)
                             .clip(RoundedCornerShape(10.dp))
-                            .background(if (isSignInMode) GoldPrimary else Color.Transparent)
+                            .background(if (isSignInMode) MaterialTheme.colorScheme.primary else Color.Transparent)
                             .clickable {
                                 isSignInMode = true
                                 signInErrorMessage = null
@@ -423,7 +426,7 @@ fun SignUpOnboardingScreen(
                         modifier = Modifier
                             .weight(1f)
                             .clip(RoundedCornerShape(10.dp))
-                            .background(if (!isSignInMode) GoldPrimary else Color.Transparent)
+                            .background(if (!isSignInMode) MaterialTheme.colorScheme.primary else Color.Transparent)
                             .clickable {
                                 isSignInMode = false
                                 signInErrorMessage = null
@@ -468,7 +471,7 @@ fun SignUpOnboardingScreen(
                         .testTag("sign_in_card"),
                     shape = RoundedCornerShape(18.dp),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, GoldPrimary.copy(alpha = 0.3f)),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)),
                     elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                 ) {
                     Column(
@@ -507,7 +510,7 @@ fun SignUpOnboardingScreen(
                                 Icon(
                                     imageVector = Icons.Default.ElectricMeter,
                                     contentDescription = null,
-                                    tint = GoldPrimary,
+                                    tint = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.size(20.dp)
                                 )
                             },
@@ -528,7 +531,7 @@ fun SignUpOnboardingScreen(
                                 .fillMaxWidth()
                                 .testTag("sign_in_identifier_input"),
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = GoldPrimary,
+                                focusedBorderColor = MaterialTheme.colorScheme.primary,
                                 unfocusedBorderColor = MaterialTheme.colorScheme.outline
                             )
                         )
@@ -547,7 +550,7 @@ fun SignUpOnboardingScreen(
                                 Icon(
                                     imageVector = Icons.Default.Lock,
                                     contentDescription = null,
-                                    tint = GoldPrimary,
+                                    tint = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.size(20.dp)
                                 )
                             },
@@ -567,7 +570,7 @@ fun SignUpOnboardingScreen(
                                 .fillMaxWidth()
                                 .testTag("sign_in_pin_input"),
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = GoldPrimary,
+                                focusedBorderColor = MaterialTheme.colorScheme.primary,
                                 unfocusedBorderColor = MaterialTheme.colorScheme.outline
                             )
                         )
@@ -576,7 +579,7 @@ fun SignUpOnboardingScreen(
                         signInErrorMessage?.let { err ->
                             Text(
                                 text = err,
-                                color = Color(0xFFEF4444),
+                                color = MaterialTheme.colorScheme.error,
                                 style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold)
                             )
                         }
@@ -592,7 +595,7 @@ fun SignUpOnboardingScreen(
                                     fontWeight = FontWeight.SemiBold,
                                     fontSize = 12.sp
                                 ),
-                                color = GoldPrimary,
+                                color = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier
                                     .clickable { showForgotPinDialog = true }
                                     .testTag("forgot_pin_button")
@@ -621,8 +624,8 @@ fun SignUpOnboardingScreen(
                                 .height(50.dp)
                                 .testTag("submit_sign_in_button"),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = GoldPrimary,
-                                contentColor = Color.Black
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary
                             ),
                             shape = RoundedCornerShape(12.dp)
                         ) {
@@ -668,12 +671,12 @@ fun SignUpOnboardingScreen(
                                 .height(46.dp)
                                 .testTag("biometric_sign_in_button"),
                             shape = RoundedCornerShape(12.dp),
-                            border = androidx.compose.foundation.BorderStroke(1.dp, EmeraldAccent.copy(alpha = 0.6f))
+                            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.secondary.copy(alpha = 0.6f))
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Fingerprint,
                                 contentDescription = null,
-                                tint = EmeraldAccent,
+                                tint = MaterialTheme.colorScheme.secondary,
                                 modifier = Modifier.size(18.dp)
                             )
                             Spacer(modifier = Modifier.width(8.dp))
@@ -681,7 +684,7 @@ fun SignUpOnboardingScreen(
                                 text = "Sign In with Fingerprint / Face",
                                 style = MaterialTheme.typography.bodySmall.copy(
                                     fontWeight = FontWeight.Bold,
-                                    color = EmeraldAccent
+                                    color = MaterialTheme.colorScheme.secondary
                                 )
                             )
                         }
@@ -712,7 +715,7 @@ fun SignUpOnboardingScreen(
                         Text(
                             text = "Switch Instantly",
                             style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp),
-                            color = GoldPrimary
+                            color = MaterialTheme.colorScheme.primary
                         )
                     }
 
@@ -734,7 +737,7 @@ fun SignUpOnboardingScreen(
                             ),
                             border = androidx.compose.foundation.BorderStroke(
                                 1.dp,
-                                if (isCurrent) GoldPrimary else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)
+                                if (isCurrent) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)
                             )
                         ) {
                             Row(
@@ -780,27 +783,27 @@ fun SignUpOnboardingScreen(
                                             )
                                             if (isCurrent) {
                                                 Surface(
-                                                    color = GoldPrimary.copy(alpha = 0.2f),
+                                                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
                                                     shape = RoundedCornerShape(100.dp)
                                                 ) {
                                                     Text(
                                                         text = "ACTIVE",
                                                         fontSize = 12.sp,
                                                         fontWeight = FontWeight.ExtraBold,
-                                                        color = GoldPrimary,
+                                                        color = MaterialTheme.colorScheme.primary,
                                                         modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
                                                     )
                                                 }
                                             }
                                             Surface(
-                                                color = if (isAccPaid) EmeraldAccent.copy(alpha = 0.15f) else Color(0xFFF59E0B).copy(alpha = 0.15f),
+                                                color = if (isAccPaid) MaterialTheme.colorScheme.secondary.copy(alpha = 0.15f) else MaterialTheme.extendedColors.warning.copy(alpha = 0.15f),
                                                 shape = RoundedCornerShape(100.dp)
                                             ) {
                                                 Text(
                                                     text = if (isAccPaid) "✓ ₦500 PAID" else "₦500 REQUIRED",
                                                     fontSize = 12.sp,
                                                     fontWeight = FontWeight.ExtraBold,
-                                                    color = if (isAccPaid) EmeraldAccent else Color(0xFFF59E0B),
+                                                    color = if (isAccPaid) MaterialTheme.colorScheme.secondary else MaterialTheme.extendedColors.warning,
                                                     modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
                                                 )
                                             }
@@ -812,7 +815,7 @@ fun SignUpOnboardingScreen(
                                                 fontWeight = FontWeight.SemiBold,
                                                 fontSize = 12.sp
                                             ),
-                                            color = GoldPrimary
+                                            color = MaterialTheme.colorScheme.primary
                                         )
                                         Text(
                                             text = acc.subtitle,
@@ -829,7 +832,7 @@ fun SignUpOnboardingScreen(
                                         attemptSignIn(acc.profile)
                                     },
                                     colors = ButtonDefaults.buttonColors(
-                                        containerColor = if (!isAccPaid) Color(0xFFF59E0B) else if (isCurrent) GoldPrimary else MaterialTheme.colorScheme.surfaceVariant,
+                                        containerColor = if (!isAccPaid) MaterialTheme.extendedColors.warning else if (isCurrent) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
                                         contentColor = if (!isAccPaid || isCurrent) Color.Black else MaterialTheme.colorScheme.onSurface
                                     ),
                                     shape = RoundedCornerShape(8.dp),
@@ -874,7 +877,7 @@ fun SignUpOnboardingScreen(
                             Icon(
                                 imageVector = Icons.Default.ElectricMeter,
                                 contentDescription = null,
-                                tint = GoldPrimary,
+                                tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(20.dp)
                             )
                             Text(
@@ -896,7 +899,7 @@ fun SignUpOnboardingScreen(
                                 .fillMaxWidth()
                                 .testTag("new_meter_input"),
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = GoldPrimary
+                                focusedBorderColor = MaterialTheme.colorScheme.primary
                             )
                         )
 
@@ -922,7 +925,7 @@ fun SignUpOnboardingScreen(
                                         .fillMaxWidth()
                                         .testTag("disco_dropdown_select"),
                                     colors = OutlinedTextFieldDefaults.colors(
-                                        focusedBorderColor = GoldPrimary
+                                        focusedBorderColor = MaterialTheme.colorScheme.primary
                                     )
                                 )
                                 ExposedDropdownMenu(
@@ -958,7 +961,7 @@ fun SignUpOnboardingScreen(
                                         .fillMaxWidth()
                                         .testTag("band_dropdown_select"),
                                     colors = OutlinedTextFieldDefaults.colors(
-                                        focusedBorderColor = GoldPrimary
+                                        focusedBorderColor = MaterialTheme.colorScheme.primary
                                     )
                                 )
                                 ExposedDropdownMenu(
@@ -987,8 +990,8 @@ fun SignUpOnboardingScreen(
                                 modifier = Modifier
                                     .weight(1f)
                                     .clip(RoundedCornerShape(8.dp))
-                                    .background(if (isPrepaid) GoldPrimary.copy(alpha = 0.2f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))
-                                    .border(1.dp, if (isPrepaid) GoldPrimary else Color.Transparent, RoundedCornerShape(8.dp))
+                                    .background(if (isPrepaid) MaterialTheme.colorScheme.primary.copy(alpha = 0.2f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))
+                                    .border(1.dp, if (isPrepaid) MaterialTheme.colorScheme.primary else Color.Transparent, RoundedCornerShape(8.dp))
                                     .clickable { isPrepaid = true }
                                     .padding(vertical = 8.dp),
                                 contentAlignment = Alignment.Center
@@ -997,7 +1000,7 @@ fun SignUpOnboardingScreen(
                                     text = "Prepaid Residential",
                                     fontSize = 12.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = if (isPrepaid) GoldPrimary else MaterialTheme.colorScheme.onSurfaceVariant
+                                    color = if (isPrepaid) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
 
@@ -1005,8 +1008,8 @@ fun SignUpOnboardingScreen(
                                 modifier = Modifier
                                     .weight(1f)
                                     .clip(RoundedCornerShape(8.dp))
-                                    .background(if (!isPrepaid) GoldPrimary.copy(alpha = 0.2f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))
-                                    .border(1.dp, if (!isPrepaid) GoldPrimary else Color.Transparent, RoundedCornerShape(8.dp))
+                                    .background(if (!isPrepaid) MaterialTheme.colorScheme.primary.copy(alpha = 0.2f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))
+                                    .border(1.dp, if (!isPrepaid) MaterialTheme.colorScheme.primary else Color.Transparent, RoundedCornerShape(8.dp))
                                     .clickable { isPrepaid = false }
                                     .padding(vertical = 8.dp),
                                 contentAlignment = Alignment.Center
@@ -1015,7 +1018,7 @@ fun SignUpOnboardingScreen(
                                     text = "Postpaid Account",
                                     fontSize = 12.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = if (!isPrepaid) GoldPrimary else MaterialTheme.colorScheme.onSurfaceVariant
+                                    color = if (!isPrepaid) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                         }
@@ -1047,7 +1050,7 @@ fun SignUpOnboardingScreen(
                             Icon(
                                 imageVector = Icons.Default.Person,
                                 contentDescription = null,
-                                tint = GoldPrimary,
+                                tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(20.dp)
                             )
                             Text(
@@ -1067,7 +1070,7 @@ fun SignUpOnboardingScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .testTag("new_customer_name_input"),
-                            colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = GoldPrimary)
+                            colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = MaterialTheme.colorScheme.primary)
                         )
 
                         // Phone Number
@@ -1081,7 +1084,7 @@ fun SignUpOnboardingScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .testTag("new_phone_number_input"),
-                            colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = GoldPrimary)
+                            colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = MaterialTheme.colorScheme.primary)
                         )
 
                         // Street Address & LGA
@@ -1094,7 +1097,7 @@ fun SignUpOnboardingScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .testTag("new_street_address_input"),
-                            colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = GoldPrimary)
+                            colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = MaterialTheme.colorScheme.primary)
                         )
 
                         Row(
@@ -1107,7 +1110,7 @@ fun SignUpOnboardingScreen(
                                 label = { Text("LGA") },
                                 singleLine = true,
                                 modifier = Modifier.weight(1f),
-                                colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = GoldPrimary)
+                                colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = MaterialTheme.colorScheme.primary)
                             )
                             OutlinedTextField(
                                 value = selectedState,
@@ -1115,7 +1118,7 @@ fun SignUpOnboardingScreen(
                                 label = { Text("State") },
                                 singleLine = true,
                                 modifier = Modifier.weight(1f),
-                                colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = GoldPrimary)
+                                colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = MaterialTheme.colorScheme.primary)
                             )
                         }
 
@@ -1130,7 +1133,7 @@ fun SignUpOnboardingScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .testTag("new_account_pin_input"),
-                            colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = GoldPrimary)
+                            colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = MaterialTheme.colorScheme.primary)
                         )
                     }
                 }
@@ -1180,12 +1183,12 @@ fun SignUpOnboardingScreen(
                         .testTag("meter_gateway_activation_card"),
                     shape = RoundedCornerShape(14.dp),
                     colors = CardDefaults.cardColors(
-                        containerColor = if (isCurrentMeterPaid) EmeraldAccent.copy(alpha = 0.08f)
+                        containerColor = if (isCurrentMeterPaid) MaterialTheme.colorScheme.secondary.copy(alpha = 0.08f)
                         else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f)
                     ),
                     border = androidx.compose.foundation.BorderStroke(
                         1.5.dp,
-                        if (isCurrentMeterPaid) EmeraldAccent.copy(alpha = 0.6f) else GoldPrimary.copy(alpha = 0.7f)
+                        if (isCurrentMeterPaid) MaterialTheme.colorScheme.secondary.copy(alpha = 0.6f) else MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
                     )
                 ) {
                     Column(
@@ -1206,7 +1209,7 @@ fun SignUpOnboardingScreen(
                                 Icon(
                                     imageVector = if (isCurrentMeterPaid) Icons.Default.CheckCircle else Icons.Default.Lock,
                                     contentDescription = null,
-                                    tint = if (isCurrentMeterPaid) EmeraldAccent else GoldPrimary,
+                                    tint = if (isCurrentMeterPaid) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.size(20.dp)
                                 )
                                 Text(
@@ -1217,14 +1220,14 @@ fun SignUpOnboardingScreen(
                             }
 
                             Surface(
-                                color = if (isCurrentMeterPaid) EmeraldAccent.copy(alpha = 0.2f) else GoldPrimary.copy(alpha = 0.2f),
+                                color = if (isCurrentMeterPaid) MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f) else MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
                                 shape = RoundedCornerShape(100.dp)
                             ) {
                                 Text(
                                     text = if (isCurrentMeterPaid) "PAID ONCE • ACTIVATED" else "BLOCKING • ₦500 REQUIRED",
                                     fontSize = 12.sp,
                                     fontWeight = FontWeight.ExtraBold,
-                                    color = if (isCurrentMeterPaid) EmeraldAccent else GoldPrimary,
+                                    color = if (isCurrentMeterPaid) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                                 )
                             }
@@ -1234,9 +1237,9 @@ fun SignUpOnboardingScreen(
                             // Already paid meter
                             Surface(
                                 modifier = Modifier.fillMaxWidth(),
-                                color = EmeraldAccent.copy(alpha = 0.12f),
+                                color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.12f),
                                 shape = RoundedCornerShape(10.dp),
-                                border = androidx.compose.foundation.BorderStroke(1.dp, EmeraldAccent.copy(alpha = 0.3f))
+                                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.secondary.copy(alpha = 0.3f))
                             ) {
                                 Row(
                                     modifier = Modifier.padding(12.dp),
@@ -1246,14 +1249,14 @@ fun SignUpOnboardingScreen(
                                     Icon(
                                         imageVector = Icons.Default.Check,
                                         contentDescription = null,
-                                        tint = EmeraldAccent,
+                                        tint = MaterialTheme.colorScheme.secondary,
                                         modifier = Modifier.size(18.dp)
                                     )
                                     Column {
                                         Text(
                                             text = "Meter #$meterNumber is activated!",
                                             style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                                            color = EmeraldAccent
+                                            color = MaterialTheme.colorScheme.secondary
                                         )
                                         Text(
                                             text = "The one-time ₦500 gateway fee has already been paid for this meter. No additional payment required.",
@@ -1275,7 +1278,7 @@ fun SignUpOnboardingScreen(
                                     .height(52.dp)
                                     .testTag("register_and_enter_dashboard_button"),
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = EmeraldAccent,
+                                    containerColor = MaterialTheme.colorScheme.secondary,
                                     contentColor = Color.Black
                                 ),
                                 shape = RoundedCornerShape(12.dp)
@@ -1299,7 +1302,7 @@ fun SignUpOnboardingScreen(
                                 modifier = Modifier.fillMaxWidth(),
                                 color = MaterialTheme.colorScheme.surface,
                                 shape = RoundedCornerShape(12.dp),
-                                border = androidx.compose.foundation.BorderStroke(1.dp, GoldPrimary.copy(alpha = 0.3f))
+                                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f))
                             ) {
                                 Row(
                                     modifier = Modifier
@@ -1317,7 +1320,7 @@ fun SignUpOnboardingScreen(
                                         Text(
                                             text = "Paid Once Per Meter",
                                             style = MaterialTheme.typography.bodySmall,
-                                            color = GoldPrimary
+                                            color = MaterialTheme.colorScheme.primary
                                         )
                                     }
                                     Text(
@@ -1326,7 +1329,7 @@ fun SignUpOnboardingScreen(
                                             fontWeight = FontWeight.Black,
                                             fontSize = 24.sp
                                         ),
-                                        color = GoldPrimary
+                                        color = MaterialTheme.colorScheme.primary
                                     )
                                 }
                             }
@@ -1336,7 +1339,7 @@ fun SignUpOnboardingScreen(
                                 modifier = Modifier.fillMaxWidth(),
                                 color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
                                 shape = RoundedCornerShape(10.dp),
-                                border = androidx.compose.foundation.BorderStroke(1.dp, GoldPrimary.copy(alpha = 0.4f))
+                                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.4f))
                             ) {
                                 Row(
                                     modifier = Modifier.padding(12.dp),
@@ -1346,14 +1349,14 @@ fun SignUpOnboardingScreen(
                                     Icon(
                                         imageVector = Icons.Default.Security,
                                         contentDescription = null,
-                                        tint = GoldPrimary,
+                                        tint = MaterialTheme.colorScheme.primary,
                                         modifier = Modifier.size(20.dp)
                                     )
                                     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                                         Text(
                                             text = "GATEWAY POLICY (NO TOKENS OR REWARDS)",
                                             style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.ExtraBold, letterSpacing = 0.8.sp),
-                                            color = GoldPrimary
+                                            color = MaterialTheme.colorScheme.primary
                                         )
                                         Text(
                                             text = "This ₦500 payment is strictly a blocking requirement and gateway to the app to verify your meter with the national grid server. No electricity units, tokens, or rewards are given to users for paying this. It is paid once per meter.",
@@ -1386,11 +1389,11 @@ fun SignUpOnboardingScreen(
                                             modifier = Modifier.weight(1f),
                                             shape = RoundedCornerShape(8.dp),
                                             colors = ButtonDefaults.outlinedButtonColors(
-                                                containerColor = if (isSelected) GoldPrimary.copy(alpha = 0.15f) else Color.Transparent
+                                                containerColor = if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.15f) else Color.Transparent
                                             ),
                                             border = androidx.compose.foundation.BorderStroke(
                                                 1.dp,
-                                                if (isSelected) GoldPrimary else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+                                                if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
                                             ),
                                             contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 4.dp, vertical = 6.dp)
                                         ) {
@@ -1398,7 +1401,7 @@ fun SignUpOnboardingScreen(
                                                 text = method.take(10),
                                                 fontSize = 12.sp,
                                                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                                                color = if (isSelected) GoldPrimary else MaterialTheme.colorScheme.onSurface,
+                                                color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
                                                 maxLines = 1
                                             )
                                         }
@@ -1418,7 +1421,7 @@ fun SignUpOnboardingScreen(
                                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                                     ) {
                                         CircularProgressIndicator(
-                                            color = GoldPrimary,
+                                            color = MaterialTheme.colorScheme.primary,
                                             modifier = Modifier.size(22.dp),
                                             strokeWidth = 2.5.dp
                                         )
@@ -1426,7 +1429,7 @@ fun SignUpOnboardingScreen(
                                             Text(
                                                 text = "Authorizing ₦500 Gateway Fee...",
                                                 style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                                                color = GoldPrimary
+                                                color = MaterialTheme.colorScheme.primary
                                             )
                                             Text(
                                                 text = "Connecting to Interswitch / $selectedRegPaymentMethod",
@@ -1459,8 +1462,8 @@ fun SignUpOnboardingScreen(
                                     .height(52.dp)
                                     .testTag("pay_gateway_and_enter_button"),
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = GoldPrimary,
-                                    contentColor = Color.Black
+                                    containerColor = MaterialTheme.colorScheme.primary,
+                                    contentColor = MaterialTheme.colorScheme.onPrimary
                                 ),
                                 shape = RoundedCornerShape(12.dp)
                             ) {
@@ -1507,7 +1510,7 @@ fun SignUpOnboardingScreen(
             confirmButton = {
                 Button(
                     onClick = { showForgotPinDialog = false },
-                    colors = ButtonDefaults.buttonColors(containerColor = GoldPrimary, contentColor = Color.Black)
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary)
                 ) {
                     Text("OK", fontWeight = FontWeight.Bold)
                 }
@@ -1534,7 +1537,7 @@ fun SignUpOnboardingScreen(
                     Icon(
                         imageVector = Icons.Default.Lock,
                         contentDescription = null,
-                        tint = GoldPrimary,
+                        tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(24.dp)
                     )
                     Text(
@@ -1555,7 +1558,7 @@ fun SignUpOnboardingScreen(
                         modifier = Modifier.fillMaxWidth(),
                         color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
                         shape = RoundedCornerShape(10.dp),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, GoldPrimary.copy(alpha = 0.4f))
+                        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.4f))
                     ) {
                         Row(
                             modifier = Modifier
@@ -1573,13 +1576,13 @@ fun SignUpOnboardingScreen(
                                 Text(
                                     text = "Paid Once Per Meter",
                                     style = MaterialTheme.typography.labelSmall,
-                                    color = GoldPrimary
+                                    color = MaterialTheme.colorScheme.primary
                                 )
                             }
                             Text(
                                 text = "₦500.00",
                                 style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Black),
-                                color = GoldPrimary
+                                color = MaterialTheme.colorScheme.primary
                             )
                         }
                     }
@@ -1589,7 +1592,7 @@ fun SignUpOnboardingScreen(
                         modifier = Modifier.fillMaxWidth(),
                         color = Color(0xFF1E1B18),
                         shape = RoundedCornerShape(8.dp),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, GoldPrimary.copy(alpha = 0.3f))
+                        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f))
                     ) {
                         Row(
                             modifier = Modifier.padding(10.dp),
@@ -1599,7 +1602,7 @@ fun SignUpOnboardingScreen(
                             Icon(
                                 imageVector = Icons.Default.Security,
                                 contentDescription = null,
-                                tint = GoldPrimary,
+                                tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(16.dp)
                             )
                             Text(
@@ -1632,11 +1635,11 @@ fun SignUpOnboardingScreen(
                                     modifier = Modifier.weight(1f),
                                     shape = RoundedCornerShape(8.dp),
                                     colors = ButtonDefaults.outlinedButtonColors(
-                                        containerColor = if (isSelected) GoldPrimary.copy(alpha = 0.15f) else Color.Transparent
+                                        containerColor = if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.15f) else Color.Transparent
                                     ),
                                     border = androidx.compose.foundation.BorderStroke(
                                         1.dp,
-                                        if (isSelected) GoldPrimary else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+                                        if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
                                     ),
                                     contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 4.dp, vertical = 6.dp)
                                 ) {
@@ -1644,7 +1647,7 @@ fun SignUpOnboardingScreen(
                                         text = method,
                                         fontSize = 12.sp,
                                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                                        color = if (isSelected) GoldPrimary else MaterialTheme.colorScheme.onSurface,
+                                        color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
                                         maxLines = 1
                                     )
                                 }
@@ -1664,14 +1667,14 @@ fun SignUpOnboardingScreen(
                                 horizontalArrangement = Arrangement.spacedBy(10.dp)
                             ) {
                                 CircularProgressIndicator(
-                                    color = GoldPrimary,
+                                    color = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.size(18.dp),
                                     strokeWidth = 2.dp
                                 )
                                 Text(
                                     text = "Authorizing ₦500 via Interswitch Gateway...",
                                     style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
-                                    color = GoldPrimary
+                                    color = MaterialTheme.colorScheme.primary
                                 )
                             }
                         }
@@ -1694,7 +1697,7 @@ fun SignUpOnboardingScreen(
                         }
                     },
                     enabled = !isProcessingSignInPayment,
-                    colors = ButtonDefaults.buttonColors(containerColor = GoldPrimary, contentColor = Color.Black),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary),
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier.testTag("pay_sign_in_gateway_fee_button")
                 ) {

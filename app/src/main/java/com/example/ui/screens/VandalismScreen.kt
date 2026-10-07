@@ -52,6 +52,7 @@ import com.example.model.VandalismReport
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import com.example.ui.theme.extendedColors
 
 @Composable
 fun VandalismScreen(
@@ -92,13 +93,13 @@ fun VandalismScreen(
                         modifier = Modifier
                             .size(38.dp)
                             .clip(CircleShape)
-                            .background(Color(0xFFDC2626).copy(alpha = 0.15f)),
+                            .background(MaterialTheme.colorScheme.error.copy(alpha = 0.15f)),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = Icons.Default.Shield,
                             contentDescription = "Vandalism Shield",
-                            tint = Color(0xFFDC2626),
+                            tint = MaterialTheme.colorScheme.error,
                             modifier = Modifier.size(22.dp)
                         )
                     }
@@ -334,7 +335,7 @@ fun VandalismScreen(
                                 .fillMaxWidth()
                                 .height(48.dp)
                                 .testTag("submit_vandalism_report_btn"),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFDC2626)),
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
                             shape = RoundedCornerShape(10.dp)
                         ) {
                             Text("DISPATCH SECURITY ALERT", fontWeight = FontWeight.Bold, color = Color.White)
@@ -375,7 +376,7 @@ fun VandalismScreen(
                         Icon(
                             imageVector = Icons.Default.Shield,
                             contentDescription = null,
-                            tint = Color(0xFF10B981),
+                            tint = MaterialTheme.extendedColors.success,
                             modifier = Modifier.size(40.dp)
                         )
                         Spacer(modifier = Modifier.height(10.dp))

@@ -61,6 +61,7 @@ import com.example.data.service.CitizenMeterStatus
 import com.example.model.SmartMeterDevice
 import com.example.model.UserProfile
 import com.example.ui.theme.ElegantGoldPrimary
+import com.example.ui.theme.extendedColors
 
 /**
  * Citizen-First Auto-Connect & Status Tab
@@ -141,7 +142,7 @@ fun CitizenAutoConnectTab(
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
                     ),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF0284C7).copy(alpha = 0.4f))
+                    border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.extendedColors.info.copy(alpha = 0.4f))
                 ) {
                     Column(
                         modifier = Modifier
@@ -157,13 +158,13 @@ fun CitizenAutoConnectTab(
                                 modifier = Modifier
                                     .size(36.dp)
                                     .clip(RoundedCornerShape(8.dp))
-                                    .background(Color(0xFF0284C7).copy(alpha = 0.15f)),
+                                    .background(MaterialTheme.extendedColors.info.copy(alpha = 0.15f)),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Bolt,
                                     contentDescription = null,
-                                    tint = Color(0xFF0284C7),
+                                    tint = MaterialTheme.extendedColors.info,
                                     modifier = Modifier.size(20.dp)
                                 )
                             }
@@ -196,7 +197,7 @@ fun CitizenAutoConnectTab(
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             singleLine = true,
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = Color(0xFF0284C7),
+                                focusedBorderColor = MaterialTheme.extendedColors.info,
                                 unfocusedBorderColor = MaterialTheme.colorScheme.outline
                             )
                         )
@@ -215,7 +216,7 @@ fun CitizenAutoConnectTab(
                                 },
                                 enabled = otaTokenInput.replace(" ", "").trim().length == 20,
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(0xFF0284C7),
+                                    containerColor = MaterialTheme.extendedColors.info,
                                     contentColor = Color.White
                                 ),
                                 shape = RoundedCornerShape(10.dp),
@@ -237,7 +238,7 @@ fun CitizenAutoConnectTab(
                                 onClick = { onToggleRelay(userProfile.meterNumber) },
                                 shape = RoundedCornerShape(10.dp),
                                 colors = ButtonDefaults.outlinedButtonColors(
-                                    contentColor = if (activeSmartMeter?.relayStatusClosed == true) Color(0xFFEF4444) else Color(0xFF22C55E)
+                                    contentColor = if (activeSmartMeter?.relayStatusClosed == true) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.secondary
                                 ),
                                 modifier = Modifier.testTag("citizen_toggle_relay_btn"),
                                 contentPadding = PaddingValues(horizontal = 12.dp, vertical = 12.dp)
@@ -288,7 +289,7 @@ fun CitizenAutoConnectTab(
                             Icon(
                                 imageVector = Icons.Default.HelpOutline,
                                 contentDescription = null,
-                                tint = ElegantGoldPrimary,
+                                tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(18.dp)
                             )
                             Text(
@@ -306,7 +307,7 @@ fun CitizenAutoConnectTab(
                             Text(
                                 text = if (showHowItWorks) "Hide" else "Read",
                                 fontSize = 12.sp,
-                                color = ElegantGoldPrimary
+                                color = MaterialTheme.colorScheme.primary
                             )
                         }
                     }
@@ -370,9 +371,9 @@ private fun SmartMeterConnectedHeroCard(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFF0284C7).copy(alpha = 0.08f)
+            containerColor = MaterialTheme.extendedColors.info.copy(alpha = 0.08f)
         ),
-        border = androidx.compose.foundation.BorderStroke(1.5.dp, Color(0xFF0284C7))
+        border = androidx.compose.foundation.BorderStroke(1.5.dp, MaterialTheme.extendedColors.info)
     ) {
         Column(
             modifier = Modifier
@@ -393,14 +394,14 @@ private fun SmartMeterConnectedHeroCard(
                         modifier = Modifier
                             .size(10.dp)
                             .clip(CircleShape)
-                            .background(Color(0xFF22C55E))
+                            .background(MaterialTheme.colorScheme.secondary)
                     )
                     Text(
                         text = "AUTO-CONNECTED ONCE",
                         fontSize = 12.sp,
                         fontWeight = FontWeight.ExtraBold,
                         letterSpacing = 0.5.sp,
-                        color = Color(0xFF22C55E)
+                        color = MaterialTheme.colorScheme.secondary
                     )
                 }
 
@@ -413,10 +414,10 @@ private fun SmartMeterConnectedHeroCard(
                         imageVector = Icons.Default.Refresh,
                         contentDescription = null,
                         modifier = Modifier.size(12.dp),
-                        tint = Color(0xFF0284C7)
+                        tint = MaterialTheme.extendedColors.info
                     )
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text("Re-scan", fontSize = 12.sp, color = Color(0xFF0284C7))
+                    Text("Re-scan", fontSize = 12.sp, color = MaterialTheme.extendedColors.info)
                 }
             }
 
@@ -429,7 +430,7 @@ private fun SmartMeterConnectedHeroCard(
                 Text(
                     text = "${status.manufacturerName} AMI • ${status.modelName}",
                     style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
-                    color = Color(0xFF0284C7)
+                    color = MaterialTheme.extendedColors.info
                 )
             }
 
@@ -466,7 +467,7 @@ private fun SmartMeterConnectedHeroCard(
                 ) {
                     Column {
                         Text("Feeder Band", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        Text(userProfile.feederBand.label, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color(0xFF22C55E))
+                        Text(userProfile.feederBand.label, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.secondary)
                     }
                 }
 
@@ -497,9 +498,9 @@ private fun StandardMeterNonSmartHeroCard(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFFD97706).copy(alpha = 0.08f)
+            containerColor = MaterialTheme.extendedColors.warning.copy(alpha = 0.08f)
         ),
-        border = androidx.compose.foundation.BorderStroke(1.5.dp, Color(0xFFD97706))
+        border = androidx.compose.foundation.BorderStroke(1.5.dp, MaterialTheme.extendedColors.warning)
     ) {
         Column(
             modifier = Modifier
@@ -520,20 +521,20 @@ private fun StandardMeterNonSmartHeroCard(
                         modifier = Modifier
                             .size(10.dp)
                             .clip(CircleShape)
-                            .background(Color(0xFFD97706))
+                            .background(MaterialTheme.extendedColors.warning)
                     )
                     Text(
                         text = "STANDARD STS AREA (NO GATEWAY NEEDED)",
                         fontSize = 12.sp,
                         fontWeight = FontWeight.ExtraBold,
                         letterSpacing = 0.5.sp,
-                        color = Color(0xFFD97706)
+                        color = MaterialTheme.extendedColors.warning
                     )
                 }
 
                 Button(
                     onClick = onAutoDetect,
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD97706), contentColor = Color.Black),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.extendedColors.warning, contentColor = Color.Black),
                     shape = RoundedCornerShape(8.dp),
                     contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp),
                     modifier = Modifier.testTag("citizen_recheck_smart_upgrade_btn")
@@ -557,7 +558,7 @@ private fun StandardMeterNonSmartHeroCard(
                 Text(
                     text = "Traditional STS Keypad Meter • Manual Token Entry",
                     style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
-                    color = Color(0xFFD97706)
+                    color = MaterialTheme.extendedColors.warning
                 )
             }
 
@@ -581,7 +582,7 @@ private fun StandardMeterNonSmartHeroCard(
                     Icon(
                         imageVector = Icons.Default.Info,
                         contentDescription = null,
-                        tint = Color(0xFFD97706),
+                        tint = MaterialTheme.extendedColors.warning,
                         modifier = Modifier.size(20.dp)
                     )
                     Text(
@@ -632,14 +633,14 @@ private fun LiveCitizenTelemetryGrid(
                         Icon(
                             imageVector = Icons.Default.Speed,
                             contentDescription = null,
-                            tint = Color(0xFF22C55E),
+                            tint = MaterialTheme.colorScheme.secondary,
                             modifier = Modifier.size(16.dp)
                         )
                     }
                     Text(
                         text = "%.1f V".format(voltage),
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.ExtraBold),
-                        color = Color(0xFF22C55E)
+                        color = MaterialTheme.colorScheme.secondary
                     )
                     Text(
                         text = "Nominal (220V - 240V)",
@@ -670,14 +671,14 @@ private fun LiveCitizenTelemetryGrid(
                         Icon(
                             imageVector = Icons.Default.Bolt,
                             contentDescription = null,
-                            tint = ElegantGoldPrimary,
+                            tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(16.dp)
                         )
                     }
                     Text(
                         text = "%.2f kW".format(power),
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.ExtraBold),
-                        color = ElegantGoldPrimary
+                        color = MaterialTheme.colorScheme.primary
                     )
                     Text(
                         text = "%.1f A Draw".format(current),
@@ -739,14 +740,14 @@ private fun LiveCitizenTelemetryGrid(
                         Icon(
                             imageVector = Icons.Default.SignalCellularAlt,
                             contentDescription = null,
-                            tint = Color(0xFF0284C7),
+                            tint = MaterialTheme.extendedColors.info,
                             modifier = Modifier.size(16.dp)
                         )
                     }
                     Text(
                         text = "-68 dBm",
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                        color = Color(0xFF0284C7)
+                        color = MaterialTheme.extendedColors.info
                     )
                     Text(
                         text = "Strong DisCo SIM Link",

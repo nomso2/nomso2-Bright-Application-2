@@ -125,7 +125,7 @@ fun TieredUrgencyCategoriserFeature(
                 Button(
                     onClick = { selectedTier = tier },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (isSelected) GoldPrimary else MaterialTheme.colorScheme.surfaceVariant,
+                        containerColor = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
                         contentColor = if (isSelected) Color.Black else MaterialTheme.colorScheme.onSurface
                     ),
                     shape = RoundedCornerShape(10.dp),
@@ -146,13 +146,13 @@ fun TieredUrgencyCategoriserFeature(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text("Estimated Affected Households:", fontSize = 12.sp, fontWeight = FontWeight.Medium)
-                Text("${affectedHouseholds.toInt()} Homes", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = GoldPrimary)
+                Text("${affectedHouseholds.toInt()} Homes", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
             }
             Slider(
                 value = affectedHouseholds,
                 onValueChange = { affectedHouseholds = it },
                 valueRange = 1f..500f,
-                colors = SliderDefaults.colors(thumbColor = GoldPrimary, activeTrackColor = GoldPrimary)
+                colors = SliderDefaults.colors(thumbColor = MaterialTheme.colorScheme.primary, activeTrackColor = MaterialTheme.colorScheme.primary)
             )
         }
 
@@ -162,7 +162,7 @@ fun TieredUrgencyCategoriserFeature(
             Checkbox(
                 checked = hasHospitalOrClinic,
                 onCheckedChange = { hasHospitalOrClinic = it },
-                colors = CheckboxDefaults.colors(checkedColor = GoldPrimary)
+                colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colorScheme.primary)
             )
             Text("Hospital / Primary Health Clinic (+15 Priority)", fontSize = 12.sp)
         }
@@ -170,18 +170,18 @@ fun TieredUrgencyCategoriserFeature(
             Checkbox(
                 checked = hasWaterBoard,
                 onCheckedChange = { hasWaterBoard = it },
-                colors = CheckboxDefaults.colors(checkedColor = GoldPrimary)
+                colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colorScheme.primary)
             )
             Text("State Water Board / Public Pumping Station (+10 Priority)", fontSize = 12.sp)
         }
 
         // Results Card
         Surface(
-            color = if (priorityScore > 75) MaterialTheme.colorScheme.error.copy(alpha = 0.12f) else GoldPrimary.copy(alpha = 0.12f),
+            color = if (priorityScore > 75) MaterialTheme.colorScheme.error.copy(alpha = 0.12f) else MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
             shape = RoundedCornerShape(12.dp),
             border = androidx.compose.foundation.BorderStroke(
                 1.dp,
-                if (priorityScore > 75) MaterialTheme.colorScheme.error else GoldPrimary
+                if (priorityScore > 75) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
             )
         ) {
             Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -194,7 +194,7 @@ fun TieredUrgencyCategoriserFeature(
                         text = "NERC CALCULATED PRIORITY: $priorityScore / 100",
                         fontWeight = FontWeight.Black,
                         fontSize = 12.sp,
-                        color = if (priorityScore > 75) MaterialTheme.colorScheme.error else GoldPrimary
+                        color = if (priorityScore > 75) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
                     )
                     Text(
                         text = "Max SLA: $slaHours Hours",
@@ -206,7 +206,7 @@ fun TieredUrgencyCategoriserFeature(
                 LinearProgressIndicator(
                     progress = { priorityScore / 100f },
                     modifier = Modifier.fillMaxWidth().height(6.dp),
-                    color = if (priorityScore > 75) MaterialTheme.colorScheme.error else GoldPrimary
+                    color = if (priorityScore > 75) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
                 )
                 Text(
                     text = when (selectedTier) {
@@ -222,7 +222,7 @@ fun TieredUrgencyCategoriserFeature(
 
         if (ticketDispatched) {
             Surface(
-                color = EmeraldAccent.copy(alpha = 0.15f),
+                color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.15f),
                 shape = RoundedCornerShape(10.dp)
             ) {
                 Row(
@@ -230,9 +230,9 @@ fun TieredUrgencyCategoriserFeature(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Icon(Icons.Default.CheckCircle, contentDescription = null, tint = EmeraldAccent)
+                    Icon(Icons.Default.CheckCircle, contentDescription = null, tint = MaterialTheme.colorScheme.secondary)
                     Column {
-                        Text("Categorized Dispatch Active: $generatedTicketId", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = EmeraldAccent)
+                        Text("Categorized Dispatch Active: $generatedTicketId", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = MaterialTheme.colorScheme.secondary)
                         Text("Dispatched to ${userProfile.discoCode} Dispatch NOC with Tier $selectedTier priority.", fontSize = 12.sp)
                     }
                 }
@@ -246,7 +246,7 @@ fun TieredUrgencyCategoriserFeature(
                     onDispatchTicket?.invoke(id, "Tier $selectedTier Outage", priorityScore)
                     Toast.makeText(context, "Dispatched $id to ${userProfile.discoCode} Control Room!", Toast.LENGTH_SHORT).show()
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = GoldPrimary, contentColor = Color.Black),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary),
                 shape = RoundedCornerShape(10.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -303,10 +303,10 @@ fun GpsFaultGeofencingFeature(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                        Icon(Icons.Default.LocationOn, contentDescription = null, tint = GoldPrimary, modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.LocationOn, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
                         Text("Substation Epicenter:", fontWeight = FontWeight.Bold, fontSize = 12.sp)
                     }
-                    Text("${userProfile.transformerId} (Zone 4)", fontSize = 12.sp, color = GoldPrimary, fontWeight = FontWeight.Bold)
+                    Text("${userProfile.transformerId} (Zone 4)", fontSize = 12.sp, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
                 }
 
                 Text(
@@ -325,8 +325,8 @@ fun GpsFaultGeofencingFeature(
                         Box(
                             modifier = Modifier
                                 .size((geofenceRadiusMeters / 1000f * 80f + 25f).dp)
-                                .border(1.5.dp, GoldPrimary, CircleShape)
-                                .background(GoldPrimary.copy(alpha = 0.15f), CircleShape)
+                                .border(1.5.dp, MaterialTheme.colorScheme.primary, CircleShape)
+                                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f), CircleShape)
                         )
                         Box(
                             modifier = Modifier.size(10.dp).background(Color.Red, CircleShape)
@@ -346,13 +346,13 @@ fun GpsFaultGeofencingFeature(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text("Geofence Radius:", fontSize = 12.sp)
-                    Text("${geofenceRadiusMeters.toInt()} Meters", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = GoldPrimary)
+                    Text("${geofenceRadiusMeters.toInt()} Meters", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                 }
                 Slider(
                     value = geofenceRadiusMeters,
                     onValueChange = { geofenceRadiusMeters = it },
                     valueRange = 50f..1000f,
-                    colors = SliderDefaults.colors(thumbColor = GoldPrimary, activeTrackColor = GoldPrimary)
+                    colors = SliderDefaults.colors(thumbColor = MaterialTheme.colorScheme.primary, activeTrackColor = MaterialTheme.colorScheme.primary)
                 )
             }
         }
@@ -366,7 +366,7 @@ fun GpsFaultGeofencingFeature(
                     isBroadcasting = true
                     Toast.makeText(context, "Transmitted geofence centroid to DisCo Field Unit!", Toast.LENGTH_SHORT).show()
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = GoldPrimary, contentColor = Color.Black),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary),
                 shape = RoundedCornerShape(10.dp),
                 modifier = Modifier.weight(1f)
             ) {
@@ -431,10 +431,10 @@ fun AutomatedDispatchRouterFeature(
                         Text("Senior Linesman • ID: ${userProfile.discoCode}-8821", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                     Surface(
-                        color = EmeraldAccent.copy(alpha = 0.2f),
+                        color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f),
                         shape = RoundedCornerShape(6.dp)
                     ) {
-                        Text("DISPATCHED", color = EmeraldAccent, fontWeight = FontWeight.Bold, fontSize = 12.sp, modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp))
+                        Text("DISPATCHED", color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.Bold, fontSize = 12.sp, modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp))
                     }
                 }
 
@@ -443,11 +443,11 @@ fun AutomatedDispatchRouterFeature(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text("Service Vehicle: White Toyota Hilux (LAG-441-XY)", fontSize = 12.sp)
-                    Text("Rating: 4.8 ★", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = GoldPrimary)
+                    Text("Rating: 4.8 ★", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                 }
 
                 Surface(
-                    color = GoldPrimary.copy(alpha = 0.12f),
+                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
                     shape = RoundedCornerShape(10.dp)
                 ) {
                     Row(
@@ -461,7 +461,7 @@ fun AutomatedDispatchRouterFeature(
                         }
                         Column(horizontalAlignment = Alignment.End) {
                             Text("Live ETA:", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                            Text("$etaMinutes Mins", fontWeight = FontWeight.Black, fontSize = 14.sp, color = GoldPrimary)
+                            Text("$etaMinutes Mins", fontWeight = FontWeight.Black, fontSize = 14.sp, color = MaterialTheme.colorScheme.primary)
                         }
                     }
                 }
@@ -475,7 +475,7 @@ fun AutomatedDispatchRouterFeature(
                             val intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:08030004921"))
                             context.startActivity(intent)
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = GoldPrimary, contentColor = Color.Black),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary),
                         shape = RoundedCornerShape(8.dp),
                         modifier = Modifier.weight(1f)
                     ) {
@@ -671,7 +671,7 @@ fun DiagnosticStatusTrackerFeature(
                         color = Color(0xFF8B5CF6),
                         modifier = Modifier.fillMaxWidth().height(6.dp)
                     )
-                    Text("Expected Restoration: $restoralTimeText", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = GoldPrimary)
+                    Text("Expected Restoration: $restoralTimeText", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = MaterialTheme.colorScheme.primary)
                 } else {
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         Icon(Icons.Default.Warning, contentDescription = null, tint = MaterialTheme.colorScheme.error)
@@ -685,7 +685,7 @@ fun DiagnosticStatusTrackerFeature(
                     onClick = {
                         Toast.makeText(context, "You'll get an alert when power is back on your feeder!", Toast.LENGTH_SHORT).show()
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = GoldPrimary, contentColor = Color.Black),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary),
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {

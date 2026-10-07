@@ -101,9 +101,9 @@ fun VisualProofOverrideFeature(
                 proofTypes.forEach { type ->
                     val isSelected = selectedProofType == type
                     Surface(
-                        color = if (isSelected) GoldPrimary.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surface,
+                        color = if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surface,
                         shape = RoundedCornerShape(8.dp),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, if (isSelected) GoldPrimary else Color.Transparent),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent),
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Row(
@@ -114,7 +114,7 @@ fun VisualProofOverrideFeature(
                                 text = type,
                                 fontSize = 12.sp,
                                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                                color = if (isSelected) GoldPrimary else MaterialTheme.colorScheme.onSurface
+                                color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                             )
                         }
                     }
@@ -128,13 +128,13 @@ fun VisualProofOverrideFeature(
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         if (proofAttached) {
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Icon(Icons.Default.CheckCircle, contentDescription = null, tint = EmeraldAccent, modifier = Modifier.size(24.dp))
+                                Icon(Icons.Default.CheckCircle, contentDescription = null, tint = MaterialTheme.colorScheme.secondary, modifier = Modifier.size(24.dp))
                                 Text("Cryptographic EXIF Validated • GPS: 6.5244°N, 3.3792°E", fontSize = 12.sp, color = Color.White)
-                                Text("3-Neighbor Co-Signature Requirement: BYPASSED", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = EmeraldAccent)
+                                Text("3-Neighbor Co-Signature Requirement: BYPASSED", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.secondary)
                             }
                         } else {
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Icon(Icons.Default.CameraAlt, contentDescription = null, tint = GoldPrimary, modifier = Modifier.size(22.dp))
+                                Icon(Icons.Default.CameraAlt, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(22.dp))
                                 Text("Tap Below to Attach Real-Time Camera Proof", fontSize = 12.sp, color = Color.LightGray)
                             }
                         }
@@ -146,7 +146,7 @@ fun VisualProofOverrideFeature(
                         proofAttached = true
                         Toast.makeText(context, "Visual evidence attached & 3-neighbor rule bypassed!", Toast.LENGTH_SHORT).show()
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = GoldPrimary, contentColor = Color.Black),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary),
                     shape = RoundedCornerShape(10.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -196,22 +196,22 @@ fun WakeUpStreetAlertsFeature(
             Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     Text("Transformer ID:", fontSize = 12.sp)
-                    Text(userProfile.transformerId, fontWeight = FontWeight.Bold, color = GoldPrimary, fontSize = 12.sp)
+                    Text(userProfile.transformerId, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary, fontSize = 12.sp)
                 }
 
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     Text("Co-Signers on Transformer:", fontSize = 12.sp)
-                    Text("$coSignersCount / $threshold Required", fontWeight = FontWeight.Bold, color = EmeraldAccent, fontSize = 12.sp)
+                    Text("$coSignersCount / $threshold Required", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.secondary, fontSize = 12.sp)
                 }
 
                 LinearProgressIndicator(
                     progress = { (coSignersCount.toFloat() / threshold).coerceAtMost(1f) },
-                    color = EmeraldAccent,
+                    color = MaterialTheme.colorScheme.secondary,
                     modifier = Modifier.fillMaxWidth().height(6.dp)
                 )
 
                 Surface(
-                    color = EmeraldAccent.copy(alpha = 0.12f),
+                    color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.12f),
                     shape = RoundedCornerShape(8.dp)
                 ) {
                     Row(
@@ -219,8 +219,8 @@ fun WakeUpStreetAlertsFeature(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Icon(Icons.Default.CheckCircle, contentDescription = null, tint = EmeraldAccent, modifier = Modifier.size(16.dp))
-                        Text("AUTOMATIC NERC ESCALATION: Threshold reached! Outage officially flagged as critical feeder priority.", fontSize = 12.sp, color = EmeraldAccent, fontWeight = FontWeight.Bold)
+                        Icon(Icons.Default.CheckCircle, contentDescription = null, tint = MaterialTheme.colorScheme.secondary, modifier = Modifier.size(16.dp))
+                        Text("AUTOMATIC NERC ESCALATION: Threshold reached! Outage officially flagged as critical feeder priority.", fontSize = 12.sp, color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.Bold)
                     }
                 }
 
@@ -230,7 +230,7 @@ fun WakeUpStreetAlertsFeature(
                         broadcastSent = true
                         Toast.makeText(context, "Broadcast ping sent to 142 households on ${userProfile.transformerId}!", Toast.LENGTH_SHORT).show()
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = GoldPrimary, contentColor = Color.Black),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary),
                     shape = RoundedCornerShape(10.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -284,21 +284,21 @@ fun UserTrustScoreFeature(
                 ) {
                     Column {
                         Text("Citizen Reputation Score", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        Text("$currentScore / 100", fontSize = 24.sp, fontWeight = FontWeight.Black, color = GoldPrimary)
+                        Text("$currentScore / 100", fontSize = 24.sp, fontWeight = FontWeight.Black, color = MaterialTheme.colorScheme.primary)
                     }
                     Surface(
-                        color = EmeraldAccent.copy(alpha = 0.2f),
+                        color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f),
                         shape = RoundedCornerShape(8.dp)
                     ) {
-                        Text("VIP LEVEL 3 GUARDIAN", color = EmeraldAccent, fontWeight = FontWeight.Bold, fontSize = 12.sp, modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp))
+                        Text("VIP LEVEL 3 GUARDIAN", color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.Bold, fontSize = 12.sp, modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp))
                     }
                 }
 
                 Text("Recent Points Ledger:", fontWeight = FontWeight.Bold, fontSize = 12.sp)
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text("• +20 Pts: Reported fallen conductor hazard (Confirmed by DisCo)", fontSize = 12.sp, color = EmeraldAccent)
-                    Text("• +10 Pts: Provided verified photo proof of blown jumper", fontSize = 12.sp, color = EmeraldAccent)
-                    Text("• +5 Pts: Co-signed street outage ticket", fontSize = 12.sp, color = EmeraldAccent)
+                    Text("• +20 Pts: Reported fallen conductor hazard (Confirmed by DisCo)", fontSize = 12.sp, color = MaterialTheme.colorScheme.secondary)
+                    Text("• +10 Pts: Provided verified photo proof of blown jumper", fontSize = 12.sp, color = MaterialTheme.colorScheme.secondary)
+                    Text("• +5 Pts: Co-signed street outage ticket", fontSize = 12.sp, color = MaterialTheme.colorScheme.secondary)
                 }
 
                 Button(
@@ -309,7 +309,7 @@ fun UserTrustScoreFeature(
                             Toast.makeText(context, "NIN & Utility Bill verified! +2 Trust points awarded.", Toast.LENGTH_SHORT).show()
                         }
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = GoldPrimary, contentColor = Color.Black),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary),
                     shape = RoundedCornerShape(10.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -372,7 +372,7 @@ fun NeighborhoodGridForumFeature(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Column(modifier = Modifier.padding(10.dp)) {
-                            Text(author, fontWeight = FontWeight.Bold, fontSize = 12.sp, color = GoldPrimary)
+                            Text(author, fontWeight = FontWeight.Bold, fontSize = 12.sp, color = MaterialTheme.colorScheme.primary)
                             Text(text, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface)
                         }
                     }
@@ -390,7 +390,7 @@ fun NeighborhoodGridForumFeature(
                         modifier = Modifier.weight(1f),
                         singleLine = true,
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = GoldPrimary,
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
                             unfocusedBorderColor = MaterialTheme.colorScheme.outline
                         )
                     )
@@ -402,7 +402,7 @@ fun NeighborhoodGridForumFeature(
                                 Toast.makeText(context, "Posted update to transformer thread!", Toast.LENGTH_SHORT).show()
                             }
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = GoldPrimary, contentColor = Color.Black),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary),
                         shape = RoundedCornerShape(8.dp)
                     ) {
                         Icon(Icons.Default.Send, contentDescription = null, modifier = Modifier.size(16.dp))
@@ -458,7 +458,7 @@ fun MultiLingualVoiceReportingFeature(
                 Button(
                     onClick = { selectedLanguage = lang },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (isSelected) GoldPrimary else MaterialTheme.colorScheme.surfaceVariant,
+                        containerColor = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
                         contentColor = if (isSelected) Color.Black else MaterialTheme.colorScheme.onSurface
                     ),
                     shape = RoundedCornerShape(8.dp),
@@ -484,17 +484,17 @@ fun MultiLingualVoiceReportingFeature(
                     Text(
                         text = "\"${samplePhrases[selectedLanguage]}\"",
                         fontSize = 12.sp,
-                        color = GoldPrimary,
+                        color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.padding(10.dp)
                     )
                 }
 
                 Surface(
-                    color = EmeraldAccent.copy(alpha = 0.12f),
+                    color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.12f),
                     shape = RoundedCornerShape(8.dp)
                 ) {
                     Column(modifier = Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Text("AI Formal NERC Technical Translation:", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = EmeraldAccent)
+                        Text("AI Formal NERC Technical Translation:", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.secondary)
                         Text("• Fault Category: Unplanned Distribution Feeder Outage", fontSize = 12.sp)
                         Text("• Hazard Code: Active Overhead Conductor Arcing on Ground", fontSize = 12.sp)
                         Text("• Substation: Transformer ${userProfile.transformerId}", fontSize = 12.sp)
@@ -506,7 +506,7 @@ fun MultiLingualVoiceReportingFeature(
                         ticketConverted = true
                         Toast.makeText(context, "Voice note transcribed & mapped to NERC complaint!", Toast.LENGTH_SHORT).show()
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = GoldPrimary, contentColor = Color.Black),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary),
                     shape = RoundedCornerShape(10.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {

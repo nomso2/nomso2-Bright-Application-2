@@ -73,6 +73,7 @@ import com.example.ui.theme.ElegantGoldPrimary
 import com.example.ui.theme.Slate100Text
 import com.example.ui.theme.Slate400Text
 import com.example.ui.theme.Slate500Text
+import com.example.ui.theme.extendedColors
 
 /**
  * Phase 7: Profile Management & Administrative Protocols
@@ -135,7 +136,7 @@ fun ProfileAdminDialog(
                             Icon(
                                 imageVector = Icons.Default.Security,
                                 contentDescription = null,
-                                tint = ElegantGoldPrimary,
+                                tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(16.dp)
                             )
                             Spacer(modifier = Modifier.width(6.dp))
@@ -145,7 +146,7 @@ fun ProfileAdminDialog(
                                     fontWeight = FontWeight.ExtraBold,
                                     letterSpacing = 1.sp
                                 ),
-                                color = ElegantGoldPrimary
+                                color = MaterialTheme.colorScheme.primary
                             )
                         }
                         Text(
@@ -177,7 +178,7 @@ fun ProfileAdminDialog(
                             modifier = Modifier
                                 .weight(1f)
                                 .clip(RoundedCornerShape(8.dp))
-                                .background(if (isSelected) ElegantGoldPrimary else Color.Transparent)
+                                .background(if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent)
                                 .clickable { activeTab = index }
                                 .padding(vertical = 8.dp),
                             contentAlignment = Alignment.Center
@@ -185,7 +186,7 @@ fun ProfileAdminDialog(
                             Text(
                                 text = title,
                                 style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                                color = if (isSelected) Color(0xFF0A0C10) else MaterialTheme.colorScheme.onSurfaceVariant
+                                color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
@@ -216,10 +217,10 @@ fun ProfileAdminDialog(
                                     .fillMaxWidth()
                                     .padding(vertical = 4.dp)
                                     .clip(RoundedCornerShape(12.dp))
-                                    .background(if (isCurrent) Color(0x26FACC15) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))
+                                    .background(if (isCurrent) MaterialTheme.colorScheme.primary.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))
                                     .border(
                                         1.dp,
-                                        if (isCurrent) ElegantGoldPrimary else MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
+                                        if (isCurrent) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
                                         RoundedCornerShape(12.dp)
                                     )
                                     .clickable { onSwitchMeter(asset.id) }
@@ -235,7 +236,7 @@ fun ProfileAdminDialog(
                                             Text(
                                                 text = asset.label,
                                                 style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                                                color = if (isCurrent) ElegantGoldPrimary else MaterialTheme.colorScheme.onSurface
+                                                color = if (isCurrent) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                                             )
                                             if (isCurrent) {
                                                 Spacer(modifier = Modifier.width(6.dp))
@@ -244,7 +245,7 @@ fun ProfileAdminDialog(
                                                     style = MaterialTheme.typography.labelSmall.copy(
                                                         fontSize = 12.sp,
                                                         fontWeight = FontWeight.ExtraBold,
-                                                        color = Color(0xFF16A34A)
+                                                        color = MaterialTheme.colorScheme.secondary
                                                     )
                                                 )
                                             }
@@ -269,7 +270,7 @@ fun ProfileAdminDialog(
                                         Icon(
                                             imageVector = Icons.Default.CheckCircle,
                                             contentDescription = null,
-                                            tint = ElegantGoldPrimary,
+                                            tint = MaterialTheme.colorScheme.primary,
                                             modifier = Modifier.size(20.dp)
                                         )
                                     }
@@ -306,18 +307,18 @@ fun ProfileAdminDialog(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clip(RoundedCornerShape(12.dp))
-                                    .background(Color(0x1AEF4444))
-                                    .border(1.dp, Color(0x33EF4444), RoundedCornerShape(12.dp))
+                                    .background(MaterialTheme.colorScheme.error.copy(alpha = 0.1f))
+                                    .border(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.2f), RoundedCornerShape(12.dp))
                                     .padding(12.dp)
                             ) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(imageVector = Icons.Default.Shield, contentDescription = null, tint = Color(0xFFEF4444))
+                                    Icon(imageVector = Icons.Default.Shield, contentDescription = null, tint = MaterialTheme.colorScheme.error)
                                     Spacer(modifier = Modifier.width(8.dp))
                                     Column {
                                         Text(
                                             text = "NERC Anti-Extortion Whistleblower Portal",
                                             style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                                            color = Color(0xFFDC2626)
+                                            color = MaterialTheme.colorScheme.error
                                         )
                                         Text(
                                             text = "End-to-end encrypted evidence pipeline directly to NERC Compliance Directorate. Bypasses DisCo channels.",
@@ -335,7 +336,7 @@ fun ProfileAdminDialog(
                                 placeholder = { Text("e.g., Victoria Island Feeder 4 Crew / Truck #LAG-482") },
                                 modifier = Modifier.fillMaxWidth(),
                                 colors = OutlinedTextFieldDefaults.colors(
-                                    focusedBorderColor = Color(0xFFEF4444),
+                                    focusedBorderColor = MaterialTheme.colorScheme.error,
                                     unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
                                     focusedTextColor = MaterialTheme.colorScheme.onSurface,
                                     unfocusedTextColor = MaterialTheme.colorScheme.onSurface
@@ -350,7 +351,7 @@ fun ProfileAdminDialog(
                                 modifier = Modifier.fillMaxWidth(),
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                 colors = OutlinedTextFieldDefaults.colors(
-                                    focusedBorderColor = Color(0xFFEF4444),
+                                    focusedBorderColor = MaterialTheme.colorScheme.error,
                                     unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
                                     focusedTextColor = MaterialTheme.colorScheme.onSurface,
                                     unfocusedTextColor = MaterialTheme.colorScheme.onSurface
@@ -365,7 +366,7 @@ fun ProfileAdminDialog(
                                 modifier = Modifier.fillMaxWidth(),
                                 minLines = 3,
                                 colors = OutlinedTextFieldDefaults.colors(
-                                    focusedBorderColor = Color(0xFFEF4444),
+                                    focusedBorderColor = MaterialTheme.colorScheme.error,
                                     unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
                                     focusedTextColor = MaterialTheme.colorScheme.onSurface,
                                     unfocusedTextColor = MaterialTheme.colorScheme.onSurface
@@ -390,7 +391,7 @@ fun ProfileAdminDialog(
                                     .height(48.dp)
                                     .testTag("submit_whistleblower_button"),
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(0xFFEF4444),
+                                    containerColor = MaterialTheme.colorScheme.error,
                                     contentColor = Color.White
                                 ),
                                 shape = RoundedCornerShape(10.dp)
@@ -410,17 +411,17 @@ fun ProfileAdminDialog(
                                     .fillMaxWidth()
                                     .clip(RoundedCornerShape(12.dp))
                                     .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
-                                    .border(1.dp, ElegantGoldPrimary.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
+                                    .border(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
                                     .padding(14.dp)
                             ) {
                                 Column {
                                     Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Icon(imageVector = Icons.Default.Security, contentDescription = null, tint = ElegantGoldPrimary)
+                                        Icon(imageVector = Icons.Default.Security, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                                         Spacer(modifier = Modifier.width(8.dp))
                                         Text(
                                             text = "Biometric Security & Verification",
                                             style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                                            color = ElegantGoldPrimary
+                                            color = MaterialTheme.colorScheme.primary
                                         )
                                     }
                                     Spacer(modifier = Modifier.height(4.dp))
@@ -452,13 +453,13 @@ fun ProfileAdminDialog(
                                                 modifier = Modifier
                                                     .size(36.dp)
                                                     .clip(CircleShape)
-                                                    .background(Color(0xFF3B82F6).copy(alpha = 0.15f)),
+                                                    .background(MaterialTheme.colorScheme.tertiary.copy(alpha = 0.15f)),
                                                 contentAlignment = Alignment.Center
                                             ) {
                                                 Icon(
                                                     imageVector = Icons.Default.Fingerprint,
                                                     contentDescription = "Fingerprint",
-                                                    tint = Color(0xFF2563EB),
+                                                    tint = MaterialTheme.colorScheme.tertiary,
                                                     modifier = Modifier.size(20.dp)
                                                 )
                                             }
@@ -472,7 +473,7 @@ fun ProfileAdminDialog(
                                                 Text(
                                                     text = if (fingerprintEnabled) "Active & Enrolled" else "Not Configured",
                                                     style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp),
-                                                    color = if (fingerprintEnabled) Color(0xFF16A34A) else MaterialTheme.colorScheme.onSurfaceVariant
+                                                    color = if (fingerprintEnabled) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurfaceVariant
                                                 )
                                             }
                                         }
@@ -487,8 +488,8 @@ fun ProfileAdminDialog(
                                                 }
                                             },
                                             colors = SwitchDefaults.colors(
-                                                checkedThumbColor = ElegantGoldPrimary,
-                                                checkedTrackColor = ElegantGoldPrimary.copy(alpha = 0.4f)
+                                                checkedThumbColor = MaterialTheme.colorScheme.primary,
+                                                checkedTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)
                                             )
                                         )
                                     }
@@ -505,8 +506,8 @@ fun ProfileAdminDialog(
                                         onClick = {
                                             testBiometricMode = BiometricAuthMode.FINGERPRINT
                                         },
-                                        colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF2563EB)),
-                                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF3B82F6).copy(alpha = 0.4f)),
+                                        colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.tertiary),
+                                        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary.copy(alpha = 0.4f)),
                                         shape = RoundedCornerShape(8.dp),
                                         modifier = Modifier.fillMaxWidth()
                                     ) {
@@ -537,13 +538,13 @@ fun ProfileAdminDialog(
                                                 modifier = Modifier
                                                     .size(36.dp)
                                                     .clip(CircleShape)
-                                                    .background(Color(0xFF10B981).copy(alpha = 0.15f)),
+                                                    .background(MaterialTheme.extendedColors.success.copy(alpha = 0.15f)),
                                                 contentAlignment = Alignment.Center
                                             ) {
                                                 Icon(
                                                     imageVector = Icons.Default.Face,
                                                     contentDescription = "Face ID",
-                                                    tint = Color(0xFF16A34A),
+                                                    tint = MaterialTheme.colorScheme.secondary,
                                                     modifier = Modifier.size(20.dp)
                                                 )
                                             }
@@ -557,7 +558,7 @@ fun ProfileAdminDialog(
                                                 Text(
                                                     text = if (facialEnabled) "Active & Enrolled" else "Not Configured",
                                                     style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp),
-                                                    color = if (facialEnabled) Color(0xFF16A34A) else MaterialTheme.colorScheme.onSurfaceVariant
+                                                    color = if (facialEnabled) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurfaceVariant
                                                 )
                                             }
                                         }
@@ -572,8 +573,8 @@ fun ProfileAdminDialog(
                                                 }
                                             },
                                             colors = SwitchDefaults.colors(
-                                                checkedThumbColor = Color(0xFF16A34A),
-                                                checkedTrackColor = Color(0xFF16A34A).copy(alpha = 0.4f)
+                                                checkedThumbColor = MaterialTheme.colorScheme.secondary,
+                                                checkedTrackColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.4f)
                                             )
                                         )
                                     }
@@ -590,8 +591,8 @@ fun ProfileAdminDialog(
                                         onClick = {
                                             testBiometricMode = BiometricAuthMode.FACIAL_RECOGNITION
                                         },
-                                        colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF16A34A)),
-                                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF16A34A).copy(alpha = 0.4f)),
+                                        colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.secondary),
+                                        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.secondary.copy(alpha = 0.4f)),
                                         shape = RoundedCornerShape(8.dp),
                                         modifier = Modifier.fillMaxWidth()
                                     ) {
@@ -607,14 +608,14 @@ fun ProfileAdminDialog(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .clip(RoundedCornerShape(8.dp))
-                                        .background(Color(0xFF10B981).copy(alpha = 0.15f))
-                                        .border(1.dp, Color(0xFF10B981).copy(alpha = 0.3f), RoundedCornerShape(8.dp))
+                                        .background(MaterialTheme.extendedColors.success.copy(alpha = 0.15f))
+                                        .border(1.dp, MaterialTheme.extendedColors.success.copy(alpha = 0.3f), RoundedCornerShape(8.dp))
                                         .padding(10.dp)
                                 ) {
                                     Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Icon(imageVector = Icons.Default.CheckCircle, contentDescription = null, tint = Color(0xFF10B981), modifier = Modifier.size(16.dp))
+                                        Icon(imageVector = Icons.Default.CheckCircle, contentDescription = null, tint = MaterialTheme.extendedColors.success, modifier = Modifier.size(16.dp))
                                         Spacer(modifier = Modifier.width(8.dp))
-                                        Text(text = msg, style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp, fontWeight = FontWeight.Bold), color = Color(0xFF10B981))
+                                        Text(text = msg, style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp, fontWeight = FontWeight.Bold), color = MaterialTheme.extendedColors.success)
                                     }
                                 }
                             }
@@ -630,7 +631,7 @@ fun ProfileAdminDialog(
                                     .fillMaxWidth()
                                     .clip(RoundedCornerShape(12.dp))
                                     .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
-                                    .border(1.dp, ElegantGoldPrimary.copy(alpha = 0.4f), RoundedCornerShape(12.dp))
+                                    .border(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.4f), RoundedCornerShape(12.dp))
                                     .padding(14.dp)
                             ) {
                                 Column {
@@ -643,7 +644,7 @@ fun ProfileAdminDialog(
                                             verticalAlignment = Alignment.CenterVertically,
                                             modifier = Modifier.weight(1f)
                                         ) {
-                                            Icon(imageVector = Icons.Default.Lock, contentDescription = null, tint = ElegantGoldPrimary)
+                                            Icon(imageVector = Icons.Default.Lock, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                                             Spacer(modifier = Modifier.width(8.dp))
                                             Column {
                                                 Text(
@@ -663,8 +664,8 @@ fun ProfileAdminDialog(
                                             checked = requireLoginOnLeave,
                                             onCheckedChange = onToggleRequireLoginOnLeave,
                                             colors = SwitchDefaults.colors(
-                                                checkedThumbColor = ElegantGoldPrimary,
-                                                checkedTrackColor = ElegantGoldPrimary.copy(alpha = 0.3f)
+                                                checkedThumbColor = MaterialTheme.colorScheme.primary,
+                                                checkedTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
                                             ),
                                             modifier = Modifier.testTag("admin_require_login_switch")
                                         )
@@ -678,8 +679,8 @@ fun ProfileAdminDialog(
                                             onLockSession()
                                         },
                                         colors = ButtonDefaults.buttonColors(
-                                            containerColor = ElegantGoldPrimary,
-                                            contentColor = Color.Black
+                                            containerColor = MaterialTheme.colorScheme.primary,
+                                            contentColor = MaterialTheme.colorScheme.onPrimary
                                         ),
                                         shape = RoundedCornerShape(8.dp),
                                         modifier = Modifier.fillMaxWidth().testTag("admin_lock_session_button")
@@ -701,7 +702,7 @@ fun ProfileAdminDialog(
                             ) {
                                 Column {
                                     Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Icon(imageVector = Icons.Default.DeleteSweep, contentDescription = null, tint = Color(0xFFEF4444))
+                                        Icon(imageVector = Icons.Default.DeleteSweep, contentDescription = null, tint = MaterialTheme.colorScheme.error)
                                         Spacer(modifier = Modifier.width(8.dp))
                                         Text(
                                             text = "Compliance Data De-indexing Switch",
@@ -722,8 +723,8 @@ fun ProfileAdminDialog(
                                             onDismiss()
                                         },
                                         colors = ButtonDefaults.buttonColors(
-                                            containerColor = Color(0x26EF4444),
-                                            contentColor = Color(0xFFEF4444)
+                                            containerColor = MaterialTheme.colorScheme.error.copy(alpha = 0.15f),
+                                            contentColor = MaterialTheme.colorScheme.error
                                         ),
                                         shape = RoundedCornerShape(8.dp)
                                     ) {

@@ -100,13 +100,13 @@ fun AuditingMatrixCard(
                         modifier = Modifier
                             .size(34.dp)
                             .clip(CircleShape)
-                            .background(Color(0x26FACC15)),
+                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = Icons.Default.Assessment,
                             contentDescription = null,
-                            tint = ElegantGoldPrimary,
+                            tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(18.dp)
                         )
                     }
@@ -118,7 +118,7 @@ fun AuditingMatrixCard(
                                 fontWeight = FontWeight.ExtraBold,
                                 letterSpacing = 0.5.sp
                             ),
-                            color = ElegantGoldPrimary
+                            color = MaterialTheme.colorScheme.primary
                         )
                         Text(
                             text = "${userProfile.feederBand.code} • 20h Target SLA Ledger",
@@ -131,14 +131,14 @@ fun AuditingMatrixCard(
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(8.dp))
-                        .background(if (todayRecord.isSlaBreached) Color(0x26EF4444) else Color(0x1A22C55E))
+                        .background(if (todayRecord.isSlaBreached) MaterialTheme.colorScheme.error.copy(alpha = 0.15f) else MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f))
                         .padding(horizontal = 8.dp, vertical = 4.dp)
                 ) {
                     Text(
                         text = if (todayRecord.isSlaBreached) "SLA SHORTFALL" else "ON TARGET",
                         style = MaterialTheme.typography.labelSmall.copy(
                             fontWeight = FontWeight.Bold,
-                            color = if (todayRecord.isSlaBreached) Color(0xFFEF4444) else Color(0xFF4ADE80)
+                            color = if (todayRecord.isSlaBreached) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.secondary
                         )
                     )
                 }
@@ -160,7 +160,7 @@ fun AuditingMatrixCard(
                 Text(
                     text = "${((todayRecord.actualDeliveredHours / 20.0) * 100).toInt()}%",
                     style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                    color = ElegantGoldPrimary
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
 
@@ -172,7 +172,7 @@ fun AuditingMatrixCard(
                     .fillMaxWidth()
                     .height(8.dp)
                     .clip(RoundedCornerShape(4.dp)),
-                color = if (todayRecord.actualDeliveredHours >= 16.0) ElegantGoldPrimary else Color(0xFFEF4444),
+                color = if (todayRecord.actualDeliveredHours >= 16.0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
                 trackColor = MaterialTheme.colorScheme.surfaceVariant
             )
 
@@ -196,7 +196,7 @@ fun AuditingMatrixCard(
                         Icon(
                             imageVector = Icons.Default.GpsFixed,
                             contentDescription = null,
-                            tint = Color(0xFF60A5FA),
+                            tint = MaterialTheme.colorScheme.tertiary,
                             modifier = Modifier.size(16.dp)
                         )
                         Spacer(modifier = Modifier.width(6.dp))
@@ -227,7 +227,7 @@ fun AuditingMatrixCard(
                         .weight(1f)
                         .clip(RoundedCornerShape(12.dp))
                         .background(Color(0x0DEF4444))
-                        .border(1.dp, Color(0x26EF4444), RoundedCornerShape(12.dp))
+                        .border(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.15f), RoundedCornerShape(12.dp))
                         .padding(10.dp)
                 ) {
                     Column {
@@ -240,7 +240,7 @@ fun AuditingMatrixCard(
                         Text(
                             text = "${Math.round(totalShortfall * 10.0) / 10.0} hrs",
                             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                            color = Color(0xFFEF4444)
+                            color = MaterialTheme.colorScheme.error
                         )
                         Text(
                             text = "Verified DisCo Default",
@@ -256,7 +256,7 @@ fun AuditingMatrixCard(
                         .weight(1f)
                         .clip(RoundedCornerShape(12.dp))
                         .background(Color(0x1422C55E))
-                        .border(1.dp, Color(0x2622C55E), RoundedCornerShape(12.dp))
+                        .border(1.dp, MaterialTheme.colorScheme.secondary.copy(alpha = 0.15f), RoundedCornerShape(12.dp))
                         .clickable(onClick = onOpenClearinghouse)
                         .padding(10.dp)
                 ) {
@@ -270,12 +270,12 @@ fun AuditingMatrixCard(
                         Text(
                             text = "₦${totalRebateDue.toInt()}",
                             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                            color = Color(0xFF4ADE80)
+                            color = MaterialTheme.colorScheme.secondary
                         )
                         Text(
                             text = "Tap to Claim Escrow Token ›",
                             style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp, fontWeight = FontWeight.Bold),
-                            color = ElegantGoldPrimary
+                            color = MaterialTheme.colorScheme.primary
                         )
                     }
                 }
@@ -294,12 +294,12 @@ fun AuditingMatrixCard(
                 Text(
                     text = if (isExpanded) "Hide Daily Ledger" else "View 7-Day Immutable SLA Ledger",
                     style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                    color = ElegantGoldPrimary
+                    color = MaterialTheme.colorScheme.primary
                 )
                 Icon(
                     imageVector = Icons.Default.ChevronRight,
                     contentDescription = null,
-                    tint = ElegantGoldPrimary,
+                    tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(16.dp)
                 )
             }
@@ -338,13 +338,13 @@ fun AuditingMatrixCard(
                                 Text(
                                     text = "-${record.shortfallHours}h (₦${record.compensationDueNgn.toInt()})",
                                     style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                                    color = Color(0xFFEF4444)
+                                    color = MaterialTheme.colorScheme.error
                                 )
                             } else {
                                 Text(
                                     text = "MET (100%)",
                                     style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                                    color = Color(0xFF4ADE80)
+                                    color = MaterialTheme.colorScheme.secondary
                                 )
                             }
                         }

@@ -51,7 +51,7 @@ fun HazardFastTrackCard(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
-        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0x4DEF4444)),
+        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.3f)),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
@@ -72,14 +72,14 @@ fun HazardFastTrackCard(
                         modifier = Modifier
                             .size(36.dp)
                             .clip(CircleShape)
-                            .background(Color(0x26EF4444))
-                            .border(1.dp, Color(0x4DEF4444), CircleShape),
+                            .background(MaterialTheme.colorScheme.error.copy(alpha = 0.15f))
+                            .border(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.3f), CircleShape),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = Icons.Default.Warning,
                             contentDescription = "Hazard Alert",
-                            tint = ElegantRedHazard,
+                            tint = MaterialTheme.colorScheme.error,
                             modifier = Modifier.size(18.dp)
                         )
                     }
@@ -91,7 +91,7 @@ fun HazardFastTrackCard(
                                 fontWeight = FontWeight.ExtraBold,
                                 letterSpacing = 0.5.sp
                             ),
-                            color = ElegantRedHazard
+                            color = MaterialTheme.colorScheme.error
                         )
                         Text(
                             text = "Life safety emergency? Bypasses queue instantly.",
@@ -152,7 +152,7 @@ fun EmergencyButton(
             Icon(
                 imageVector = Icons.Default.FlashOn,
                 contentDescription = null,
-                tint = ElegantRedHazard,
+                tint = MaterialTheme.colorScheme.error,
                 modifier = Modifier.size(13.dp)
             )
             Spacer(modifier = Modifier.width(4.dp))

@@ -78,6 +78,8 @@ import com.example.ui.theme.Slate400Text
 import com.example.ui.theme.Slate500Text
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import com.example.ui.theme.extendedColors
+import com.example.ui.theme.SuccessEmerald
 
 enum class BiometricAuthMode {
     FINGERPRINT,
@@ -177,7 +179,7 @@ fun BiometricVerificationDialog(
                 .testTag("biometric_verification_dialog"),
             shape = RoundedCornerShape(26.dp),
             colors = CardDefaults.cardColors(containerColor = ElegantDarkSurface),
-            border = androidx.compose.foundation.BorderStroke(1.5.dp, ElegantGoldPrimary.copy(alpha = 0.6f)),
+            border = androidx.compose.foundation.BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)),
             elevation = CardDefaults.cardElevation(defaultElevation = 10.dp)
         ) {
             Column(
@@ -200,7 +202,7 @@ fun BiometricVerificationDialog(
                             modifier = Modifier
                                 .size(32.dp)
                                 .clip(CircleShape)
-                                .background(Color(0x14FACC15)),
+                                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
@@ -209,7 +211,7 @@ fun BiometricVerificationDialog(
                                 else
                                     Icons.Default.Face,
                                 contentDescription = null,
-                                tint = ElegantGoldPrimary,
+                                tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(18.dp)
                             )
                         }
@@ -260,7 +262,7 @@ fun BiometricVerificationDialog(
                                 .clickable { currentMode = BiometricAuthMode.FINGERPRINT }
                                 .testTag("select_fingerprint_mode_tab"),
                             color = if (currentMode == BiometricAuthMode.FINGERPRINT)
-                                ElegantGoldPrimary
+                                MaterialTheme.colorScheme.primary
                             else
                                 Color.Transparent
                         ) {
@@ -294,7 +296,7 @@ fun BiometricVerificationDialog(
                                 .clickable { currentMode = BiometricAuthMode.FACIAL_RECOGNITION }
                                 .testTag("select_face_mode_tab"),
                             color = if (currentMode == BiometricAuthMode.FACIAL_RECOGNITION)
-                                ElegantGoldPrimary
+                                MaterialTheme.colorScheme.primary
                             else
                                 Color.Transparent
                         ) {
@@ -344,10 +346,10 @@ fun BiometricVerificationDialog(
                 // Status Message Card
                 Surface(
                     shape = RoundedCornerShape(12.dp),
-                    color = if (isSuccess) Color(0xFF10B981).copy(alpha = 0.15f) else Color(0x14FFFFFF),
+                    color = if (isSuccess) MaterialTheme.extendedColors.success.copy(alpha = 0.15f) else Color(0x14FFFFFF),
                     border = androidx.compose.foundation.BorderStroke(
                         1.dp,
-                        if (isSuccess) Color(0xFF10B981) else Color(0x22FFFFFF)
+                        if (isSuccess) MaterialTheme.extendedColors.success else Color(0x22FFFFFF)
                     ),
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -359,7 +361,7 @@ fun BiometricVerificationDialog(
                         Icon(
                             imageVector = if (isSuccess) Icons.Default.CheckCircle else Icons.Default.Security,
                             contentDescription = null,
-                            tint = if (isSuccess) Color(0xFF10B981) else ElegantGoldPrimary,
+                            tint = if (isSuccess) MaterialTheme.extendedColors.success else MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(16.dp)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
@@ -369,7 +371,7 @@ fun BiometricVerificationDialog(
                                 fontWeight = if (isSuccess) FontWeight.Bold else FontWeight.Medium,
                                 fontSize = 12.sp
                             ),
-                            color = if (isSuccess) Color(0xFF10B981) else Slate100Text,
+                            color = if (isSuccess) MaterialTheme.extendedColors.success else Slate100Text,
                             textAlign = TextAlign.Center
                         )
                     }
@@ -386,8 +388,8 @@ fun BiometricVerificationDialog(
                             .height(48.dp)
                             .testTag("tap_to_scan_fingerprint_button"),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = ElegantGoldPrimary,
-                            contentColor = Color.Black
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
                         ),
                         shape = RoundedCornerShape(12.dp)
                     ) {
@@ -423,8 +425,8 @@ fun BiometricVerificationDialog(
                             .height(48.dp)
                             .testTag("re_scan_face_button"),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = ElegantGoldPrimary,
-                            contentColor = Color.Black
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
                         ),
                         shape = RoundedCornerShape(12.dp)
                     ) {
@@ -498,16 +500,16 @@ private fun FingerprintSensorVisual(
                 .clip(CircleShape)
                 .background(
                     when {
-                        isSuccess -> Color(0xFF10B981).copy(alpha = 0.15f)
-                        isScanning -> ElegantGoldPrimary.copy(alpha = 0.2f)
+                        isSuccess -> MaterialTheme.extendedColors.success.copy(alpha = 0.15f)
+                        isScanning -> MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
                         else -> Color(0x14FFFFFF)
                     }
                 )
                 .border(
                     width = 1.5.dp,
                     color = when {
-                        isSuccess -> Color(0xFF10B981).copy(alpha = 0.5f)
-                        isScanning -> ElegantGoldPrimary.copy(alpha = 0.6f)
+                        isSuccess -> MaterialTheme.extendedColors.success.copy(alpha = 0.5f)
+                        isScanning -> MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
                         else -> Color(0x22FFFFFF)
                     },
                     shape = CircleShape
@@ -521,14 +523,14 @@ private fun FingerprintSensorVisual(
                 .clip(CircleShape)
                 .background(
                     when {
-                        isSuccess -> Color(0xFF10B981).copy(alpha = 0.25f)
+                        isSuccess -> MaterialTheme.extendedColors.success.copy(alpha = 0.25f)
                         isScanning -> ElegantGoldDark.copy(alpha = 0.35f)
                         else -> Color(0x1FFFFFFF)
                     }
                 )
                 .border(
                     width = 2.dp,
-                    color = if (isSuccess) Color(0xFF10B981) else if (isScanning) ElegantGoldPrimary else Color(0x33FFFFFF),
+                    color = if (isSuccess) MaterialTheme.extendedColors.success else if (isScanning) MaterialTheme.colorScheme.primary else Color(0x33FFFFFF),
                     shape = CircleShape
                 )
         )
@@ -538,8 +540,8 @@ private fun FingerprintSensorVisual(
             imageVector = if (isSuccess) Icons.Default.CheckCircle else Icons.Default.Fingerprint,
             contentDescription = "Biometric Sensor",
             tint = when {
-                isSuccess -> Color(0xFF10B981)
-                isScanning -> ElegantGoldPrimary
+                isSuccess -> MaterialTheme.extendedColors.success
+                isScanning -> MaterialTheme.colorScheme.primary
                 else -> Slate100Text
             },
             modifier = Modifier.size(52.dp)
@@ -573,7 +575,7 @@ private fun FacialRecognitionScannerVisual(
             .background(Color(0xFF0F131C))
             .border(
                 2.dp,
-                if (isSuccess) Color(0xFF10B981) else ElegantGoldPrimary.copy(alpha = 0.6f),
+                if (isSuccess) MaterialTheme.extendedColors.success else MaterialTheme.colorScheme.primary.copy(alpha = 0.6f),
                 RoundedCornerShape(24.dp)
             )
             .testTag("facial_scanner_viewfinder"),
@@ -583,7 +585,7 @@ private fun FacialRecognitionScannerVisual(
         Icon(
             imageVector = if (isSuccess) Icons.Default.CheckCircle else Icons.Default.Face,
             contentDescription = "Facial Scanner",
-            tint = if (isSuccess) Color(0xFF10B981) else Slate100Text.copy(alpha = 0.85f),
+            tint = if (isSuccess) MaterialTheme.extendedColors.success else Slate100Text.copy(alpha = 0.85f),
             modifier = Modifier.size(70.dp)
         )
 
@@ -591,7 +593,7 @@ private fun FacialRecognitionScannerVisual(
         Canvas(modifier = Modifier.matchParentSize()) {
             val bracketLen = 20.dp.toPx()
             val strokeWidth = 3.dp.toPx()
-            val bracketColor = if (isSuccess) Color(0xFF10B981) else Color(0xFFFACC15)
+            val bracketColor = if (isSuccess) SuccessEmerald else ElegantGoldPrimary
 
             // Top-left
             drawLine(bracketColor, Offset(10f, 10f), Offset(10f + bracketLen, 10f), strokeWidth)
@@ -613,7 +615,7 @@ private fun FacialRecognitionScannerVisual(
             if (isScanning && !isSuccess) {
                 val currentY = size.height * laserY
                 drawLine(
-                    color = Color(0xFF10B981),
+                    color = SuccessEmerald,
                     start = Offset(14f, currentY),
                     end = Offset(size.width - 14f, currentY),
                     strokeWidth = 2.5.dp.toPx()
@@ -627,7 +629,7 @@ private fun FacialRecognitionScannerVisual(
                 .align(Alignment.BottomCenter)
                 .padding(bottom = 6.dp)
                 .clip(RoundedCornerShape(4.dp))
-                .background(if (isSuccess) Color(0xFF10B981).copy(alpha = 0.3f) else Color(0x99000000))
+                .background(if (isSuccess) MaterialTheme.extendedColors.success.copy(alpha = 0.3f) else Color(0x99000000))
                 .padding(horizontal = 6.dp, vertical = 2.dp)
         ) {
             Text(
@@ -637,7 +639,7 @@ private fun FacialRecognitionScannerVisual(
                     fontWeight = FontWeight.ExtraBold,
                     letterSpacing = 0.5.sp
                 ),
-                color = if (isSuccess) Color(0xFF10B981) else ElegantGoldPrimary
+                color = if (isSuccess) MaterialTheme.extendedColors.success else MaterialTheme.colorScheme.primary
             )
         }
     }

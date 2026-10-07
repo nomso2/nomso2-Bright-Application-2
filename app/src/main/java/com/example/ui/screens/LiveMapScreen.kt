@@ -86,6 +86,7 @@ import com.example.model.TransformerStatus
 import com.example.model.UserProfile
 import com.example.ui.theme.EmeraldAccent
 import com.example.ui.theme.GoldPrimary
+import com.example.ui.theme.ConsoleDarkSurface
 
 enum class MapStyleMode {
     ROADMAP,
@@ -293,7 +294,7 @@ fun LiveMapScreen(
                     Icon(
                         imageVector = Icons.Default.Refresh,
                         contentDescription = "Refresh Live Map",
-                        tint = GoldPrimary
+                        tint = MaterialTheme.colorScheme.primary
                     )
                 }
             }
@@ -304,7 +305,7 @@ fun LiveMapScreen(
             TabRow(
                 selectedTabIndex = selectedTab,
                 containerColor = MaterialTheme.colorScheme.surface,
-                contentColor = GoldPrimary,
+                contentColor = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.clip(RoundedCornerShape(10.dp))
             ) {
                 Tab(
@@ -350,7 +351,7 @@ fun LiveMapScreen(
                         }
                     },
                     placeholder = { Text("Search by Transformer ID, Street, or City...", fontSize = 12.sp) },
-                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = GoldPrimary, modifier = Modifier.size(18.dp)) },
+                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp)) },
                     trailingIcon = {
                         if (searchQuery.isNotBlank()) {
                             IconButton(onClick = { searchQuery = "" }) {
@@ -365,7 +366,7 @@ fun LiveMapScreen(
                     singleLine = true,
                     shape = RoundedCornerShape(12.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = GoldPrimary,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
                         unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant
                     )
                 )
@@ -403,8 +404,8 @@ fun LiveMapScreen(
                             },
                             label = { Text(city, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                             colors = FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = GoldPrimary.copy(alpha = 0.2f),
-                                selectedLabelColor = GoldPrimary
+                                selectedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
+                                selectedLabelColor = MaterialTheme.colorScheme.primary
                             )
                         )
                     }
@@ -449,7 +450,7 @@ fun LiveMapScreen(
                                     Icon(
                                         imageVector = Icons.Default.Map,
                                         contentDescription = "Roadmap",
-                                        tint = if (mapStyle == MapStyleMode.ROADMAP) GoldPrimary else Color.LightGray,
+                                        tint = if (mapStyle == MapStyleMode.ROADMAP) MaterialTheme.colorScheme.primary else Color.LightGray,
                                         modifier = Modifier.size(16.dp)
                                     )
                                 }
@@ -460,7 +461,7 @@ fun LiveMapScreen(
                                     Icon(
                                         imageVector = Icons.Default.Layers,
                                         contentDescription = "Satellite",
-                                        tint = if (mapStyle == MapStyleMode.SATELLITE) GoldPrimary else Color.LightGray,
+                                        tint = if (mapStyle == MapStyleMode.SATELLITE) MaterialTheme.colorScheme.primary else Color.LightGray,
                                         modifier = Modifier.size(16.dp)
                                     )
                                 }
@@ -471,7 +472,7 @@ fun LiveMapScreen(
                                     Icon(
                                         imageVector = Icons.Default.Bolt,
                                         contentDescription = "Grid operator map style",
-                                        tint = if (mapStyle == MapStyleMode.DARK_SCADA) GoldPrimary else Color.LightGray,
+                                        tint = if (mapStyle == MapStyleMode.DARK_SCADA) MaterialTheme.colorScheme.primary else Color.LightGray,
                                         modifier = Modifier.size(16.dp)
                                     )
                                 }
@@ -515,7 +516,7 @@ fun LiveMapScreen(
                         Surface(
                             shape = CircleShape,
                             color = Color(0xEE1E293B),
-                            border = androidx.compose.foundation.BorderStroke(1.dp, GoldPrimary)
+                            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
                         ) {
                             IconButton(
                                 onClick = {
@@ -530,7 +531,7 @@ fun LiveMapScreen(
                                 },
                                 modifier = Modifier.size(36.dp)
                             ) {
-                                Icon(Icons.Default.MyLocation, contentDescription = "Recenter", tint = GoldPrimary, modifier = Modifier.size(18.dp))
+                                Icon(Icons.Default.MyLocation, contentDescription = "Recenter", tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
                             }
                         }
                     }
@@ -562,7 +563,7 @@ fun LiveMapScreen(
                     value = discoSearchQuery,
                     onValueChange = { discoSearchQuery = it },
                     placeholder = { Text("Search Abuja (AEDC), Eko, Ikeja, Benin...", fontSize = 12.sp) },
-                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = GoldPrimary, modifier = Modifier.size(18.dp)) },
+                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp)) },
                     trailingIcon = {
                         if (discoSearchQuery.isNotBlank()) {
                             IconButton(onClick = { discoSearchQuery = "" }) {
@@ -574,7 +575,7 @@ fun LiveMapScreen(
                     singleLine = true,
                     shape = RoundedCornerShape(12.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = GoldPrimary,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
                         unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant
                     )
                 )
@@ -613,8 +614,8 @@ fun LiveMapScreen(
                             onClick = { selectedDiscoFilter = if (isSelected) null else code },
                             label = { Text(label, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                             colors = FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = GoldPrimary.copy(alpha = 0.2f),
-                                selectedLabelColor = GoldPrimary
+                                selectedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
+                                selectedLabelColor = MaterialTheme.colorScheme.primary
                             )
                         )
                     }
@@ -698,14 +699,14 @@ private fun DisCoFacilityCard(
 
                 place.discoAffiliation?.let { aff ->
                     Surface(
-                        color = GoldPrimary.copy(alpha = 0.15f),
+                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
                         shape = RoundedCornerShape(6.dp)
                     ) {
                         Text(
                             text = aff,
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Black,
-                            color = GoldPrimary,
+                            color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
                         )
                     }
@@ -720,7 +721,7 @@ private fun DisCoFacilityCard(
                 Icon(
                     imageVector = Icons.Default.LocationOn,
                     contentDescription = null,
-                    tint = GoldPrimary,
+                    tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(16.dp)
                 )
                 Text(
@@ -732,9 +733,9 @@ private fun DisCoFacilityCard(
 
             // HIGHLY VISIBLE OPEN HOURS BADGE
             Surface(
-                color = EmeraldAccent.copy(alpha = 0.15f),
+                color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.15f),
                 shape = RoundedCornerShape(8.dp),
-                border = androidx.compose.foundation.BorderStroke(1.dp, EmeraldAccent.copy(alpha = 0.4f)),
+                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.secondary.copy(alpha = 0.4f)),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Row(
@@ -745,7 +746,7 @@ private fun DisCoFacilityCard(
                     Icon(
                         imageVector = Icons.Default.AccessTime,
                         contentDescription = null,
-                        tint = EmeraldAccent,
+                        tint = MaterialTheme.colorScheme.secondary,
                         modifier = Modifier.size(18.dp)
                     )
                     Column {
@@ -753,14 +754,14 @@ private fun DisCoFacilityCard(
                             text = "WORKING & FAULT DESK HOURS",
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Black,
-                            color = EmeraldAccent.copy(alpha = 0.8f),
+                            color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.8f),
                             letterSpacing = 0.5.sp
                         )
                         Text(
                             text = place.operatingHours,
                             fontWeight = FontWeight.Bold,
                             fontSize = 12.sp,
-                            color = EmeraldAccent
+                            color = MaterialTheme.colorScheme.secondary
                         )
                     }
                 }
@@ -785,14 +786,14 @@ private fun DisCoFacilityCard(
                     ) {
                         Surface(
                             shape = CircleShape,
-                            color = GoldPrimary.copy(alpha = 0.15f),
+                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
                             modifier = Modifier.size(32.dp)
                         ) {
                             Box(contentAlignment = Alignment.Center) {
                                 Icon(
                                     imageVector = Icons.Default.Call,
                                     contentDescription = null,
-                                    tint = GoldPrimary,
+                                    tint = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.size(16.dp)
                                 )
                             }
@@ -817,8 +818,8 @@ private fun DisCoFacilityCard(
                         onClick = onCallDisCo,
                         shape = RoundedCornerShape(8.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = GoldPrimary,
-                            contentColor = Color.Black
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
                         ),
                         contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
                     ) {
@@ -834,10 +835,10 @@ private fun DisCoFacilityCard(
                 onClick = onOpenDirections,
                 shape = RoundedCornerShape(8.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF1E293B),
-                    contentColor = GoldPrimary
+                    containerColor = ConsoleDarkSurface,
+                    contentColor = MaterialTheme.colorScheme.primary
                 ),
-                border = androidx.compose.foundation.BorderStroke(1.dp, GoldPrimary.copy(alpha = 0.5f)),
+                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Icon(Icons.Default.Directions, contentDescription = null, modifier = Modifier.size(16.dp))
@@ -1131,7 +1132,7 @@ private fun TransformerInspectorCard(
                         text = transformer.id,
                         fontWeight = FontWeight.Black,
                         fontSize = 14.sp,
-                        color = GoldPrimary
+                        color = MaterialTheme.colorScheme.primary
                     )
                     Surface(
                         color = Color(transformer.status.colorHex).copy(alpha = 0.15f),
@@ -1231,7 +1232,7 @@ private fun TransformerInspectorCard(
                 Button(
                     onClick = onGoogleMapsDirections,
                     shape = RoundedCornerShape(10.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = GoldPrimary, contentColor = Color.Black),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary),
                     modifier = Modifier.weight(1.5f)
                 ) {
                     Icon(Icons.Default.Directions, contentDescription = null, modifier = Modifier.size(16.dp))
@@ -1245,8 +1246,8 @@ private fun TransformerInspectorCard(
                 OutlinedButton(
                     onClick = onGoogleMapsPinpoint,
                     shape = RoundedCornerShape(10.dp),
-                    colors = ButtonDefaults.outlinedButtonColors(contentColor = GoldPrimary),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, GoldPrimary.copy(alpha = 0.6f)),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.primary),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)),
                     modifier = Modifier.weight(1f)
                 ) {
                     Icon(Icons.Default.LocationOn, contentDescription = null, modifier = Modifier.size(15.dp))

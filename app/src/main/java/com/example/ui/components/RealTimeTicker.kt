@@ -63,7 +63,7 @@ fun RealTimeTicker(
                     modifier = Modifier
                         .size(8.dp)
                         .clip(CircleShape)
-                        .background(ElegantGreenLive)
+                        .background(MaterialTheme.colorScheme.secondary)
                 )
                 Text(
                     text = "LIVE GRID",
@@ -72,7 +72,7 @@ fun RealTimeTicker(
                         fontSize = 12.sp,
                         letterSpacing = 0.5.sp
                     ),
-                    color = Color(0xFF16A34A)
+                    color = MaterialTheme.colorScheme.secondary
                 )
             }
 
@@ -84,7 +84,7 @@ fun RealTimeTicker(
                 Icon(
                     imageVector = Icons.Default.Bolt,
                     contentDescription = "National Power Generation",
-                    tint = ElegantGoldPrimary,
+                    tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(16.dp)
                 )
                 Text(
@@ -105,7 +105,7 @@ fun RealTimeTicker(
                 Icon(
                     imageVector = Icons.Default.Speed,
                     contentDescription = "System Grid Frequency",
-                    tint = if (telemetry.systemFrequencyHz in 49.8..50.2) ElegantGoldPrimary else MaterialTheme.colorScheme.error,
+                    tint = if (telemetry.systemFrequencyHz in 49.8..50.2) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
                     modifier = Modifier.size(16.dp)
                 )
                 Text(
@@ -122,8 +122,8 @@ fun RealTimeTicker(
             Box(
                 modifier = Modifier
                     .clip(RoundedCornerShape(6.dp))
-                    .background(Color(0x1A22C55E))
-                    .border(1.dp, Color(0x3322C55E), RoundedCornerShape(6.dp))
+                    .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f))
+                    .border(1.dp, MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f), RoundedCornerShape(6.dp))
                     .padding(horizontal = 6.dp, vertical = 2.dp)
             ) {
                 Text(
@@ -132,7 +132,7 @@ fun RealTimeTicker(
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold
                     ),
-                    color = Color(0xFF4ADE80)
+                    color = MaterialTheme.colorScheme.secondary
                 )
             }
         }

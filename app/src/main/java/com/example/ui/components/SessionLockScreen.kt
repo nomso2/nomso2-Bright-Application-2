@@ -150,14 +150,14 @@ fun SessionLockScreen(
             Box(
                 modifier = Modifier
                     .size(64.dp)
-                    .background(ElegantGoldPrimary.copy(alpha = 0.15f), CircleShape)
-                    .border(2.dp, ElegantGoldPrimary, CircleShape),
+                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f), CircleShape)
+                    .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.Default.Lock,
                     contentDescription = "Session Locked",
-                    tint = ElegantGoldPrimary,
+                    tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(32.dp)
                 )
             }
@@ -171,7 +171,7 @@ fun SessionLockScreen(
                     letterSpacing = 2.sp,
                     fontSize = 12.sp
                 ),
-                color = ElegantGoldPrimary
+                color = MaterialTheme.colorScheme.primary
             )
 
             Spacer(modifier = Modifier.height(6.dp))
@@ -217,13 +217,13 @@ fun SessionLockScreen(
                         modifier = Modifier
                             .size(46.dp)
                             .clip(CircleShape)
-                            .background(ElegantGoldPrimary.copy(alpha = 0.15f)),
+                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = Icons.Default.ElectricMeter,
                             contentDescription = null,
-                            tint = ElegantGoldPrimary,
+                            tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(24.dp)
                         )
                     }
@@ -243,7 +243,7 @@ fun SessionLockScreen(
                         Text(
                             text = "${userProfile.feederBand.code} Feeder (${userProfile.feederName})",
                             style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp, fontWeight = FontWeight.SemiBold),
-                            color = ElegantGoldPrimary
+                            color = MaterialTheme.colorScheme.primary
                         )
                     }
                 }
@@ -256,7 +256,7 @@ fun SessionLockScreen(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(18.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                border = androidx.compose.foundation.BorderStroke(1.dp, ElegantGoldPrimary.copy(alpha = 0.4f)),
+                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)),
                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
                 Column(
@@ -284,7 +284,7 @@ fun SessionLockScreen(
                             Icon(
                                 imageVector = Icons.Default.Lock,
                                 contentDescription = null,
-                                tint = ElegantGoldPrimary,
+                                tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(20.dp)
                             )
                         },
@@ -308,7 +308,7 @@ fun SessionLockScreen(
                             .fillMaxWidth()
                             .testTag("relogin_pin_input"),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = ElegantGoldPrimary,
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
                             unfocusedBorderColor = MaterialTheme.colorScheme.outline
                         )
                     )
@@ -339,7 +339,7 @@ fun SessionLockScreen(
                                 .fillMaxWidth()
                                 .testTag("relogin_pin_confirm_input"),
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = ElegantGoldPrimary,
+                                focusedBorderColor = MaterialTheme.colorScheme.primary,
                                 unfocusedBorderColor = MaterialTheme.colorScheme.outline
                             )
                         )
@@ -348,7 +348,7 @@ fun SessionLockScreen(
                     errorMessage?.let { err ->
                         Text(
                             text = err,
-                            color = Color(0xFFEF4444),
+                            color = MaterialTheme.colorScheme.error,
                             style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold)
                         )
                     }
@@ -360,8 +360,8 @@ fun SessionLockScreen(
                             .height(48.dp)
                             .testTag("relogin_unlock_button"),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = ElegantGoldPrimary,
-                            contentColor = Color.Black
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
                         ),
                         shape = RoundedCornerShape(10.dp)
                     ) {
@@ -377,8 +377,8 @@ fun SessionLockScreen(
                             .height(46.dp)
                             .testTag("relogin_biometric_button"),
                         shape = RoundedCornerShape(10.dp),
-                        colors = ButtonDefaults.outlinedButtonColors(contentColor = ElegantGoldPrimary),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, ElegantGoldPrimary.copy(alpha = 0.5f))
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.primary),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.5f))
                     ) {
                         Icon(imageVector = Icons.Default.Fingerprint, contentDescription = null, modifier = Modifier.size(18.dp))
                         Spacer(modifier = Modifier.width(8.dp))
@@ -442,8 +442,8 @@ fun SessionLockScreen(
                         checked = requireLoginOnLeave,
                         onCheckedChange = onToggleRequireLoginOnLeave,
                         colors = SwitchDefaults.colors(
-                            checkedThumbColor = ElegantGoldPrimary,
-                            checkedTrackColor = ElegantGoldPrimary.copy(alpha = 0.3f)
+                            checkedThumbColor = MaterialTheme.colorScheme.primary,
+                            checkedTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
                         ),
                         modifier = Modifier.testTag("relogin_autolock_switch")
                     )
@@ -465,14 +465,14 @@ fun SessionLockScreen(
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ExitToApp,
                     contentDescription = null,
-                    tint = Color(0xFFEF4444),
+                    tint = MaterialTheme.colorScheme.error,
                     modifier = Modifier.size(16.dp)
                 )
                 Text(
                     text = "Sign Out Completely",
                     style = MaterialTheme.typography.labelMedium.copy(
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFFEF4444)
+                        color = MaterialTheme.colorScheme.error
                     )
                 )
             }

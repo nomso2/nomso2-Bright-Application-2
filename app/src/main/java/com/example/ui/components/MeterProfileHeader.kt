@@ -51,6 +51,7 @@ import com.example.ui.theme.Slate100Text
 import com.example.ui.theme.Slate300Text
 import com.example.ui.theme.Slate400Text
 import com.example.ui.theme.Slate500Text
+import com.example.ui.theme.extendedColors
 
 @Composable
 fun MeterProfileHeader(
@@ -62,7 +63,7 @@ fun MeterProfileHeader(
     val cardBrush = if (isDark) {
         Brush.linearGradient(colors = listOf(ElegantDarkCardStart, ElegantDarkCardEnd))
     } else {
-        Brush.linearGradient(colors = listOf(Color(0xFFFFFFFF), Color(0xFFF1F5F9)))
+        Brush.linearGradient(colors = listOf(Color.White, Slate100Text))
     }
 
     Card(
@@ -119,7 +120,7 @@ fun MeterProfileHeader(
                             Icon(
                                 imageVector = Icons.Default.Verified,
                                 contentDescription = "Verified Meter in DisCo Database",
-                                tint = ElegantGoldPrimary,
+                                tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(18.dp)
                             )
                         }
@@ -130,8 +131,8 @@ fun MeterProfileHeader(
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(8.dp))
-                                .background(Color(0x1A22C55E))
-                                .border(1.dp, Color(0x3322C55E), RoundedCornerShape(8.dp))
+                                .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f))
+                                .border(1.dp, MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f), RoundedCornerShape(8.dp))
                                 .padding(horizontal = 10.dp, vertical = 5.dp)
                                 .testTag("meter_live_feed_badge")
                         ) {
@@ -143,7 +144,7 @@ fun MeterProfileHeader(
                                     modifier = Modifier
                                         .size(8.dp)
                                         .clip(CircleShape)
-                                        .background(ElegantGreenLive)
+                                        .background(MaterialTheme.colorScheme.secondary)
                                 )
                                 Text(
                                     text = "LIVE FEED • VERIFIED ACTIVE",
@@ -152,7 +153,7 @@ fun MeterProfileHeader(
                                         fontWeight = FontWeight.ExtraBold,
                                         letterSpacing = 0.5.sp
                                     ),
-                                    color = Color(0xFF16A34A),
+                                    color = MaterialTheme.colorScheme.secondary,
                                     softWrap = false,
                                     maxLines = 1
                                 )
@@ -170,7 +171,7 @@ fun MeterProfileHeader(
                         Icon(
                             imageVector = Icons.Default.Edit,
                             contentDescription = "Edit Meter or Address",
-                            tint = ElegantGoldPrimary,
+                            tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(18.dp)
                         )
                     }
@@ -203,7 +204,7 @@ fun MeterProfileHeader(
                                 modifier = Modifier
                                     .size(8.dp)
                                     .clip(CircleShape)
-                                    .background(ElegantBluePhase)
+                                    .background(MaterialTheme.colorScheme.tertiary)
                             )
                             Text(
                                 text = "Phase Status:",
@@ -233,8 +234,8 @@ fun MeterProfileHeader(
                             Box(
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(6.dp))
-                                    .background(ElegantGoldPrimary.copy(alpha = 0.15f))
-                                    .border(1.dp, ElegantGoldPrimary.copy(alpha = 0.4f), RoundedCornerShape(6.dp))
+                                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f))
+                                    .border(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.4f), RoundedCornerShape(6.dp))
                                     .padding(horizontal = 8.dp, vertical = 3.dp)
                             ) {
                                 Text(
@@ -244,7 +245,7 @@ fun MeterProfileHeader(
                                         fontSize = 12.sp,
                                         letterSpacing = 0.5.sp
                                     ),
-                                    color = ElegantGoldPrimary,
+                                    color = MaterialTheme.colorScheme.primary,
                                     softWrap = false,
                                     maxLines = 1
                                 )
@@ -296,7 +297,7 @@ fun MeterProfileHeader(
                         label = "DisCo",
                         value = profile.discoCode,
                         containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                        contentColor = ElegantGoldPrimary,
+                        contentColor = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.weight(1f)
                     )
 
@@ -339,7 +340,7 @@ fun MeterProfileHeader(
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 12.sp
                             ),
-                            color = Color(0xFF38BDF8),
+                            color = MaterialTheme.extendedColors.info,
                             softWrap = false,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis

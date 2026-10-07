@@ -91,6 +91,9 @@ import com.example.util.NercDossierPdfGenerator
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import com.example.ui.theme.extendedColors
+import com.example.ui.theme.ConsoleDarkBackground
+import com.example.ui.theme.Slate400Text
 
 enum class HistoryFilter {
     ALL,
@@ -243,14 +246,14 @@ fun HistoryScreen(
                 title = "Resolved",
                 value = "$resolvedCount",
                 subtitle = "Verified",
-                accentColor = Color(0xFF10B981),
+                accentColor = MaterialTheme.extendedColors.success,
                 modifier = Modifier.weight(1f)
             )
             HistoryKpiCard(
                 title = "Avg Turnaround",
                 value = "3.2h",
                 subtitle = "NERC SLA 4h",
-                accentColor = Color(0xFF38BDF8),
+                accentColor = MaterialTheme.extendedColors.info,
                 modifier = Modifier.weight(1f)
             )
         }
@@ -315,8 +318,8 @@ fun HistoryScreen(
                     label = { Text("Resolved ($resolvedCount)", fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                     shape = RoundedCornerShape(8.dp),
                     colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = Color(0xFF10B981).copy(alpha = 0.2f),
-                        selectedLabelColor = Color(0xFF10B981)
+                        selectedContainerColor = MaterialTheme.extendedColors.success.copy(alpha = 0.2f),
+                        selectedLabelColor = MaterialTheme.extendedColors.success
                     )
                 )
             }
@@ -327,8 +330,8 @@ fun HistoryScreen(
                     label = { Text("Active / Pending ($activeCount)", fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                     shape = RoundedCornerShape(8.dp),
                     colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = Color(0xFFF59E0B).copy(alpha = 0.2f),
-                        selectedLabelColor = Color(0xFFF59E0B)
+                        selectedContainerColor = MaterialTheme.extendedColors.warning.copy(alpha = 0.2f),
+                        selectedLabelColor = MaterialTheme.extendedColors.warning
                     )
                 )
             }
@@ -439,7 +442,7 @@ fun HistoryScreen(
                     .fillMaxWidth()
                     .padding(16.dp),
                 shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFF0F172A))
+                colors = CardDefaults.cardColors(containerColor = ConsoleDarkBackground)
             ) {
                 Column(
                     modifier = Modifier
@@ -514,7 +517,7 @@ fun HistoryScreen(
                     Text(
                         text = "Verified field technician asset attached to fault report.",
                         style = MaterialTheme.typography.bodySmall,
-                        color = Color(0xFF94A3B8)
+                        color = Slate400Text
                     )
                 }
             }
@@ -553,7 +556,7 @@ fun HistoricalComplaintCard(
         ),
         border = androidx.compose.foundation.BorderStroke(
             1.dp,
-            if (isResolved) Color(0xFF10B981).copy(alpha = 0.3f) else MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
+            if (isResolved) MaterialTheme.extendedColors.success.copy(alpha = 0.3f) else MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
@@ -603,16 +606,16 @@ fun HistoricalComplaintCard(
                         .clip(RoundedCornerShape(8.dp))
                         .background(
                             if (isResolved)
-                                Color(0xFF10B981).copy(alpha = 0.15f)
+                                MaterialTheme.extendedColors.success.copy(alpha = 0.15f)
                             else
-                                Color(0xFFF59E0B).copy(alpha = 0.15f)
+                                MaterialTheme.extendedColors.warning.copy(alpha = 0.15f)
                         )
                         .padding(horizontal = 8.dp, vertical = 4.dp)
                 ) {
                     Icon(
                         imageVector = if (isResolved) Icons.Default.CheckCircle else Icons.Default.AccessTime,
                         contentDescription = null,
-                        tint = if (isResolved) Color(0xFF10B981) else Color(0xFFF59E0B),
+                        tint = if (isResolved) MaterialTheme.extendedColors.success else MaterialTheme.extendedColors.warning,
                         modifier = Modifier.size(14.dp)
                     )
                     Text(
@@ -620,7 +623,7 @@ fun HistoricalComplaintCard(
                         style = MaterialTheme.typography.labelSmall.copy(
                             fontWeight = FontWeight.ExtraBold,
                             fontSize = 12.sp,
-                            color = if (isResolved) Color(0xFF10B981) else Color(0xFFF59E0B)
+                            color = if (isResolved) MaterialTheme.extendedColors.success else MaterialTheme.extendedColors.warning
                         )
                     )
                 }
@@ -636,7 +639,7 @@ fun HistoricalComplaintCard(
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(6.dp))
-                        .background(Color(0xFF3B82F6).copy(alpha = 0.15f))
+                        .background(MaterialTheme.colorScheme.tertiary.copy(alpha = 0.15f))
                         .padding(horizontal = 8.dp, vertical = 3.dp)
                 ) {
                     Text(
@@ -644,7 +647,7 @@ fun HistoricalComplaintCard(
                         style = MaterialTheme.typography.labelSmall.copy(
                             fontWeight = FontWeight.Bold,
                             fontSize = 12.sp,
-                            color = Color(0xFF60A5FA)
+                            color = MaterialTheme.colorScheme.tertiary
                         )
                     )
                 }
@@ -653,7 +656,7 @@ fun HistoricalComplaintCard(
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(6.dp))
-                            .background(Color(0xFFEF4444).copy(alpha = 0.15f))
+                            .background(MaterialTheme.colorScheme.error.copy(alpha = 0.15f))
                             .padding(horizontal = 8.dp, vertical = 3.dp)
                     ) {
                         Text(
@@ -661,7 +664,7 @@ fun HistoricalComplaintCard(
                             style = MaterialTheme.typography.labelSmall.copy(
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 12.sp,
-                                color = Color(0xFFEF4444)
+                                color = MaterialTheme.colorScheme.error
                             )
                         )
                     }
@@ -822,20 +825,20 @@ fun HistoricalComplaintCard(
                                 Icon(
                                     imageVector = Icons.Default.CheckCircle,
                                     contentDescription = null,
-                                    tint = Color(0xFF10B981),
+                                    tint = MaterialTheme.extendedColors.success,
                                     modifier = Modifier.size(14.dp)
                                 )
                                 Text(
                                     text = "Date Resolved:",
                                     style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                                    color = Color(0xFF10B981)
+                                    color = MaterialTheme.extendedColors.success
                                 )
                             }
                             Text(
                                 text = dateFormat.format(Date(resolutionTime)),
                                 style = MaterialTheme.typography.bodySmall.copy(
                                     fontWeight = FontWeight.Bold,
-                                    color = Color(0xFF10B981)
+                                    color = MaterialTheme.extendedColors.success
                                 )
                             )
                         }
@@ -860,7 +863,7 @@ fun HistoricalComplaintCard(
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 12.sp
                                 ),
-                                color = Color(0xFF38BDF8)
+                                color = MaterialTheme.extendedColors.info
                             )
                         }
                     }
@@ -963,7 +966,7 @@ fun HistoricalComplaintCard(
                     Icon(
                         imageVector = Icons.Default.Speed,
                         contentDescription = null,
-                        tint = Color(0xFFF59E0B),
+                        tint = MaterialTheme.extendedColors.warning,
                         modifier = Modifier.size(14.dp)
                     )
                     Text(
@@ -972,7 +975,7 @@ fun HistoricalComplaintCard(
                             fontWeight = FontWeight.Bold,
                             fontSize = 12.sp
                         ),
-                        color = Color(0xFFF59E0B)
+                        color = MaterialTheme.extendedColors.warning
                     )
                 }
 
@@ -1027,8 +1030,8 @@ fun HistoricalComplaintCard(
                             }
                         },
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFFEAB308),
-                            contentColor = Color(0xFF0F172A)
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = ConsoleDarkBackground
                         ),
                         shape = RoundedCornerShape(8.dp),
                         modifier = Modifier.testTag("escalate_ticket_${complaint.id}")
@@ -1119,7 +1122,7 @@ fun BillingDisputeHistoryCard(
                     text = "₦%,.2f".format(dispute.disputedAmountNgn),
                     style = MaterialTheme.typography.titleSmall.copy(
                         fontWeight = FontWeight.ExtraBold,
-                        color = Color(0xFFEF4444)
+                        color = MaterialTheme.colorScheme.error
                     )
                 )
             }

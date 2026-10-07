@@ -45,7 +45,8 @@ private val ElegantDarkColorScheme = darkColorScheme(
 // Elegant Light Color Scheme adhering directly to high contrast design guidelines
 private val ElegantLightColorScheme = lightColorScheme(
     primary = ElegantGoldLightPrimary,
-    onPrimary = Color.White,
+    // Dark text on amber reads better (~6:1) than white (~3:1); gold buttons use onPrimary.
+    onPrimary = Slate900Text,
     primaryContainer = ElegantGoldLightContainer,
     onPrimaryContainer = ElegantGoldLightPrimary,
 
@@ -82,7 +83,12 @@ fun BrightTheme(
 ) {
     val colors = if (darkTheme) ElegantDarkColorScheme else ElegantLightColorScheme
 
-    CompositionLocalProvider(LocalIsDarkTheme provides darkTheme) {
+    val extendedColors = if (darkTheme) DarkExtendedColors else LightExtendedColors
+
+    CompositionLocalProvider(
+        LocalIsDarkTheme provides darkTheme,
+        LocalBrightExtendedColors provides extendedColors
+    ) {
         MaterialTheme(
             colorScheme = colors,
             typography = Typography,

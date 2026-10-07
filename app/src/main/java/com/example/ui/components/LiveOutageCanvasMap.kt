@@ -51,6 +51,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.model.OutageGridNode
 import com.example.model.OutageStatus
+import com.example.ui.theme.extendedColors
+import com.example.ui.theme.ConsoleDarkSurface
+import com.example.ui.theme.ElegantDarkBar
+import com.example.ui.theme.ElegantDarkBorder
+import com.example.ui.theme.ElegantDarkSurface
+import com.example.ui.theme.SuccessEmerald
 
 @Composable
 fun LiveOutageCanvasMap(
@@ -111,9 +117,9 @@ fun LiveOutageCanvasMap(
                 .testTag("live_outage_interactive_map_card"),
             shape = RoundedCornerShape(24.dp),
             colors = CardDefaults.cardColors(
-                containerColor = Color(0xFF11141B) // Elegant Dark Bar Canvas
+                containerColor = ElegantDarkBar // Elegant Dark Bar Canvas
             ),
-            border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF1E2430)),
+            border = androidx.compose.foundation.BorderStroke(1.dp, ElegantDarkBorder),
             elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
         ) {
             Box(modifier = Modifier.fillMaxSize()) {
@@ -150,7 +156,7 @@ fun LiveOutageCanvasMap(
 
                     // 1. Draw national 330kV transmission grid backbone lines (connecting key hubs)
                     val lineStroke = 2.dp.toPx()
-                    val gridLineColor = Color(0xFF1E293B)
+                    val gridLineColor = ConsoleDarkSurface
                     val dashedEffect = PathEffect.dashPathEffect(floatArrayOf(12f, 10f), 0f)
 
                     // Connect nodes with simulated high-voltage transmission interconnects
@@ -165,7 +171,7 @@ fun LiveOutageCanvasMap(
                             // Draw lines only between geographically adjacent nodes
                             if (distance < w * 0.45f) {
                                 val isBothActive = n1.status == OutageStatus.ACTIVE && n2.status == OutageStatus.ACTIVE
-                                val lineCol = if (isBothActive) Color(0xFF10B981).copy(alpha = 0.35f) else gridLineColor
+                                val lineCol = if (isBothActive) SuccessEmerald.copy(alpha = 0.35f) else gridLineColor
 
                                 drawLine(
                                     color = lineCol,
@@ -216,14 +222,14 @@ fun LiveOutageCanvasMap(
                         .align(Alignment.TopStart)
                         .padding(12.dp)
                         .clip(RoundedCornerShape(8.dp))
-                        .background(Color(0xFF161920).copy(alpha = 0.92f))
-                        .border(1.dp, Color(0xFF1E2430), RoundedCornerShape(8.dp))
+                        .background(ElegantDarkSurface.copy(alpha = 0.92f))
+                        .border(1.dp, ElegantDarkBorder, RoundedCornerShape(8.dp))
                         .padding(horizontal = 8.dp, vertical = 4.dp)
                 ) {
                     Text(
                         text = "NIGERIA POWER GRID MAP",
                         style = MaterialTheme.typography.labelSmall.copy(
-                            color = Color(0xFFFACC15),
+                            color = MaterialTheme.colorScheme.primary,
                             fontWeight = FontWeight.Bold,
                             fontSize = 12.sp,
                             letterSpacing = 0.5.sp
@@ -237,17 +243,17 @@ fun LiveOutageCanvasMap(
                         .align(Alignment.BottomEnd)
                         .padding(12.dp)
                         .clip(RoundedCornerShape(8.dp))
-                        .background(Color(0xFF161920).copy(alpha = 0.92f))
-                        .border(1.dp, Color(0xFF1E2430), RoundedCornerShape(8.dp))
+                        .background(ElegantDarkSurface.copy(alpha = 0.92f))
+                        .border(1.dp, ElegantDarkBorder, RoundedCornerShape(8.dp))
                         .padding(horizontal = 8.dp, vertical = 4.dp)
                 ) {
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        LegendDot(Color(0xFF10B981), "ON")
-                        LegendDot(Color(0xFFEF4444), "FAULT")
-                        LegendDot(Color(0xFFF59E0B), "MAINT")
+                        LegendDot(MaterialTheme.extendedColors.success, "ON")
+                        LegendDot(MaterialTheme.colorScheme.error, "FAULT")
+                        LegendDot(MaterialTheme.extendedColors.warning, "MAINT")
                     }
                 }
             }

@@ -123,7 +123,7 @@ fun PhaseOnboardingDialog(
                             Icon(
                                 imageVector = Icons.Default.Lock,
                                 contentDescription = null,
-                                tint = ElegantGoldPrimary,
+                                tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(16.dp)
                             )
                             Spacer(modifier = Modifier.width(6.dp))
@@ -133,7 +133,7 @@ fun PhaseOnboardingDialog(
                                     fontWeight = FontWeight.ExtraBold,
                                     letterSpacing = 1.sp
                                 ),
-                                color = ElegantGoldPrimary
+                                color = MaterialTheme.colorScheme.primary
                             )
                         }
                         Text(
@@ -163,7 +163,7 @@ fun PhaseOnboardingDialog(
                         modifier = Modifier
                             .weight(1f)
                             .clip(RoundedCornerShape(8.dp))
-                            .background(if (!isSignUpMode) ElegantGoldPrimary else Color.Transparent)
+                            .background(if (!isSignUpMode) MaterialTheme.colorScheme.primary else Color.Transparent)
                             .clickable { isSignUpMode = false }
                             .padding(vertical = 8.dp),
                         contentAlignment = Alignment.Center
@@ -171,7 +171,7 @@ fun PhaseOnboardingDialog(
                         Text(
                             text = "Manual Login",
                             style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                            color = if (!isSignUpMode) Color(0xFF0A0C10) else MaterialTheme.colorScheme.onSurfaceVariant
+                            color = if (!isSignUpMode) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
 
@@ -179,7 +179,7 @@ fun PhaseOnboardingDialog(
                         modifier = Modifier
                             .weight(1f)
                             .clip(RoundedCornerShape(8.dp))
-                            .background(if (isSignUpMode) ElegantGoldPrimary else Color.Transparent)
+                            .background(if (isSignUpMode) MaterialTheme.colorScheme.primary else Color.Transparent)
                             .clickable { isSignUpMode = true }
                             .padding(vertical = 8.dp),
                         contentAlignment = Alignment.Center
@@ -187,7 +187,7 @@ fun PhaseOnboardingDialog(
                         Text(
                             text = "Sign Up / Register",
                             style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                            color = if (isSignUpMode) Color(0xFF0A0C10) else MaterialTheme.colorScheme.onSurfaceVariant
+                            color = if (isSignUpMode) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -200,14 +200,14 @@ fun PhaseOnboardingDialog(
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(12.dp))
                         .background(Color(0x0D60A5FA))
-                        .border(1.dp, Color(0x3360A5FA), RoundedCornerShape(12.dp))
+                        .border(1.dp, MaterialTheme.colorScheme.tertiary.copy(alpha = 0.2f), RoundedCornerShape(12.dp))
                         .padding(12.dp)
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             imageVector = Icons.Default.Dialpad,
                             contentDescription = null,
-                            tint = Color(0xFF60A5FA),
+                            tint = MaterialTheme.colorScheme.tertiary,
                             modifier = Modifier.size(20.dp)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
@@ -255,17 +255,17 @@ fun PhaseOnboardingDialog(
                     },
                     label = { Text("Prepaid Meter Number (11 or 13 digits)") },
                     leadingIcon = {
-                        Icon(imageVector = Icons.Default.Bolt, contentDescription = null, tint = ElegantGoldPrimary)
+                        Icon(imageVector = Icons.Default.Bolt, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                     },
                     trailingIcon = {
                         if (isValidMeterLength) {
-                            Icon(imageVector = Icons.Default.CheckCircle, contentDescription = null, tint = ElegantGreenLive)
+                            Icon(imageVector = Icons.Default.CheckCircle, contentDescription = null, tint = MaterialTheme.colorScheme.secondary)
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = ElegantGoldPrimary,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
                         unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
                         focusedTextColor = MaterialTheme.colorScheme.onSurface,
                         unfocusedTextColor = MaterialTheme.colorScheme.onSurface
@@ -279,12 +279,12 @@ fun PhaseOnboardingDialog(
                     onValueChange = { phoneInput = it },
                     label = { Text("SIM MSISDN Phone Number") },
                     leadingIcon = {
-                        Icon(imageVector = Icons.Default.PhoneAndroid, contentDescription = null, tint = ElegantGoldPrimary)
+                        Icon(imageVector = Icons.Default.PhoneAndroid, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                     },
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = ElegantGoldPrimary,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
                         unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
                         focusedTextColor = MaterialTheme.colorScheme.onSurface,
                         unfocusedTextColor = MaterialTheme.colorScheme.onSurface
@@ -299,7 +299,7 @@ fun PhaseOnboardingDialog(
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(12.dp))
                         .background(Color(0x1422C55E))
-                        .border(1.dp, Color(0x3322C55E), RoundedCornerShape(12.dp))
+                        .border(1.dp, MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f), RoundedCornerShape(12.dp))
                         .padding(12.dp)
                 ) {
                     Row(
@@ -308,13 +308,13 @@ fun PhaseOnboardingDialog(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(imageVector = Icons.Default.Security, contentDescription = null, tint = ElegantGreenLive)
+                            Icon(imageVector = Icons.Default.Security, contentDescription = null, tint = MaterialTheme.colorScheme.secondary)
                             Spacer(modifier = Modifier.width(8.dp))
                             Column {
                                 Text(
                                     text = "SIM Cryptographic Handshake",
                                     style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                                    color = Color(0xFF4ADE80)
+                                    color = MaterialTheme.colorScheme.secondary
                                 )
                                 Text(
                                     text = "Automated carrier-level OTP validation ($otpCode)",
@@ -326,7 +326,7 @@ fun PhaseOnboardingDialog(
                         Text(
                             text = "VERIFIED",
                             style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.ExtraBold),
-                            color = ElegantGreenLive
+                            color = MaterialTheme.colorScheme.secondary
                         )
                     }
                 }
@@ -355,7 +355,7 @@ fun PhaseOnboardingDialog(
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text(text = "DisCo Franchise:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                            Text(text = "$detectedDisCo Licensee Area", style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold), color = ElegantGoldPrimary)
+                            Text(text = "$detectedDisCo Licensee Area", style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold), color = MaterialTheme.colorScheme.primary)
                         }
                         Spacer(modifier = Modifier.height(4.dp))
                         Row(
@@ -363,7 +363,7 @@ fun PhaseOnboardingDialog(
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text(text = "Service Tier Classification:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                            Text(text = "${detectedBand.code} (${detectedBand.minimumHours}+ hrs SLA target)", style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold), color = Color(0xFF60A5FA))
+                            Text(text = "${detectedBand.code} (${detectedBand.minimumHours}+ hrs SLA target)", style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold), color = MaterialTheme.colorScheme.tertiary)
                         }
                         Spacer(modifier = Modifier.height(4.dp))
                         Row(
@@ -371,7 +371,7 @@ fun PhaseOnboardingDialog(
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text(text = "Presidential Metering Initiative (PMI):", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                            Text(text = "Smart Node Cross-Synced", style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold), color = ElegantGreenLive)
+                            Text(text = "Smart Node Cross-Synced", style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold), color = MaterialTheme.colorScheme.secondary)
                         }
                     }
                 }
@@ -402,10 +402,10 @@ fun PhaseOnboardingDialog(
                             modifier = Modifier
                                 .weight(1f)
                                 .clip(RoundedCornerShape(10.dp))
-                                .background(if (isSelected) Color(0x26FACC15) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                                .background(if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
                                 .border(
                                     1.dp,
-                                    if (isSelected) ElegantGoldPrimary else MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
+                                    if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
                                     RoundedCornerShape(10.dp)
                                 )
                                 .clickable { selectedPaymentGateway = gateway }
@@ -416,14 +416,14 @@ fun PhaseOnboardingDialog(
                                 Icon(
                                     imageVector = if (gateway.contains("Airtime")) Icons.Default.PhoneAndroid else Icons.Default.CreditCard,
                                     contentDescription = null,
-                                    tint = if (isSelected) ElegantGoldPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
+                                    tint = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier.size(18.dp)
                                 )
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text(
                                     text = gateway,
                                     style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp, fontWeight = FontWeight.Bold),
-                                    color = if (isSelected) ElegantGoldPrimary else MaterialTheme.colorScheme.onSurfaceVariant
+                                    color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                         }
@@ -459,8 +459,8 @@ fun PhaseOnboardingDialog(
                         .testTag("submit_onboarding_button"),
                     enabled = isValidMeterLength,
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = ElegantGoldPrimary,
-                        contentColor = Color(0xFF0A0C10)
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
                     ),
                     shape = RoundedCornerShape(12.dp)
                 ) {

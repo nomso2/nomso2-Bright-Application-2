@@ -105,7 +105,7 @@ fun TransformerForumDialog(
                             Icon(
                                 imageVector = Icons.Default.Forum,
                                 contentDescription = null,
-                                tint = ElegantGoldPrimary,
+                                tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(16.dp)
                             )
                             Spacer(modifier = Modifier.width(6.dp))
@@ -115,7 +115,7 @@ fun TransformerForumDialog(
                                     fontWeight = FontWeight.ExtraBold,
                                     letterSpacing = 1.sp
                                 ),
-                                color = ElegantGoldPrimary
+                                color = MaterialTheme.colorScheme.primary
                             )
                         }
                         Text(
@@ -152,7 +152,7 @@ fun TransformerForumDialog(
                             modifier = Modifier
                                 .weight(1f)
                                 .clip(RoundedCornerShape(8.dp))
-                                .background(if (isSelected) ElegantGoldPrimary else Color.Transparent)
+                                .background(if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent)
                                 .clickable { activeTab = index }
                                 .padding(vertical = 8.dp),
                             contentAlignment = Alignment.Center
@@ -160,7 +160,7 @@ fun TransformerForumDialog(
                             Text(
                                 text = title,
                                 style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                                color = if (isSelected) Color(0xFF0A0C10) else MaterialTheme.colorScheme.onSurfaceVariant
+                                color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
@@ -176,8 +176,8 @@ fun TransformerForumDialog(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clip(RoundedCornerShape(12.dp))
-                                .background(Color(0x14FACC15))
-                                .border(1.dp, Color(0x33FACC15), RoundedCornerShape(12.dp))
+                                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.08f))
+                                .border(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.2f), RoundedCornerShape(12.dp))
                                 .clickable(onClick = onTriggerPeerBroadcast)
                                 .padding(12.dp)
                         ) {
@@ -185,7 +185,7 @@ fun TransformerForumDialog(
                                 Icon(
                                     imageVector = Icons.Default.NotificationsActive,
                                     contentDescription = null,
-                                    tint = ElegantGoldPrimary,
+                                    tint = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.size(20.dp)
                                 )
                                 Spacer(modifier = Modifier.width(10.dp))
@@ -193,7 +193,7 @@ fun TransformerForumDialog(
                                     Text(
                                         text = "Geofenced Peer Outage Broadcast",
                                         style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                                        color = ElegantGoldPrimary
+                                        color = MaterialTheme.colorScheme.primary
                                     )
                                     Text(
                                         text = "Ping ${userProfile.connectedHouseholdsCount} nearby meters on this transformer to co-sign active outage",
@@ -213,7 +213,7 @@ fun TransformerForumDialog(
                             placeholder = { Text("Share maintenance update or report linesman extortion...") },
                             modifier = Modifier.fillMaxWidth(),
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = ElegantGoldPrimary,
+                                focusedBorderColor = MaterialTheme.colorScheme.primary,
                                 unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
                                 focusedTextColor = MaterialTheme.colorScheme.onSurface,
                                 unfocusedTextColor = MaterialTheme.colorScheme.onSurface
@@ -231,7 +231,7 @@ fun TransformerForumDialog(
                             Row(
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(8.dp))
-                                    .background(if (isExtortionFlag) Color(0x26EF4444) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                                    .background(if (isExtortionFlag) MaterialTheme.colorScheme.error.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
                                     .clickable { isExtortionFlag = !isExtortionFlag }
                                     .padding(horizontal = 8.dp, vertical = 6.dp),
                                 verticalAlignment = Alignment.CenterVertically
@@ -239,7 +239,7 @@ fun TransformerForumDialog(
                                 Icon(
                                     imageVector = Icons.Default.Warning,
                                     contentDescription = null,
-                                    tint = if (isExtortionFlag) Color(0xFFEF4444) else MaterialTheme.colorScheme.onSurfaceVariant,
+                                    tint = if (isExtortionFlag) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier.size(14.dp)
                                 )
                                 Spacer(modifier = Modifier.width(4.dp))
@@ -247,7 +247,7 @@ fun TransformerForumDialog(
                                     text = "Flag Extortion",
                                     style = MaterialTheme.typography.labelSmall.copy(
                                         fontWeight = FontWeight.Bold,
-                                        color = if (isExtortionFlag) Color(0xFFEF4444) else MaterialTheme.colorScheme.onSurfaceVariant
+                                        color = if (isExtortionFlag) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 )
                             }
@@ -262,8 +262,8 @@ fun TransformerForumDialog(
                                 },
                                 enabled = messageInput.isNotBlank(),
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = ElegantGoldPrimary,
-                                    contentColor = Color(0xFF0A0C10)
+                                    containerColor = MaterialTheme.colorScheme.primary,
+                                    contentColor = MaterialTheme.colorScheme.onPrimary
                                 ),
                                 shape = RoundedCornerShape(10.dp)
                             ) {
@@ -282,10 +282,10 @@ fun TransformerForumDialog(
                                     .fillMaxWidth()
                                     .padding(vertical = 4.dp)
                                     .clip(RoundedCornerShape(12.dp))
-                                    .background(if (post.isExtortionReport) Color(0x1AEF4444) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                                    .background(if (post.isExtortionReport) MaterialTheme.colorScheme.error.copy(alpha = 0.1f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
                                     .border(
                                         1.dp,
-                                        if (post.isExtortionReport) Color(0x33EF4444) else MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
+                                        if (post.isExtortionReport) MaterialTheme.colorScheme.error.copy(alpha = 0.2f) else MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
                                         RoundedCornerShape(12.dp)
                                     )
                                     .padding(12.dp)
@@ -314,7 +314,7 @@ fun TransformerForumDialog(
                                             Box(
                                                 modifier = Modifier
                                                     .clip(RoundedCornerShape(6.dp))
-                                                    .background(Color(0x26EF4444))
+                                                    .background(MaterialTheme.colorScheme.error.copy(alpha = 0.15f))
                                                     .padding(horizontal = 6.dp, vertical = 2.dp)
                                             ) {
                                                 Text(
@@ -322,7 +322,7 @@ fun TransformerForumDialog(
                                                     style = MaterialTheme.typography.labelSmall.copy(
                                                         fontSize = 12.sp,
                                                         fontWeight = FontWeight.ExtraBold,
-                                                        color = Color(0xFFEF4444)
+                                                        color = MaterialTheme.colorScheme.error
                                                     )
                                                 )
                                             }
@@ -350,7 +350,7 @@ fun TransformerForumDialog(
                                         Icon(
                                             imageVector = Icons.Default.ThumbUp,
                                             contentDescription = null,
-                                            tint = ElegantGoldPrimary,
+                                            tint = MaterialTheme.colorScheme.primary,
                                             modifier = Modifier.size(12.dp)
                                         )
                                         Spacer(modifier = Modifier.width(4.dp))
@@ -358,7 +358,7 @@ fun TransformerForumDialog(
                                             text = "${post.upvotes} verified",
                                             style = MaterialTheme.typography.labelSmall.copy(
                                                 fontSize = 12.sp,
-                                                color = ElegantGoldPrimary,
+                                                color = MaterialTheme.colorScheme.primary,
                                                 fontWeight = FontWeight.Bold
                                             )
                                         )
@@ -406,7 +406,7 @@ fun TransformerForumDialog(
                                             Text(
                                                 text = "$lang AI Parser",
                                                 style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                                                color = ElegantGoldPrimary
+                                                color = MaterialTheme.colorScheme.primary
                                             )
                                             Text(
                                                 text = sample,
@@ -417,7 +417,7 @@ fun TransformerForumDialog(
                                         Icon(
                                             imageVector = Icons.Default.Mic,
                                             contentDescription = null,
-                                            tint = ElegantGoldPrimary,
+                                            tint = MaterialTheme.colorScheme.primary,
                                             modifier = Modifier.size(20.dp)
                                         )
                                     }
@@ -433,8 +433,8 @@ fun TransformerForumDialog(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clip(RoundedCornerShape(14.dp))
-                                    .background(Color(0x1A60A5FA))
-                                    .border(1.dp, Color(0x3360A5FA), RoundedCornerShape(14.dp))
+                                    .background(MaterialTheme.colorScheme.tertiary.copy(alpha = 0.1f))
+                                    .border(1.dp, MaterialTheme.colorScheme.tertiary.copy(alpha = 0.2f), RoundedCornerShape(14.dp))
                                     .padding(14.dp)
                             ) {
                                 Column {
@@ -442,7 +442,7 @@ fun TransformerForumDialog(
                                         Icon(
                                             imageVector = Icons.Default.HowToVote,
                                             contentDescription = null,
-                                            tint = Color(0xFF60A5FA),
+                                            tint = MaterialTheme.colorScheme.tertiary,
                                             modifier = Modifier.size(20.dp)
                                         )
                                         Spacer(modifier = Modifier.width(8.dp))
@@ -488,7 +488,7 @@ fun TransformerForumDialog(
                                         Text(
                                             text = stepTitle,
                                             style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                                            color = ElegantGoldPrimary
+                                            color = MaterialTheme.colorScheme.primary
                                         )
                                         Text(
                                             text = stepDesc,
@@ -499,7 +499,7 @@ fun TransformerForumDialog(
                                     Icon(
                                         imageVector = Icons.Default.CheckCircle,
                                         contentDescription = null,
-                                        tint = Color(0xFF4ADE80),
+                                        tint = MaterialTheme.colorScheme.secondary,
                                         modifier = Modifier.size(16.dp)
                                     )
                                 }

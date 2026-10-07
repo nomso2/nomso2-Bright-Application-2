@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.sp
 import com.example.model.DisCo
 import com.example.model.FeederBand
 import com.example.model.UserProfile
+import com.example.ui.theme.extendedColors
 
 @Composable
 fun EditMeterDialog(
@@ -195,7 +196,7 @@ fun ResolutionRatingDialog(
                 Icon(
                     imageVector = Icons.Default.CheckCircle,
                     contentDescription = null,
-                    tint = Color(0xFF10B981)
+                    tint = MaterialTheme.extendedColors.success
                 )
                 Text(
                     text = "Confirm Light Restored",
@@ -256,7 +257,7 @@ fun ResolutionRatingDialog(
                     onConfirmResolution(rating, notes)
                     onDismiss()
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF10B981)),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.extendedColors.success),
                 modifier = Modifier.testTag("confirm_resolution_dialog_btn")
             ) {
                 Text("Confirm & Close Ticket", color = Color.White)

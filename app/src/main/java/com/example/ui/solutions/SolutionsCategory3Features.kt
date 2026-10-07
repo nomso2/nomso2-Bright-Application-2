@@ -106,8 +106,8 @@ fun AutomatedBandAuditorFeature(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text("Contracted Tariff Band:", fontSize = 12.sp)
-                    Surface(color = GoldPrimary.copy(alpha = 0.2f), shape = RoundedCornerShape(6.dp)) {
-                        Text(userProfile.feederBand.code, fontWeight = FontWeight.Bold, color = GoldPrimary, fontSize = 12.sp, modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp))
+                    Surface(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f), shape = RoundedCornerShape(6.dp)) {
+                        Text(userProfile.feederBand.code, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary, fontSize = 12.sp, modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp))
                     }
                 }
 
@@ -116,20 +116,20 @@ fun AutomatedBandAuditorFeature(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text("Actual Average Daily Supply Received:", fontSize = 12.sp)
-                    Text("${String.format("%.1f", actualDailyHours)} Hours / Day", fontWeight = FontWeight.Bold, color = if (deficitHours > 0) MaterialTheme.colorScheme.error else EmeraldAccent, fontSize = 12.sp)
+                    Text("${String.format("%.1f", actualDailyHours)} Hours / Day", fontWeight = FontWeight.Bold, color = if (deficitHours > 0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.secondary, fontSize = 12.sp)
                 }
 
                 Slider(
                     value = actualDailyHours,
                     onValueChange = { actualDailyHours = it },
                     valueRange = 0f..24f,
-                    colors = SliderDefaults.colors(thumbColor = GoldPrimary, activeTrackColor = GoldPrimary)
+                    colors = SliderDefaults.colors(thumbColor = MaterialTheme.colorScheme.primary, activeTrackColor = MaterialTheme.colorScheme.primary)
                 )
 
                 Surface(
-                    color = if (deficitHours > 0) MaterialTheme.colorScheme.error.copy(alpha = 0.12f) else EmeraldAccent.copy(alpha = 0.12f),
+                    color = if (deficitHours > 0) MaterialTheme.colorScheme.error.copy(alpha = 0.12f) else MaterialTheme.colorScheme.secondary.copy(alpha = 0.12f),
                     shape = RoundedCornerShape(10.dp),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, if (deficitHours > 0) MaterialTheme.colorScheme.error else EmeraldAccent)
+                    border = androidx.compose.foundation.BorderStroke(1.dp, if (deficitHours > 0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.secondary)
                 ) {
                     Column(modifier = Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
@@ -138,7 +138,7 @@ fun AutomatedBandAuditorFeature(
                         }
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                             Text("Estimated Monthly Tariff Overbilling:", fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
-                            Text("₦${estimatedOverbillingNgn}", fontWeight = FontWeight.Black, color = GoldPrimary, fontSize = 13.sp)
+                            Text("₦${estimatedOverbillingNgn}", fontWeight = FontWeight.Black, color = MaterialTheme.colorScheme.primary, fontSize = 13.sp)
                         }
                     }
                 }
@@ -148,7 +148,7 @@ fun AutomatedBandAuditorFeature(
                         petitionGenerated = true
                         Toast.makeText(context, "Drafted NERC Band Demotion & Tariff Refund Petition!", Toast.LENGTH_SHORT).show()
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = GoldPrimary, contentColor = Color.Black),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary),
                     shape = RoundedCornerShape(10.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -204,14 +204,14 @@ fun AutomatedRefundLedgerFeature(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text("Total Outage Duration:", fontSize = 12.sp)
-                    Text("${outageDurationHours.toInt()} Consecutive Hours", fontWeight = FontWeight.Bold, color = GoldPrimary, fontSize = 12.sp)
+                    Text("${outageDurationHours.toInt()} Consecutive Hours", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary, fontSize = 12.sp)
                 }
 
                 Slider(
                     value = outageDurationHours,
                     onValueChange = { outageDurationHours = it },
                     valueRange = 12f..120f,
-                    colors = SliderDefaults.colors(thumbColor = GoldPrimary, activeTrackColor = GoldPrimary)
+                    colors = SliderDefaults.colors(thumbColor = MaterialTheme.colorScheme.primary, activeTrackColor = MaterialTheme.colorScheme.primary)
                 )
 
                 Surface(
@@ -230,7 +230,7 @@ fun AutomatedRefundLedgerFeature(
                         }
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                             Text("DisCo Mandatory Compensation:", fontSize = 12.sp, color = Color.Gray)
-                            Text("₦$statutoryPenaltyNgn", fontSize = 14.sp, color = EmeraldAccent, fontWeight = FontWeight.Black)
+                            Text("₦$statutoryPenaltyNgn", fontSize = 14.sp, color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.Black)
                         }
                     }
                 }
@@ -240,7 +240,7 @@ fun AutomatedRefundLedgerFeature(
                         claimSubmitted = true
                         Toast.makeText(context, "Submitted $claimRef to ${userProfile.discoCode} Regulatory Escrow!", Toast.LENGTH_SHORT).show()
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = GoldPrimary, contentColor = Color.Black),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary),
                     shape = RoundedCornerShape(10.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -301,7 +301,7 @@ fun CommunityConsumptionCalculatorFeature(
                     value = estimatedBillNgn,
                     onValueChange = { estimatedBillNgn = it },
                     valueRange = 10000f..150000f,
-                    colors = SliderDefaults.colors(thumbColor = GoldPrimary, activeTrackColor = GoldPrimary)
+                    colors = SliderDefaults.colors(thumbColor = MaterialTheme.colorScheme.primary, activeTrackColor = MaterialTheme.colorScheme.primary)
                 )
 
                 Surface(
@@ -311,7 +311,7 @@ fun CommunityConsumptionCalculatorFeature(
                     Column(modifier = Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                             Text("Neighbor Average (Metered, same feeder):", fontSize = 12.sp)
-                            Text("₦$streetMeteredAverageNgn", fontWeight = FontWeight.Bold, color = EmeraldAccent, fontSize = 12.sp)
+                            Text("₦$streetMeteredAverageNgn", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.secondary, fontSize = 12.sp)
                         }
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                             Text("Illegal Extortion Margin:", fontSize = 12.sp, fontWeight = FontWeight.Bold)
@@ -326,7 +326,7 @@ fun CommunityConsumptionCalculatorFeature(
                         clipboardManager.setText(AnnotatedString(letter))
                         Toast.makeText(context, "Copied legal NERC dispute letter to clipboard!", Toast.LENGTH_SHORT).show()
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = GoldPrimary, contentColor = Color.Black),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary),
                     shape = RoundedCornerShape(10.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -380,18 +380,18 @@ fun MeterWaitlistTrackerFeature(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text("Days Since Meter Fee Payment:", fontSize = 12.sp)
-                    Text("${daysWaiting.toInt()} Days", fontWeight = FontWeight.Bold, color = if (breachDays > 0) MaterialTheme.colorScheme.error else EmeraldAccent, fontSize = 12.sp)
+                    Text("${daysWaiting.toInt()} Days", fontWeight = FontWeight.Bold, color = if (breachDays > 0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.secondary, fontSize = 12.sp)
                 }
 
                 Slider(
                     value = daysWaiting,
                     onValueChange = { daysWaiting = it },
                     valueRange = 1f..60f,
-                    colors = SliderDefaults.colors(thumbColor = GoldPrimary, activeTrackColor = GoldPrimary)
+                    colors = SliderDefaults.colors(thumbColor = MaterialTheme.colorScheme.primary, activeTrackColor = MaterialTheme.colorScheme.primary)
                 )
 
                 Surface(
-                    color = if (breachDays > 0) MaterialTheme.colorScheme.error.copy(alpha = 0.12f) else EmeraldAccent.copy(alpha = 0.12f),
+                    color = if (breachDays > 0) MaterialTheme.colorScheme.error.copy(alpha = 0.12f) else MaterialTheme.colorScheme.secondary.copy(alpha = 0.12f),
                     shape = RoundedCornerShape(10.dp)
                 ) {
                     Column(modifier = Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -405,7 +405,7 @@ fun MeterWaitlistTrackerFeature(
                         }
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                             Text("Accrued Default Penalty:", fontSize = 12.sp)
-                            Text("₦$accumulatedPenaltyNgn", fontSize = 13.sp, fontWeight = FontWeight.Black, color = GoldPrimary)
+                            Text("₦$accumulatedPenaltyNgn", fontSize = 13.sp, fontWeight = FontWeight.Black, color = MaterialTheme.colorScheme.primary)
                         }
                     }
                 }
@@ -413,15 +413,15 @@ fun MeterWaitlistTrackerFeature(
                 Text("DisCo Delay Ranking (Hall of Shame):", fontWeight = FontWeight.Bold, fontSize = 12.sp)
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     Text("1. Kaduna Electric (42 days avg)", fontSize = 12.sp, color = MaterialTheme.colorScheme.error)
-                    Text("2. Ikeja Electric (14 days)", fontSize = 12.sp, color = GoldPrimary)
-                    Text("3. Eko DisCo (8 days)", fontSize = 12.sp, color = EmeraldAccent)
+                    Text("2. Ikeja Electric (14 days)", fontSize = 12.sp, color = MaterialTheme.colorScheme.primary)
+                    Text("3. Eko DisCo (8 days)", fontSize = 12.sp, color = MaterialTheme.colorScheme.secondary)
                 }
 
                 Button(
                     onClick = {
                         Toast.makeText(context, "Petitioned NERC Enforcement Division for default sanction!", Toast.LENGTH_SHORT).show()
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = GoldPrimary, contentColor = Color.Black),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary),
                     shape = RoundedCornerShape(10.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -474,7 +474,7 @@ fun OfflineTokenVendingFeature(
                 Button(
                     onClick = { selectedAmount = amount },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (isSelected) GoldPrimary else MaterialTheme.colorScheme.surfaceVariant,
+                        containerColor = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
                         contentColor = if (isSelected) Color.Black else MaterialTheme.colorScheme.onSurface
                     ),
                     shape = RoundedCornerShape(8.dp),
@@ -493,11 +493,11 @@ fun OfflineTokenVendingFeature(
             Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     Text("Target Meter Number:", fontSize = 12.sp)
-                    Text(userProfile.meterNumber, fontWeight = FontWeight.Bold, color = GoldPrimary, fontSize = 12.sp)
+                    Text(userProfile.meterNumber, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary, fontSize = 12.sp)
                 }
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     Text("Calculated Electricity Units:", fontSize = 12.sp)
-                    Text("${String.format("%.1f", unitsKwh)} kWh", fontWeight = FontWeight.Black, color = EmeraldAccent, fontSize = 13.sp)
+                    Text("${String.format("%.1f", unitsKwh)} kWh", fontWeight = FontWeight.Black, color = MaterialTheme.colorScheme.secondary, fontSize = 13.sp)
                 }
 
                 Surface(
@@ -507,7 +507,7 @@ fun OfflineTokenVendingFeature(
                 ) {
                     Column(modifier = Modifier.padding(12.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         Text("20-Digit STS Prepaid Token:", fontSize = 12.sp, color = Color.Gray)
-                        Text(generatedToken, fontFamily = FontFamily.Monospace, fontSize = 15.sp, fontWeight = FontWeight.Black, color = GoldPrimary)
+                        Text(generatedToken, fontFamily = FontFamily.Monospace, fontSize = 15.sp, fontWeight = FontWeight.Black, color = MaterialTheme.colorScheme.primary)
                         Text("Type on Keypad and Press ↵ (Enter)", fontSize = 12.sp, color = Color.LightGray)
                     }
                 }
@@ -522,7 +522,7 @@ fun OfflineTokenVendingFeature(
                             tokenCopied = true
                             Toast.makeText(context, "Copied 20-digit token to clipboard!", Toast.LENGTH_SHORT).show()
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = GoldPrimary, contentColor = Color.Black),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary),
                         shape = RoundedCornerShape(8.dp),
                         modifier = Modifier.weight(1f)
                     ) {
