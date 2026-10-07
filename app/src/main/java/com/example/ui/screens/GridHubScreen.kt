@@ -116,6 +116,7 @@ fun GridHubScreen(
     onOpenRedDangerSOS: () -> Unit = {},
     onOpenForum: () -> Unit = {},
     onPlaySirenAlarm: () -> Unit = {},
+    onOpenSolutionSettings: (Int) -> Unit = {},
     onOpenEstateExco: () -> Unit = {},
     onOpenSmartMeterGateway: () -> Unit = {},
     citizenMeterStatus: CitizenMeterStatus? = null,
@@ -411,7 +412,8 @@ fun GridHubScreen(
                     onToggleBatSignalMode = onToggleBatSignalMode,
                     onOpenRedDangerSOS = onOpenRedDangerSOS,
                     onOpenForum = onOpenForum,
-                    onPlaySirenAlarm = onPlaySirenAlarm
+                    onPlaySirenAlarm = onPlaySirenAlarm,
+                    onOpenSolutionSettings = onOpenSolutionSettings
                 )
             }
         }

@@ -1,519 +1,336 @@
 package com.example.ui.solutions
 
-import android.content.Context
+import android.app.Activity
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.speech.RecognizerIntent
 import android.widget.Toast
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddComment
-import androidx.compose.material.icons.filled.CameraAlt
-import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.AddAPhoto
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Forum
-import androidx.compose.material.icons.filled.Mic
-import androidx.compose.material.icons.filled.NotificationAdd
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.RecordVoiceOver
 import androidx.compose.material.icons.filled.Send
-import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.Sms
+import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material.icons.filled.VerifiedUser
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.data.solutions.FaultReportEntity
+import com.example.data.solutions.ForumPostEntity
+import com.example.data.solutions.Refs
+import com.example.data.solutions.VoiceNoteEntity
 import com.example.model.UserProfile
-import com.example.ui.theme.EmeraldAccent
-import com.example.ui.theme.GoldPrimary
+import com.example.ui.solutions.common.ActionButton
+import com.example.ui.solutions.common.ChoiceRow
+import com.example.ui.solutions.common.DemoDataBadge
+import com.example.ui.solutions.common.FeatureHeader
+import com.example.ui.solutions.common.Fmt
+import com.example.ui.solutions.common.HoldToRecordButton
+import com.example.ui.solutions.common.InfoNote
+import com.example.ui.solutions.common.LocationPinner
+import com.example.ui.solutions.common.PhotoThumb
+import com.example.ui.solutions.common.PinnedLocation
+import com.example.ui.solutions.common.SectionCard
+import com.example.ui.solutions.common.SolutionIntents
+import com.example.ui.solutions.common.StatRow
+import com.example.ui.solutions.common.TextInput
+import com.example.ui.solutions.common.VoicePlayer
+import com.example.ui.solutions.common.rememberSolutionsDao
+import com.example.ui.solutions.common.rememberSolutionsPrefs
+import com.example.ui.solutions.common.rememberTakePhotoAction
+import kotlinx.coroutines.launch
+import java.io.File
 
-// ==========================================
 // SOLUTION 16: VISUAL PROOF OVERRIDE
-// ==========================================
 @Composable
-fun VisualProofOverrideFeature(
-    userProfile: UserProfile,
-    modifier: Modifier = Modifier
-) {
+fun VisualProofOverrideFeature(userProfile: UserProfile) {
     val context = LocalContext.current
-    var selectedProofType by remember { mutableStateOf("Blown Transformer Jumper Fuse") }
-    var proofAttached by remember { mutableStateOf(false) }
+    val dao = rememberSolutionsDao()
+    val scope = rememberCoroutineScope()
+    val reports by dao.reports().collectAsState(initial = emptyList())
+    var kind by remember { mutableStateOf("Blown fuse") }
+    var photo by remember { mutableStateOf<String?>(null) }
+    var takenAt by remember { mutableStateOf(0L) }
+    var pin by remember { mutableStateOf<PinnedLocation?>(null) }
+    var saved by remember { mutableStateOf<String?>(null) }
+    val take = rememberTakePhotoAction { f -> if (f != null) { photo = f.absolutePath; takenAt = System.currentTimeMillis() } }
 
-    val proofTypes = listOf(
-        "Blown Transformer Jumper Fuse",
-        "Snapped Aluminum Overhead Cable",
-        "Melted Feeder Pillar Cut-Out",
-        "Cracked Concrete Pole Leaning on Building"
-    )
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        FeatureHeader(16, "Visual Proof Override", "One clear photo is enough to report a fault - no need to wait for neighbours.")
+        ChoiceRow(listOf("Blown fuse", "Snapped cable", "Burnt pillar", "Leaning pole", "Burnt transformer", "Other"), kind) { kind = it }
+        ActionButton(if (photo == null) "Take proof photo" else "Retake photo", Icons.Default.AddAPhoto, take, outlined = photo != null)
+        photo?.let {
+            PhotoThumb(it, "Proof photo of $kind", Modifier.fillMaxWidth().height(180.dp))
+            Text("Taken ${Fmt.dateTime(takenAt)}", fontSize = 14.sp)
+        }
+        LocationPinner(pin) { pin = it }
+        val ready = photo != null && pin != null
+        ActionButton("File photo-verified report", Icons.Default.VerifiedUser, {
+            val ref = Refs.make("PV")
+            scope.launch {
+                dao.insertReport(FaultReportEntity(
+                    reference = ref, source = "PHOTO", tier = 2, title = "Photo proof: $kind",
+                    details = "Photo ${Fmt.dateTime(takenAt)}; location ${pin?.describe()}",
+                    transformerId = userProfile.transformerId, latitude = pin?.latitude, longitude = pin?.longitude,
+                    photoPath = photo
+                ))
+                saved = ref
+            }
+        }, enabled = ready)
+        if (!ready) Text("Take a photo and add the place first.", fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        saved?.let { ref ->
+            InfoNote("Report sent ($ref).")
+            InviteNeighboursPrompt(userProfile, ref)
+            ActionButton("Send photo to DisCo", Icons.Default.Share, {
+                photo?.let { p -> SolutionIntents.shareFile(context, File(p), "image/jpeg", "Fault $ref: $kind at ${pin?.mapsLink() ?: pin?.label}") }
+            }, outlined = true)
+        }
+        val past = reports.filter { it.source == "PHOTO" }
+        if (past.isNotEmpty()) StatRow("Photo-verified reports filed", "${past.size}")
+    }
+}
 
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        Text(
-            text = "16. Visual Proof Override (Bypass 3-Neighbor Rule)",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-        Text(
-            text = "Bypasses the restrictive 3-neighbor co-signature rule immediately when you upload geotagged photographic proof of physical equipment damage.",
-            fontSize = 12.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+// SOLUTION 17: WAKE UP THE STREET
+@Composable
+fun WakeUpStreetAlertsFeature(userProfile: UserProfile) {
+    val context = LocalContext.current
+    val prefs = rememberSolutionsPrefs()
+    val dao = rememberSolutionsDao()
+    val reports by dao.reports().collectAsState(initial = emptyList())
+    var sent by remember { mutableIntStateOf(prefs.invitesSent) }
+    val open = reports.firstOrNull { it.stage < 4 }
+    val invite = "Light is out on our transformer (${userProfile.transformerId}, ${userProfile.streetAddress}). " +
+        (open?.let { "I've reported it (ref ${it.reference}). " } ?: "") +
+        "Please report it too so the DisCo sends a crew faster - get the Bright app and co-sign."
 
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(14.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
-        ) {
-            Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                Text("Select Visible Physical Damage:", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+    fun count() { sent += 1; prefs.invitesSent = sent }
 
-                proofTypes.forEach { type ->
-                    val isSelected = selectedProofType == type
-                    Surface(
-                        color = if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surface,
-                        shape = RoundedCornerShape(8.dp),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth().padding(10.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = type,
-                                fontSize = 12.sp,
-                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                                color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-                            )
-                        }
-                    }
-                }
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        FeatureHeader(17, "'Wake Up the Street' Alerts", "Invite neighbours on your transformer to co-sign the report - by SMS from your own phone or any chat app.")
+        SectionCard { Text(invite, fontSize = 16.sp) }
+        ActionButton("Send SMS invite", Icons.Default.Sms, {
+            if (SolutionIntents.sms(context, emptyList(), invite)) count()
+        })
+        ActionButton("Share to WhatsApp / estate group", Icons.Default.Share, {
+            if (SolutionIntents.shareText(context, "Light is out - please co-sign", invite)) count()
+        }, outlined = true)
+        StatRow("Invites you've sent", "$sent")
+        Text("SMS is sent from your phone at your network's normal rate; Bright doesn't send messages for you.", fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    }
+}
 
-                Surface(
-                    color = Color.Black.copy(alpha = 0.4f),
-                    shape = RoundedCornerShape(10.dp),
-                    modifier = Modifier.fillMaxWidth().height(80.dp)
-                ) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        if (proofAttached) {
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Icon(Icons.Default.CheckCircle, contentDescription = null, tint = MaterialTheme.colorScheme.secondary, modifier = Modifier.size(24.dp))
-                                Text("Cryptographic EXIF Validated • GPS: 6.5244°N, 3.3792°E", fontSize = 12.sp, color = Color.White)
-                                Text("3-Neighbor Co-Signature Requirement: BYPASSED", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.secondary)
-                            }
-                        } else {
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Icon(Icons.Default.CameraAlt, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(22.dp))
-                                Text("Tap Below to Attach Real-Time Camera Proof", fontSize = 12.sp, color = Color.LightGray)
-                            }
-                        }
-                    }
-                }
+/** #17 in action: after a report, offers to invite neighbours (only when that setting is on). */
+@Composable
+fun InviteNeighboursPrompt(userProfile: UserProfile, reference: String) {
+    val context = LocalContext.current
+    val prefs = rememberSolutionsPrefs()
+    if (!prefs.isEnabled(17)) return
+    val text = "Light is out on our transformer (${userProfile.transformerId}). I've reported it (ref $reference). Please report it too so the repair team comes faster."
+    ActionButton("Ask neighbours to report too", Icons.Default.Share, {
+        if (SolutionIntents.shareText(context, "Please report the outage too", text)) prefs.invitesSent = prefs.invitesSent + 1
+    }, outlined = true)
+}
 
-                Button(
-                    onClick = {
-                        proofAttached = true
-                        Toast.makeText(context, "Visual evidence attached & 3-neighbor rule bypassed!", Toast.LENGTH_SHORT).show()
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary),
-                    shape = RoundedCornerShape(10.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Icon(Icons.Default.CameraAlt, contentDescription = null, modifier = Modifier.size(16.dp))
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(if (proofAttached) "Fast-Track Evidence Verified ✓" else "Capture & Verify Damage Proof", fontWeight = FontWeight.Bold)
+// SOLUTION 18: USER TRUST SCORE
+object TrustScore {
+    const val START = 50
+    fun of(reports: List<FaultReportEntity>): Int =
+        (START + reports.count { it.verified == true } * 5 - reports.count { it.verified == false } * 15).coerceIn(0, 100)
+}
+
+@Composable
+fun UserTrustScoreFeature() {
+    val dao = rememberSolutionsDao()
+    val scope = rememberCoroutineScope()
+    val reports by dao.reports().collectAsState(initial = emptyList())
+    val score = TrustScore.of(reports)
+    val pending = reports.filter { it.verified == null }
+
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        FeatureHeader(18, "User Trust Score", "Starts at 50. Each report confirmed fixed (in #23) adds 5; a false alarm takes away 15.")
+        SectionCard {
+            Text("$score / 100", fontWeight = FontWeight.Black, fontSize = 28.sp,
+                color = if (score >= 50) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error)
+            LinearProgressIndicator(progress = { score / 100f }, modifier = Modifier.fillMaxWidth().height(8.dp))
+            StatRow("Verified reports", "${reports.count { it.verified == true }}")
+            StatRow("False alarms", "${reports.count { it.verified == false }}")
+            StatRow("Awaiting verification", "${pending.size}")
+        }
+        if (pending.isNotEmpty()) {
+            Text("Reported by mistake? Withdraw it honestly:", fontSize = 16.sp)
+            pending.take(5).forEach { r ->
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text("${r.reference} - ${r.title}", fontSize = 16.sp, modifier = Modifier.weight(1f))
+                    OutlinedButton(onClick = { scope.launch { dao.updateReport(r.copy(verified = false, stage = 5)) } },
+                        modifier = Modifier.heightIn(min = 48.dp)) { Text("False alarm") }
                 }
             }
         }
     }
 }
 
-// ==========================================
-// SOLUTION 17: "WAKE UP THE STREET" ALERT BROADCAST
-// ==========================================
+// SOLUTION 19: NEIGHBOURHOOD GRID FORUM
 @Composable
-fun WakeUpStreetAlertsFeature(
-    userProfile: UserProfile,
-    modifier: Modifier = Modifier
-) {
-    val context = LocalContext.current
-    var coSignersCount by remember { mutableStateOf(6) }
-    var broadcastSent by remember { mutableStateOf(false) }
-    val threshold = 5
+fun NeighborhoodGridForumFeature(userProfile: UserProfile, onOpenFullForum: () -> Unit) {
+    val dao = rememberSolutionsDao()
+    val scope = rememberCoroutineScope()
+    val zone = userProfile.transformerId
+    val posts by dao.forumPosts(zone).collectAsState(initial = emptyList())
+    var text by remember { mutableStateOf("") }
+    var alert by remember { mutableStateOf(false) }
 
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        Text(
-            text = "17. 'Wake Up the Street' Community Alert Broadcast",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-        Text(
-            text = "Broadcasts a free localized alert ping to all registered households on your transformer to co-sign the outage and hit the priority escalation threshold.",
-            fontSize = 12.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+    LaunchedEffect(zone) {
+        if (dao.forumPostCount(zone) == 0) {
+            val now = System.currentTimeMillis()
+            dao.insertForumPost(ForumPostEntity(transformerId = zone, author = "Neighbour (demo)", body = "Transformer was humming loudly last night. Anyone else?", isMine = false, isDemo = true, createdAt = now - 5 * 3_600_000L))
+            dao.insertForumPost(ForumPostEntity(transformerId = zone, author = "Estate chairman (demo)", body = "Reminder: never pay a technician cash for 'fuel' or cables. Report it in #21.", isExtortionAlert = true, isMine = false, isDemo = true, createdAt = now - 26 * 3_600_000L))
+        }
+    }
 
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(14.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
-        ) {
-            Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text("Transformer ID:", fontSize = 12.sp)
-                    Text(userProfile.transformerId, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary, fontSize = 12.sp)
-                }
-
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text("Co-Signers on Transformer:", fontSize = 12.sp)
-                    Text("$coSignersCount / $threshold Required", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.secondary, fontSize = 12.sp)
-                }
-
-                LinearProgressIndicator(
-                    progress = { (coSignersCount.toFloat() / threshold).coerceAtMost(1f) },
-                    color = MaterialTheme.colorScheme.secondary,
-                    modifier = Modifier.fillMaxWidth().height(6.dp)
-                )
-
-                Surface(
-                    color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.12f),
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth().padding(10.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Icon(Icons.Default.CheckCircle, contentDescription = null, tint = MaterialTheme.colorScheme.secondary, modifier = Modifier.size(16.dp))
-                        Text("AUTOMATIC NERC ESCALATION: Threshold reached! Outage officially flagged as critical feeder priority.", fontSize = 12.sp, color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.Bold)
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        FeatureHeader(19, "Neighbourhood Grid Forum", "A board for everyone on transformer $zone: local faults, who the electricity rep is, and anti-extortion alerts.")
+        InfoNote("Posts are saved on this phone until the shared forum server is live. Example posts are marked demo.")
+        TextInput("Write to your transformer zone", text, { text = it.take(500) }, singleLine = false)
+        CheckRow("Mark as anti-extortion alert", alert) { alert = it }
+        ActionButton("Post", Icons.Default.Send, {
+            val body = text.trim()
+            scope.launch {
+                dao.insertForumPost(ForumPostEntity(transformerId = zone, author = "You", body = body, isExtortionAlert = alert))
+                text = ""; alert = false
+            }
+        }, enabled = text.isNotBlank())
+        posts.forEach { p ->
+            SectionCard {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(p.author, fontWeight = FontWeight.Bold, fontSize = 16.sp, modifier = Modifier.weight(1f))
+                    if (p.isDemo) DemoDataBadge("Demo")
+                    if (p.isMine) IconButton(onClick = { scope.launch { dao.deleteForumPost(p) } }) {
+                        Icon(Icons.Default.Delete, contentDescription = "Delete your post")
                     }
                 }
-
-                Button(
-                    onClick = {
-                        coSignersCount += 2
-                        broadcastSent = true
-                        Toast.makeText(context, "Broadcast ping sent to 142 households on ${userProfile.transformerId}!", Toast.LENGTH_SHORT).show()
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary),
-                    shape = RoundedCornerShape(10.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Icon(Icons.Default.NotificationAdd, contentDescription = null, modifier = Modifier.size(16.dp))
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(if (broadcastSent) "Street Ping Sent (+2 Co-Signers) ✓" else "Send 'Wake Up The Street' Alert", fontWeight = FontWeight.Bold)
-                }
+                if (p.isExtortionAlert) Text("ANTI-EXTORTION ALERT", color = MaterialTheme.colorScheme.error, fontWeight = FontWeight.Black, fontSize = 14.sp)
+                Text(p.body, fontSize = 16.sp)
+                Text(Fmt.dateTime(p.createdAt), fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
+        ActionButton("Open community forum", Icons.Default.Forum, onOpenFullForum, outlined = true)
     }
 }
 
-// ==========================================
-// SOLUTION 18: USER TRUST SCORE & REPUTATION
-// ==========================================
-@Composable
-fun UserTrustScoreFeature(
-    userTrustScore: Int = 98,
-    modifier: Modifier = Modifier
-) {
-    val context = LocalContext.current
-    var currentScore by remember { mutableStateOf(userTrustScore) }
-    var isNinVerified by remember { mutableStateOf(false) }
-
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        Text(
-            text = "18. Citizen Trust Score & VIP Dispatch Reputation",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-        Text(
-            text = "Earns reputation points for verified outage logs and hazard reports. High-trust citizens bypass customer care queues directly to Area Managers.",
-            fontSize = 12.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(14.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
-        ) {
-            Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column {
-                        Text("Citizen Reputation Score", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        Text("$currentScore / 100", fontSize = 24.sp, fontWeight = FontWeight.Black, color = MaterialTheme.colorScheme.primary)
-                    }
-                    Surface(
-                        color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f),
-                        shape = RoundedCornerShape(8.dp)
-                    ) {
-                        Text("VIP LEVEL 3 GUARDIAN", color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.Bold, fontSize = 12.sp, modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp))
-                    }
-                }
-
-                Text("Recent Points Ledger:", fontWeight = FontWeight.Bold, fontSize = 12.sp)
-                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text("• +20 Pts: Reported fallen conductor hazard (Confirmed by DisCo)", fontSize = 12.sp, color = MaterialTheme.colorScheme.secondary)
-                    Text("• +10 Pts: Provided verified photo proof of blown jumper", fontSize = 12.sp, color = MaterialTheme.colorScheme.secondary)
-                    Text("• +5 Pts: Co-signed street outage ticket", fontSize = 12.sp, color = MaterialTheme.colorScheme.secondary)
-                }
-
-                Button(
-                    onClick = {
-                        if (!isNinVerified) {
-                            currentScore = (currentScore + 2).coerceAtMost(100)
-                            isNinVerified = true
-                            Toast.makeText(context, "NIN & Utility Bill verified! +2 Trust points awarded.", Toast.LENGTH_SHORT).show()
-                        }
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary),
-                    shape = RoundedCornerShape(10.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Icon(Icons.Default.VerifiedUser, contentDescription = null, modifier = Modifier.size(16.dp))
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(if (isNinVerified) "ID Fully Verified ✓" else "Verify NIN & Utility Bill (+2 Pts)", fontWeight = FontWeight.Bold)
-                }
-            }
-        }
-    }
-}
-
-// ==========================================
-// SOLUTION 19: NEIGHBORHOOD GRID FORUM
-// ==========================================
-@Composable
-fun NeighborhoodGridForumFeature(
-    userProfile: UserProfile,
-    onOpenFullForum: () -> Unit = {},
-    modifier: Modifier = Modifier
-) {
-    val context = LocalContext.current
-    var newPostText by remember { mutableStateOf("") }
-    var postsList by remember {
-        mutableStateOf(
-            listOf(
-                Pair("Adebayo (House 12)", "Linesmen just entered our street. They are inspecting the 33kV jumper."),
-                Pair("Engr. Kenneth (House 4)", "Please no resident should give them money for fuel. Maintenance is legally free!"),
-                Pair("Mama Chidinma (House 19)", "Light is back on Phase 1, but Phase 2 is still dim.")
-            )
-        )
-    }
-
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        Text(
-            text = "19. Local Transformer Grid Forum (${userProfile.transformerId})",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-        Text(
-            text = "Private community board for residents connected strictly to your transformer to organize, share restoration news, and counter extortion.",
-            fontSize = 12.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(14.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
-        ) {
-            Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                postsList.take(3).forEach { (author, text) ->
-                    Surface(
-                        color = MaterialTheme.colorScheme.surface,
-                        shape = RoundedCornerShape(8.dp),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Column(modifier = Modifier.padding(10.dp)) {
-                            Text(author, fontWeight = FontWeight.Bold, fontSize = 12.sp, color = MaterialTheme.colorScheme.primary)
-                            Text(text, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface)
-                        }
-                    }
-                }
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    OutlinedTextField(
-                        value = newPostText,
-                        onValueChange = { newPostText = it },
-                        placeholder = { Text("Post update to transformer neighbors...", fontSize = 12.sp) },
-                        modifier = Modifier.weight(1f),
-                        singleLine = true,
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = MaterialTheme.colorScheme.primary,
-                            unfocusedBorderColor = MaterialTheme.colorScheme.outline
-                        )
-                    )
-                    Button(
-                        onClick = {
-                            if (newPostText.isNotBlank()) {
-                                postsList = listOf(Pair("You (${userProfile.meterNumber.takeLast(4)})", newPostText)) + postsList
-                                newPostText = ""
-                                Toast.makeText(context, "Posted update to transformer thread!", Toast.LENGTH_SHORT).show()
-                            }
-                        },
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary),
-                        shape = RoundedCornerShape(8.dp)
-                    ) {
-                        Icon(Icons.Default.Send, contentDescription = null, modifier = Modifier.size(16.dp))
-                    }
-                }
-            }
-        }
-    }
-}
-
-// ==========================================
 // SOLUTION 20: MULTI-LINGUAL VOICE REPORTING
-// ==========================================
+private val LANGS = listOf("Pidgin" to "en-NG", "English" to "en-NG", "Yorùbá" to "yo-NG", "Hausa" to "ha-NG", "Igbo" to "ig-NG")
+
 @Composable
-fun MultiLingualVoiceReportingFeature(
-    userProfile: UserProfile,
-    modifier: Modifier = Modifier
-) {
+fun MultiLingualVoiceReportingFeature(userProfile: UserProfile) {
     val context = LocalContext.current
-    var selectedLanguage by remember { mutableStateOf("Pidgin") }
-    var isRecording by remember { mutableStateOf(false) }
-    var ticketConverted by remember { mutableStateOf(false) }
+    val dao = rememberSolutionsDao()
+    val scope = rememberCoroutineScope()
+    val notes by dao.voiceNotes().collectAsState(initial = emptyList())
+    var lang by remember { mutableStateOf("Pidgin") }
+    val player = remember { VoicePlayer() }
+    var playing by remember { mutableStateOf<String?>(null) }
+    var dictated by remember { mutableStateOf("") }
+    DisposableEffect(Unit) { onDispose { player.stop() } }
 
-    val samplePhrases = mapOf(
-        "Pidgin" to "Light don quench for our street since morning. The transformer spark gboaa and smoke full everywhere.",
-        "Yoruba" to "Iná ti kú láti ọ̀sán. Wáyà tọ́pọ̀ lórí pọ́ọ̀lù ti já lulẹ̀, iná sì ń tàn lórí ilẹ̀.",
-        "Hausa" to "Wutar lantarki ta dauke tun safe. Waya ta fadi a kasa kuma tana fitar da wuta.",
-        "Igbo" to "Ọkụ agwala n'ogbe anyị kemgbe ụtụtụ. Waya daa n'ala na-enwu ọkụ."
-    )
+    val speech = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { res ->
+        if (res.resultCode == Activity.RESULT_OK) {
+            dictated = res.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)?.firstOrNull().orEmpty()
+        }
+    }
 
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        Text(
-            text = "20. Multi-Lingual AI Voice Reporting Engine",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-        Text(
-            text = "Speak in Nigerian languages (Pidgin, Yoruba, Hausa, Igbo). Converts conversational voice notes into formal technical NERC fault tickets.",
-            fontSize = 12.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(6.dp)
-        ) {
-            listOf("Pidgin", "Yoruba", "Hausa", "Igbo").forEach { lang ->
-                val isSelected = selectedLanguage == lang
-                Button(
-                    onClick = { selectedLanguage = lang },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
-                        contentColor = if (isSelected) Color.Black else MaterialTheme.colorScheme.onSurface
-                    ),
-                    shape = RoundedCornerShape(8.dp),
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(lang, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        FeatureHeader(20, "Multi-Lingual Voice Reporting", "Say it in your own language - 'Light don quench for our street'. Hold the mic, release to save, then send the voice note to your DisCo.")
+        ChoiceRow(LANGS.map { it.first }, lang) { lang = it }
+        HoldToRecordButton(onRecorded = { file, ms ->
+            scope.launch { dao.insertVoiceNote(VoiceNoteEntity(filePath = file.absolutePath, durationMs = ms, language = lang)) }
+        })
+        notes.forEach { n ->
+            SectionCard {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(onClick = {
+                        if (playing == n.filePath) { player.stop(); playing = null }
+                        else { playing = n.filePath; player.play(n.filePath) { playing = null } }
+                    }) {
+                        Icon(if (playing == n.filePath) Icons.Default.Stop else Icons.Default.PlayArrow,
+                            contentDescription = if (playing == n.filePath) "Stop voice note" else "Play voice note")
+                    }
+                    Column(Modifier.weight(1f)) {
+                        Text("${n.language} - ${Fmt.duration(n.durationMs)}", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                        Text(Fmt.dateTime(n.createdAt), fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                    IconButton(onClick = {
+                        SolutionIntents.shareFile(context, File(n.filePath), "audio/mp4", "Voice fault report - meter ${userProfile.meterNumber}")
+                    }) { Icon(Icons.Default.Share, contentDescription = "Send voice note") }
+                    IconButton(onClick = {
+                        if (playing == n.filePath) { player.stop(); playing = null }
+                        File(n.filePath).delete()
+                        scope.launch { dao.deleteVoiceNote(n) }
+                    }) { Icon(Icons.Default.Delete, contentDescription = "Delete voice note") }
                 }
+                OutlinedButton(onClick = {
+                    scope.launch {
+                        dao.insertReport(FaultReportEntity(reference = Refs.make("VN"), source = "VOICE", tier = 1,
+                            title = "Voice report (${n.language})", transformerId = userProfile.transformerId, voicePath = n.filePath))
+                        Toast.makeText(context, "Filed as a report - track it in #22", Toast.LENGTH_SHORT).show()
+                    }
+                }, modifier = Modifier.heightIn(min = 48.dp)) { Text("File as fault report") }
             }
         }
-
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(14.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
-        ) {
-            Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                Text("Spoken Voice Note ($selectedLanguage):", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                Surface(
-                    color = Color.Black.copy(alpha = 0.5f),
-                    shape = RoundedCornerShape(8.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        text = "\"${samplePhrases[selectedLanguage]}\"",
-                        fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(10.dp)
-                    )
+        SectionCard {
+            Text("Prefer text? Dictate it", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+            Text("Uses your phone's speech-to-text. Yorùbá, Hausa and Igbo depend on the languages your phone supports.", fontSize = 14.sp)
+            ActionButton("Speak in $lang", Icons.Default.RecordVoiceOver, {
+                val tag = LANGS.first { it.first == lang }.second
+                val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+                    .putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+                    .putExtra(RecognizerIntent.EXTRA_LANGUAGE, tag)
+                    .putExtra(RecognizerIntent.EXTRA_PROMPT, "Describe the fault")
+                try { speech.launch(intent) } catch (e: ActivityNotFoundException) {
+                    Toast.makeText(context, "Speech-to-text isn't available on this phone", Toast.LENGTH_LONG).show()
                 }
-
-                Surface(
-                    color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.12f),
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    Column(modifier = Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Text("AI Formal NERC Technical Translation:", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.secondary)
-                        Text("• Fault Category: Unplanned Distribution Feeder Outage", fontSize = 12.sp)
-                        Text("• Hazard Code: Active Overhead Conductor Arcing on Ground", fontSize = 12.sp)
-                        Text("• Substation: Transformer ${userProfile.transformerId}", fontSize = 12.sp)
+            }, outlined = true)
+            if (dictated.isNotBlank()) {
+                TextInput("What you said (edit if needed)", dictated, { dictated = it }, singleLine = false)
+                ActionButton("File text report", Icons.Default.Send, {
+                    val body = dictated
+                    scope.launch {
+                        dao.insertReport(FaultReportEntity(reference = Refs.make("TX"), source = "VOICE", tier = 1, title = "Dictated report ($lang)", details = body, transformerId = userProfile.transformerId))
+                        dictated = ""
+                        Toast.makeText(context, "Report filed", Toast.LENGTH_SHORT).show()
                     }
-                }
-
-                Button(
-                    onClick = {
-                        ticketConverted = true
-                        Toast.makeText(context, "Voice note transcribed & mapped to NERC complaint!", Toast.LENGTH_SHORT).show()
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary),
-                    shape = RoundedCornerShape(10.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Icon(Icons.Default.Mic, contentDescription = null, modifier = Modifier.size(16.dp))
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(if (ticketConverted) "Mapped to Official NERC Ticket ✓" else "Record & Transcribe Voice Ticket", fontWeight = FontWeight.Bold)
-                }
+                })
             }
         }
     }

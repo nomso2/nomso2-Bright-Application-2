@@ -34,6 +34,8 @@ import androidx.compose.runtime.setValue
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -69,6 +71,8 @@ import com.example.ui.screens.LiveMapScreen
 import com.example.ui.screens.MoreScreen
 import com.example.ui.screens.ReportFaultScreen
 import com.example.ui.screens.VandalismScreen
+import com.example.ui.solutions.settings.SolutionsFirstRun
+import com.example.ui.solutions.settings.SolutionsSettingsScreen
 import com.example.ui.theme.BrightTheme
 import com.example.ui.theme.ElegantDarkBar
 import com.example.ui.theme.ElegantDarkBorder
@@ -92,6 +96,9 @@ enum class BrightNavDestination(
 object BrightSubRoutes {
     const val ANTI_THEFT = "more/anti_theft"
     const val GRID_HUB = "more/grid_hub"
+    /** Bright tools settings; "?solution=n" opens one tool's page directly (0 = the list). */
+    const val SOLUTIONS_SETTINGS = "more/solutions_settings?solution={solution}"
+    fun solutionsSettings(solution: Int) = "more/solutions_settings?solution=$solution"
 }
 
 // FragmentActivity (a ComponentActivity subclass) is required by androidx.biometric's BiometricPrompt.
@@ -253,6 +260,9 @@ fun BrightApp(viewModel: BrightViewModel) {
         )
         return
     }
+
+    // Bright tools: keep background checks in step with Settings; calm one-time welcome + permissions.
+    SolutionsFirstRun(userProfile)
 
     // Show Snackbars when user messages are triggered
     LaunchedEffect(userMessage) {
@@ -423,7 +433,23 @@ fun BrightApp(viewModel: BrightViewModel) {
                     onOpenOnboarding = { showOnboardingDialog = true },
                     onLockApp = { viewModel.lockAppSession() },
                     onLogOut = { viewModel.logOut() },
-                    onDeleteAccount = { showDeleteAccountDialog = true }
+                    onDeleteAccount = { showDeleteAccountDialog = true },
+                    onOpenSolutionsSettings = { navController.navigateToMoreSubScreen(BrightSubRoutes.solutionsSettings(0)) }
+                )
+            }
+
+            composable(
+                BrightSubRoutes.SOLUTIONS_SETTINGS,
+                arguments = listOf(navArgument("solution") { type = NavType.IntType; defaultValue = 0 })
+            ) { entry ->
+                SolutionsSettingsScreen(
+                    userProfile = userProfile,
+                    initialSolution = entry.arguments?.getInt("solution") ?: 0,
+                    isBatSignalMode = isBatSignalMode,
+                    onToggleBatSignalMode = { viewModel.toggleBatSignalMode(it) },
+                    onOpenForum = { showTransformerForumDialog = true },
+                    onOpenHazardForm = { viewModel.triggerRedDangerEmergency() },
+                    onBack = { navController.popBackStack() }
                 )
             }
 
@@ -453,6 +479,9 @@ fun BrightApp(viewModel: BrightViewModel) {
                     onOpenRedDangerSOS = { viewModel.triggerRedDangerEmergency() },
                     onOpenForum = { showTransformerForumDialog = true },
                     onPlaySirenAlarm = { viewModel.playRestorationChime() },
+                    onOpenSolutionSettings = { n ->
+                        navController.navigate(BrightSubRoutes.solutionsSettings(n)) { launchSingleTop = true }
+                    },
                     onOpenEstateExco = { showEstateExcoDialog = true },
                     onOpenSmartMeterGateway = { showSmartMeterGatewayDialog = true },
                     citizenMeterStatus = citizenMeterStatus,

@@ -27,6 +27,7 @@ import androidx.compose.material.icons.filled.Gavel
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Router
 import androidx.compose.material.icons.filled.Security
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.SwapHoriz
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.AlertDialog
@@ -81,6 +82,7 @@ fun MoreScreen(
     onLockApp: () -> Unit,
     onLogOut: () -> Unit,
     onDeleteAccount: () -> Unit = {},
+    onOpenSolutionsSettings: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     var showLogoutConfirmDialog by remember { mutableStateOf(false) }
@@ -96,6 +98,7 @@ fun MoreScreen(
     )
     val accountItems = listOf(
         MoreItem("profile_admin", "Profile & Security", "Linked meters, biometrics and privacy", Icons.Default.AccountCircle, onOpenProfileAdmin),
+        MoreItem("solutions_settings", "Settings: Bright tools", "Turn on or off the tools that work for you", Icons.Default.Settings, onOpenSolutionsSettings),
         MoreItem("switch_meter", "Sign In / Switch Meter", "Use a different meter account", Icons.Default.SwapHoriz, onOpenOnboarding),
         MoreItem("lock_app", "Lock App", "Require your PIN or fingerprint to reopen", Icons.Default.Lock, onLockApp),
         MoreItem("log_out", "Log Out", "Sign out on this phone. Your data and PIN stay here.", Icons.AutoMirrored.Filled.ExitToApp, { showLogoutConfirmDialog = true }),
