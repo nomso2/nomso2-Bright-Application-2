@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bright - Nigeria Electricity Response Platform</title>
+  <style>
+    :root {
+      --primary: #F59E0B;
+      --primary-dark: #D97706;
+      --bg: #0F172A;
+      --card-bg: #1E293B;
+      --text: #F8FAFC;
+      --text-muted: #94A3B8;
+      --border: #334155;
+      --success: #10B981;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 24px 16px;
+    }
+    .container {
+      max-width: 600px;
+      width: 100%;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 32px 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      text-align: center;
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--primary);
+      font-weight: 600;
+      font-size: 13px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      margin-bottom: 16px;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+    .icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+    h1 {
+      font-size: 28px;
+      font-weight: 800;
+      margin-bottom: 8px;
+      color: #FFFFFF;
+    }
+    .tagline {
+      font-size: 15px;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+    .download-card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+    .btn-download {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: linear-gradient(135deg, #F59E0B, #D97706);
+      color: #000;
+      font-weight: 700;
+      font-size: 16px;
+      text-decoration: none;
+      padding: 16px 28px;
+      border-radius: 12px;
+      width: 100%;
+      box-sizing: border-box;
+      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.4);
+      transition: transform 0.1s ease, filter 0.2s ease;
+    }
+    .btn-download:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+    }
+    .btn-download:active {
+      transform: translateY(1px);
+    }
+    .file-info {
+      margin-top: 10px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .steps {
+      text-align: left;
+      margin-top: 24px;
+      background: rgba(0,0,0,0.25);
+      border-radius: 14px;
+      padding: 20px;
+    }
+    .steps h2 {
+      font-size: 16px;
+      margin-bottom: 14px;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .step-item {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 14px;
+      font-size: 14px;
+      line-height: 1.4;
+      color: #CBD5E1;
+    }
+    .step-num {
+      background: var(--border);
+      color: var(--text);
+      font-weight: 700;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .step-text strong {
+      color: #FFFFFF;
+    }
+    .callout {
+      margin-top: 20px;
+      padding: 14px 16px;
+      border-radius: 12px;
+      font-size: 13px;
+      line-height: 1.4;
+      text-align: left;
+    }
+    .callout-warning {
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #FCA5A5;
+    }
+    .callout-info {
+      background: rgba(59, 130, 246, 0.12);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      color: #93C5FD;
+      margin-top: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="badge">Official Android Package</div>
+    <div class="icon">⚡</div>
+    <h1>Bright</h1>
+    <p class="tagline">Nigeria's Electricity Response & Grid Telemetry Platform</p>
+
+    <div class="download-card">
+      <a href="/bright-app-debug.apk" class="btn-download" download="bright-app-debug.apk">
+        <span>⬇️</span> Download Bright APK (28.9 MB)
+      </a>
+      <div class="file-info">Version 1.0 (debug) • Direct APK Package for Android</div>
+    </div>
+
+    <div class="steps">
+      <h2>📱 How to Install on Android</h2>
+      <div class="step-item">
+        <div class="step-num">1</div>
+        <div class="step-text">Tap the <strong>Download Bright APK</strong> button above to download the file directly to your phone.</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">2</div>
+        <div class="step-text">When Chrome displays <em>"File might be harmful"</em>, tap <strong>Download anyway</strong> (this is Android's standard alert for apps installed outside Google Play).</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">3</div>
+        <div class="step-text">Open your phone's <strong>Downloads</strong> folder (or tap <strong>Open</strong> in Chrome notification) and select <strong>bright-app-debug.apk</strong>.</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">4</div>
+        <div class="step-text">If asked to allow unknown apps, tap <strong>Settings</strong>, toggle on <strong>Allow from this source</strong>, then press back and tap <strong>Install</strong>.</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">5</div>
+        <div class="step-text">If Google Play Protect displays <em>"Unrecognized app"</em>, tap <strong>More details</strong> &rarr; <strong>Install anyway</strong>.</div>
+      </div>
+    </div>
+
+    <div class="callout callout-warning">
+      <strong>⚠️ iPhone / iPad Users:</strong> Apple iOS does not support Android APK files. If you are using an iPhone, you cannot install APK files. To view and test the Bright app on an iPhone or laptop, use the streaming emulator inside Google AI Studio.
+    </div>
+
+    <div class="callout callout-info">
+      <strong>💡 AI Studio Direct Export:</strong> You can also export the APK directly from Google AI Studio by clicking the <strong>Export / Settings</strong> menu in the top toolbar.
+    </div>
+  </div>
+</body>
+</html>

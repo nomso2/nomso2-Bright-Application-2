@@ -95,6 +95,19 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
     val pendingSyncCount: StateFlow<Int> = repository.pendingSyncCount
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
 
+    // Room database sync & offline mode state
+    private val _isSyncing = MutableStateFlow(false)
+    val isSyncing: StateFlow<Boolean> = _isSyncing.asStateFlow()
+
+    private val _isOfflineMode = MutableStateFlow(false)
+    val isOfflineMode: StateFlow<Boolean> = _isOfflineMode.asStateFlow()
+
+    private val _lastSyncTimeText = MutableStateFlow("Not yet")
+    val lastSyncTimeText: StateFlow<String> = _lastSyncTimeText.asStateFlow()
+
+    val pendingSyncActions: StateFlow<List<com.example.data.database.OfflineSyncQueueEntity>> = repository.pendingSyncActions
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
     // Feature 4: Appliance Damage Claims
     val applianceClaims: StateFlow<List<ApplianceDamageClaim>> = userProfile.flatMapLatest { profile ->
         repository.getApplianceClaims(profile.meterNumber)
@@ -733,13 +746,54 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
+    fun setOfflineMode(enabled: Boolean) {
+        _isOfflineMode.value = enabled
+        if (enabled) {
+            showNotification("Offline mode on. Your reports are saved on this phone and sent later.")
+        } else {
+            showNotification("Back online. Sending saved reports...")
+            syncOfflineQueue()
+        }
+    }
+
+    fun toggleOfflineMode() {
+        setOfflineMode(!_isOfflineMode.value)
+    }
+
     fun syncOfflineQueue() {
+        if (_isSyncing.value) return
+        if (_isOfflineMode.value) {
+            showNotification("You're in offline mode. Turn it off to send saved reports.")
+            return
+        }
+        _isSyncing.value = true
         viewModelScope.launch {
-            val flushed = repository.flushOfflineSyncQueue()
-            showNotification(
-                if (flushed > 0) "Sent $flushed waiting report(s). You're all caught up."
-                else "All caught up. Your reports are up to date."
+            try {
+                val flushed = repository.flushOfflineSyncQueue()
+                val timeFormat = java.text.SimpleDateFormat("hh:mm a", java.util.Locale.getDefault())
+                _lastSyncTimeText.value = timeFormat.format(java.util.Date())
+                showNotification(
+                    if (flushed > 0) "Sent $flushed waiting report(s). You're all caught up."
+                    else "All caught up. Your reports are up to date."
+                )
+            } catch (e: Exception) {
+                showNotification("Couldn't send saved reports right now. They're safe on this phone.")
+            } finally {
+                _isSyncing.value = false
+            }
+        }
+    }
+
+    /** Adds a sample queued report so the sync screen can be tried out. */
+    fun addTestOfflineFaultReport() {
+        viewModelScope.launch {
+            val refId = "FLT-OFFLINE-${(1000..9999).random()}"
+            repository.enqueueOfflineSyncAction(
+                actionType = "REPORT_FAULT_OFFLINE",
+                referenceId = refId,
+                payloadJson = "{\"fault\":\"Transformer Low Voltage Outage\",\"feeder\":\"${userProfile.value.feederBand.code}\"}"
             )
+            showNotification("Test report $refId saved on this phone. It will send on the next sync.")
         }
     }
 

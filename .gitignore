@@ -22,3 +22,7 @@ debug.keystore
 *.keystore
 *.apk
 *.aab
+
+# Local web server log (AI Studio preview)
+server.log
+*.log

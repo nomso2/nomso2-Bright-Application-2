@@ -6,7 +6,9 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -56,6 +58,8 @@ import com.example.ui.components.EnergyOptimizationDialog
 import com.example.ui.components.EstateExcoAndSlaDossierDialog
 import com.example.ui.components.ProfileAdminDialog
 import com.example.ui.components.DeleteAccountDialog
+import com.example.ui.components.RoomDatabaseSyncDialog
+import com.example.ui.components.RoomSyncStatusBar
 import com.example.ui.components.ResolutionRatingDialog
 import com.example.ui.components.SessionLockScreen
 import com.example.ui.components.SignUpOnboardingScreen
@@ -181,6 +185,11 @@ fun BrightApp(viewModel: BrightViewModel) {
     val isAppLocked by viewModel.isAppLocked.collectAsState()
     val requireLoginOnLeave by viewModel.requireLoginOnLeave.collectAsState()
     val pendingSyncCount by viewModel.pendingSyncCount.collectAsState()
+    val isSyncing by viewModel.isSyncing.collectAsState()
+    val isOfflineMode by viewModel.isOfflineMode.collectAsState()
+    val lastSyncTimeText by viewModel.lastSyncTimeText.collectAsState()
+    val pendingSyncActions by viewModel.pendingSyncActions.collectAsState()
+    var showRoomSyncDialog by remember { mutableStateOf(false) }
     val storedPin by viewModel.userPin.collectAsState()
     val isPinSet = storedPin.isNotBlank()
 
@@ -320,12 +329,27 @@ fun BrightApp(viewModel: BrightViewModel) {
             }
         }
     ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+        // Room database sync & offline mode status bar
+        RoomSyncStatusBar(
+            isSyncing = isSyncing,
+            isOfflineMode = isOfflineMode,
+            pendingSyncCount = pendingSyncCount,
+            lastSyncTime = lastSyncTimeText,
+            onSyncNow = { viewModel.syncOfflineQueue() },
+            onToggleOfflineMode = { viewModel.toggleOfflineMode() },
+            onOpenDetails = { showRoomSyncDialog = true }
+        )
         NavHost(
             navController = navController,
             startDestination = BrightNavDestination.HOME.route,
             modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
+                .fillMaxWidth()
+                .weight(1f)
         ) {
             composable(BrightNavDestination.HOME.route) {
                 HomeScreen(
@@ -485,6 +509,7 @@ fun BrightApp(viewModel: BrightViewModel) {
                 )
             }
         }
+        }
     }
 
     // Modal dialog for editing user's linked meter profile
@@ -638,6 +663,21 @@ fun BrightApp(viewModel: BrightViewModel) {
             onSendOtaToken = { meterNum, token -> viewModel.sendOtaTokenToSmartMeter(meterNum, token) },
             onPingMeter = { meterNum -> viewModel.pingSmartMeterInstantRead(meterNum) },
             onDismiss = { showSmartMeterGatewayDialog = false }
+        )
+    }
+
+    // Room database sync & offline mode details
+    if (showRoomSyncDialog) {
+        RoomDatabaseSyncDialog(
+            isSyncing = isSyncing,
+            isOfflineMode = isOfflineMode,
+            pendingSyncCount = pendingSyncCount,
+            lastSyncTime = lastSyncTimeText,
+            pendingActions = pendingSyncActions,
+            onToggleOfflineMode = { viewModel.toggleOfflineMode() },
+            onSyncNow = { viewModel.syncOfflineQueue() },
+            onAddTestOfflineAction = { viewModel.addTestOfflineFaultReport() },
+            onDismiss = { showRoomSyncDialog = false }
         )
     }
 }
