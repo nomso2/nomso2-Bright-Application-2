@@ -28,6 +28,7 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Router
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.SupportAgent
 import androidx.compose.material.icons.filled.SwapHoriz
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.AlertDialog
@@ -83,6 +84,7 @@ fun MoreScreen(
     onLogOut: () -> Unit,
     onDeleteAccount: () -> Unit = {},
     onOpenSolutionsSettings: () -> Unit = {},
+    onOpenHelp: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     var showLogoutConfirmDialog by remember { mutableStateOf(false) }
@@ -96,6 +98,7 @@ fun MoreScreen(
         MoreItem("transformer_forum", "Neighbour Forum", "Talk with people on your transformer", Icons.Default.Forum, onOpenTransformerForum),
         MoreItem("energy_optimization", "Energy & Surge Guard", "Appliance budget, restore alerts and surge warnings", Icons.Default.Tune, onOpenEnergyOptimization)
     )
+    val helpItem = MoreItem("help", "Help", "Call or WhatsApp your DisCo, and answers to common questions", Icons.Default.SupportAgent, onOpenHelp)
     val accountItems = listOf(
         MoreItem("profile_admin", "Profile & Security", "Linked meters, biometrics and privacy", Icons.Default.AccountCircle, onOpenProfileAdmin),
         MoreItem("solutions_settings", "Settings: Bright tools", "Turn on or off the tools that work for you", Icons.Default.Settings, onOpenSolutionsSettings),
@@ -112,6 +115,8 @@ fun MoreScreen(
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
+        item { MoreSectionTitle("Help") }
+        item(key = helpItem.key) { MoreRow(helpItem) }
         item { MoreSectionTitle("Tools") }
         toolItems.forEach { entry -> item(key = entry.key) { MoreRow(entry) } }
         item { MoreSectionTitle("Account") }

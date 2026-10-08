@@ -56,6 +56,7 @@ data class HomeActions(
     val onNavigateHistory: () -> Unit = {},
     val onNavigateHub: () -> Unit = {},
     val onNavigateMore: () -> Unit = {},
+    val onOpenHelp: () -> Unit = {},
     val onOpenRedDangerSOS: () -> Unit = {},
     val onToggleDiagnosticStatus: () -> Unit = {},
     val onOpenEstateExcoDossier: () -> Unit = {},

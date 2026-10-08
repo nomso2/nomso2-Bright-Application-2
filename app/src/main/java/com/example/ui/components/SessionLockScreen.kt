@@ -1,6 +1,8 @@
 package com.example.ui.components
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.material3.TextButton
+import com.example.data.security.PinResetCheck
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -78,8 +80,16 @@ fun SessionLockScreen(
     onCreatePin: (String) -> Boolean,
     onSwitchAccount: () -> Unit,
     onLogOut: () -> Unit,
+    /** Forgot PIN step 1: checks the registered meter number and full name. */
+    onCheckPinResetDetails: (meterNumber: String, fullName: String) -> PinResetCheck = { _, _ -> PinResetCheck.NoAccount },
+    /** Forgot PIN step 2: saves the new PIN after a successful check. */
+    onResetPin: (String) -> Boolean = { false },
+    /** Last resort from Forgot PIN: wipes this phone's account. Null hides the option. */
+    onDeleteAccount: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
+    var showForgotPinDialog by remember { mutableStateOf(false) }
+    var showDeleteAccountDialog by remember { mutableStateOf(false) }
     var enteredPin by remember { mutableStateOf("") }
     var isPinVisible by remember { mutableStateOf(false) }
     var confirmPin by remember { mutableStateOf("") }
@@ -369,6 +379,18 @@ fun SessionLockScreen(
                         Text(text = if (isPinSet) "Unlock" else "Save PIN and Unlock", fontWeight = FontWeight.Bold)
                     }
 
+                    if (isPinSet) {
+                        TextButton(
+                            onClick = { showForgotPinDialog = true },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(48.dp)
+                                .testTag("relogin_forgot_pin_button")
+                        ) {
+                            Text(text = "Forgot your PIN?", fontSize = 16.sp)
+                        }
+                    }
+
                     if (canUseBiometrics && hostActivity != null) OutlinedButton(
                         onClick = { launchBiometricPrompt() },
                         modifier = Modifier
@@ -476,5 +498,43 @@ fun SessionLockScreen(
                 )
             }
         }
+    }
+
+    if (showForgotPinDialog) {
+        ForgotPinDialog(
+            onCheckDetails = onCheckPinResetDetails,
+            onSaveNewPin = { newPin ->
+                val saved = onResetPin(newPin)
+                if (saved) {
+                    enteredPin = ""
+                    errorMessage = null
+                }
+                saved
+            },
+            onDismiss = { showForgotPinDialog = false },
+            onDeleteAccount = if (onDeleteAccount != null) {
+                {
+                    showForgotPinDialog = false
+                    showDeleteAccountDialog = true
+                }
+            } else {
+                null
+            },
+            prefillMeterNumber = userProfile.meterNumber
+        )
+    }
+
+    if (showDeleteAccountDialog && onDeleteAccount != null) {
+        // The PIN is forgotten here, so deleting is confirmed by typing DELETE.
+        DeleteAccountDialog(
+            meterNumber = userProfile.meterNumber,
+            isPinSet = false,
+            verifyPin = { false },
+            onConfirmDelete = {
+                showDeleteAccountDialog = false
+                onDeleteAccount()
+            },
+            onDismiss = { showDeleteAccountDialog = false }
+        )
     }
 }
