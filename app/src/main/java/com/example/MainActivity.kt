@@ -97,6 +97,7 @@ enum class BrightNavDestination(
 object BrightSubRoutes {
     const val ANTI_THEFT = "more/anti_theft"
     const val GRID_HUB = "more/grid_hub"
+    const val HELP = "more/help"
     /** Bright tools settings; "?solution=n" opens one tool's page directly (0 = the list). */
     const val SOLUTIONS_SETTINGS = "more/solutions_settings?solution={solution}"
     fun solutionsSettings(solution: Int) = "more/solutions_settings?solution=$solution"
@@ -197,8 +198,7 @@ fun BrightApp(viewModel: BrightViewModel) {
     val lastSyncTimeText by viewModel.lastSyncTimeText.collectAsState()
     val pendingSyncActions by viewModel.pendingSyncActions.collectAsState()
     var showRoomSyncDialog by remember { mutableStateOf(false) }
-    val storedPin by viewModel.userPin.collectAsState()
-    val isPinSet = storedPin.isNotBlank()
+    val isPinSet by viewModel.pinSet.collectAsState()
 
     // Auto-lock when user leaves the app (presses Home, switches apps, locks screen)
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -241,7 +241,9 @@ fun BrightApp(viewModel: BrightViewModel) {
             },
             isPinSet = isPinSet,
             verifyPin = { pin -> viewModel.verifyPin(pin) },
-            onDeleteAccount = { viewModel.deleteAccount() }
+            onDeleteAccount = { viewModel.deleteAccount() },
+            onCheckPinResetDetails = { meter, name -> viewModel.checkPinResetDetails(meter, name) },
+            onResetPin = { newPin -> viewModel.resetPinAfterCheck(newPin) }
         )
         return
     }
@@ -268,7 +270,10 @@ fun BrightApp(viewModel: BrightViewModel) {
             },
             onLogOut = {
                 viewModel.logOut()
-            }
+            },
+            onCheckPinResetDetails = { meter, name -> viewModel.checkPinResetDetails(meter, name) },
+            onResetPin = { newPin -> viewModel.resetPinAfterCheck(newPin) },
+            onDeleteAccount = { viewModel.deleteAccount() }
         )
         return
     }
@@ -406,6 +411,7 @@ fun BrightApp(viewModel: BrightViewModel) {
                         onNavigateHistory = { navController.navigateToTab(BrightNavDestination.HISTORY) },
                         onNavigateHub = { navController.navigateToMoreSubScreen(BrightSubRoutes.GRID_HUB) },
                         onNavigateMore = { navController.navigateToTab(BrightNavDestination.MORE) },
+                        onOpenHelp = { navController.navigateToMoreSubScreen(BrightSubRoutes.HELP) },
                         onOpenRedDangerSOS = { viewModel.triggerRedDangerEmergency() },
                         onToggleDiagnosticStatus = { viewModel.toggleDiagnosticStatus() },
                         onOpenEstateExcoDossier = { showEstateExcoDialog = true },
@@ -471,7 +477,15 @@ fun BrightApp(viewModel: BrightViewModel) {
                     onLogOut = { viewModel.logOut() },
                     onDeleteAccount = { showDeleteAccountDialog = true },
                     onOpenSolutionsSettings = { navController.navigateToMoreSubScreen(BrightSubRoutes.solutionsSettings(0)) },
+                    onOpenHelp = { navController.navigateToMoreSubScreen(BrightSubRoutes.HELP) },
                     onShowTour = { replayTour = true }
+                )
+            }
+
+            composable(BrightSubRoutes.HELP) {
+                com.example.ui.screens.HelpScreen(
+                    userProfile = userProfile,
+                    onBack = { navController.popBackStack() }
                 )
             }
 
@@ -620,6 +634,9 @@ fun BrightApp(viewModel: BrightViewModel) {
             requireLoginOnLeave = requireLoginOnLeave,
             onToggleRequireLoginOnLeave = { enabled -> viewModel.setRequireLoginOnLeave(enabled) },
             onLockSession = { viewModel.lockAppSession() },
+            isPinSet = isPinSet,
+            verifyPin = { pin -> viewModel.verifyPin(pin) },
+            onChangePin = { current, new -> viewModel.changePin(current, new) },
             onDismiss = { showProfileAdminDialog = false }
         )
     }

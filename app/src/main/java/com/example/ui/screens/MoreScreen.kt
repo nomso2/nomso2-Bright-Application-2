@@ -29,6 +29,7 @@ import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.material.icons.filled.Router
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.SupportAgent
 import androidx.compose.material.icons.filled.SwapHoriz
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.AlertDialog
@@ -86,11 +87,13 @@ fun MoreScreen(
     onLogOut: () -> Unit,
     onDeleteAccount: () -> Unit = {},
     onOpenSolutionsSettings: () -> Unit = {},
+    onOpenHelp: () -> Unit = {},
     onShowTour: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     var showLogoutConfirmDialog by remember { mutableStateOf(false) }
 
+    val helpItem = MoreItem("help", "Help", "Call or WhatsApp your DisCo, and answers to common questions", Icons.Default.SupportAgent, onOpenHelp)
     val accountItems = listOf(
         MoreItem("profile_admin", "Profile & Security", "Linked meters, biometrics and privacy", Icons.Default.AccountCircle, onOpenProfileAdmin),
         MoreItem("switch_meter", "Sign In / Switch Meter", "Use a different meter account", Icons.Default.SwapHoriz, onOpenOnboarding),
@@ -107,6 +110,7 @@ fun MoreScreen(
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         item { MoreSectionTitle("Help") }
+        item(key = helpItem.key) { MoreRow(helpItem) }
         item(key = "show_tour") {
             MoreRow(MoreItem("show_tour", "Show the tour again", "A short guide to reporting a problem", Icons.Default.PlayCircle, onShowTour))
         }

@@ -12,12 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -25,10 +20,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.data.payment.ActivationPaymentState
+import com.example.data.security.PinResetCheck
 import com.example.model.UserProfile
 
 /**
@@ -53,6 +47,10 @@ fun SignUpOnboardingScreen(
     isPinSet: Boolean = false,
     verifyPin: (String) -> Boolean = { false },
     onDeleteAccount: () -> Unit = {},
+    /** Forgot PIN step 1: checks the registered meter number and full name. */
+    onCheckPinResetDetails: (meterNumber: String, fullName: String) -> PinResetCheck = { _, _ -> PinResetCheck.NoAccount },
+    /** Forgot PIN step 2: saves the new PIN after a successful check. */
+    onResetPin: (String) -> Boolean = { false },
     modifier: Modifier = Modifier
 ) {
     var isSignInMode by remember { mutableStateOf(initialSignInMode) }
@@ -135,46 +133,16 @@ fun SignUpOnboardingScreen(
     }
 
     if (showForgotPinDialog) {
-        // PIN reset by SMS needs a real OTP backend. Until one exists, the only way back in is
-        // deleting this phone's account (which wipes its data) and registering again.
-        AlertDialog(
-            onDismissRequest = { showForgotPinDialog = false },
-            modifier = Modifier.testTag("forgot_pin_dialog"),
-            title = {
-                Text(
-                    text = "Forgot your PIN?",
-                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
-                )
-            },
-            text = {
-                Text(
-                    text = "We can't reset PINs by SMS yet. To start again, delete the account on this phone and register your meter again. Your meter stays activated, so you won't pay twice.",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            },
-            confirmButton = {
-                Button(
-                    onClick = { showForgotPinDialog = false },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    )
-                ) {
-                    Text("OK", fontWeight = FontWeight.Bold)
-                }
-            },
-            dismissButton = if (isPinSet) {
+        // Forgot PIN: confirm the registered meter number and full name, then choose a new PIN.
+        // Nothing is deleted. Delete account stays available as the last resort.
+        ForgotPinDialog(
+            onCheckDetails = onCheckPinResetDetails,
+            onSaveNewPin = onResetPin,
+            onDismiss = { showForgotPinDialog = false },
+            onDeleteAccount = if (isPinSet) {
                 {
-                    TextButton(
-                        onClick = {
-                            showForgotPinDialog = false
-                            showDeleteAccountDialog = true
-                        },
-                        colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error),
-                        modifier = Modifier.testTag("forgot_pin_delete_account_button")
-                    ) {
-                        Text("Delete account")
-                    }
+                    showForgotPinDialog = false
+                    showDeleteAccountDialog = true
                 }
             } else {
                 null
