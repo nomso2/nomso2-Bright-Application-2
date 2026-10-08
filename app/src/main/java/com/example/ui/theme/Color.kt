@@ -79,8 +79,6 @@ val NavyDarkSurface = ElegantDarkSurface
 val NavyDarkSurfaceElevated = ElegantDarkSurfaceElevated
 val NavyDarkBorder = ElegantDarkBorder
 
-val LightBackground = ElegantLightCanvas
-val LightSurface = ElegantLightSurface
 val LightSurfaceElevated = ElegantLightSurfaceElevated
 val LightBorder = ElegantLightBorder
 
