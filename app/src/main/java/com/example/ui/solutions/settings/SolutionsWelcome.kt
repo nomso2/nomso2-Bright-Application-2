@@ -47,7 +47,6 @@ fun SolutionsFirstRun(userProfile: UserProfile) {
     val context = LocalContext.current
     val prefs = remember { SolutionsPrefs(context) }
     var showWelcome by remember { mutableStateOf(!prefs.firstRunPermissionsAsked) }
-    var showTour by remember { mutableStateOf(!prefs.tourShown) }
 
     LaunchedEffect(userProfile.feederBand) {
         val band = com.example.model.FeederBand.entries.firstOrNull { it.code == prefs.refundBand } ?: userProfile.feederBand
@@ -64,16 +63,7 @@ fun SolutionsFirstRun(userProfile: UserProfile) {
         locationLauncher.launch(BrightPermissions.LOCATION.toTypedArray())
     }
 
-    if (!showWelcome) {
-        // Right after the welcome and permissions: the ~30-second tour, shown once.
-        if (showTour) {
-            WelcomeTour(onDone = {
-                prefs.tourShown = true
-                showTour = false
-            })
-        }
-        return
-    }
+    if (!showWelcome) return
 
     Dialog(onDismissRequest = {}, properties = DialogProperties(usePlatformDefaultWidth = false, dismissOnClickOutside = false)) {
         Box(

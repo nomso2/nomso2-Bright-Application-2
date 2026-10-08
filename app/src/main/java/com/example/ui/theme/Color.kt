@@ -2,202 +2,143 @@ package com.example.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-/*
- * Bright palette: "Calm green".
- *
- * Every colour value in the app lives here. Screens read colours through
- * MaterialTheme.colorScheme / MaterialTheme.extendedColors, never these constants directly
- * (the constants exist for non-composable code such as Canvas drawing).
- *
- * Brand = green. Gold/amber is no longer a brand colour; it only means "warning"
- * (tertiary + extendedColors.warning).
- */
+// Elegant Dark Palette (from Design HTML specification)
+val ElegantDarkCanvas = Color(0xFF0A0C10) // Deep noir background
+val ElegantDarkBar = Color(0xFF11141B) // App header & navigation bar background
+val ElegantDarkCardStart = Color(0xFF1C1F26) // Card gradient start
+val ElegantDarkCardEnd = Color(0xFF14171E) // Card gradient end
+val ElegantDarkSurface = Color(0xFF161920) // Secondary card & container surface
+val ElegantDarkSurfaceElevated = Color(0xFF1F242F) // Elevated dialog & modal surface
+val ElegantDarkBorder = Color(0xFF1E2430) // Subtle slate-800 border
+val ElegantDarkBorderLight = Color(0xFF2E384A) // Slate-700 border for interactive components
 
-// ---------------------------------------------------------------------------
-// LIGHT scheme tokens (default daylight look)
-// ---------------------------------------------------------------------------
-val LightPrimary = Color(0xFF15803D)
-val LightOnPrimary = Color(0xFFFFFFFF)
-val LightPrimaryContainer = Color(0xFFDCFCE7)
-val LightOnPrimaryContainer = Color(0xFF14532D)
+// Accent Colors
+val ElegantGoldPrimary = Color(0xFFFACC15) // Signature Bright gold #FACC15
+val ElegantGoldDark = Color(0xFFEAB308) // Darker gold shade for pressed state
+val ElegantGoldContainer = Color(0x2BFACC15) // Gold 17% alpha for badges and highlights
 
-val LightSecondary = Color(0xFF3F6F52) // muted sage green for secondary accents
-val LightOnSecondary = Color(0xFFFFFFFF)
-val LightSecondaryContainer = Color(0xFFE3EFE6)
-val LightOnSecondaryContainer = Color(0xFF1E3A2A)
+val ElegantGreenLive = Color(0xFF22C55E) // Live feed emerald pulse & verified meters
+val ElegantGreenContainer = Color(0x1A22C55E) // Green 10% alpha
 
-// Tertiary = warning amber (the only place gold/amber is used)
-val LightTertiary = Color(0xFFB45309)
-val LightOnTertiary = Color(0xFFFFFFFF)
-val LightTertiaryContainer = Color(0xFFFEF3C7)
-val LightOnTertiaryContainer = Color(0xFF78350F)
+val ElegantBluePhase = Color(0xFF60A5FA) // Phase voltage & telemetry cyan/blue
+val ElegantBlueContainer = Color(0x1A60A5FA) // Blue 10% alpha
 
-val LightError = Color(0xFFB91C1C)
-val LightOnError = Color(0xFFFFFFFF)
-val LightErrorContainer = Color(0xFFFEE2E2)
-val LightOnErrorContainer = Color(0xFF7F1D1D)
+val ElegantRedHazard = Color(0xFFEF4444) // Life safety emergency hazard
+val ElegantRedContainer = Color(0x26EF4444) // Hazard 15% container
 
-val LightBackground = Color(0xFFFFFFFF)
-val LightOnBackground = Color(0xFF111827)
-val LightSurface = Color(0xFFFFFFFF)
-val LightOnSurface = Color(0xFF111827)
-val LightSurfaceVariant = Color(0xFFF0F5F1)
-val LightOnSurfaceVariant = Color(0xFF374151)
-val LightOutline = Color(0xFF9CA3AF)
-val LightOutlineVariant = Color(0xFFD1D9D3)
-val LightInverseSurface = Color(0xFF1F2937)
-val LightInverseOnSurface = Color(0xFFF9FAFB)
-val LightInversePrimary = Color(0xFF4ADE80)
-val LightSurfaceTint = LightPrimary
-val LightScrim = Color(0xFF000000)
+// Typography / Slates
+val Slate100Text = Color(0xFFF1F5F9) // Primary text
+val Slate300Text = Color(0xFFCBD5E1) // Secondary text
+val Slate400Text = Color(0xFF94A3B8) // Muted labels & subtitles
+val Slate500Text = Color(0xFF64748B) // Metadata & timestamps
+val Slate700Icon = Color(0xFF334155) // Inactive state
 
-val LightSurfaceBright = Color(0xFFFFFFFF)
-val LightSurfaceDim = Color(0xFFDCE4DE)
-val LightSurfaceContainerLowest = Color(0xFFFFFFFF)
-val LightSurfaceContainerLow = Color(0xFFF7FAF8)
-val LightSurfaceContainer = Color(0xFFF0F5F1)
-val LightSurfaceContainerHigh = Color(0xFFE8EFEA)
-val LightSurfaceContainerHighest = Color(0xFFE1E9E3)
+// Elegant Light Palette (High-contrast, crisp styling)
+val ElegantLightCanvas = Color(0xFFF8FAFC) // Crisp daylight canvas #F8FAFC
+val ElegantLightBar = Color(0xFFFFFFFF) // Clean header & nav bar background
+val ElegantLightCardStart = Color(0xFFFFFFFF) // Pure white card surface
+val ElegantLightCardEnd = Color(0xFFF1F5F9) // Slate-100 card subtle gradient
+val ElegantLightSurface = Color(0xFFFFFFFF) // Surface container
+val ElegantLightSurfaceElevated = Color(0xFFF1F5F9) // Elevated modal
+val ElegantLightBorder = Color(0xFFE2E8F0) // Subtle border
+val ElegantLightBorderLight = Color(0xFFCBD5E1) // Interactive border
 
-// ---------------------------------------------------------------------------
-// DARK scheme tokens (companion night look)
-// ---------------------------------------------------------------------------
-val DarkPrimary = Color(0xFF4ADE80)
-val DarkOnPrimary = Color(0xFF052E16)
-val DarkPrimaryContainer = Color(0xFF14532D)
-val DarkOnPrimaryContainer = Color(0xFFDCFCE7)
+val Slate900Text = Color(0xFF0F172A) // Dark slate primary text in light mode
+val Slate800Text = Color(0xFF1E293B) // Dark slate titles
+val Slate600Text = Color(0xFF475569) // Secondary text in light mode
+val ElegantGoldLightPrimary = Color(0xFFD97706) // Rich amber-gold for high-contrast light mode
+val ElegantGoldLightContainer = Color(0x1AD97706)
 
-val DarkSecondary = Color(0xFF9DC9AC)
-val DarkOnSecondary = Color(0xFF0F2A1A)
-val DarkSecondaryContainer = Color(0xFF24392C)
-val DarkOnSecondaryContainer = Color(0xFFD4EBDC)
 
-val DarkTertiary = Color(0xFFFBBF24)
-val DarkOnTertiary = Color(0xFF451A03)
-val DarkTertiaryContainer = Color(0xFF78350F)
-val DarkOnTertiaryContainer = Color(0xFFFEF3C7)
+// Legacy aliases mapped to Elegant Dark for theme compatibility
+val GoldPrimary = ElegantGoldPrimary
+val EmeraldAccent = ElegantGreenLive
 
-val DarkError = Color(0xFFF87171)
-val DarkOnError = Color(0xFF450A0A)
-val DarkErrorContainer = Color(0xFF7F1D1D)
-val DarkOnErrorContainer = Color(0xFFFEE2E2)
+val ElectricGreenLight = ElegantGoldPrimary
+val ElectricGreenDark = ElegantGoldPrimary
+val ElectricGreenContainerLight = ElegantGoldContainer
+val ElectricGreenContainerDark = ElegantGoldContainer
 
-val DarkBackground = Color(0xFF0B1410)
-val DarkOnBackground = Color(0xFFF1F5F9)
-val DarkSurface = Color(0xFF111C16)
-val DarkOnSurface = Color(0xFFF1F5F9)
-val DarkSurfaceVariant = Color(0xFF1A2A21)
-val DarkOnSurfaceVariant = Color(0xFFCBD5E1)
-val DarkOutline = Color(0xFF3F5A4A)
-val DarkOutlineVariant = Color(0xFF2A3D32)
-val DarkInverseSurface = Color(0xFFE5EDE8)
-val DarkInverseOnSurface = Color(0xFF111C16)
-val DarkInversePrimary = Color(0xFF15803D)
-val DarkSurfaceTint = DarkPrimary
-val DarkScrim = Color(0xFF000000)
+val AmberElectricLight = ElegantGoldPrimary
+val AmberElectricDark = ElegantGoldPrimary
+val AmberContainerLight = ElegantGoldContainer
+val AmberContainerDark = ElegantGoldContainer
 
-val DarkSurfaceBright = Color(0xFF2A3D32)
-val DarkSurfaceDim = Color(0xFF0B1410)
-val DarkSurfaceContainerLowest = Color(0xFF07100C)
-val DarkSurfaceContainerLow = Color(0xFF142019)
-val DarkSurfaceContainer = Color(0xFF17251D)
-val DarkSurfaceContainerHigh = Color(0xFF1A2A21)
-val DarkSurfaceContainerHighest = Color(0xFF22352A)
+val ElectricCyanLight = ElegantBluePhase
+val ElectricCyanDark = ElegantBluePhase
+val ElectricCyanContainerLight = ElegantBlueContainer
+val ElectricCyanContainerDark = ElegantBlueContainer
 
-// ---------------------------------------------------------------------------
-// Semantic accents for non-composable code (Canvas, models)
-// ---------------------------------------------------------------------------
+val HazardRedLight = ElegantRedHazard
+val HazardRedDark = ElegantRedHazard
+val HazardContainerLight = ElegantRedContainer
+val HazardContainerDark = ElegantRedContainer
+
+val NavyDarkBackground = ElegantDarkCanvas
+val NavyDarkSurface = ElegantDarkSurface
+val NavyDarkSurfaceElevated = ElegantDarkSurfaceElevated
+val NavyDarkBorder = ElegantDarkBorder
+
+val LightSurfaceElevated = ElegantLightSurfaceElevated
+val LightBorder = ElegantLightBorder
+
+val DarkTextPrimary = Slate100Text
+val DarkTextSecondary = Slate400Text
+val LightTextPrimary = Slate900Text
+val LightTextSecondary = Slate600Text
+
+val DarkCharcoal = Color(0xFF1E293B)
+val MutedSlateText = Color(0xFF94A3B8)
+
+// Named semantic accents (use MaterialTheme.colorScheme / MaterialTheme.extendedColors inside
+// composables; these constants are for non-composable code such as Canvas drawing and models).
 val SuccessEmerald = Color(0xFF10B981)
-val WarningAmber = Color(0xFFFBBF24) // warning only, never brand
-val WarningAmberDeep = Color(0xFFB45309)
+val WarningAmber = Color(0xFFF59E0B)
 val InfoSky = Color(0xFF38BDF8)
 val InfoSkyDark = Color(0xFF0284C7)
 val InfoBlue = Color(0xFF2563EB)
 val InfoBlueBright = Color(0xFF3B82F6)
 val HazardRedDeep = Color(0xFFDC2626)
-val GreenDeep = Color(0xFF15803D)
+val GreenDeep = Color(0xFF16A34A)
 val GreenSoft = Color(0xFF4ADE80)
 
 // Always-dark "console" panels (gateway / telemetry screens are designed dark in both themes)
-val ConsoleDarkBackground = Color(0xFF0B1410)
-val ConsoleDarkSurface = Color(0xFF17251D)
+val ConsoleDarkBackground = Color(0xFF0F172A)
+val ConsoleDarkSurface = Color(0xFF1E293B)
 
-// ---------------------------------------------------------------------------
-// Legacy names kept so existing code (and open branches) still compile.
-// They now point at the Calm green palette. "Gold" names no longer mean brand:
-// they map to green, except the Amber ones, which map to warning amber.
-// ---------------------------------------------------------------------------
-val ElegantDarkCanvas = DarkBackground
-val ElegantDarkBar = DarkSurface
-val ElegantDarkCardStart = DarkSurfaceVariant
-val ElegantDarkCardEnd = DarkSurfaceContainer
-val ElegantDarkSurface = DarkSurface
-val ElegantDarkSurfaceElevated = DarkSurfaceContainerHighest
-val ElegantDarkSurfaceBright = DarkSurfaceBright
-val ElegantDarkBorder = DarkOutlineVariant
-val ElegantDarkBorderLight = DarkOutline
-
-val ElegantGoldPrimary = DarkPrimary
-val ElegantGoldDark = LightPrimary
-val ElegantGoldContainer = DarkPrimaryContainer
-val ElegantGoldLightPrimary = LightPrimary
-val ElegantGoldLightContainer = LightPrimaryContainer
-
-val ElegantGreenLive = Color(0xFF22C55E)
-val ElegantGreenContainer = Color(0x1A22C55E)
-val ElegantBluePhase = Color(0xFF60A5FA)
-val ElegantBlueContainer = Color(0x1A60A5FA)
-val ElegantRedHazard = Color(0xFFEF4444)
-val ElegantRedContainer = Color(0x26EF4444)
-
-val Slate100Text = DarkOnSurface
-val Slate300Text = DarkOnSurfaceVariant
-val Slate400Text = Color(0xFF94A3B8)
-val Slate500Text = Color(0xFF64748B)
-val Slate700Icon = Color(0xFF334155)
-val Slate900Text = LightOnSurface
-val Slate800Text = Color(0xFF1E293B)
-val Slate600Text = LightOnSurfaceVariant
-
-val ElegantLightCanvas = LightBackground
-val ElegantLightBar = LightSurface
-val ElegantLightCardStart = LightSurface
-val ElegantLightCardEnd = LightSurfaceVariant
-val ElegantLightSurface = LightSurface
-val ElegantLightSurfaceElevated = LightSurfaceContainer
-val ElegantLightBorder = LightOutlineVariant
-val ElegantLightBorderLight = LightOutline
-
-val GoldPrimary = DarkPrimary
-val EmeraldAccent = ElegantGreenLive
-val ElectricGreenLight = LightPrimary
-val ElectricGreenDark = DarkPrimary
-val ElectricGreenContainerLight = LightPrimaryContainer
-val ElectricGreenContainerDark = DarkPrimaryContainer
-val AmberElectricLight = LightTertiary
-val AmberElectricDark = DarkTertiary
-val AmberContainerLight = LightTertiaryContainer
-val AmberContainerDark = DarkTertiaryContainer
-val ElectricCyanLight = ElegantBluePhase
-val ElectricCyanDark = ElegantBluePhase
-val ElectricCyanContainerLight = ElegantBlueContainer
-val ElectricCyanContainerDark = ElegantBlueContainer
-val HazardRedLight = LightError
-val HazardRedDark = DarkError
-val HazardContainerLight = LightErrorContainer
-val HazardContainerDark = DarkErrorContainer
-
-val NavyDarkBackground = DarkBackground
-val NavyDarkSurface = DarkSurface
-val NavyDarkSurfaceElevated = DarkSurfaceContainerHighest
-val NavyDarkBorder = DarkOutlineVariant
-val LightSurfaceElevated = LightSurfaceContainer
-val LightBorder = LightOutlineVariant
-
-val DarkTextPrimary = DarkOnSurface
-val DarkTextSecondary = DarkOnSurfaceVariant
-val LightTextPrimary = LightOnSurface
-val LightTextSecondary = LightOnSurfaceVariant
-
-val DarkCharcoal = Color(0xFF1E293B)
-val MutedSlateText = Color(0xFF94A3B8)
+// Light scheme tokens (single place to swap the light palette)
+val LightPrimary = Color(0xFFA16207)
+val LightOnPrimary = Color(0xFFFFFFFF)
+val LightPrimaryContainer = Color(0xFFFEF3C7)
+val LightOnPrimaryContainer = Color(0xFF713F12)
+val LightSecondary = Color(0xFF15803D)
+val LightSecondaryContainer = Color(0xFFDCFCE7)
+val LightOnSecondaryContainer = Color(0xFF14532D)
+val LightTertiary = Color(0xFF1D4ED8)
+val LightTertiaryContainer = Color(0xFFDBEAFE)
+val LightOnTertiaryContainer = Color(0xFF1E3A8A)
+val LightError = Color(0xFFB91C1C)
+val LightErrorContainer = Color(0xFFFEE2E2)
+val LightOnErrorContainer = Color(0xFF7F1D1D)
+val LightBackground = Color(0xFFFAFAF7)
+val LightOnBackground = Color(0xFF111827)
+val LightSurface = Color(0xFFFFFFFF)
+val LightOnSurface = Color(0xFF111827)
+val LightSurfaceVariant = Color(0xFFF1F2F4)
+val LightOnSurfaceVariant = Color(0xFF374151)
+val LightOutline = Color(0xFF9CA3AF)
+val LightOutlineVariant = Color(0xFFD1D5DB)
+val LightInverseSurface = Color(0xFF1F2937)
+val LightInverseOnSurface = Color(0xFFF9FAFB)
+val LightSurfaceTint = Color(0xFFA16207)
+val LightSurfaceBright = Color(0xFFFFFFFF)
+val LightSurfaceDim = Color(0xFFE5E7EB)
+val LightSurfaceContainerLowest = Color(0xFFFFFFFF)
+val LightSurfaceContainerLow = Color(0xFFF9FAFB)
+val LightSurfaceContainer = Color(0xFFF3F4F6)
+val LightSurfaceContainerHigh = Color(0xFFEDEEF1)
+val LightSurfaceContainerHighest = Color(0xFFE5E7EB)
+val LightOnSecondary = Color(0xFFFFFFFF)
+val LightOnTertiary = Color(0xFFFFFFFF)
+val LightOnError = Color(0xFFFFFFFF)
+val ElegantDarkSurfaceBright = Color(0xFF2A2F3A) // Dark scheme surfaceBright

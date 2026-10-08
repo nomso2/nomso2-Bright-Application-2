@@ -27,11 +27,11 @@ data class BrightExtendedColors(
 )
 
 val DarkExtendedColors = BrightExtendedColors(
-    success = DarkPrimary,
-    onSuccess = DarkOnPrimary,
-    successContainer = DarkPrimaryContainer,
-    warning = WarningAmber, // #FBBF24, matches dark tertiary
-    onWarning = DarkOnTertiary,
+    success = SuccessEmerald,
+    onSuccess = ElegantDarkCanvas,
+    successContainer = SuccessEmerald.copy(alpha = 0.15f),
+    warning = WarningAmber,
+    onWarning = ElegantDarkCanvas,
     warningContainer = WarningAmber.copy(alpha = 0.15f),
     info = InfoSky,
     onInfo = ElegantDarkCanvas,
@@ -39,10 +39,10 @@ val DarkExtendedColors = BrightExtendedColors(
 )
 
 val LightExtendedColors = BrightExtendedColors(
-    success = LightPrimary, // calm green #15803D: readable on white
+    success = Color(0xFF047857), // emerald-700: readable on white
     onSuccess = Color.White,
-    successContainer = LightPrimaryContainer,
-    warning = WarningAmberDeep, // #B45309 amber-700, matches light tertiary
+    successContainer = Color(0x1A047857),
+    warning = Color(0xFFB45309), // amber-700
     onWarning = Color.White,
     warningContainer = Color(0x1AB45309),
     info = InfoSkyDark,
@@ -50,7 +50,7 @@ val LightExtendedColors = BrightExtendedColors(
     infoContainer = Color(0x1A0284C7)
 )
 
-val LocalBrightExtendedColors = staticCompositionLocalOf { LightExtendedColors }
+val LocalBrightExtendedColors = staticCompositionLocalOf { DarkExtendedColors }
 
 /** Bright's extra semantic colours for the current theme. */
 val MaterialTheme.extendedColors: BrightExtendedColors

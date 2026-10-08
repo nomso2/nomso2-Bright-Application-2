@@ -123,59 +123,41 @@ class VoicePlayer {
     }
 }
 
-/**
- * "Light is back" alert. Gentle (the default) repeats Bright's soft chime with one light buzz;
- * Ringtone / Loud use the phone's own sounds for people who asked for them in settings.
- */
+/** Loud alarm used by the "Grid is back" siren and SOS confirmation. */
 object SirenPlayer {
     private var ringtone: Ringtone? = null
-    private var chiming = false
     private val handler = Handler(Looper.getMainLooper())
 
-    fun isPlaying(): Boolean = chiming || ringtone?.isPlaying == true
+    fun isPlaying(): Boolean = ringtone?.isPlaying == true
 
-    /** Plays the chosen alert sound (gentle chime by default) at the chosen volume. */
+    /** Plays the chosen alert sound (gentle notification tone by default) at the chosen volume, with vibration. */
     fun play(context: Context, seconds: Int = 8) {
         stop()
         val prefs = com.example.data.solutions.SolutionsPrefs(context)
-        val volume = prefs.sirenVolume / 100f
-        if (prefs.sirenSound == "NOTIFICATION") {
-            val app = context.applicationContext
-            chiming = true
-            val repeat = object : Runnable {
-                override fun run() {
-                    if (!chiming) return
-                    GentleAlert.play(app, volume, buzz = false)
-                    handler.postDelayed(this, 2000L)
-                }
-            }
-            handler.post(repeat)
-            GentleAlert.buzz(context)
-            handler.postDelayed({ stop() }, seconds * 1000L)
-            return
+        val type = when (prefs.sirenSound) {
+            "RINGTONE" -> RingtoneManager.TYPE_RINGTONE
+            "NOTIFICATION" -> RingtoneManager.TYPE_NOTIFICATION
+            else -> RingtoneManager.TYPE_ALARM
         }
-        val type = if (prefs.sirenSound == "RINGTONE") RingtoneManager.TYPE_RINGTONE else RingtoneManager.TYPE_ALARM
         val uri = RingtoneManager.getDefaultUri(type)
             ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         val tone = RingtoneManager.getRingtone(context.applicationContext, uri)
         if (tone == null) {
-            GentleAlert.play(context, volume)
+            Toast.makeText(context, "No alarm sound on this phone", Toast.LENGTH_SHORT).show()
             return
         }
         if (Build.VERSION.SDK_INT >= 28) {
             tone.isLooping = true
-            tone.volume = volume
+            tone.volume = prefs.sirenVolume / 100f
         }
         tone.play()
         ringtone = tone
-        GentleAlert.buzz(context)
+        vibrate(context, longArrayOf(0, 400, 300, 400))
         handler.postDelayed({ stop() }, seconds * 1000L)
     }
 
     fun stop() {
         handler.removeCallbacksAndMessages(null)
-        chiming = false
-        GentleAlert.stop()
         ringtone?.stop()
         ringtone = null
     }

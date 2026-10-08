@@ -6,16 +6,58 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.graphics.Color
 
-val LocalIsDarkTheme = staticCompositionLocalOf { false }
+val LocalIsDarkTheme = staticCompositionLocalOf { true }
 
-/** Calm green, light. White canvas, green brand, amber only for warnings. */
-private val CalmGreenLightColorScheme = lightColorScheme(
+// Elegant Dark Color Scheme adhering directly to the design HTML specifications
+private val ElegantDarkColorScheme = darkColorScheme(
+    primary = ElegantGoldPrimary,
+    onPrimary = Color(0xFF0A0C10),
+    primaryContainer = ElegantGoldContainer,
+    onPrimaryContainer = ElegantGoldPrimary,
+
+    secondary = ElegantGreenLive,
+    onSecondary = Color(0xFF0A0C10),
+    secondaryContainer = ElegantGreenContainer,
+    onSecondaryContainer = ElegantGreenLive,
+
+    tertiary = ElegantBluePhase,
+    onTertiary = Color(0xFF0A0C10),
+    tertiaryContainer = ElegantBlueContainer,
+    onTertiaryContainer = ElegantBluePhase,
+
+    error = ElegantRedHazard,
+    onError = Color.White,
+    errorContainer = ElegantRedContainer,
+    onErrorContainer = ElegantRedHazard,
+
+    background = ElegantDarkCanvas,
+    onBackground = Slate100Text,
+    surface = ElegantDarkSurface,
+    onSurface = Slate100Text,
+    surfaceVariant = ElegantDarkCardStart,
+    onSurfaceVariant = Slate400Text,
+    outline = ElegantDarkBorder,
+    outlineVariant = ElegantDarkBorderLight,
+    surfaceTint = ElegantGoldPrimary,
+
+    surfaceBright = ElegantDarkSurfaceBright,
+    surfaceDim = ElegantDarkCanvas,
+    surfaceContainerLowest = ElegantDarkCanvas,
+    surfaceContainerLow = ElegantDarkBar,
+    surfaceContainer = ElegantDarkSurface,
+    surfaceContainerHigh = ElegantDarkCardStart,
+    surfaceContainerHighest = ElegantDarkSurfaceElevated
+)
+
+// Light scheme: calm, high-contrast daylight colours. Gold text uses the deeper amber
+// primary (#A16207) so it stays readable on white.
+private val ElegantLightColorScheme = lightColorScheme(
     primary = LightPrimary,
     onPrimary = LightOnPrimary,
     primaryContainer = LightPrimaryContainer,
     onPrimaryContainer = LightOnPrimaryContainer,
-    inversePrimary = LightInversePrimary,
 
     secondary = LightSecondary,
     onSecondary = LightOnSecondary,
@@ -38,12 +80,12 @@ private val CalmGreenLightColorScheme = lightColorScheme(
     onSurface = LightOnSurface,
     surfaceVariant = LightSurfaceVariant,
     onSurfaceVariant = LightOnSurfaceVariant,
-    surfaceTint = LightSurfaceTint,
-    inverseSurface = LightInverseSurface,
-    inverseOnSurface = LightInverseOnSurface,
     outline = LightOutline,
     outlineVariant = LightOutlineVariant,
-    scrim = LightScrim,
+    inverseSurface = LightInverseSurface,
+    inverseOnSurface = LightInverseOnSurface,
+    inversePrimary = ElegantGoldPrimary,
+    surfaceTint = LightSurfaceTint,
 
     surfaceBright = LightSurfaceBright,
     surfaceDim = LightSurfaceDim,
@@ -54,62 +96,14 @@ private val CalmGreenLightColorScheme = lightColorScheme(
     surfaceContainerHighest = LightSurfaceContainerHighest
 )
 
-/** Calm green, dark companion. Deep green-black canvas, mint brand, amber only for warnings. */
-private val CalmGreenDarkColorScheme = darkColorScheme(
-    primary = DarkPrimary,
-    onPrimary = DarkOnPrimary,
-    primaryContainer = DarkPrimaryContainer,
-    onPrimaryContainer = DarkOnPrimaryContainer,
-    inversePrimary = DarkInversePrimary,
-
-    secondary = DarkSecondary,
-    onSecondary = DarkOnSecondary,
-    secondaryContainer = DarkSecondaryContainer,
-    onSecondaryContainer = DarkOnSecondaryContainer,
-
-    tertiary = DarkTertiary,
-    onTertiary = DarkOnTertiary,
-    tertiaryContainer = DarkTertiaryContainer,
-    onTertiaryContainer = DarkOnTertiaryContainer,
-
-    error = DarkError,
-    onError = DarkOnError,
-    errorContainer = DarkErrorContainer,
-    onErrorContainer = DarkOnErrorContainer,
-
-    background = DarkBackground,
-    onBackground = DarkOnBackground,
-    surface = DarkSurface,
-    onSurface = DarkOnSurface,
-    surfaceVariant = DarkSurfaceVariant,
-    onSurfaceVariant = DarkOnSurfaceVariant,
-    surfaceTint = DarkSurfaceTint,
-    inverseSurface = DarkInverseSurface,
-    inverseOnSurface = DarkInverseOnSurface,
-    outline = DarkOutline,
-    outlineVariant = DarkOutlineVariant,
-    scrim = DarkScrim,
-
-    surfaceBright = DarkSurfaceBright,
-    surfaceDim = DarkSurfaceDim,
-    surfaceContainerLowest = DarkSurfaceContainerLowest,
-    surfaceContainerLow = DarkSurfaceContainerLow,
-    surfaceContainer = DarkSurfaceContainer,
-    surfaceContainerHigh = DarkSurfaceContainerHigh,
-    surfaceContainerHighest = DarkSurfaceContainerHighest
-)
-
-/**
- * App theme. The caller decides [darkTheme] from [ThemeMode] (default SYSTEM = follow the phone).
- * Dynamic colour is off on purpose: the Calm green palette is the brand.
- */
 @Composable
 fun BrightTheme(
-    darkTheme: Boolean = false,
-    @Suppress("UNUSED_PARAMETER") dynamicColor: Boolean = false,
+    darkTheme: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit,
 ) {
-    val colors = if (darkTheme) CalmGreenDarkColorScheme else CalmGreenLightColorScheme
+    val colors = if (darkTheme) ElegantDarkColorScheme else ElegantLightColorScheme
+
     val extendedColors = if (darkTheme) DarkExtendedColors else LightExtendedColors
 
     CompositionLocalProvider(
@@ -119,8 +113,8 @@ fun BrightTheme(
         MaterialTheme(
             colorScheme = colors,
             typography = Typography,
-            shapes = BrightShapes,
             content = content
         )
     }
 }
+
