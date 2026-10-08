@@ -44,17 +44,16 @@ private val helpQuestions = listOf(
     HelpQuestion(
         key = "report_fault",
         question = "How do I report a fault?",
-        answer = "Tap the big \"Report Outage / Fault\" button on Home, or \"Report\" at the bottom of " +
-            "the screen. Choose what is wrong, write a short note (a photo helps), then tap " +
-            "\"Submit fault ticket\". You can follow it under \"History\"."
+        answer = "Tap the big \"Report a problem\" button on Home. Then choose Danger (SOS), " +
+            "Speak your report, Send a photo, Pin where the fault is, or Report by text message. " +
+            "You can also tap \"Report\" at the bottom of the screen. Follow your report under \"History\"."
     ),
     HelpQuestion(
         key = "refund_tracker",
-        question = "What does the refund tracker do?",
-        answer = "It keeps a record of when your light goes off and comes back. Bright adds up your " +
-            "hours of light and compares them with what your band promises. If you got fewer hours, " +
-            "it works out what your DisCo owes you and helps you claim it. Find it in More, then " +
-            "\"Settings: Bright tools\", then \"Track when light goes and comes back\"."
+        question = "Will Bright tell me if I am owed money?",
+        answer = "Yes. Bright quietly notes when your light goes off and comes back, and compares " +
+            "your hours of light with what your band promises. If you got fewer hours, it sends " +
+            "you a gentle message. Keep notifications allowed so it can reach you."
     ),
     HelpQuestion(
         key = "change_pin",
