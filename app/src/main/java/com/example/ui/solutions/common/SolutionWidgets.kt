@@ -41,6 +41,7 @@ import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import com.example.ui.theme.BrightButtonShape
 
 /** Header of a feature page. Always shows the plain-language name from SolutionCatalog. */
 @Suppress("UNUSED_PARAMETER")
@@ -125,13 +126,15 @@ fun ActionButton(
         OutlinedButton(
             onClick = onClick,
             enabled = enabled,
-            modifier = modifier.fillMaxWidth().heightIn(min = 56.dp)
+            modifier = modifier.fillMaxWidth().heightIn(min = 56.dp),
+            shape = BrightButtonShape
         ) { content() }
     } else {
         Button(
             onClick = onClick,
             enabled = enabled,
             modifier = modifier.fillMaxWidth().heightIn(min = 56.dp),
+            shape = BrightButtonShape,
             colors = if (danger) ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.error,
                 contentColor = MaterialTheme.colorScheme.onError

@@ -49,6 +49,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.example.ui.theme.BrightButtonShape
 
 /** The four steps of registering a meter. */
 internal enum class SignUpStep(val number: Int, val label: String) {
@@ -286,7 +287,7 @@ internal fun PrimaryStepButton(
             .fillMaxWidth()
             .heightIn(min = 52.dp)
             .testTag(testTag),
-        shape = RoundedCornerShape(12.dp),
+        shape = BrightButtonShape,
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.primary,
             contentColor = MaterialTheme.colorScheme.onPrimary
