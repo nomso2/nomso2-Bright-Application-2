@@ -125,9 +125,10 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
     private val _isRestorationAlarmEnabled = MutableStateFlow(true)
     val isRestorationAlarmEnabled: StateFlow<Boolean> = _isRestorationAlarmEnabled.asStateFlow()
 
-    // UI state & Theme Mode (Dark / Light)
-    private val _isDarkMode = MutableStateFlow(true)
-    val isDarkMode: StateFlow<Boolean> = _isDarkMode.asStateFlow()
+    // Theme mode: Same as my phone / Light / Dark (saved, default follows the phone)
+    private val uiPrefs = application.getSharedPreferences("bright_ui_prefs", android.content.Context.MODE_PRIVATE)
+    private val _themeMode = MutableStateFlow(com.example.ui.theme.ThemeMode.fromName(uiPrefs.getString("theme_mode", null)))
+    val themeMode: StateFlow<com.example.ui.theme.ThemeMode> = _themeMode.asStateFlow()
 
     private val _selectedLanguage = MutableStateFlow(AppLanguage.ENGLISH)
     val selectedLanguage: StateFlow<AppLanguage> = _selectedLanguage.asStateFlow()
@@ -864,10 +865,17 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
-    // Theme Mode Toggle (Dark / Light)
-    fun toggleThemeMode() {
-        _isDarkMode.value = !_isDarkMode.value
-        showNotification(if (_isDarkMode.value) "🌙 Switched to Elegant Dark Mode" else "☀️ Switched to Crisp Daylight Mode")
+    // Theme mode choice (Same as my phone / Light / Dark), saved across launches
+    fun setThemeMode(mode: com.example.ui.theme.ThemeMode) {
+        _themeMode.value = mode
+        uiPrefs.edit().putString("theme_mode", mode.name).apply()
+        showNotification(
+            when (mode) {
+                com.example.ui.theme.ThemeMode.LIGHT -> "Light mode on"
+                com.example.ui.theme.ThemeMode.DARK -> "Dark mode on"
+                com.example.ui.theme.ThemeMode.SYSTEM -> "Colours now match your phone"
+            }
+        )
     }
 
     // Phase 1: Linking an extra meter (no payment here; activation is paid in sign-up)

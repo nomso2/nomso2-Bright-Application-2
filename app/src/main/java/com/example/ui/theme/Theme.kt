@@ -39,40 +39,61 @@ private val ElegantDarkColorScheme = darkColorScheme(
     surfaceVariant = ElegantDarkCardStart,
     onSurfaceVariant = Slate400Text,
     outline = ElegantDarkBorder,
-    outlineVariant = ElegantDarkBorderLight
+    outlineVariant = ElegantDarkBorderLight,
+    surfaceTint = ElegantGoldPrimary,
+
+    surfaceBright = ElegantDarkSurfaceBright,
+    surfaceDim = ElegantDarkCanvas,
+    surfaceContainerLowest = ElegantDarkCanvas,
+    surfaceContainerLow = ElegantDarkBar,
+    surfaceContainer = ElegantDarkSurface,
+    surfaceContainerHigh = ElegantDarkCardStart,
+    surfaceContainerHighest = ElegantDarkSurfaceElevated
 )
 
-// Elegant Light Color Scheme adhering directly to high contrast design guidelines
+// Light scheme: calm, high-contrast daylight colours. Gold text uses the deeper amber
+// primary (#A16207) so it stays readable on white.
 private val ElegantLightColorScheme = lightColorScheme(
-    primary = ElegantGoldLightPrimary,
-    // Dark text on amber reads better (~6:1) than white (~3:1); gold buttons use onPrimary.
-    onPrimary = Slate900Text,
-    primaryContainer = ElegantGoldLightContainer,
-    onPrimaryContainer = ElegantGoldLightPrimary,
+    primary = LightPrimary,
+    onPrimary = LightOnPrimary,
+    primaryContainer = LightPrimaryContainer,
+    onPrimaryContainer = LightOnPrimaryContainer,
 
-    secondary = Color(0xFF16A34A),
-    onSecondary = Color.White,
-    secondaryContainer = Color(0x1A16A34A),
-    onSecondaryContainer = Color(0xFF15803D),
+    secondary = LightSecondary,
+    onSecondary = LightOnSecondary,
+    secondaryContainer = LightSecondaryContainer,
+    onSecondaryContainer = LightOnSecondaryContainer,
 
-    tertiary = Color(0xFF2563EB),
-    onTertiary = Color.White,
-    tertiaryContainer = Color(0x1A2563EB),
-    onTertiaryContainer = Color(0xFF1D4ED8),
+    tertiary = LightTertiary,
+    onTertiary = LightOnTertiary,
+    tertiaryContainer = LightTertiaryContainer,
+    onTertiaryContainer = LightOnTertiaryContainer,
 
-    error = Color(0xFFDC2626),
-    onError = Color.White,
-    errorContainer = Color(0x1ADC2626),
-    onErrorContainer = Color(0xFFB91C1C),
+    error = LightError,
+    onError = LightOnError,
+    errorContainer = LightErrorContainer,
+    onErrorContainer = LightOnErrorContainer,
 
-    background = ElegantLightCanvas,
-    onBackground = Slate900Text,
-    surface = ElegantLightSurface,
-    onSurface = Slate900Text,
-    surfaceVariant = ElegantLightCardEnd,
-    onSurfaceVariant = Slate600Text,
-    outline = ElegantLightBorder,
-    outlineVariant = ElegantLightBorderLight
+    background = LightBackground,
+    onBackground = LightOnBackground,
+    surface = LightSurface,
+    onSurface = LightOnSurface,
+    surfaceVariant = LightSurfaceVariant,
+    onSurfaceVariant = LightOnSurfaceVariant,
+    outline = LightOutline,
+    outlineVariant = LightOutlineVariant,
+    inverseSurface = LightInverseSurface,
+    inverseOnSurface = LightInverseOnSurface,
+    inversePrimary = ElegantGoldPrimary,
+    surfaceTint = LightSurfaceTint,
+
+    surfaceBright = LightSurfaceBright,
+    surfaceDim = LightSurfaceDim,
+    surfaceContainerLowest = LightSurfaceContainerLowest,
+    surfaceContainerLow = LightSurfaceContainerLow,
+    surfaceContainer = LightSurfaceContainer,
+    surfaceContainerHigh = LightSurfaceContainerHigh,
+    surfaceContainerHighest = LightSurfaceContainerHighest
 )
 
 @Composable

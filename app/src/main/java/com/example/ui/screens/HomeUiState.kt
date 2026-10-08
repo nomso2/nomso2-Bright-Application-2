@@ -18,6 +18,7 @@ data class HomeUiState(
     val personalComplaints: List<Complaint>,
     val telemetry: GridTelemetry,
     val isDarkMode: Boolean = true,
+    val themeMode: com.example.ui.theme.ThemeMode = com.example.ui.theme.ThemeMode.SYSTEM,
     val auditingRecords: List<AuditingHourRecord> = emptyList(),
     val transformerTelemetry: TransformerOverloadTelemetry = TransformerOverloadTelemetry(),
     val isRestorationAlarmEnabled: Boolean = true,
@@ -35,7 +36,7 @@ data class HomeUiState(
  */
 @Immutable
 data class HomeActions(
-    val onToggleThemeMode: () -> Unit = {},
+    val onSetThemeMode: (com.example.ui.theme.ThemeMode) -> Unit = { _ -> },
     val onReportFaultClicked: () -> Unit = {},
     val onEmergencyHazardTriggered: (String) -> Unit = { _ -> },
     val onEscalateComplaint: (String) -> Unit = { _ -> },

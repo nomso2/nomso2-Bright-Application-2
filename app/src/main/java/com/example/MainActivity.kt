@@ -111,7 +111,12 @@ class MainActivity : FragmentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            val isDarkMode by viewModel.isDarkMode.collectAsState()
+            val themeMode by viewModel.themeMode.collectAsState()
+            val isDarkMode = when (themeMode) {
+                com.example.ui.theme.ThemeMode.SYSTEM -> androidx.compose.foundation.isSystemInDarkTheme()
+                com.example.ui.theme.ThemeMode.LIGHT -> false
+                com.example.ui.theme.ThemeMode.DARK -> true
+            }
             BrightTheme(darkTheme = isDarkMode) {
                 BrightApp(viewModel = viewModel)
             }
@@ -151,7 +156,8 @@ fun BrightApp(viewModel: BrightViewModel) {
     val userMessage by viewModel.userMessage.collectAsState()
 
     // Phase 1 - 7 States & New Features
-    val isDarkMode by viewModel.isDarkMode.collectAsState()
+    val isDarkMode = com.example.ui.theme.LocalIsDarkTheme.current
+    val themeMode by viewModel.themeMode.collectAsState()
     val auditingRecords by viewModel.auditingRecords.collectAsState()
     val escrowTokens by viewModel.escrowRebateTokens.collectAsState()
     val escrowVaultBalanceNgn by viewModel.escrowLiquidityVaultBalanceNgn.collectAsState()
@@ -358,6 +364,7 @@ fun BrightApp(viewModel: BrightViewModel) {
                         personalComplaints = personalComplaints,
                         telemetry = gridTelemetry,
                         isDarkMode = isDarkMode,
+                        themeMode = themeMode,
                         auditingRecords = auditingRecords,
                         transformerTelemetry = transformerTelemetry,
                         isRestorationAlarmEnabled = isRestorationAlarmEnabled,
@@ -369,7 +376,7 @@ fun BrightApp(viewModel: BrightViewModel) {
                         pendingSyncCount = pendingSyncCount
                     ),
                     actions = HomeActions(
-                        onToggleThemeMode = { viewModel.toggleThemeMode() },
+                        onSetThemeMode = { mode -> viewModel.setThemeMode(mode) },
                         onReportFaultClicked = { navController.navigateToTab(BrightNavDestination.REPORT) },
                         onEmergencyHazardTriggered = { hazardName ->
                             viewModel.reportQuickEmergencyHazard(hazardName)

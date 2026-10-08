@@ -30,6 +30,7 @@ import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Bolt
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.ElectricMeter
@@ -78,6 +79,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.model.AuditingHourRecord
+import com.example.ui.theme.ThemeMode
 import com.example.model.Complaint
 import com.example.model.GridTelemetry
 import com.example.model.TransformerOverloadTelemetry
@@ -114,7 +116,8 @@ fun HomeScreen(
     val surgeWarningActive = state.surgeWarningActive
     val surgeCountdownSeconds = state.surgeCountdownSeconds
     val pendingSyncCount = state.pendingSyncCount
-    val onToggleThemeMode = actions.onToggleThemeMode
+    val onSetThemeMode = actions.onSetThemeMode
+    val themeMode = state.themeMode
     val onReportFaultClicked = actions.onReportFaultClicked
     val onEmergencyHazardTriggered = actions.onEmergencyHazardTriggered
     val onEscalateComplaint = actions.onEscalateComplaint
@@ -146,6 +149,7 @@ fun HomeScreen(
     val onSyncNow = actions.onSyncNow
     var showLogoutConfirmDialog by remember { mutableStateOf(false) }
     var showToolsDropdown by remember { mutableStateOf(false) }
+    var showThemeMenu by remember { mutableStateOf(false) }
 
     if (showLogoutConfirmDialog) {
         AlertDialog(
@@ -236,16 +240,53 @@ fun HomeScreen(
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    IconButton(
-                        onClick = onToggleThemeMode,
-                        modifier = Modifier.testTag("theme_toggle_button")
-                    ) {
-                        Icon(
-                            imageVector = if (isDarkMode) Icons.Default.LightMode else Icons.Default.DarkMode,
-                            contentDescription = if (isDarkMode) "Switch to light theme" else "Switch to dark theme",
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(22.dp)
-                        )
+                    // Colours: Same as my phone / Light / Dark
+                    Box {
+                        IconButton(
+                            onClick = { showThemeMenu = true },
+                            modifier = Modifier.size(56.dp).testTag("theme_toggle_button")
+                        ) {
+                            Icon(
+                                imageVector = if (isDarkMode) Icons.Default.DarkMode else Icons.Default.LightMode,
+                                contentDescription = "Choose light or dark colours",
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+                        DropdownMenu(
+                            expanded = showThemeMenu,
+                            onDismissRequest = { showThemeMenu = false },
+                            modifier = Modifier.background(MaterialTheme.colorScheme.surface)
+                        ) {
+                            ThemeMode.entries.forEach { mode ->
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(
+                                            text = mode.label,
+                                            color = MaterialTheme.colorScheme.onSurface,
+                                            fontSize = 17.sp,
+                                            fontWeight = if (mode == themeMode) FontWeight.Bold else FontWeight.Normal
+                                        )
+                                    },
+                                    leadingIcon = {
+                                        if (mode == themeMode) {
+                                            Icon(
+                                                imageVector = Icons.Default.Check,
+                                                contentDescription = "Selected",
+                                                tint = MaterialTheme.colorScheme.primary
+                                            )
+                                        } else {
+                                            Spacer(modifier = Modifier.size(24.dp))
+                                        }
+                                    },
+                                    onClick = {
+                                        showThemeMenu = false
+                                        onSetThemeMode(mode)
+                                    },
+                                    modifier = Modifier.height(56.dp).testTag("theme_mode_${mode.name.lowercase()}")
+                                )
+                            }
+                        }
                     }
 
                     Box {
