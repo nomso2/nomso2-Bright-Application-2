@@ -26,6 +26,8 @@ import com.example.model.StreetHazardPin
 import com.example.model.UserProfile
 import com.example.model.VandalismReport
 import android.content.Context
+import com.example.data.security.PinResetCheck
+import com.example.data.security.PinStore
 import android.content.SharedPreferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -71,16 +73,26 @@ class BrightRepository(
         prefs?.edit()?.putBoolean(KEY_REQUIRE_LOGIN_ON_LEAVE, enabled)?.apply()
     }
 
-    // Empty string means "no PIN set yet". There is deliberately no default PIN.
-    private val _userPin = MutableStateFlow(
-        prefs?.getString(KEY_USER_PIN, "") ?: ""
-    )
-    val userPin: StateFlow<String> = _userPin.asStateFlow()
+    // Security PIN: stored only as a salted SHA-256 hash (see PinStore). Creating the store also
+    // migrates a plain-text PIN left by older versions. There is deliberately no default PIN.
+    private val pinStore = PinStore(prefs)
+    private val _isPinSet = MutableStateFlow(pinStore.isPinSet)
+    val isPinSet: StateFlow<Boolean> = _isPinSet.asStateFlow()
 
     fun setUserPin(pin: String) {
-        _userPin.value = pin
-        prefs?.edit()?.putString(KEY_USER_PIN, pin)?.apply()
+        pinStore.setPin(pin.trim())
+        _isPinSet.value = true
     }
+
+    /** Checks [pin] against the stored hash. Always false when no PIN is set. */
+    fun verifyUserPin(pin: String): Boolean = pinStore.verify(pin.trim())
+
+    /** Minutes left in a forgot-PIN break (0 = may try now). */
+    fun pinResetLockoutMinutesLeft(): Int = pinStore.resetLockoutMinutesLeft()
+
+    fun recordPinResetFailure(): PinResetCheck = pinStore.recordResetFailure()
+
+    fun clearPinResetFailures() = pinStore.clearResetFailures()
 
     // Meter activation tracker: the ₦1,000 activation is paid once per meter, for life.
     // This record is deliberately kept when an account is deleted, so re-registering the same
@@ -663,7 +675,8 @@ class BrightRepository(
                 ?.clear()
                 ?.putStringSet(KEY_PAID_METERS, paidMeters)
                 ?.commit()
-            _userPin.value = ""
+            pinStore.clear()
+            _isPinSet.value = false
             _requireLoginOnLeave.value = true
 
             complaintDao.clearAll()
@@ -720,7 +733,6 @@ class BrightRepository(
     }
 
     private companion object {
-        const val KEY_USER_PIN = "user_pin"
         const val KEY_PAID_METERS = "paid_meters"
         const val KEY_REQUIRE_LOGIN_ON_LEAVE = "require_login_on_leave"
     }

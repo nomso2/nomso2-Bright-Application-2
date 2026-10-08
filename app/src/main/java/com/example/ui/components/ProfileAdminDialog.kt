@@ -92,8 +92,13 @@ fun ProfileAdminDialog(
     requireLoginOnLeave: Boolean = true,
     onToggleRequireLoginOnLeave: (Boolean) -> Unit = {},
     onLockSession: () -> Unit = {},
+    /** True when a security PIN exists; shows the "Change my PIN" button. */
+    isPinSet: Boolean = false,
+    verifyPin: (String) -> Boolean = { false },
+    onChangePin: (currentPin: String, newPin: String) -> Boolean = { _, _ -> false },
     onDismiss: () -> Unit
 ) {
+    var showChangePinDialog by remember { mutableStateOf(false) }
     var activeTab by remember { mutableStateOf(0) } // 0: Multi-Asset Switcher, 1: NERC Whistleblower, 2: Biometrics, 3: Security & Privacy
 
     // Biometric state
@@ -162,6 +167,18 @@ fun ProfileAdminDialog(
                 }
 
                 Spacer(modifier = Modifier.height(12.dp))
+
+                // Change PIN sits above the tabs so it is easy to find.
+                if (isPinSet) {
+                    com.example.ui.solutions.common.ActionButton(
+                        text = "Change my PIN",
+                        icon = Icons.Default.Lock,
+                        onClick = { showChangePinDialog = true },
+                        outlined = true,
+                        modifier = Modifier.testTag("admin_change_pin_button")
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                }
 
                 // Navigation Tabs
                 Row(
@@ -793,6 +810,14 @@ fun ProfileAdminDialog(
                 testBiometricMode = null
             },
             onDismiss = { testBiometricMode = null }
+        )
+    }
+
+    if (showChangePinDialog) {
+        ChangePinDialog(
+            verifyPin = verifyPin,
+            onChangePin = onChangePin,
+            onDismiss = { showChangePinDialog = false }
         )
     }
 }

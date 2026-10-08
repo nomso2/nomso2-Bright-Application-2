@@ -5,6 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.data.database.AppDatabase
 import com.example.data.repository.BrightRepository
+import com.example.data.security.PinResetCheck
 import com.example.data.payment.ActivationFee
 import com.example.data.payment.ActivationPaymentGateway
 import com.example.data.payment.ActivationPaymentState
@@ -455,7 +456,8 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
     val isAppLocked: StateFlow<Boolean> = _isAppLocked.asStateFlow()
 
     val requireLoginOnLeave: StateFlow<Boolean> = repository.requireLoginOnLeave
-    val userPin: StateFlow<String> = repository.userPin
+    /** True once a security PIN exists on this phone. (The PIN itself is only kept hashed.) */
+    val pinSet: StateFlow<Boolean> = repository.isPinSet
 
     fun setRequireLoginOnLeave(enabled: Boolean) {
         repository.setRequireLoginOnLeave(enabled)
@@ -467,7 +469,7 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
 
     /** True once the user has created a security PIN on this device. */
     val isPinSet: Boolean
-        get() = repository.userPin.value.isNotBlank()
+        get() = repository.isPinSet.value
 
     /** A valid new PIN is 4 to 6 digits. (Older PINs of up to 8 digits still verify.) */
     fun isValidPinFormat(pin: String): Boolean {
@@ -483,10 +485,69 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     /** Checks [enteredPin] against the stored PIN. Always false when no PIN has been set. */
-    fun verifyPin(enteredPin: String): Boolean {
-        val stored = repository.userPin.value.trim()
-        return stored.isNotEmpty() && enteredPin.trim() == stored
+    fun verifyPin(enteredPin: String): Boolean =
+        isPinSet && repository.verifyUserPin(enteredPin.trim())
+
+    /**
+     * Change PIN (Profile & Security): the current PIN must be right and the new one 4 to 6
+     * digits. Returns true when the new PIN was saved.
+     */
+    fun changePin(currentPin: String, newPin: String): Boolean {
+        if (!verifyPin(currentPin) || !isValidPinFormat(newPin)) return false
+        repository.setUserPin(newPin.trim())
+        return true
     }
+
+    // Forgot PIN: after the registered meter number and full name match, the user has a short
+    // window to choose a new PIN. Nothing else on the phone is touched.
+    private var pinResetAllowedUntil: Long = 0L
+
+    /**
+     * Forgot PIN, step 1: checks the registered meter number and full name against the account
+     * on this phone. Five wrong tries start a 15-minute break.
+     */
+    fun checkPinResetDetails(meterNumber: String, fullName: String): PinResetCheck {
+        if (!isPinSet) return PinResetCheck.NoAccount
+        val minutesLeft = repository.pinResetLockoutMinutesLeft()
+        if (minutesLeft > 0) return PinResetCheck.LockedOut(minutesLeft)
+
+        val profile = userProfile.value
+        val enteredMeter = meterNumber.filter { it.isDigit() }
+        val savedMeter = profile.meterNumber.filter { it.isDigit() }
+        val enteredName = normaliseName(fullName)
+        val savedName = normaliseName(profile.customerName)
+        val matches = enteredMeter.isNotEmpty() && enteredMeter == savedMeter &&
+            enteredName.isNotEmpty() && enteredName == savedName
+
+        return if (matches) {
+            repository.clearPinResetFailures()
+            pinResetAllowedUntil = System.currentTimeMillis() + PIN_RESET_WINDOW_MS
+            PinResetCheck.Verified
+        } else {
+            pinResetAllowedUntil = 0L
+            repository.recordPinResetFailure()
+        }
+    }
+
+    /**
+     * Forgot PIN, step 2: saves [newPin] only right after a successful [checkPinResetDetails].
+     * Profile, reports and history are kept. Returns true when saved.
+     */
+    fun resetPinAfterCheck(newPin: String): Boolean {
+        if (System.currentTimeMillis() > pinResetAllowedUntil || !isValidPinFormat(newPin)) return false
+        repository.setUserPin(newPin.trim())
+        pinResetAllowedUntil = 0L
+        return true
+    }
+
+    /** "  Ada   O. Okafor " and "ada o okafor" compare equal; letters and digits only. */
+    private fun normaliseName(name: String): String =
+        name.lowercase()
+            .map { if (it.isLetterOrDigit()) it else ' ' }
+            .joinToString("")
+            .split(' ')
+            .filter { it.isNotEmpty() }
+            .joinToString(" ")
 
     /**
      * Used by the lock screen when no PIN exists yet (e.g. accounts created before PINs were
@@ -1365,4 +1426,5 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
     }
 }
 
-
+/** How long after a successful forgot-PIN check the new PIN may be saved. */
+private const val PIN_RESET_WINDOW_MS = 10 * 60 * 1000L

@@ -8,6 +8,7 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -144,6 +145,7 @@ fun HomeScreen(
     val onNavigateHistory = actions.onNavigateHistory
     val onNavigateHub = actions.onNavigateHub
     val onNavigateMore = actions.onNavigateMore
+    val onOpenHelp = actions.onOpenHelp
     val onOpenRedDangerSOS = actions.onOpenRedDangerSOS
     val onToggleDiagnosticStatus = actions.onToggleDiagnosticStatus
     val onOpenEstateExcoDossier = actions.onOpenEstateExcoDossier
@@ -246,6 +248,16 @@ fun HomeScreen(
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    // Plain "Help" text button: opens the Help screen (DisCo contacts and answers).
+                    TextButton(
+                        onClick = onOpenHelp,
+                        modifier = Modifier
+                            .heightIn(min = 48.dp)
+                            .testTag("header_help_button")
+                    ) {
+                        Text("Help", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+                    }
+
                     IconButton(
                         onClick = onToggleThemeMode,
                         modifier = Modifier.testTag("theme_toggle_button")
