@@ -7,6 +7,8 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.media.AudioAttributes
+import android.media.RingtoneManager
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -21,13 +23,10 @@ import kotlinx.coroutines.launch
 
 /** Notification channels and posts for the siren, surge warning and quick Light On/Off log. */
 object SolutionsNotifier {
-    // Channel sound can't change once a channel exists, so the gentle-chime channels have new ids
-    // and the old loud ones are deleted in ensureChannels().
-    const val CHANNEL_SIREN = "bright_light_back_chime"
-    const val CHANNEL_SURGE = "bright_surge_chime"
+    const val CHANNEL_SIREN = "bright_light_back_alert"
+    const val CHANNEL_SURGE = "bright_surge_warning"
     const val CHANNEL_QUICK_LOG = "bright_quick_supply_log"
-    const val CHANNEL_UPDATES = "bright_updates_chime"
-    private val OLD_CHANNELS = listOf("bright_light_back_alert", "bright_surge_warning", "bright_solution_updates")
+    const val CHANNEL_UPDATES = "bright_solution_updates"
 
     private const val ID_SIREN = 3001
     private const val ID_SURGE = 3002
@@ -36,30 +35,26 @@ object SolutionsNotifier {
     fun ensureChannels(context: Context) {
         if (Build.VERSION.SDK_INT < 26) return
         val nm = context.getSystemService(NotificationManager::class.java) ?: return
-        OLD_CHANNELS.forEach { nm.deleteNotificationChannel(it) }
-        val chime = GentleAlert.chimeUri(context)
-        val attrs = GentleAlert.audioAttributes
+        val alarmAttrs = AudioAttributes.Builder()
+            .setUsage(AudioAttributes.USAGE_NOTIFICATION_EVENT)
+            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+            .build()
         val siren = NotificationChannel(CHANNEL_SIREN, "Light is back alert", NotificationManager.IMPORTANCE_HIGH).apply {
-            description = "A gentle chime when power returns, so you can switch off the generator."
-            setSound(chime, attrs)
+            description = "A gentle sound when power returns, so you can switch off the generator."
+            setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION), alarmAttrs)
             enableVibration(true)
-            vibrationPattern = GentleAlert.CHANNEL_VIBRATION
+            vibrationPattern = longArrayOf(0, 400, 300, 400)
         }
         val surge = NotificationChannel(CHANNEL_SURGE, "Surge warning", NotificationManager.IMPORTANCE_HIGH).apply {
             description = "Reminder to unplug delicate appliances before power is restored."
-            setSound(chime, attrs)
             enableVibration(true)
-            vibrationPattern = GentleAlert.CHANNEL_VIBRATION
         }
         val quick = NotificationChannel(CHANNEL_QUICK_LOG, "Light On / Off quick log", NotificationManager.IMPORTANCE_LOW).apply {
             description = "Keeps Light On and Light Off buttons in your notification shade."
             setShowBadge(false)
         }
         val updates = NotificationChannel(CHANNEL_UPDATES, "Supply summaries & news", NotificationManager.IMPORTANCE_DEFAULT).apply {
-            description = "Weekly light summary, money you're owed, price news and report updates."
-            setSound(chime, attrs)
-            enableVibration(true)
-            vibrationPattern = GentleAlert.CHANNEL_VIBRATION
+            description = "Weekly band audit, shortfall alerts, tariff news and report updates."
         }
         nm.createNotificationChannels(listOf(siren, surge, quick, updates))
     }
@@ -89,8 +84,7 @@ object SolutionsNotifier {
             .setContentText(text)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCategory(NotificationCompat.CATEGORY_STATUS)
-            .setSound(GentleAlert.chimeUri(context))
-            .setVibrate(GentleAlert.CHANNEL_VIBRATION)
+            .setDefaults(NotificationCompat.DEFAULT_ALL)
             .setAutoCancel(true)
             .setContentIntent(openAppIntent(context))
             .build()
@@ -109,8 +103,6 @@ object SolutionsNotifier {
             .setStyle(NotificationCompat.BigTextStyle().bigText(text))
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCategory(NotificationCompat.CATEGORY_REMINDER)
-            .setSound(GentleAlert.chimeUri(context))
-            .setVibrate(GentleAlert.CHANNEL_VIBRATION)
             .setAutoCancel(true)
             .setContentIntent(openAppIntent(context))
             .build()
@@ -153,8 +145,6 @@ object SolutionsNotifier {
             .setContentTitle(title)
             .setContentText(text)
             .setStyle(NotificationCompat.BigTextStyle().bigText(text))
-            .setSound(GentleAlert.chimeUri(context))
-            .setVibrate(GentleAlert.CHANNEL_VIBRATION)
             .setAutoCancel(true)
             .setContentIntent(openAppIntent(context))
             .build()

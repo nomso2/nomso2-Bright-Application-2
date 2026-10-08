@@ -286,6 +286,7 @@ fun CriticalDangerRedButtonFeature(userProfile: UserProfile, onOpenHazardForm: (
     val context = LocalContext.current
     val dao = rememberSolutionsDao()
     val scope = rememberCoroutineScope()
+    var progress by remember { mutableFloatStateOf(0f) }
     var triggeredRef by remember { mutableStateOf<String?>(null) }
     var reportId by remember { mutableStateOf<Long?>(null) }
     var location by remember { mutableStateOf<PinnedLocation?>(null) }
@@ -326,9 +327,44 @@ fun CriticalDangerRedButtonFeature(userProfile: UserProfile, onOpenHazardForm: (
     }
 
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        FeatureHeader(4, "Danger", "For fallen or sparking wires only. Press and hold the red circle for 2 seconds. Let go to cancel.")
+        FeatureHeader(4, "Critical Danger Red Button", "For fallen or sparking wires only. Press and hold the red button for 2 seconds.")
         Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-            com.example.ui.solutions.common.SosHoldButton(sent = triggeredRef != null, onTrigger = { trigger() })
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .size(150.dp)
+                    .semantics {
+                        role = Role.Button
+                        contentDescription = "SOS. Hold for two seconds to raise a danger alert"
+                        onClick(label = "Raise danger alert") { trigger(); true }
+                    }
+                    .pointerInput(Unit) {
+                        detectTapGestures(onPress = {
+                            val job = scope.launch {
+                                val steps = 20
+                                for (i in 1..steps) {
+                                    delay(100)
+                                    progress = i / steps.toFloat()
+                                }
+                                trigger()
+                            }
+                            tryAwaitRelease()
+                            if (triggeredRef == null) job.cancel()
+                            progress = 0f
+                        })
+                    }
+            ) {
+                CircularProgressIndicator(progress = { progress }, modifier = Modifier.size(150.dp), strokeWidth = 8.dp,
+                    color = MaterialTheme.colorScheme.onErrorContainer)
+                Surface(shape = CircleShape, color = MaterialTheme.colorScheme.error, modifier = Modifier.size(126.dp)) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Icon(Icons.Default.Warning, contentDescription = null, tint = MaterialTheme.colorScheme.onError, modifier = Modifier.size(36.dp))
+                            Text(if (triggeredRef == null) "HOLD SOS" else "SENT", color = MaterialTheme.colorScheme.onError, fontWeight = FontWeight.Black, fontSize = 18.sp)
+                        }
+                    }
+                }
+            }
         }
         val ref = triggeredRef
         if (ref == null) {

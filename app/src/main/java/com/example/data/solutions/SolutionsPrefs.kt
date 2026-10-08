@@ -8,12 +8,8 @@ class SolutionsPrefs(context: Context) {
     private val prefs: SharedPreferences =
         context.applicationContext.getSharedPreferences(FILE, Context.MODE_PRIVATE)
 
-    /**
-     * Every background helper is always on and runs quietly; there is no on/off list for users.
-     * Older stored switches are ignored on purpose. (setEnabled still writes, harmlessly.)
-     */
-    @Suppress("UNUSED_PARAMETER")
-    fun isEnabled(number: Int): Boolean = true
+    /** Main on/off switch for each of the 25 settings-based solutions (see SolutionSettingsCatalog). */
+    fun isEnabled(number: Int): Boolean = prefs.getBoolean("enabled_$number", true)
 
     fun setEnabled(number: Int, on: Boolean) = prefs.edit().putBoolean("enabled_$number", on).apply()
 
@@ -34,7 +30,7 @@ class SolutionsPrefs(context: Context) {
 
     /** #12: log Light ON / OFF automatically from the phone's charger (power-presence proxy). */
     var autoTrackOutages: Boolean
-        get() = true // always on (helpers run silently; stored value ignored)
+        get() = prefs.getBoolean("auto_track_outages", true)
         set(v) = prefs.edit().putBoolean("auto_track_outages", v).apply()
 
     /** Last charger state the auto-tracker saw: 1 plugged, 0 unplugged, -1 unknown. */
@@ -43,7 +39,7 @@ class SolutionsPrefs(context: Context) {
         set(v) = prefs.edit().putInt("last_plugged", v).apply()
 
     var shortfallAlerts: Boolean
-        get() = true // always on (helpers run silently; stored value ignored)
+        get() = prefs.getBoolean("shortfall_alerts", true)
         set(v) = prefs.edit().putBoolean("shortfall_alerts", v).apply()
 
     var lastShortfallAlert: Long
@@ -61,7 +57,7 @@ class SolutionsPrefs(context: Context) {
         set(v) = prefs.edit().putInt("promised_hours", v).apply()
 
     var weeklyAuditSummary: Boolean
-        get() = true // always on (helpers run silently; stored value ignored)
+        get() = prefs.getBoolean("weekly_audit_summary", true)
         set(v) = prefs.edit().putBoolean("weekly_audit_summary", v).apply()
 
     var lastAuditSummary: Long
@@ -70,11 +66,11 @@ class SolutionsPrefs(context: Context) {
 
     /** #26: warn the moment power returns, before plugging appliances back in. */
     var surgeOnReturn: Boolean
-        get() = true // always on (helpers run silently; stored value ignored)
+        get() = prefs.getBoolean("surge_on_return", true)
         set(v) = prefs.edit().putBoolean("surge_on_return", v).apply()
 
     var newsNotifications: Boolean
-        get() = true // always on (helpers run silently; stored value ignored)
+        get() = prefs.getBoolean("news_notifications", true)
         set(v) = prefs.edit().putBoolean("news_notifications", v).apply()
 
     var notifiedNewsIds: Set<String>
@@ -82,7 +78,7 @@ class SolutionsPrefs(context: Context) {
         set(v) = prefs.edit().putStringSet("notified_news", v).apply()
 
     var stageNotifications: Boolean
-        get() = true // always on (helpers run silently; stored value ignored)
+        get() = prefs.getBoolean("stage_notifications", true)
         set(v) = prefs.edit().putBoolean("stage_notifications", v).apply()
 
     /** #8: switch Bat-Signal on automatically below this battery %, 0 = never. */
@@ -134,11 +130,6 @@ class SolutionsPrefs(context: Context) {
     var firstRunPermissionsAsked: Boolean
         get() = prefs.getBoolean("first_run_permissions_asked", false)
         set(v) = prefs.edit().putBoolean("first_run_permissions_asked", v).apply()
-
-    /** True once the welcome tour has been shown (replay it from More > Show the tour again). */
-    var tourShown: Boolean
-        get() = prefs.getBoolean("welcome_tour_shown", false)
-        set(v) = prefs.edit().putBoolean("welcome_tour_shown", v).apply()
 
     var ussdCode: String
         get() = prefs.getString("ussd_code", "") ?: ""
