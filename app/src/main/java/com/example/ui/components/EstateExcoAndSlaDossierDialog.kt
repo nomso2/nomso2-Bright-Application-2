@@ -87,22 +87,11 @@ import com.example.model.SlaCompensationAssessment
 import com.example.model.TransformerDuesEntry
 import com.example.model.UserProfile
 import com.example.util.NercDossierPdfGenerator
-import com.example.ui.theme.DarkCharcoal
-import com.example.ui.theme.ElegantDarkBar
-import com.example.ui.theme.ElegantDarkBorder
-import com.example.ui.theme.ElegantGoldContainer
-import com.example.ui.theme.ElegantGoldPrimary
-import com.example.ui.theme.ElegantGreenLive
-import com.example.ui.theme.MutedSlateText
-import com.example.ui.theme.Slate100Text
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import com.example.ui.theme.extendedColors
-import com.example.ui.theme.ConsoleDarkBackground
-import com.example.ui.theme.ConsoleDarkSurface
 import com.example.ui.theme.ElegantLightBorder
-import com.example.ui.theme.Slate300Text
 
 /**
  * Full Suite for:
@@ -155,8 +144,8 @@ fun EstateExcoAndSlaDossierDialog(
                 .fillMaxSize()
                 .padding(12.dp),
             shape = RoundedCornerShape(20.dp),
-            color = DarkCharcoal,
-            border = androidx.compose.foundation.BorderStroke(1.dp, ElegantDarkBorder)
+            color = MaterialTheme.colorScheme.surfaceVariant,
+            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
         ) {
             Column(
                 modifier = Modifier
@@ -174,7 +163,7 @@ fun EstateExcoAndSlaDossierDialog(
                             modifier = Modifier
                                 .size(40.dp)
                                 .clip(RoundedCornerShape(10.dp))
-                                .background(ElegantGoldContainer),
+                                .background(MaterialTheme.colorScheme.primaryContainer),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
@@ -193,7 +182,7 @@ fun EstateExcoAndSlaDossierDialog(
                                     fontSize = 16.sp,
                                     letterSpacing = 0.5.sp
                                 ),
-                                color = Slate100Text
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
                                 text = "${userProfile.discoCode} • ${userProfile.transformerId} CDA Jurisdiction",
@@ -211,7 +200,7 @@ fun EstateExcoAndSlaDossierDialog(
                         Icon(
                             imageVector = Icons.Default.Close,
                             contentDescription = "Close",
-                            tint = MutedSlateText
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -221,7 +210,7 @@ fun EstateExcoAndSlaDossierDialog(
                 // Navigation Tabs
                 TabRow(
                     selectedTabIndex = selectedTab,
-                    containerColor = ElegantDarkBar,
+                    containerColor = MaterialTheme.colorScheme.surface,
                     contentColor = MaterialTheme.colorScheme.primary,
                     indicator = { tabPositions ->
                         TabRowDefaults.SecondaryIndicator(
@@ -238,7 +227,7 @@ fun EstateExcoAndSlaDossierDialog(
                                 text = "NERC PDF Dossier",
                                 fontSize = 12.sp,
                                 fontWeight = if (selectedTab == 0) FontWeight.Bold else FontWeight.Normal,
-                                color = if (selectedTab == 0) MaterialTheme.colorScheme.primary else MutedSlateText
+                                color = if (selectedTab == 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         },
                         icon = {
@@ -257,7 +246,7 @@ fun EstateExcoAndSlaDossierDialog(
                                 text = "Transformer Dues",
                                 fontSize = 12.sp,
                                 fontWeight = if (selectedTab == 1) FontWeight.Bold else FontWeight.Normal,
-                                color = if (selectedTab == 1) MaterialTheme.colorScheme.primary else MutedSlateText
+                                color = if (selectedTab == 1) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         },
                         icon = {
@@ -276,7 +265,7 @@ fun EstateExcoAndSlaDossierDialog(
                                 text = "SLA Refund Calc",
                                 fontSize = 12.sp,
                                 fontWeight = if (selectedTab == 2) FontWeight.Bold else FontWeight.Normal,
-                                color = if (selectedTab == 2) MaterialTheme.colorScheme.primary else MutedSlateText
+                                color = if (selectedTab == 2) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         },
                         icon = {
@@ -437,7 +426,7 @@ private fun NercDossierTabContent(
     ) {
         item {
             Card(
-                colors = CardDefaults.cardColors(containerColor = ElegantDarkBar),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)),
                 shape = RoundedCornerShape(12.dp)
             ) {
@@ -456,7 +445,7 @@ private fun NercDossierTabContent(
                         Text(
                             text = "Generated pursuant to NERC CPR 2023. Export as certified PDF dossier or text document for DisCo & NERC Forum follow-up.",
                             style = MaterialTheme.typography.bodySmall,
-                            color = MutedSlateText
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
 
@@ -474,7 +463,7 @@ private fun NercDossierTabContent(
                         },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.primary,
-                            contentColor = DarkCharcoal
+                            contentColor = MaterialTheme.colorScheme.onPrimary
                         ),
                         shape = RoundedCornerShape(10.dp),
                         modifier = Modifier
@@ -518,7 +507,7 @@ private fun NercDossierTabContent(
 
                         OutlinedButton(
                             onClick = { onShare(formattedDossier) },
-                            colors = ButtonDefaults.outlinedButtonColors(contentColor = Slate100Text),
+                            colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.onSurface),
                             shape = RoundedCornerShape(8.dp),
                             contentPadding = PaddingValues(horizontal = 6.dp, vertical = 6.dp),
                             modifier = Modifier
@@ -551,8 +540,8 @@ private fun NercDossierTabContent(
         item {
             // Dossier Document Preview Canvas
             Card(
-                colors = CardDefaults.cardColors(containerColor = ConsoleDarkBackground),
-                border = androidx.compose.foundation.BorderStroke(1.dp, ElegantDarkBorder),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
+                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
                 shape = RoundedCornerShape(8.dp)
             ) {
                 Column(
@@ -632,7 +621,7 @@ private fun TransformerDuesTabContent(
         // CDA Balance Summary Card
         item {
             Card(
-                colors = CardDefaults.cardColors(containerColor = ElegantDarkBar),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)),
                 shape = RoundedCornerShape(12.dp)
             ) {
@@ -652,7 +641,7 @@ private fun TransformerDuesTabContent(
                     Text(
                         text = "${userProfile.transformerId} Community Pot",
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                        color = Slate100Text
+                        color = MaterialTheme.colorScheme.onSurface
                     )
 
                     Spacer(modifier = Modifier.height(10.dp))
@@ -662,7 +651,7 @@ private fun TransformerDuesTabContent(
                         onClick = onToggleAddForm,
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.primary,
-                            contentColor = DarkCharcoal
+                            contentColor = MaterialTheme.colorScheme.onPrimary
                         ),
                         shape = RoundedCornerShape(10.dp),
                         modifier = Modifier
@@ -687,12 +676,12 @@ private fun TransformerDuesTabContent(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column {
-                            Text("Total Verified Collections", fontSize = 12.sp, color = MutedSlateText)
+                            Text("Total Verified Collections", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             Text("₦${String.format("%,.2f", totalCollected)}", fontSize = 18.sp, fontWeight = FontWeight.ExtraBold, color = MaterialTheme.colorScheme.secondary)
                         }
                         Column(horizontalAlignment = Alignment.End) {
-                            Text("Verified Households", fontSize = 12.sp, color = MutedSlateText)
-                            Text("${duesEntries.size} Recorded", fontSize = 15.sp, fontWeight = FontWeight.Bold, color = Slate100Text)
+                            Text("Verified Households", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text("${duesEntries.size} Recorded", fontSize = 15.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
                         }
                     }
                 }
@@ -703,7 +692,7 @@ private fun TransformerDuesTabContent(
         if (showAddForm) {
             item {
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = ConsoleDarkSurface),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
                     border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
                     shape = RoundedCornerShape(12.dp)
                 ) {
@@ -728,7 +717,7 @@ private fun TransformerDuesTabContent(
                             modifier = Modifier.fillMaxWidth(),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = MaterialTheme.colorScheme.primary,
-                                unfocusedBorderColor = ElegantDarkBorder
+                                unfocusedBorderColor = MaterialTheme.colorScheme.outline
                             )
                         )
 
@@ -741,7 +730,7 @@ private fun TransformerDuesTabContent(
                             modifier = Modifier.fillMaxWidth(),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = MaterialTheme.colorScheme.primary,
-                                unfocusedBorderColor = ElegantDarkBorder
+                                unfocusedBorderColor = MaterialTheme.colorScheme.outline
                             )
                         )
 
@@ -753,7 +742,7 @@ private fun TransformerDuesTabContent(
                             modifier = Modifier.fillMaxWidth(),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = MaterialTheme.colorScheme.primary,
-                                unfocusedBorderColor = ElegantDarkBorder
+                                unfocusedBorderColor = MaterialTheme.colorScheme.outline
                             )
                         )
 
@@ -766,7 +755,7 @@ private fun TransformerDuesTabContent(
                                 modifier = Modifier.weight(1f),
                                 colors = OutlinedTextFieldDefaults.colors(
                                     focusedBorderColor = MaterialTheme.colorScheme.primary,
-                                    unfocusedBorderColor = ElegantDarkBorder
+                                    unfocusedBorderColor = MaterialTheme.colorScheme.outline
                                 )
                             )
 
@@ -778,14 +767,14 @@ private fun TransformerDuesTabContent(
                                 modifier = Modifier.weight(1f),
                                 colors = OutlinedTextFieldDefaults.colors(
                                     focusedBorderColor = MaterialTheme.colorScheme.primary,
-                                    unfocusedBorderColor = ElegantDarkBorder
+                                    unfocusedBorderColor = MaterialTheme.colorScheme.outline
                                 )
                             )
                         }
 
                         Button(
                             onClick = onSubmit,
-                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = DarkCharcoal),
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary),
                             shape = RoundedCornerShape(8.dp),
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -811,8 +800,8 @@ private fun TransformerDuesTabContent(
 
         items(duesEntries) { entry ->
             Card(
-                colors = CardDefaults.cardColors(containerColor = ElegantDarkBar),
-                border = androidx.compose.foundation.BorderStroke(1.dp, ElegantDarkBorder),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
                 shape = RoundedCornerShape(10.dp)
             ) {
                 Row(
@@ -827,7 +816,7 @@ private fun TransformerDuesTabContent(
                             Text(
                                 text = entry.residentName,
                                 style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                                color = Slate100Text
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                             Spacer(modifier = Modifier.width(6.dp))
                             if (entry.verifiedByChairman) {
@@ -844,7 +833,7 @@ private fun TransformerDuesTabContent(
                         Text(
                             text = "${entry.houseAddress} • ${entry.paymentMethod}",
                             fontSize = 12.sp,
-                            color = MutedSlateText
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Spacer(modifier = Modifier.height(2.dp))
                         Text(
@@ -864,7 +853,7 @@ private fun TransformerDuesTabContent(
                         Text(
                             text = entry.dateText,
                             fontSize = 12.sp,
-                            color = MutedSlateText
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -891,7 +880,7 @@ private fun SlaRefundCalculatorTabContent(
     ) {
         item {
             Card(
-                colors = CardDefaults.cardColors(containerColor = ElegantDarkBar),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)),
                 shape = RoundedCornerShape(12.dp)
             ) {
@@ -912,7 +901,7 @@ private fun SlaRefundCalculatorTabContent(
                             Text(
                                 text = "${assessment.discoCode} SLA Breach Compensation",
                                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                                color = Slate100Text
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                         }
 
@@ -938,7 +927,7 @@ private fun SlaRefundCalculatorTabContent(
                         text = "Total Unresolved Outage Duration: $delayHours Hours (SLA Limit: ${assessment.nercStandardHoursLimit}h)",
                         fontSize = 13.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = Slate100Text
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Spacer(modifier = Modifier.height(6.dp))
 
@@ -952,7 +941,7 @@ private fun SlaRefundCalculatorTabContent(
                                 modifier = Modifier
                                     .weight(1f)
                                     .clip(RoundedCornerShape(8.dp))
-                                    .background(if (isSelected) MaterialTheme.colorScheme.primary else Color.White.copy(alpha = 0.05f))
+                                    .background(if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f))
                                     .clickable { onDelayHoursChanged(hours) }
                                     .padding(vertical = 8.dp),
                                 contentAlignment = Alignment.Center
@@ -961,7 +950,7 @@ private fun SlaRefundCalculatorTabContent(
                                     text = "${hours}h",
                                     fontSize = 12.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = if (isSelected) DarkCharcoal else Slate100Text
+                                    color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
                                 )
                             }
                         }
@@ -971,7 +960,7 @@ private fun SlaRefundCalculatorTabContent(
 
                     // Statutory Calculation Result
                     Card(
-                        colors = CardDefaults.cardColors(containerColor = ConsoleDarkBackground),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
                         border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f)),
                         shape = RoundedCornerShape(10.dp)
                     ) {
@@ -980,23 +969,23 @@ private fun SlaRefundCalculatorTabContent(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                Text("Excess Unlawful Delay:", fontSize = 12.sp, color = MutedSlateText)
-                                Text("${assessment.excessHoursBreached} Hours", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Slate100Text)
+                                Text("Excess Unlawful Delay:", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                Text("${assessment.excessHoursBreached} Hours", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
                             }
                             Spacer(modifier = Modifier.height(4.dp))
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                Text("Statutory Rate (CPR 2023):", fontSize = 12.sp, color = MutedSlateText)
-                                Text("₦93.75 / Hour", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Slate100Text)
+                                Text("Statutory Rate (CPR 2023):", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                Text("₦93.75 / Hour", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
                             }
                             Spacer(modifier = Modifier.height(8.dp))
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(1.dp)
-                                    .background(ElegantDarkBorder)
+                                    .background(MaterialTheme.colorScheme.outline)
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Row(
@@ -1011,7 +1000,7 @@ private fun SlaRefundCalculatorTabContent(
 
                                 Button(
                                     onClick = onDispatchClaim,
-                                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = DarkCharcoal),
+                                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary),
                                     shape = RoundedCornerShape(8.dp),
                                     modifier = Modifier.testTag("serve_demand_letter_button")
                                 ) {
@@ -1029,8 +1018,8 @@ private fun SlaRefundCalculatorTabContent(
         // Demand Letter Preview
         item {
             Card(
-                colors = CardDefaults.cardColors(containerColor = ConsoleDarkBackground),
-                border = androidx.compose.foundation.BorderStroke(1.dp, ElegantDarkBorder),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
+                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
                 shape = RoundedCornerShape(10.dp)
             ) {
                 Column(modifier = Modifier.padding(14.dp)) {
@@ -1062,7 +1051,7 @@ private fun SlaRefundCalculatorTabContent(
                         text = assessment.demandLetterText,
                         fontFamily = FontFamily.Monospace,
                         fontSize = 12.sp,
-                        color = Slate300Text,
+                        color = MaterialTheme.colorScheme.onSurface,
                         lineHeight = 16.sp
                     )
                 }

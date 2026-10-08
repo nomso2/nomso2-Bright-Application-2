@@ -60,7 +60,6 @@ import androidx.compose.ui.unit.sp
 import com.example.data.service.CitizenMeterStatus
 import com.example.model.SmartMeterDevice
 import com.example.model.UserProfile
-import com.example.ui.theme.ElegantGoldPrimary
 import com.example.ui.theme.extendedColors
 
 /**

@@ -41,16 +41,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.model.UserProfile
-import com.example.ui.theme.ElegantBluePhase
-import com.example.ui.theme.ElegantDarkBorder
-import com.example.ui.theme.ElegantDarkCardEnd
-import com.example.ui.theme.ElegantDarkCardStart
-import com.example.ui.theme.ElegantGoldPrimary
-import com.example.ui.theme.ElegantGreenLive
-import com.example.ui.theme.Slate100Text
-import com.example.ui.theme.Slate300Text
-import com.example.ui.theme.Slate400Text
-import com.example.ui.theme.Slate500Text
 import com.example.ui.theme.extendedColors
 
 @Composable
@@ -59,12 +49,10 @@ fun MeterProfileHeader(
     onEditProfileClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val isDark = MaterialTheme.colorScheme.background == com.example.ui.theme.ElegantDarkCanvas
-    val cardBrush = if (isDark) {
-        Brush.linearGradient(colors = listOf(ElegantDarkCardStart, ElegantDarkCardEnd))
-    } else {
-        Brush.linearGradient(colors = listOf(Color.White, Slate100Text))
-    }
+    // Soft card background from theme roles (works in light and dark).
+    val cardBrush = Brush.linearGradient(
+        colors = listOf(MaterialTheme.colorScheme.surfaceContainerHigh, MaterialTheme.colorScheme.surface)
+    )
 
     Card(
         modifier = modifier
@@ -147,11 +135,10 @@ fun MeterProfileHeader(
                                         .background(MaterialTheme.colorScheme.secondary)
                                 )
                                 Text(
-                                    text = "LIVE FEED • VERIFIED ACTIVE",
+                                    text = "Meter active",
                                     style = MaterialTheme.typography.labelSmall.copy(
-                                        fontSize = 12.sp,
-                                        fontWeight = FontWeight.ExtraBold,
-                                        letterSpacing = 0.5.sp
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.Bold
                                     ),
                                     color = MaterialTheme.colorScheme.secondary,
                                     softWrap = false,
@@ -206,17 +193,17 @@ fun MeterProfileHeader(
                                     .background(MaterialTheme.colorScheme.tertiary)
                             )
                             Text(
-                                text = "Phase Status:",
-                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
+                                text = "Power:",
+                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 16.sp),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 softWrap = false,
                                 maxLines = 1
                             )
                             Text(
-                                text = "Stable (234V Balanced)",
+                                text = "Normal",
                                 style = MaterialTheme.typography.bodySmall.copy(
                                     fontWeight = FontWeight.SemiBold,
-                                    fontSize = 12.sp
+                                    fontSize = 16.sp
                                 ),
                                 color = MaterialTheme.colorScheme.onSurface,
                                 softWrap = false,
@@ -327,17 +314,10 @@ fun MeterProfileHeader(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(
-                            text = "Households:",
-                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            softWrap = false,
-                            maxLines = 1
-                        )
-                        Text(
-                            text = "${profile.connectedHouseholdsCount} Connected Consumers on Local Feeder",
+                            text = "${profile.connectedHouseholdsCount} homes on your line",
                             style = MaterialTheme.typography.labelSmall.copy(
                                 fontWeight = FontWeight.Bold,
-                                fontSize = 12.sp
+                                fontSize = 16.sp
                             ),
                             color = MaterialTheme.extendedColors.info,
                             softWrap = false,

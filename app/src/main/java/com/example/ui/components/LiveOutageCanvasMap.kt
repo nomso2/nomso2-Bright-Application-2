@@ -52,10 +52,6 @@ import androidx.compose.ui.unit.sp
 import com.example.model.OutageGridNode
 import com.example.model.OutageStatus
 import com.example.ui.theme.extendedColors
-import com.example.ui.theme.ConsoleDarkSurface
-import com.example.ui.theme.ElegantDarkBar
-import com.example.ui.theme.ElegantDarkBorder
-import com.example.ui.theme.ElegantDarkSurface
 import com.example.ui.theme.SuccessEmerald
 
 @Composable
@@ -110,6 +106,7 @@ fun LiveOutageCanvasMap(
         }
 
         // The Interactive Canvas Map
+        val gridLineThemeColor = MaterialTheme.colorScheme.outlineVariant
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -117,9 +114,9 @@ fun LiveOutageCanvasMap(
                 .testTag("live_outage_interactive_map_card"),
             shape = RoundedCornerShape(24.dp),
             colors = CardDefaults.cardColors(
-                containerColor = ElegantDarkBar // Elegant Dark Bar Canvas
+                containerColor = MaterialTheme.colorScheme.surface // Elegant Dark Bar Canvas
             ),
-            border = androidx.compose.foundation.BorderStroke(1.dp, ElegantDarkBorder),
+            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
             elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
         ) {
             Box(modifier = Modifier.fillMaxSize()) {
@@ -156,7 +153,7 @@ fun LiveOutageCanvasMap(
 
                     // 1. Draw national 330kV transmission grid backbone lines (connecting key hubs)
                     val lineStroke = 2.dp.toPx()
-                    val gridLineColor = ConsoleDarkSurface
+                    val gridLineColor = gridLineThemeColor
                     val dashedEffect = PathEffect.dashPathEffect(floatArrayOf(12f, 10f), 0f)
 
                     // Connect nodes with simulated high-voltage transmission interconnects
@@ -222,8 +219,8 @@ fun LiveOutageCanvasMap(
                         .align(Alignment.TopStart)
                         .padding(12.dp)
                         .clip(RoundedCornerShape(8.dp))
-                        .background(ElegantDarkSurface.copy(alpha = 0.92f))
-                        .border(1.dp, ElegantDarkBorder, RoundedCornerShape(8.dp))
+                        .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.92f))
+                        .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(8.dp))
                         .padding(horizontal = 8.dp, vertical = 4.dp)
                 ) {
                     Text(
@@ -243,8 +240,8 @@ fun LiveOutageCanvasMap(
                         .align(Alignment.BottomEnd)
                         .padding(12.dp)
                         .clip(RoundedCornerShape(8.dp))
-                        .background(ElegantDarkSurface.copy(alpha = 0.92f))
-                        .border(1.dp, ElegantDarkBorder, RoundedCornerShape(8.dp))
+                        .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.92f))
+                        .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(8.dp))
                         .padding(horizontal = 8.dp, vertical = 4.dp)
                 ) {
                     Row(

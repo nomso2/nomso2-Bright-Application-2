@@ -53,13 +53,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.model.ApplianceBudgetItem
 import com.example.model.UserProfile
-import com.example.ui.theme.ElegantDarkBorder
-import com.example.ui.theme.ElegantDarkSurface
-import com.example.ui.theme.ElegantGoldPrimary
-import com.example.ui.theme.ElegantGreenLive
-import com.example.ui.theme.Slate100Text
-import com.example.ui.theme.Slate400Text
-import com.example.ui.theme.Slate500Text
 
 /**
  * Phase 6: Energy Load Management & Optimization

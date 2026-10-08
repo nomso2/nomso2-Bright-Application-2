@@ -79,8 +79,6 @@ val NavyDarkSurface = ElegantDarkSurface
 val NavyDarkSurfaceElevated = ElegantDarkSurfaceElevated
 val NavyDarkBorder = ElegantDarkBorder
 
-val LightBackground = ElegantLightCanvas
-val LightSurface = ElegantLightSurface
 val LightSurfaceElevated = ElegantLightSurfaceElevated
 val LightBorder = ElegantLightBorder
 
@@ -107,3 +105,40 @@ val GreenSoft = Color(0xFF4ADE80)
 // Always-dark "console" panels (gateway / telemetry screens are designed dark in both themes)
 val ConsoleDarkBackground = Color(0xFF0F172A)
 val ConsoleDarkSurface = Color(0xFF1E293B)
+
+// Light scheme tokens (single place to swap the light palette)
+val LightPrimary = Color(0xFFA16207)
+val LightOnPrimary = Color(0xFFFFFFFF)
+val LightPrimaryContainer = Color(0xFFFEF3C7)
+val LightOnPrimaryContainer = Color(0xFF713F12)
+val LightSecondary = Color(0xFF15803D)
+val LightSecondaryContainer = Color(0xFFDCFCE7)
+val LightOnSecondaryContainer = Color(0xFF14532D)
+val LightTertiary = Color(0xFF1D4ED8)
+val LightTertiaryContainer = Color(0xFFDBEAFE)
+val LightOnTertiaryContainer = Color(0xFF1E3A8A)
+val LightError = Color(0xFFB91C1C)
+val LightErrorContainer = Color(0xFFFEE2E2)
+val LightOnErrorContainer = Color(0xFF7F1D1D)
+val LightBackground = Color(0xFFFAFAF7)
+val LightOnBackground = Color(0xFF111827)
+val LightSurface = Color(0xFFFFFFFF)
+val LightOnSurface = Color(0xFF111827)
+val LightSurfaceVariant = Color(0xFFF1F2F4)
+val LightOnSurfaceVariant = Color(0xFF374151)
+val LightOutline = Color(0xFF9CA3AF)
+val LightOutlineVariant = Color(0xFFD1D5DB)
+val LightInverseSurface = Color(0xFF1F2937)
+val LightInverseOnSurface = Color(0xFFF9FAFB)
+val LightSurfaceTint = Color(0xFFA16207)
+val LightSurfaceBright = Color(0xFFFFFFFF)
+val LightSurfaceDim = Color(0xFFE5E7EB)
+val LightSurfaceContainerLowest = Color(0xFFFFFFFF)
+val LightSurfaceContainerLow = Color(0xFFF9FAFB)
+val LightSurfaceContainer = Color(0xFFF3F4F6)
+val LightSurfaceContainerHigh = Color(0xFFEDEEF1)
+val LightSurfaceContainerHighest = Color(0xFFE5E7EB)
+val LightOnSecondary = Color(0xFFFFFFFF)
+val LightOnTertiary = Color(0xFFFFFFFF)
+val LightOnError = Color(0xFFFFFFFF)
+val ElegantDarkSurfaceBright = Color(0xFF2A2F3A) // Dark scheme surfaceBright
