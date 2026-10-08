@@ -27,7 +27,8 @@ data class HomeUiState(
     val citizenMeterStatus: CitizenMeterStatus? = null,
     val surgeWarningActive: Boolean = false,
     val surgeCountdownSeconds: Int = 180,
-    val pendingSyncCount: Int = 0
+    val pendingSyncCount: Int = 0,
+    val isBatSignalMode: Boolean = false
 )
 
 /**
@@ -65,5 +66,6 @@ data class HomeActions(
     val onLogOut: () -> Unit = {},
     val onTriggerSurgeSiren: () -> Unit = {},
     val onDismissSurgeWarning: () -> Unit = {},
-    val onSyncNow: () -> Unit = {}
+    val onSyncNow: () -> Unit = {},
+    val onToggleBatSignalMode: (Boolean) -> Unit = { _ -> }
 )

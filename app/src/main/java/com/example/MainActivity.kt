@@ -373,7 +373,8 @@ fun BrightApp(viewModel: BrightViewModel) {
                         citizenMeterStatus = citizenMeterStatus,
                         surgeWarningActive = surgeWarningActive,
                         surgeCountdownSeconds = surgeCountdownSeconds,
-                        pendingSyncCount = pendingSyncCount
+                        pendingSyncCount = pendingSyncCount,
+                        isBatSignalMode = isBatSignalMode
                     ),
                     actions = HomeActions(
                         onSetThemeMode = { mode -> viewModel.setThemeMode(mode) },
@@ -407,7 +408,8 @@ fun BrightApp(viewModel: BrightViewModel) {
                         onLogOut = { viewModel.logOut() },
                         onTriggerSurgeSiren = { viewModel.triggerSurgeSafetySiren() },
                         onDismissSurgeWarning = { viewModel.dismissSurgeWarning() },
-                        onSyncNow = { viewModel.syncOfflineQueue() }
+                        onSyncNow = { viewModel.syncOfflineQueue() },
+                        onToggleBatSignalMode = { viewModel.toggleBatSignalMode(it) }
                     )
                 )
             }

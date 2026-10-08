@@ -147,29 +147,15 @@ fun Solutions30ComprehensiveHub(
     }
 
     openAction?.let { n ->
-        val info = SolutionCatalog.info(n)
-        Dialog(onDismissRequest = { openAction = null }, properties = DialogProperties(usePlatformDefaultWidth = false)) {
-            Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
-                Column(Modifier.fillMaxSize()) {
-                    Row(Modifier.fillMaxWidth().padding(4.dp), verticalAlignment = Alignment.CenterVertically) {
-                        IconButton(onClick = { openAction = null }) { Icon(Icons.Default.Close, contentDescription = "Close") }
-                        Text(info.title, fontSize = 22.sp, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                    }
-                    HorizontalDivider()
-                    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp)) {
-                        SolutionFeatureContent(
-                            number = n,
-                            userProfile = userProfile,
-                            isBatSignalMode = isBatSignalMode,
-                            onToggleBatSignalMode = onToggleBatSignalMode,
-                            onOpenHazardForm = { openAction = null; onOpenRedDangerSOS() },
-                            onOpenForum = { openAction = null; onOpenForum() }
-                        )
-                        Spacer(Modifier.height(40.dp))
-                    }
-                }
-            }
-        }
+        QuickActionScreen(
+            number = n,
+            userProfile = userProfile,
+            isBatSignalMode = isBatSignalMode,
+            onToggleBatSignalMode = onToggleBatSignalMode,
+            onOpenHazardForm = onOpenRedDangerSOS,
+            onOpenForum = onOpenForum,
+            onClose = { openAction = null }
+        )
     }
 }
 
