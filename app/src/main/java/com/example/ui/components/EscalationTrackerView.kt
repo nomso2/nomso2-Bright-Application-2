@@ -41,13 +41,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.model.Complaint
 import com.example.model.EscalationTier
-import com.example.ui.theme.ElegantDarkBorder
-import com.example.ui.theme.ElegantDarkSurface
-import com.example.ui.theme.ElegantGoldDark
-import com.example.ui.theme.ElegantGoldPrimary
-import com.example.ui.theme.Slate100Text
-import com.example.ui.theme.Slate400Text
-import com.example.ui.theme.Slate500Text
 import com.example.ui.theme.extendedColors
 
 @Composable
@@ -165,14 +158,14 @@ fun EscalationTrackerView(
                                 .clip(CircleShape)
                                 .background(
                                     when {
-                                        isPast -> ElegantGoldDark
+                                        isPast -> MaterialTheme.colorScheme.primary
                                         isCurrent -> MaterialTheme.colorScheme.primary
                                         else -> MaterialTheme.colorScheme.surfaceVariant
                                     }
                                 )
                                 .border(
                                     width = if (isCurrent) 2.dp else 1.dp,
-                                    color = if (isCurrent) Color(0x66FACC15) else Color.Transparent,
+                                    color = if (isCurrent) MaterialTheme.colorScheme.primary.copy(alpha = 0.4f) else Color.Transparent,
                                     shape = CircleShape
                                 ),
                             contentAlignment = Alignment.Center

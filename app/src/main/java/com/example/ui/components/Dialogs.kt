@@ -141,7 +141,7 @@ fun EditMeterDialog(
                                 text = code,
                                 style = MaterialTheme.typography.labelSmall.copy(
                                     fontWeight = FontWeight.Bold,
-                                    color = if (isSel) Color.White else MaterialTheme.colorScheme.onSurface
+                                    color = if (isSel) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
                                 )
                             )
                         }

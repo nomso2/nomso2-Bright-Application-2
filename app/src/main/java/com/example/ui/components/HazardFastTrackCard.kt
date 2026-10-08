@@ -32,11 +32,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.ui.theme.ElegantDarkBorder
-import com.example.ui.theme.ElegantDarkSurface
-import com.example.ui.theme.ElegantRedHazard
-import com.example.ui.theme.Slate100Text
-import com.example.ui.theme.Slate400Text
 
 @Composable
 fun HazardFastTrackCard(

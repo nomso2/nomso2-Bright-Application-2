@@ -723,7 +723,7 @@ fun ReportFaultScreen(
             Icon(
                 imageVector = Icons.Default.Send,
                 contentDescription = null,
-                tint = Color.White,
+                tint = if (isEmergencyHazard) MaterialTheme.colorScheme.onError else MaterialTheme.colorScheme.onPrimary,
                 modifier = Modifier.size(18.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
@@ -731,7 +731,7 @@ fun ReportFaultScreen(
                 text = if (isEmergencyHazard) "DISPATCH EMERGENCY SOS" else "SUBMIT FAULT TICKET",
                 style = MaterialTheme.typography.bodyMedium.copy(
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color = if (isEmergencyHazard) MaterialTheme.colorScheme.onError else MaterialTheme.colorScheme.onPrimary
                 )
             )
         }

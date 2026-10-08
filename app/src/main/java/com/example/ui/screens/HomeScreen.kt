@@ -31,6 +31,7 @@ import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Bolt
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.ElectricMeter
@@ -79,6 +80,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.model.AuditingHourRecord
+import com.example.ui.theme.ThemeMode
 import com.example.model.Complaint
 import com.example.model.GridTelemetry
 import com.example.model.TransformerOverloadTelemetry
@@ -92,16 +94,6 @@ import com.example.ui.components.QuickActionGrid
 import com.example.ui.components.RealTimeTicker
 import com.example.ui.components.TransformerOverloadCard
 import com.example.ui.components.GridSurgeWarningBanner
-import com.example.ui.theme.ElegantDarkBar
-import com.example.ui.theme.ElegantDarkBorder
-import com.example.ui.theme.ElegantDarkCardStart
-import com.example.ui.theme.ElegantDarkSurface
-import com.example.ui.theme.ElegantGoldPrimary
-import com.example.ui.theme.ElegantGreenLive
-import com.example.ui.theme.Slate100Text
-import com.example.ui.theme.Slate300Text
-import com.example.ui.theme.Slate400Text
-import com.example.ui.theme.Slate500Text
 import com.example.ui.theme.extendedColors
 
 @Composable
@@ -125,7 +117,8 @@ fun HomeScreen(
     val surgeWarningActive = state.surgeWarningActive
     val surgeCountdownSeconds = state.surgeCountdownSeconds
     val pendingSyncCount = state.pendingSyncCount
-    val onToggleThemeMode = actions.onToggleThemeMode
+    val onSetThemeMode = actions.onSetThemeMode
+    val themeMode = state.themeMode
     val onReportFaultClicked = actions.onReportFaultClicked
     val onEmergencyHazardTriggered = actions.onEmergencyHazardTriggered
     val onEscalateComplaint = actions.onEscalateComplaint
@@ -158,6 +151,7 @@ fun HomeScreen(
     val onSyncNow = actions.onSyncNow
     var showLogoutConfirmDialog by remember { mutableStateOf(false) }
     var showToolsDropdown by remember { mutableStateOf(false) }
+    var showThemeMenu by remember { mutableStateOf(false) }
 
     if (showLogoutConfirmDialog) {
         AlertDialog(
@@ -252,22 +246,59 @@ fun HomeScreen(
                     TextButton(
                         onClick = onOpenHelp,
                         modifier = Modifier
-                            .heightIn(min = 48.dp)
+                            .heightIn(min = 56.dp)
                             .testTag("header_help_button")
                     ) {
                         Text("Help", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
                     }
 
-                    IconButton(
-                        onClick = onToggleThemeMode,
-                        modifier = Modifier.testTag("theme_toggle_button")
-                    ) {
-                        Icon(
-                            imageVector = if (isDarkMode) Icons.Default.LightMode else Icons.Default.DarkMode,
-                            contentDescription = if (isDarkMode) "Switch to light theme" else "Switch to dark theme",
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(22.dp)
-                        )
+                    // Colours: Same as my phone / Light / Dark
+                    Box {
+                        IconButton(
+                            onClick = { showThemeMenu = true },
+                            modifier = Modifier.size(56.dp).testTag("theme_toggle_button")
+                        ) {
+                            Icon(
+                                imageVector = if (isDarkMode) Icons.Default.DarkMode else Icons.Default.LightMode,
+                                contentDescription = "Choose light or dark colours",
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+                        DropdownMenu(
+                            expanded = showThemeMenu,
+                            onDismissRequest = { showThemeMenu = false },
+                            modifier = Modifier.background(MaterialTheme.colorScheme.surface)
+                        ) {
+                            ThemeMode.entries.forEach { mode ->
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(
+                                            text = mode.label,
+                                            color = MaterialTheme.colorScheme.onSurface,
+                                            fontSize = 17.sp,
+                                            fontWeight = if (mode == themeMode) FontWeight.Bold else FontWeight.Normal
+                                        )
+                                    },
+                                    leadingIcon = {
+                                        if (mode == themeMode) {
+                                            Icon(
+                                                imageVector = Icons.Default.Check,
+                                                contentDescription = "Selected",
+                                                tint = MaterialTheme.colorScheme.primary
+                                            )
+                                        } else {
+                                            Spacer(modifier = Modifier.size(24.dp))
+                                        }
+                                    },
+                                    onClick = {
+                                        showThemeMenu = false
+                                        onSetThemeMode(mode)
+                                    },
+                                    modifier = Modifier.height(56.dp).testTag("theme_mode_${mode.name.lowercase()}")
+                                )
+                            }
+                        }
                     }
 
                     Box {
@@ -442,14 +473,9 @@ fun HomeScreen(
                     }
                 }
 
-                // Offline queue status: shown high up only when reports are waiting to send
-                if (pendingSyncCount > 0) {
-                    item {
-                        OfflineSyncStatusCard(pendingSyncCount = pendingSyncCount, onSyncNow = onSyncNow)
-                    }
-                }
+                // Save status lives in the one small chip at the top of the app (no duplicate banner here).
 
-                // 4. Section Title: "MY ACTIVE COMPLAINTS"
+                // 4. Section Title: "My reports"
                 item {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -458,17 +484,17 @@ fun HomeScreen(
                     ) {
                         Column {
                             Text(
-                                text = "MY ACTIVE COMPLAINTS",
-                                style = MaterialTheme.typography.labelMedium.copy(
-                                    fontWeight = FontWeight.ExtraBold,
-                                    letterSpacing = 0.5.sp
+                                text = "My reports",
+                                style = MaterialTheme.typography.titleLarge.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 22.sp
                                 ),
                                 color = MaterialTheme.colorScheme.onBackground
                             )
                             Text(
-                                text = "Tracked directly with Meter #${userProfile.meterNumber}",
-                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
-                                color = MaterialTheme.colorScheme.primary
+                                text = "For meter ${userProfile.meterNumber}",
+                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 16.sp),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
 
@@ -643,12 +669,15 @@ fun HomeScreen(
                                         horizontalArrangement = Arrangement.spacedBy(6.dp)
                                     ) {
                                         Text(
-                                            text = if (isSmart) "SMART METER AUTO-CONNECTED" else "STANDARD PREPAID METER",
+                                            text = if (isSmart) "Smart meter" else "Prepaid meter",
                                             style = MaterialTheme.typography.labelSmall.copy(
                                                 fontWeight = FontWeight.ExtraBold,
-                                                letterSpacing = 0.5.sp
+                                                fontSize = 16.sp
                                             ),
-                                            color = themeColor
+                                            color = themeColor,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                            modifier = Modifier.weight(1f, fill = false)
                                         )
                                         Box(
                                             modifier = Modifier
@@ -657,8 +686,10 @@ fun HomeScreen(
                                                 .padding(horizontal = 5.dp, vertical = 1.dp)
                                         ) {
                                             Text(
-                                                text = if (isSmart) "AUTO-LINKED" else "STS KEYPAD",
-                                                fontSize = 12.sp,
+                                                text = if (isSmart) "Linked" else "Keypad",
+                                                maxLines = 1,
+                                                softWrap = false,
+                                                fontSize = 14.sp,
                                                 fontWeight = FontWeight.Bold,
                                                 color = if (isSmart) MaterialTheme.colorScheme.secondary else MaterialTheme.extendedColors.warning
                                             )
@@ -679,7 +710,7 @@ fun HomeScreen(
                                 onClick = onOpenSmartMeterGateway,
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = themeColor,
-                                    contentColor = if (isSmart) Color.Black else Color.White
+                                    contentColor = if (isSmart) MaterialTheme.extendedColors.onInfo else MaterialTheme.extendedColors.onWarning
                                 ),
                                 shape = RoundedCornerShape(8.dp),
                                 contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp),
@@ -754,13 +785,6 @@ fun HomeScreen(
                     }
                 }
 
-                // 9. Offline status when nothing is waiting (low priority)
-                if (pendingSyncCount == 0) {
-                    item {
-                        OfflineSyncStatusCard(pendingSyncCount = 0, onSyncNow = onSyncNow)
-                    }
-                }
-
                 // 10. Real-Time National Grid Telemetry Bar
                 item {
                     RealTimeTicker(telemetry = telemetry)
@@ -780,77 +804,3 @@ fun HomeScreen(
     }
 }
 
-/**
- * Plain-language status of reports saved on the phone that haven't reached the server yet.
- */
-@Composable
-private fun OfflineSyncStatusCard(
-    pendingSyncCount: Int,
-    onSyncNow: () -> Unit
-) {
-    val hasPending = pendingSyncCount > 0
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .testTag("offline_cache_status_card"),
-        colors = CardDefaults.cardColors(
-            containerColor = if (hasPending) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.surface
-        ),
-        shape = RoundedCornerShape(12.dp),
-        border = BorderStroke(
-            1.dp,
-            if (hasPending) MaterialTheme.colorScheme.primary.copy(alpha = 0.5f) else MaterialTheme.colorScheme.secondary.copy(alpha = 0.3f)
-        )
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 14.dp, vertical = 10.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
-                modifier = Modifier.weight(1f)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(10.dp)
-                        .background(
-                            if (hasPending) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,
-                            shape = CircleShape
-                        )
-                )
-                Column {
-                    Text(
-                        text = when {
-                            pendingSyncCount == 1 -> "1 report waiting to send"
-                            hasPending -> "$pendingSyncCount reports waiting to send"
-                            else -> "All caught up"
-                        },
-                        style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    Text(
-                        text = "Your reports are saved on this phone and send when you're back online.",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
-            if (hasPending) {
-                TextButton(
-                    onClick = onSyncNow,
-                    modifier = Modifier.testTag("offline_sync_button")
-                ) {
-                    Text(
-                        text = "Send now",
-                        color = MaterialTheme.colorScheme.primary,
-                        style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
-                    )
-                }
-            }
-        }
-    }
-}

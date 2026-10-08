@@ -53,12 +53,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.model.CommunityForumPost
 import com.example.model.UserProfile
-import com.example.ui.theme.ElegantDarkBorder
-import com.example.ui.theme.ElegantDarkSurface
-import com.example.ui.theme.ElegantGoldPrimary
-import com.example.ui.theme.Slate100Text
-import com.example.ui.theme.Slate400Text
-import com.example.ui.theme.Slate500Text
 
 /**
  * Phase 5: Localized Distribution & Field Validation Tools
@@ -449,7 +443,7 @@ fun TransformerForumDialog(
                                         Text(
                                             text = "CONSUMER-GATED RESOLUTION LOCK",
                                             style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                                            color = Color(0xFF93C5FD)
+                                            color = MaterialTheme.colorScheme.tertiary
                                         )
                                     }
                                     Spacer(modifier = Modifier.height(6.dp))

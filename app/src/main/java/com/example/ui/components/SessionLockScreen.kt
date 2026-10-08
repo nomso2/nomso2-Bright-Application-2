@@ -68,7 +68,6 @@ import androidx.compose.ui.unit.sp
 import com.example.model.UserProfile
 import com.example.ui.security.BiometricAuthenticator
 import com.example.ui.security.findFragmentActivity
-import com.example.ui.theme.ElegantGoldPrimary
 
 @Composable
 fun SessionLockScreen(

@@ -54,12 +54,6 @@ import androidx.compose.ui.unit.sp
 import com.example.model.DisCo
 import com.example.model.PhoneNumbers
 import com.example.model.UserProfile
-import com.example.ui.theme.ElegantDarkBar
-import com.example.ui.theme.ElegantDarkBorder
-import com.example.ui.theme.ElegantGoldPrimary
-import com.example.ui.theme.Slate100Text
-import com.example.ui.theme.Slate400Text
-import com.example.ui.theme.Slate500Text
 
 data class UssdQuickCode(
     val title: String,
@@ -94,7 +88,7 @@ fun DisCoQuickChannelsDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         modifier = modifier.testTag("disco_channels_dialog"),
-        containerColor = ElegantDarkBar,
+        containerColor = MaterialTheme.colorScheme.surface,
         title = {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -158,7 +152,7 @@ fun DisCoQuickChannelsDialog(
                             }
                         }
                         .testTag("launch_whatsapp_bot_card"),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFF132219))
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFF25D366).copy(alpha = 0.12f))
                 ) {
                     Row(
                         modifier = Modifier
@@ -194,7 +188,7 @@ fun DisCoQuickChannelsDialog(
                                 Text(
                                     text = if (whatsappNumber != null) "Chat with ${userProfile.discoCode} on WhatsApp" else "No official WhatsApp line. Call instead",
                                     style = MaterialTheme.typography.labelSmall,
-                                    color = Color(0xFF86EFAC)
+                                    color = MaterialTheme.colorScheme.secondary
                                 )
                             }
                         }
@@ -212,7 +206,7 @@ fun DisCoQuickChannelsDialog(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(12.dp))
-                        .border(1.dp, ElegantDarkBorder, RoundedCornerShape(12.dp))
+                        .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(12.dp))
                         .clickable {
                             val intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:${PhoneNumbers.toDialable(currentDisCo.customerCarePhone)}"))
                             try {
@@ -222,7 +216,7 @@ fun DisCoQuickChannelsDialog(
                             }
                         }
                         .testTag("dial_customer_care_card"),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFF161B24))
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
                 ) {
                     Row(
                         modifier = Modifier
@@ -253,7 +247,7 @@ fun DisCoQuickChannelsDialog(
                                 Text(
                                     text = "Customer Care Hotline",
                                     style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                                    color = Slate100Text
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
                                     text = currentDisCo.customerCarePhone,
@@ -287,8 +281,8 @@ fun DisCoQuickChannelsDialog(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(8.dp))
-                            .background(Color(0xFF161B24))
-                            .border(1.dp, ElegantDarkBorder, RoundedCornerShape(8.dp))
+                            .background(MaterialTheme.colorScheme.surfaceVariant)
+                            .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(8.dp))
                             .clickable {
                                 try {
                                     val dialIntent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + Uri.encode(ussd.code)))
@@ -305,12 +299,12 @@ fun DisCoQuickChannelsDialog(
                             Text(
                                 text = ussd.title,
                                 style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                                color = Slate100Text
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
                                 text = ussd.description,
                                 style = MaterialTheme.typography.labelSmall,
-                                color = Slate400Text
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
 

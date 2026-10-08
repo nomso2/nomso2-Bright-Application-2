@@ -51,14 +51,6 @@ import com.example.model.Complaint
 import com.example.model.ComplaintStatus
 import com.example.model.UserProfile
 import com.example.util.NercDossierPdfGenerator
-import com.example.ui.theme.ElegantDarkBorder
-import com.example.ui.theme.ElegantDarkSurface
-import com.example.ui.theme.ElegantGoldPrimary
-import com.example.ui.theme.ElegantRedHazard
-import com.example.ui.theme.Slate100Text
-import com.example.ui.theme.Slate300Text
-import com.example.ui.theme.Slate400Text
-import com.example.ui.theme.Slate500Text
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -419,7 +411,7 @@ fun ComplaintCard(
 @Composable
 fun StatusBadge(status: ComplaintStatus) {
     val (bgColor, textColor, borderColor) = when (status) {
-        ComplaintStatus.LOGGED -> Triple(Color(0x1A94A3B8), Slate300Text, Color(0x3394A3B8))
+        ComplaintStatus.LOGGED -> Triple(Color(0x1A94A3B8), MaterialTheme.colorScheme.onSurface, Color(0x3394A3B8))
         ComplaintStatus.ASSIGNED -> Triple(MaterialTheme.colorScheme.tertiary.copy(alpha = 0.1f), MaterialTheme.colorScheme.tertiary, MaterialTheme.colorScheme.tertiary.copy(alpha = 0.2f))
         ComplaintStatus.DISPATCHED -> Triple(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f), MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.primary.copy(alpha = 0.2f))
         ComplaintStatus.WORK_IN_PROGRESS -> Triple(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f), MaterialTheme.colorScheme.primary, Color(0x4DFACC15))

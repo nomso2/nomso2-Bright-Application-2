@@ -42,13 +42,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.model.TransformerOverloadTelemetry
-import com.example.ui.theme.ElegantDarkBar
-import com.example.ui.theme.ElegantDarkBorder
-import com.example.ui.theme.ElegantDarkCardStart
-import com.example.ui.theme.ElegantGoldPrimary
-import com.example.ui.theme.Slate100Text
-import com.example.ui.theme.Slate400Text
-import com.example.ui.theme.Slate500Text
 import com.example.ui.theme.extendedColors
 
 /**
