@@ -76,6 +76,7 @@ import com.example.ui.screens.MoreScreen
 import com.example.ui.screens.ReportFaultScreen
 import com.example.ui.screens.VandalismScreen
 import com.example.ui.solutions.settings.SolutionsFirstRun
+import com.example.ui.solutions.settings.WelcomeTour
 import com.example.ui.solutions.settings.SolutionsSettingsScreen
 import com.example.ui.theme.BrightTheme
 
@@ -275,6 +276,12 @@ fun BrightApp(viewModel: BrightViewModel) {
     // Bright tools: keep background checks in step with Settings; calm one-time welcome + permissions.
     SolutionsFirstRun(userProfile)
 
+    // "Show the tour again" from More.
+    var replayTour by remember { mutableStateOf(false) }
+    if (replayTour) {
+        WelcomeTour(onDone = { replayTour = false })
+    }
+
     // Show Snackbars when user messages are triggered
     LaunchedEffect(userMessage) {
         userMessage?.let { msg ->
@@ -463,7 +470,8 @@ fun BrightApp(viewModel: BrightViewModel) {
                     onLockApp = { viewModel.lockAppSession() },
                     onLogOut = { viewModel.logOut() },
                     onDeleteAccount = { showDeleteAccountDialog = true },
-                    onOpenSolutionsSettings = { navController.navigateToMoreSubScreen(BrightSubRoutes.solutionsSettings(0)) }
+                    onOpenSolutionsSettings = { navController.navigateToMoreSubScreen(BrightSubRoutes.solutionsSettings(0)) },
+                    onShowTour = { replayTour = true }
                 )
             }
 
