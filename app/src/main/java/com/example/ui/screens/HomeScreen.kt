@@ -36,12 +36,6 @@ import androidx.compose.material.icons.filled.ElectricMeter
 import androidx.compose.material.icons.filled.FlashOn
 import com.example.data.service.CitizenMeterStatus
 import com.example.data.service.NigeriaSmartMeterDiscoveryService
-import com.example.ui.components.MoreSolutionsDialog
-import com.example.ui.components.RoomSyncHeaderPill
-import androidx.compose.material.icons.filled.Sync
-import androidx.compose.material.icons.filled.CloudDone
-import androidx.compose.material.icons.filled.CloudOff
-import androidx.compose.material.icons.filled.Storage
 import androidx.compose.material.icons.filled.Forum
 import androidx.compose.material.icons.filled.Gavel
 import androidx.compose.material.icons.filled.LightMode
@@ -107,61 +101,61 @@ import com.example.ui.theme.Slate100Text
 import com.example.ui.theme.Slate300Text
 import com.example.ui.theme.Slate400Text
 import com.example.ui.theme.Slate500Text
+import com.example.ui.theme.extendedColors
 
 @Composable
 fun HomeScreen(
-    userProfile: UserProfile,
-    personalComplaints: List<Complaint>,
-    telemetry: GridTelemetry,
-    isDarkMode: Boolean = true,
-    auditingRecords: List<AuditingHourRecord> = emptyList(),
-    transformerTelemetry: TransformerOverloadTelemetry = TransformerOverloadTelemetry(),
-    isRestorationAlarmEnabled: Boolean = true,
-    onToggleThemeMode: () -> Unit = {},
-    onReportFaultClicked: () -> Unit,
-    onEmergencyHazardTriggered: (String) -> Unit,
-    onEscalateComplaint: (String) -> Unit,
-    onUpvoteComplaint: (String) -> Unit,
-    onConfirmResolution: (String) -> Unit,
-    onEditProfileClicked: () -> Unit,
-    onOpenOnboarding: () -> Unit = {},
-    onOpenClearinghouse: () -> Unit = {},
-    onOpenTransformerForum: () -> Unit = {},
-    onOpenEnergyOptimization: () -> Unit = {},
-    onOpenProfileAdmin: () -> Unit = {},
-    onReportTransformerHumSpark: () -> Unit = {},
-    onToggleRestorationAlarm: () -> Unit = {},
-    onPlayRestorationChime: () -> Unit = {},
-    onNavigateMap: () -> Unit = {},
-    onNavigateVandalism: () -> Unit = {},
-    onNavigateHistory: () -> Unit = {},
-    onNavigateHub: () -> Unit = {},
-    onOpenRedDangerSOS: () -> Unit = {},
-    diagnosticStatus: String = "LOAD_SHEDDING",
-    onToggleDiagnosticStatus: () -> Unit = {},
-    userTrustScore: Int = 98,
-    onOpenEstateExcoDossier: () -> Unit = {},
-    onOpenSmartMeterGateway: () -> Unit = {},
-    citizenMeterStatus: CitizenMeterStatus? = null,
-    onAutoDetectSmartMeter: () -> Unit = {},
-    onLockApp: () -> Unit = {},
-    onLogOut: () -> Unit = {},
-    surgeWarningActive: Boolean = false,
-    surgeCountdownSeconds: Int = 180,
-    onTriggerSurgeSiren: () -> Unit = {},
-    onDismissSurgeWarning: () -> Unit = {},
-    pendingSyncCount: Int = 0,
-    onSyncNow: () -> Unit = {},
-    isSyncing: Boolean = false,
-    isOfflineMode: Boolean = false,
-    lastSyncTime: String = "Just now",
-    onToggleOfflineMode: () -> Unit = {},
-    onOpenRoomSyncDialog: () -> Unit = {},
+    state: HomeUiState,
+    actions: HomeActions,
     modifier: Modifier = Modifier
 ) {
+    // Local aliases keep the body below unchanged after collapsing ~45 parameters into
+    // HomeUiState + HomeActions.
+    val userProfile = state.userProfile
+    val personalComplaints = state.personalComplaints
+    val telemetry = state.telemetry
+    val isDarkMode = state.isDarkMode
+    val auditingRecords = state.auditingRecords
+    val transformerTelemetry = state.transformerTelemetry
+    val isRestorationAlarmEnabled = state.isRestorationAlarmEnabled
+    val diagnosticStatus = state.diagnosticStatus
+    val userTrustScore = state.userTrustScore
+    val citizenMeterStatus = state.citizenMeterStatus
+    val surgeWarningActive = state.surgeWarningActive
+    val surgeCountdownSeconds = state.surgeCountdownSeconds
+    val pendingSyncCount = state.pendingSyncCount
+    val onToggleThemeMode = actions.onToggleThemeMode
+    val onReportFaultClicked = actions.onReportFaultClicked
+    val onEmergencyHazardTriggered = actions.onEmergencyHazardTriggered
+    val onEscalateComplaint = actions.onEscalateComplaint
+    val onUpvoteComplaint = actions.onUpvoteComplaint
+    val onConfirmResolution = actions.onConfirmResolution
+    val onEditProfileClicked = actions.onEditProfileClicked
+    val onOpenOnboarding = actions.onOpenOnboarding
+    val onOpenClearinghouse = actions.onOpenClearinghouse
+    val onOpenTransformerForum = actions.onOpenTransformerForum
+    val onOpenEnergyOptimization = actions.onOpenEnergyOptimization
+    val onOpenProfileAdmin = actions.onOpenProfileAdmin
+    val onReportTransformerHumSpark = actions.onReportTransformerHumSpark
+    val onToggleRestorationAlarm = actions.onToggleRestorationAlarm
+    val onPlayRestorationChime = actions.onPlayRestorationChime
+    val onNavigateMap = actions.onNavigateMap
+    val onNavigateVandalism = actions.onNavigateVandalism
+    val onNavigateHistory = actions.onNavigateHistory
+    val onNavigateHub = actions.onNavigateHub
+    val onNavigateMore = actions.onNavigateMore
+    val onOpenRedDangerSOS = actions.onOpenRedDangerSOS
+    val onToggleDiagnosticStatus = actions.onToggleDiagnosticStatus
+    val onOpenEstateExcoDossier = actions.onOpenEstateExcoDossier
+    val onOpenSmartMeterGateway = actions.onOpenSmartMeterGateway
+    val onAutoDetectSmartMeter = actions.onAutoDetectSmartMeter
+    val onLockApp = actions.onLockApp
+    val onLogOut = actions.onLogOut
+    val onTriggerSurgeSiren = actions.onTriggerSurgeSiren
+    val onDismissSurgeWarning = actions.onDismissSurgeWarning
+    val onSyncNow = actions.onSyncNow
     var showLogoutConfirmDialog by remember { mutableStateOf(false) }
     var showToolsDropdown by remember { mutableStateOf(false) }
-    var showMoreSolutionsModal by remember { mutableStateOf(false) }
 
     if (showLogoutConfirmDialog) {
         AlertDialog(
@@ -187,7 +181,7 @@ fun HomeScreen(
                         onLogOut()
                     },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFEF4444),
+                        containerColor = MaterialTheme.colorScheme.error,
                         contentColor = Color.White
                     ),
                     shape = RoundedCornerShape(8.dp),
@@ -228,114 +222,52 @@ fun HomeScreen(
                         text = "THE BRIGHT PROJECT",
                         style = MaterialTheme.typography.labelSmall.copy(
                             fontWeight = FontWeight.ExtraBold,
-                            fontSize = 11.sp,
+                            fontSize = 12.sp,
                             letterSpacing = 1.sp
                         ),
-                        color = ElegantGoldPrimary,
+                        color = MaterialTheme.colorScheme.primary,
                         maxLines = 1
                     )
                     Spacer(modifier = Modifier.height(2.dp))
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Text(
-                            text = "${userProfile.discoCode} • ${userProfile.feederBand.code}",
-                            style = MaterialTheme.typography.titleMedium.copy(
-                                fontWeight = FontWeight.Bold,
-                                letterSpacing = (-0.2).sp,
-                                fontSize = 16.sp
-                            ),
-                            color = MaterialTheme.colorScheme.onSurface,
-                            maxLines = 1
-                        )
-                        RoomSyncHeaderPill(
-                            isSyncing = isSyncing,
-                            isOfflineMode = isOfflineMode,
-                            pendingCount = pendingSyncCount,
-                            onClick = onOpenRoomSyncDialog
-                        )
-                    }
+                    Text(
+                        text = "${userProfile.discoCode} • ${userProfile.feederBand.code}",
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = (-0.2).sp,
+                            fontSize = 16.sp
+                        ),
+                        color = MaterialTheme.colorScheme.onSurface,
+                        maxLines = 1
+                    )
                 }
 
-                // Header Tool Options: Clean, unclustered tool options without circular coverings or empty circles
+                // Header actions: at most two icons (theme toggle + overflow menu).
+                // Report lives in the big gold button and the bottom bar; other tools live in More.
                 Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // 1. Report Outage / Fault Quick Action (+)
-                    IconButton(
-                        onClick = onReportFaultClicked,
-                        modifier = Modifier
-                            .size(36.dp)
-                            .testTag("header_report_button")
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = "Report Outage or Fault",
-                            tint = ElegantGoldPrimary,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-
-                    // 2. Theme Switcher (Sun / Moon)
                     IconButton(
                         onClick = onToggleThemeMode,
-                        modifier = Modifier
-                            .size(36.dp)
-                            .testTag("theme_toggle_button")
+                        modifier = Modifier.testTag("theme_toggle_button")
                     ) {
                         Icon(
                             imageVector = if (isDarkMode) Icons.Default.LightMode else Icons.Default.DarkMode,
-                            contentDescription = "Toggle Light/Dark Theme",
-                            tint = ElegantGoldPrimary,
-                            modifier = Modifier.size(19.dp)
+                            contentDescription = if (isDarkMode) "Switch to light theme" else "Switch to dark theme",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(22.dp)
                         )
                     }
 
-                    // 3. Estate Exco & Dossier (Gavel)
-                    IconButton(
-                        onClick = onOpenEstateExcoDossier,
-                        modifier = Modifier
-                            .size(36.dp)
-                            .testTag("header_estate_exco_button")
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Gavel,
-                            contentDescription = "Estate Exco & Dossier",
-                            tint = ElegantGoldPrimary,
-                            modifier = Modifier.size(19.dp)
-                        )
-                    }
-
-                    // 4. Security Protocols & Admin (Shield)
-                    IconButton(
-                        onClick = onOpenProfileAdmin,
-                        modifier = Modifier
-                            .size(36.dp)
-                            .testTag("header_security_protocols_button")
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Security,
-                            contentDescription = "Security Protocols & Admin",
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.size(19.dp)
-                        )
-                    }
-
-                    // 5. More Tools & Gateway Menu (Clean, no circular coverings, no empty circle outlines)
                     Box {
                         IconButton(
                             onClick = { showToolsDropdown = true },
-                            modifier = Modifier
-                                .size(36.dp)
-                                .testTag("header_tools_menu_button")
+                            modifier = Modifier.testTag("header_tools_menu_button")
                         ) {
                             Icon(
                                 imageVector = Icons.Default.MoreVert,
-                                contentDescription = "More Tools and Options",
+                                contentDescription = "More options",
                                 tint = MaterialTheme.colorScheme.onSurface,
-                                modifier = Modifier.size(20.dp)
+                                modifier = Modifier.size(22.dp)
                             )
                         }
 
@@ -345,67 +277,23 @@ fun HomeScreen(
                             modifier = Modifier.background(MaterialTheme.colorScheme.surface)
                         ) {
                             DropdownMenuItem(
-                                text = { Text("Smart Meter Gateway", color = MaterialTheme.colorScheme.onSurface) },
-                                leadingIcon = {
-                                    Icon(
-                                        imageVector = Icons.Default.Router,
-                                        contentDescription = null,
-                                        tint = Color(0xFF38BDF8),
-                                        modifier = Modifier.size(18.dp)
-                                    )
-                                },
-                                onClick = {
-                                    showToolsDropdown = false
-                                    onOpenSmartMeterGateway()
-                                }
-                            )
-                            DropdownMenuItem(
-                                text = { Text("Lock Session / Re-Login", color = MaterialTheme.colorScheme.onSurface) },
+                                text = { Text("Lock App", color = MaterialTheme.colorScheme.onSurface) },
                                 leadingIcon = {
                                     Icon(
                                         imageVector = Icons.Default.Lock,
                                         contentDescription = null,
-                                        tint = ElegantGoldPrimary,
+                                        tint = MaterialTheme.colorScheme.primary,
                                         modifier = Modifier.size(18.dp)
                                     )
                                 },
                                 onClick = {
                                     showToolsDropdown = false
                                     onLockApp()
-                                }
-                            )
-                            DropdownMenuItem(
-                                text = { Text("Estate Exco & Dossier", color = MaterialTheme.colorScheme.onSurface) },
-                                leadingIcon = {
-                                    Icon(
-                                        imageVector = Icons.Default.Gavel,
-                                        contentDescription = null,
-                                        tint = ElegantGoldPrimary,
-                                        modifier = Modifier.size(18.dp)
-                                    )
                                 },
-                                onClick = {
-                                    showToolsDropdown = false
-                                    onOpenEstateExcoDossier()
-                                }
+                                modifier = Modifier.testTag("header_menu_lock")
                             )
                             DropdownMenuItem(
-                                text = { Text("Sign In / Switch Meter", color = MaterialTheme.colorScheme.onSurface) },
-                                leadingIcon = {
-                                    Icon(
-                                        imageVector = Icons.Default.AccountCircle,
-                                        contentDescription = null,
-                                        tint = ElegantGoldPrimary,
-                                        modifier = Modifier.size(18.dp)
-                                    )
-                                },
-                                onClick = {
-                                    showToolsDropdown = false
-                                    onOpenOnboarding()
-                                }
-                            )
-                            DropdownMenuItem(
-                                text = { Text("Profile & Protocols", color = MaterialTheme.colorScheme.onSurface) },
+                                text = { Text("Profile & Security", color = MaterialTheme.colorScheme.onSurface) },
                                 leadingIcon = {
                                     Icon(
                                         imageVector = Icons.Default.Security,
@@ -417,22 +305,70 @@ fun HomeScreen(
                                 onClick = {
                                     showToolsDropdown = false
                                     onOpenProfileAdmin()
+                                },
+                                modifier = Modifier.testTag("header_security_protocols_button")
+                            )
+                            DropdownMenuItem(
+                                text = { Text("Estate & Dossier", color = MaterialTheme.colorScheme.onSurface) },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Default.Gavel,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.primary,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                },
+                                onClick = {
+                                    showToolsDropdown = false
+                                    onOpenEstateExcoDossier()
+                                },
+                                modifier = Modifier.testTag("header_estate_exco_button")
+                            )
+                            DropdownMenuItem(
+                                text = { Text("Smart Meter", color = MaterialTheme.colorScheme.onSurface) },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Default.Router,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                },
+                                onClick = {
+                                    showToolsDropdown = false
+                                    onOpenSmartMeterGateway()
                                 }
                             )
                             DropdownMenuItem(
-                                text = { Text("Log Out", color = Color(0xFFEF4444)) },
+                                text = { Text("Sign In / Switch Meter", color = MaterialTheme.colorScheme.onSurface) },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Default.AccountCircle,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.primary,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                },
+                                onClick = {
+                                    showToolsDropdown = false
+                                    onOpenOnboarding()
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { Text("Log Out", color = MaterialTheme.colorScheme.error) },
                                 leadingIcon = {
                                     Icon(
                                         imageVector = Icons.AutoMirrored.Filled.ExitToApp,
                                         contentDescription = null,
-                                        tint = Color(0xFFEF4444),
+                                        tint = MaterialTheme.colorScheme.error,
                                         modifier = Modifier.size(18.dp)
                                     )
                                 },
                                 onClick = {
                                     showToolsDropdown = false
                                     showLogoutConfirmDialog = true
-                                }
+                                },
+                                modifier = Modifier.testTag("header_menu_logout")
                             )
                         }
                     }
@@ -448,7 +384,7 @@ fun HomeScreen(
                 contentPadding = PaddingValues(top = 14.dp, bottom = 96.dp),
                 verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {
-                // High-Pitch Grid Surge Warning Banner (Audio & 3-Min Countdown)
+                // 1. High-Pitch Grid Surge Warning Banner (Audio & 3-Min Countdown)
                 if (surgeWarningActive) {
                     item {
                         GridSurgeWarningBanner(
@@ -458,111 +394,7 @@ fun HomeScreen(
                     }
                 }
 
-                // Room Database Offline-Ready Status Banner
-                item {
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { onOpenRoomSyncDialog() }
-                            .testTag("offline_cache_status_card"),
-                        colors = CardDefaults.cardColors(
-                            containerColor = when {
-                                isSyncing -> Color(0xFF1E293B)
-                                isOfflineMode -> Color(0xFF271A07)
-                                pendingSyncCount > 0 -> Color(0xFF1E293B)
-                                else -> Color(0xFF071F14)
-                            }
-                        ),
-                        shape = RoundedCornerShape(12.dp),
-                        border = BorderStroke(
-                            1.dp,
-                            when {
-                                isSyncing -> ElegantGoldPrimary.copy(alpha = 0.6f)
-                                isOfflineMode -> Color(0xFFF59E0B).copy(alpha = 0.6f)
-                                pendingSyncCount > 0 -> ElegantGoldPrimary.copy(alpha = 0.5f)
-                                else -> Color(0xFF22C55E).copy(alpha = 0.4f)
-                            }
-                        )
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 14.dp, vertical = 10.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(10.dp),
-                                modifier = Modifier.weight(1f)
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(24.dp)
-                                        .background(
-                                            when {
-                                                isSyncing -> ElegantGoldPrimary.copy(alpha = 0.2f)
-                                                isOfflineMode -> Color(0xFFF59E0B).copy(alpha = 0.2f)
-                                                else -> Color(0xFF22C55E).copy(alpha = 0.2f)
-                                            },
-                                            shape = CircleShape
-                                        ),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(
-                                        imageVector = when {
-                                            isSyncing -> Icons.Default.Sync
-                                            isOfflineMode -> Icons.Default.CloudOff
-                                            else -> Icons.Default.CloudDone
-                                        },
-                                        contentDescription = null,
-                                        tint = when {
-                                            isSyncing -> ElegantGoldPrimary
-                                            isOfflineMode -> Color(0xFFFBBF24)
-                                            else -> Color(0xFF4ADE80)
-                                        },
-                                        modifier = Modifier.size(14.dp)
-                                    )
-                                }
-                                Column {
-                                    Text(
-                                        text = when {
-                                            isSyncing -> "Room Database: Syncing Data..."
-                                            isOfflineMode -> if (pendingSyncCount > 0) "Room DB: $pendingSyncCount Cached Actions (Offline)" else "Room DB: Operating in Offline Mode"
-                                            pendingSyncCount > 0 -> "Room DB: $pendingSyncCount Actions Pending Sync"
-                                            else -> "Room SQLite: 100% Synced & Active"
-                                        },
-                                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                                        color = MaterialTheme.colorScheme.onSurface
-                                    )
-                                    Text(
-                                        text = when {
-                                            isSyncing -> "Flushing offline SQLite queue to DisCo grid servers..."
-                                            isOfflineMode -> "All complaints and telemetry saved locally with zero data loss."
-                                            else -> "Local SQLite cache up to date • Synced $lastSyncTime"
-                                        },
-                                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                }
-                            }
-                            TextButton(
-                                onClick = onSyncNow,
-                                enabled = !isSyncing,
-                                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
-                                modifier = Modifier.testTag("offline_sync_button")
-                            ) {
-                                Text(
-                                    text = if (isSyncing) "Syncing..." else "Sync Now",
-                                    color = if (isSyncing) Color(0xFF94A3B8) else ElegantGoldPrimary,
-                                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold)
-                                )
-                            }
-                        }
-                    }
-                }
-
-                // 1. Personal Meter Profile & Connection Identity
+                // 2. Personal Meter Profile & Connection Identity
                 item {
                     MeterProfileHeader(
                         profile = userProfile,
@@ -570,7 +402,7 @@ fun HomeScreen(
                     )
                 }
 
-                // 2. Direct Action: Report Power Outage / Fault
+                // 3. Direct Action: Report Power Outage / Fault
                 item {
                     Button(
                         onClick = onReportFaultClicked,
@@ -579,8 +411,8 @@ fun HomeScreen(
                             .height(52.dp)
                             .testTag("report_fault_banner_button"),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = ElegantGoldPrimary,
-                            contentColor = Color(0xFF0A0C10)
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
                         ),
                         shape = RoundedCornerShape(14.dp)
                     ) {
@@ -598,7 +430,14 @@ fun HomeScreen(
                     }
                 }
 
-                // 3. Section Title: "MY ACTIVE COMPLAINTS"
+                // Offline queue status: shown high up only when reports are waiting to send
+                if (pendingSyncCount > 0) {
+                    item {
+                        OfflineSyncStatusCard(pendingSyncCount = pendingSyncCount, onSyncNow = onSyncNow)
+                    }
+                }
+
+                // 4. Section Title: "MY ACTIVE COMPLAINTS"
                 item {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -616,8 +455,8 @@ fun HomeScreen(
                             )
                             Text(
                                 text = "Tracked directly with Meter #${userProfile.meterNumber}",
-                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
-                                color = ElegantGoldPrimary
+                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
+                                color = MaterialTheme.colorScheme.primary
                             )
                         }
 
@@ -625,8 +464,8 @@ fun HomeScreen(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(8.dp))
                                 .background(
-                                    if (personalComplaints.isNotEmpty()) Color(0x26EF4444)
-                                    else Color(0x1A22C55E)
+                                    if (personalComplaints.isNotEmpty()) MaterialTheme.colorScheme.error.copy(alpha = 0.15f)
+                                    else MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f)
                                 )
                                 .padding(horizontal = 8.dp, vertical = 4.dp)
                         ) {
@@ -634,14 +473,14 @@ fun HomeScreen(
                                 text = "${personalComplaints.size} Active",
                                 style = MaterialTheme.typography.labelSmall.copy(
                                     fontWeight = FontWeight.Bold,
-                                    color = if (personalComplaints.isNotEmpty()) Color(0xFFEF4444) else Color(0xFF4ADE80)
+                                    color = if (personalComplaints.isNotEmpty()) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.secondary
                                 )
                             )
                         }
                     }
                 }
 
-                // 4. Personal Complaints List / Clean WhatsApp-like empty card
+                // 4b. Personal complaints list or empty state (the Report button above is the single entry point)
                 if (personalComplaints.isEmpty()) {
                     item {
                         Card(
@@ -666,13 +505,13 @@ fun HomeScreen(
                                     modifier = Modifier
                                         .size(56.dp)
                                         .clip(CircleShape)
-                                        .background(Color(0x26FACC15)),
+                                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Icon(
                                         imageVector = Icons.Default.Lightbulb,
-                                        contentDescription = "Light is Bright",
-                                        tint = ElegantGoldPrimary,
+                                        contentDescription = null, // decorative: the heading says it
+                                        tint = MaterialTheme.colorScheme.primary,
                                         modifier = Modifier.size(32.dp)
                                     )
                                 }
@@ -684,34 +523,11 @@ fun HomeScreen(
                                 )
                                 Spacer(modifier = Modifier.height(6.dp))
                                 Text(
-                                    text = "No active faults logged for Meter #${userProfile.meterNumber} on ${userProfile.transformerId}. If power drops, lodge complaint instantly below.",
+                                    text = "No active faults logged for Meter #${userProfile.meterNumber} on ${userProfile.transformerId}. If your power goes off, tap Report Outage above.",
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     textAlign = TextAlign.Center
                                 )
-                                Spacer(modifier = Modifier.height(16.dp))
-                                Button(
-                                    onClick = onReportFaultClicked,
-                                    modifier = Modifier
-                                        .height(44.dp)
-                                        .testTag("report_fault_empty_state_button"),
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = ElegantGoldPrimary,
-                                        contentColor = Color(0xFF0A0C10)
-                                    ),
-                                    shape = RoundedCornerShape(12.dp)
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.PowerOff,
-                                        contentDescription = null,
-                                        modifier = Modifier.size(18.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(6.dp))
-                                    Text(
-                                        text = "Report Outage / Fault",
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                }
                             }
                         }
                     }
@@ -728,10 +544,10 @@ fun HomeScreen(
                     }
                 }
 
-                // 5. Quick Action Grid
+                // 5. Compact Tools grid
                 item {
                     Text(
-                        text = "GRID & UTILITY SERVICES",
+                        text = "TOOLS",
                         style = MaterialTheme.typography.labelMedium.copy(
                             fontWeight = FontWeight.ExtraBold,
                             letterSpacing = 0.5.sp
@@ -755,17 +571,24 @@ fun HomeScreen(
                                 onReportFaultClicked()
                             }
                         },
-                        onNavigateOthers = { showMoreSolutionsModal = true }
+                        onNavigateOthers = onNavigateMore
                     )
                 }
 
-                // 6. Citizen Smart Meter Gateway Card (Auto-Connected or Standard STS)
+                // 6. Emergency Hazard Fast-Track (1-Tap SOS), kept on Home because it is safety-critical
+                item {
+                    HazardFastTrackCard(
+                        onQuickHazardSelected = onEmergencyHazardTriggered
+                    )
+                }
+
+                // 7. Citizen Smart Meter Gateway Card (Auto-Connected or Standard STS)
                 item {
                     val meterStatus = citizenMeterStatus ?: remember(userProfile) {
                         NigeriaSmartMeterDiscoveryService.checkSmartMeterAccess(userProfile)
                     }
                     val isSmart = meterStatus.hasSmartAccess
-                    val themeColor = if (isSmart) Color(0xFF38BDF8) else Color(0xFFD97706)
+                    val themeColor = if (isSmart) MaterialTheme.extendedColors.info else MaterialTheme.extendedColors.warning
 
                     Card(
                         modifier = Modifier
@@ -818,14 +641,14 @@ fun HomeScreen(
                                         Box(
                                             modifier = Modifier
                                                 .clip(RoundedCornerShape(4.dp))
-                                                .background(if (isSmart) Color(0xFF22C55E).copy(alpha = 0.15f) else Color(0xFFD97706).copy(alpha = 0.15f))
+                                                .background(if (isSmart) MaterialTheme.colorScheme.secondary.copy(alpha = 0.15f) else MaterialTheme.extendedColors.warning.copy(alpha = 0.15f))
                                                 .padding(horizontal = 5.dp, vertical = 1.dp)
                                         ) {
                                             Text(
                                                 text = if (isSmart) "AUTO-LINKED" else "STS KEYPAD",
-                                                fontSize = 9.sp,
+                                                fontSize = 12.sp,
                                                 fontWeight = FontWeight.Bold,
-                                                color = if (isSmart) Color(0xFF22C55E) else Color(0xFFD97706)
+                                                color = if (isSmart) MaterialTheme.colorScheme.secondary else MaterialTheme.extendedColors.warning
                                             )
                                         }
                                     }
@@ -834,7 +657,7 @@ fun HomeScreen(
                                             "✓ Auto-connected to ${meterStatus.manufacturerName} • 228V"
                                         else
                                             "Non-Smart Area • Standard 20-digit token keypad meter",
-                                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
@@ -850,40 +673,18 @@ fun HomeScreen(
                                 contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp),
                                 modifier = Modifier.testTag("open_smart_meter_gateway_btn")
                             ) {
-                                Text(if (isSmart) "View" else "Status", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                                Text(if (isSmart) "View" else "Status", fontSize = 12.sp, fontWeight = FontWeight.Bold)
                             }
                         }
                     }
                 }
 
-                // 7. Real-Time National Grid Telemetry Bar
-                item {
-                    RealTimeTicker(telemetry = telemetry)
-                }
-
-                // 8. Power Restoration Alert Chime (Feature 9)
-                item {
-                    PowerRestorationAlertCard(
-                        isAlarmEnabled = isRestorationAlarmEnabled,
-                        transformerId = userProfile.transformerId,
-                        onToggleAlarm = onToggleRestorationAlarm,
-                        onTestChime = onPlayRestorationChime
-                    )
-                }
-
-                // 9. Emergency Hazard Fast-Track (1-Tap SOS)
-                item {
-                    HazardFastTrackCard(
-                        onQuickHazardSelected = onEmergencyHazardTriggered
-                    )
-                }
-
-                // 10. More Tools & Comprehensive Utilities
+                // 8. More Tools (opens the More tab) & Comprehensive Utilities
                 item {
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { showMoreSolutionsModal = true }
+                            .clickable(onClick = onNavigateMore)
                             .testTag("more_tools_section_card"),
                         shape = RoundedCornerShape(16.dp),
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
@@ -904,13 +705,13 @@ fun HomeScreen(
                                     modifier = Modifier
                                         .size(36.dp)
                                         .clip(CircleShape)
-                                        .background(Color(0x1AFACC15)),
+                                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Icon(
                                         imageVector = Icons.Default.Bolt,
                                         contentDescription = null,
-                                        tint = ElegantGoldPrimary,
+                                        tint = MaterialTheme.colorScheme.primary,
                                         modifier = Modifier.size(20.dp)
                                     )
                                 }
@@ -925,7 +726,7 @@ fun HomeScreen(
                                     )
                                     Text(
                                         text = "Tariffs, diagnostics, escrow rebates, forums & policies",
-                                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
@@ -940,24 +741,104 @@ fun HomeScreen(
                         }
                     }
                 }
+
+                // 9. Offline status when nothing is waiting (low priority)
+                if (pendingSyncCount == 0) {
+                    item {
+                        OfflineSyncStatusCard(pendingSyncCount = 0, onSyncNow = onSyncNow)
+                    }
+                }
+
+                // 10. Real-Time National Grid Telemetry Bar
+                item {
+                    RealTimeTicker(telemetry = telemetry)
+                }
+
+                // 11. Power Restoration Alert Chime (Feature 9)
+                item {
+                    PowerRestorationAlertCard(
+                        isAlarmEnabled = isRestorationAlarmEnabled,
+                        transformerId = userProfile.transformerId,
+                        onToggleAlarm = onToggleRestorationAlarm,
+                        onTestChime = onPlayRestorationChime
+                    )
+                }
             }
         }
     }
+}
 
-    // Modal dialog displaying all 30 solutions as interactive in-app icons
-    if (showMoreSolutionsModal) {
-        MoreSolutionsDialog(
-            userProfile = userProfile,
-            isBatSignalMode = false,
-            onToggleBatSignalMode = {},
-            onOpenForum = onOpenTransformerForum,
-            onOpenRedDangerSOS = onOpenRedDangerSOS,
-            onPlaySirenAlarm = onPlayRestorationChime,
-            onDismiss = { showMoreSolutionsModal = false },
-            onNavigateFullHub = {
-                showMoreSolutionsModal = false
-                onNavigateHub()
-            }
+/**
+ * Plain-language status of reports saved on the phone that haven't reached the server yet.
+ */
+@Composable
+private fun OfflineSyncStatusCard(
+    pendingSyncCount: Int,
+    onSyncNow: () -> Unit
+) {
+    val hasPending = pendingSyncCount > 0
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .testTag("offline_cache_status_card"),
+        colors = CardDefaults.cardColors(
+            containerColor = if (hasPending) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.surface
+        ),
+        shape = RoundedCornerShape(12.dp),
+        border = BorderStroke(
+            1.dp,
+            if (hasPending) MaterialTheme.colorScheme.primary.copy(alpha = 0.5f) else MaterialTheme.colorScheme.secondary.copy(alpha = 0.3f)
         )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 14.dp, vertical = 10.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                modifier = Modifier.weight(1f)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(10.dp)
+                        .background(
+                            if (hasPending) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,
+                            shape = CircleShape
+                        )
+                )
+                Column {
+                    Text(
+                        text = when {
+                            pendingSyncCount == 1 -> "1 report waiting to send"
+                            hasPending -> "$pendingSyncCount reports waiting to send"
+                            else -> "All caught up"
+                        },
+                        style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Text(
+                        text = "Your reports are saved on this phone and send when you're back online.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+            if (hasPending) {
+                TextButton(
+                    onClick = onSyncNow,
+                    modifier = Modifier.testTag("offline_sync_button")
+                ) {
+                    Text(
+                        text = "Send now",
+                        color = MaterialTheme.colorScheme.primary,
+                        style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
+                    )
+                }
+            }
+        }
     }
 }
