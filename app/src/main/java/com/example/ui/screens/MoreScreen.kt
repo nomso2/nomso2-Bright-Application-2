@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Forum
 import androidx.compose.material.icons.filled.Gavel
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.material.icons.filled.Router
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Settings
@@ -66,9 +67,11 @@ private data class MoreItem(
 )
 
 /**
- * "More" tab: holds the tools that used to crowd the bottom bar (Anti-Theft, Grid Hub) and the
- * Home header/tools menu (gateway, dossier, rebates, forum, energy, account actions).
+ * "More" tab: help (replay the tour) and account actions only. Bright's helpers run on their own
+ * and are not listed here; the only way into features is "Report a problem" plus the Report, Map
+ * and History tabs. The tool callbacks below are kept (unused) so the screens can come back later.
  */
+@Suppress("UNUSED_PARAMETER")
 @Composable
 fun MoreScreen(
     onOpenAntiTheft: () -> Unit,
@@ -85,23 +88,14 @@ fun MoreScreen(
     onDeleteAccount: () -> Unit = {},
     onOpenSolutionsSettings: () -> Unit = {},
     onOpenHelp: () -> Unit = {},
+    onShowTour: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     var showLogoutConfirmDialog by remember { mutableStateOf(false) }
 
-    val toolItems = listOf(
-        MoreItem("anti_theft", "Anti-Theft", "Report cable theft and vandalism, anonymously if you like", Icons.Default.Security, onOpenAntiTheft),
-        MoreItem("grid_hub", "Grid Hub", "Tariffs, billing disputes, language and data-saver settings", Icons.Default.Bolt, onOpenGridHub),
-        MoreItem("smart_meter_gateway", "Smart Meter", "Check your meter's connection and readings", Icons.Default.Router, onOpenSmartMeterGateway),
-        MoreItem("estate_exco", "Estate & Dossier", "Estate dues, compensation claims and NERC dossier", Icons.Default.Gavel, onOpenEstateExcoDossier),
-        MoreItem("clearinghouse", "Rebates & Refunds", "Claim rebate tokens for long outages", Icons.Default.AccountBalanceWallet, onOpenClearinghouse),
-        MoreItem("transformer_forum", "Neighbour Forum", "Talk with people on your transformer", Icons.Default.Forum, onOpenTransformerForum),
-        MoreItem("energy_optimization", "Energy & Surge Guard", "Appliance budget, restore alerts and surge warnings", Icons.Default.Tune, onOpenEnergyOptimization)
-    )
     val helpItem = MoreItem("help", "Help", "Call or WhatsApp your DisCo, and answers to common questions", Icons.Default.SupportAgent, onOpenHelp)
     val accountItems = listOf(
         MoreItem("profile_admin", "Profile & Security", "Linked meters, biometrics and privacy", Icons.Default.AccountCircle, onOpenProfileAdmin),
-        MoreItem("solutions_settings", "Settings: Bright tools", "Turn on or off the tools that work for you", Icons.Default.Settings, onOpenSolutionsSettings),
         MoreItem("switch_meter", "Sign In / Switch Meter", "Use a different meter account", Icons.Default.SwapHoriz, onOpenOnboarding),
         MoreItem("lock_app", "Lock App", "Require your PIN or fingerprint to reopen", Icons.Default.Lock, onLockApp),
         MoreItem("log_out", "Log Out", "Sign out on this phone. Your data and PIN stay here.", Icons.AutoMirrored.Filled.ExitToApp, { showLogoutConfirmDialog = true }),
@@ -117,8 +111,9 @@ fun MoreScreen(
     ) {
         item { MoreSectionTitle("Help") }
         item(key = helpItem.key) { MoreRow(helpItem) }
-        item { MoreSectionTitle("Tools") }
-        toolItems.forEach { entry -> item(key = entry.key) { MoreRow(entry) } }
+        item(key = "show_tour") {
+            MoreRow(MoreItem("show_tour", "Show the tour again", "A short guide to reporting a problem", Icons.Default.PlayCircle, onShowTour))
+        }
         item { MoreSectionTitle("Account") }
         accountItems.forEach { entry -> item(key = entry.key) { MoreRow(entry) } }
     }

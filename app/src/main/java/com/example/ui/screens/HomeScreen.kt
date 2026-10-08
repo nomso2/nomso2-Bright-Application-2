@@ -90,7 +90,9 @@ import com.example.ui.components.ComplaintCard
 import com.example.ui.components.HazardFastTrackCard
 import com.example.ui.components.MeterProfileHeader
 import com.example.ui.components.PowerRestorationAlertCard
-import com.example.ui.components.QuickActionGrid
+import com.example.ui.components.QuickActionScreen
+import com.example.ui.components.ReportProblemButton
+import com.example.ui.components.ReportProblemSheet
 import com.example.ui.components.RealTimeTicker
 import com.example.ui.components.TransformerOverloadCard
 import com.example.ui.components.GridSurgeWarningBanner
@@ -152,6 +154,29 @@ fun HomeScreen(
     var showLogoutConfirmDialog by remember { mutableStateOf(false) }
     var showToolsDropdown by remember { mutableStateOf(false) }
     var showThemeMenu by remember { mutableStateOf(false) }
+    var showReportSheet by remember { mutableStateOf(false) }
+    var openChoice by remember { mutableStateOf<Int?>(null) }
+
+    if (showReportSheet) {
+        ReportProblemSheet(
+            onDismiss = { showReportSheet = false },
+            onChoose = { number ->
+                showReportSheet = false
+                openChoice = number
+            }
+        )
+    }
+    openChoice?.let { number ->
+        QuickActionScreen(
+            number = number,
+            userProfile = userProfile,
+            isBatSignalMode = state.isBatSignalMode,
+            onToggleBatSignalMode = actions.onToggleBatSignalMode,
+            onOpenHazardForm = onOpenRedDangerSOS,
+            onOpenForum = onOpenTransformerForum,
+            onClose = { openChoice = null }
+        )
+    }
 
     if (showLogoutConfirmDialog) {
         AlertDialog(
@@ -178,7 +203,7 @@ fun HomeScreen(
                     },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.error,
-                        contentColor = Color.White
+                        contentColor = MaterialTheme.colorScheme.onError
                     ),
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier.testTag("confirm_logout_button")
@@ -238,7 +263,7 @@ fun HomeScreen(
                 }
 
                 // Header actions: at most two icons (theme toggle + overflow menu).
-                // Report lives in the big gold button and the bottom bar; other tools live in More.
+                // Reporting lives in the one big "Report a problem" button and the Report tab.
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -352,37 +377,6 @@ fun HomeScreen(
                                 modifier = Modifier.testTag("header_security_protocols_button")
                             )
                             DropdownMenuItem(
-                                text = { Text("Estate & Dossier", color = MaterialTheme.colorScheme.onSurface) },
-                                leadingIcon = {
-                                    Icon(
-                                        imageVector = Icons.Default.Gavel,
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.primary,
-                                        modifier = Modifier.size(18.dp)
-                                    )
-                                },
-                                onClick = {
-                                    showToolsDropdown = false
-                                    onOpenEstateExcoDossier()
-                                },
-                                modifier = Modifier.testTag("header_estate_exco_button")
-                            )
-                            DropdownMenuItem(
-                                text = { Text("Smart Meter", color = MaterialTheme.colorScheme.onSurface) },
-                                leadingIcon = {
-                                    Icon(
-                                        imageVector = Icons.Default.Router,
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                        modifier = Modifier.size(18.dp)
-                                    )
-                                },
-                                onClick = {
-                                    showToolsDropdown = false
-                                    onOpenSmartMeterGateway()
-                                }
-                            )
-                            DropdownMenuItem(
                                 text = { Text("Sign In / Switch Meter", color = MaterialTheme.colorScheme.onSurface) },
                                 leadingIcon = {
                                     Icon(
@@ -445,32 +439,14 @@ fun HomeScreen(
                     )
                 }
 
-                // 3. Direct Action: Report Power Outage / Fault
+                // 3. The one big button: opens the five ways to report.
                 item {
-                    Button(
-                        onClick = onReportFaultClicked,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(52.dp)
-                            .testTag("report_fault_banner_button"),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary,
-                            contentColor = MaterialTheme.colorScheme.onPrimary
-                        ),
-                        shape = RoundedCornerShape(14.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = null,
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = "Report Outage / Fault",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 15.sp
-                        )
-                    }
+                    ReportProblemButton(onClick = { showReportSheet = true })
+                }
+
+                // 3b. A gentle hint only when a background helper is missing a permission.
+                item {
+                    GentlePermissionHints()
                 }
 
                 // Save status lives in the one small chip at the top of the app (no duplicate banner here).
@@ -561,7 +537,7 @@ fun HomeScreen(
                                 )
                                 Spacer(modifier = Modifier.height(6.dp))
                                 Text(
-                                    text = "No active faults logged for Meter #${userProfile.meterNumber} on ${userProfile.transformerId}. If your power goes off, tap Report Outage above.",
+                                    text = "No active faults logged for Meter #${userProfile.meterNumber} on ${userProfile.transformerId}. If your power goes off, tap Report a problem above.",
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     textAlign = TextAlign.Center
@@ -581,226 +557,71 @@ fun HomeScreen(
                         )
                     }
                 }
-
-                // 5. Compact Tools grid
-                item {
-                    Text(
-                        text = "TOOLS",
-                        style = MaterialTheme.typography.labelMedium.copy(
-                            fontWeight = FontWeight.ExtraBold,
-                            letterSpacing = 0.5.sp
-                        ),
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                }
-
-                item {
-                    QuickActionGrid(
-                        onNavigateMap = onNavigateMap,
-                        onNavigateVandalism = onNavigateVandalism,
-                        onNavigateHazard = { onEmergencyHazardTriggered("Immediate Transformer Fire Hazard") },
-                        onNavigateHistory = onNavigateHistory,
-                        onNavigateBilling = onNavigateHub,
-                        onNavigateLoadShed = onNavigateHub,
-                        onNavigateEscalate = {
-                            if (personalComplaints.isNotEmpty()) {
-                                onEscalateComplaint(personalComplaints.first().id)
-                            } else {
-                                onReportFaultClicked()
-                            }
-                        },
-                        onNavigateOthers = onNavigateMore
-                    )
-                }
-
-                // 6. Emergency Hazard Fast-Track (1-Tap SOS), kept on Home because it is safety-critical
-                item {
-                    HazardFastTrackCard(
-                        onQuickHazardSelected = onEmergencyHazardTriggered
-                    )
-                }
-
-                // 7. Citizen Smart Meter Gateway Card (Auto-Connected or Standard STS)
-                item {
-                    val meterStatus = citizenMeterStatus ?: remember(userProfile) {
-                        NigeriaSmartMeterDiscoveryService.checkSmartMeterAccess(userProfile)
-                    }
-                    val isSmart = meterStatus.hasSmartAccess
-                    val themeColor = if (isSmart) MaterialTheme.extendedColors.info else MaterialTheme.extendedColors.warning
-
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable(onClick = onOpenSmartMeterGateway)
-                            .testTag("smart_meter_server_gateway_card"),
-                        shape = RoundedCornerShape(16.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, themeColor.copy(alpha = 0.6f))
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(14.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Row(
-                                modifier = Modifier.weight(1f),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(10.dp)
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(36.dp)
-                                        .clip(RoundedCornerShape(8.dp))
-                                        .background(themeColor.copy(alpha = 0.2f)),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(
-                                        imageVector = if (isSmart) Icons.Default.Router else Icons.Default.ElectricMeter,
-                                        contentDescription = null,
-                                        tint = themeColor,
-                                        modifier = Modifier.size(20.dp)
-                                    )
-                                }
-                                Column {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.spacedBy(6.dp)
-                                    ) {
-                                        Text(
-                                            text = if (isSmart) "Smart meter" else "Prepaid meter",
-                                            style = MaterialTheme.typography.labelSmall.copy(
-                                                fontWeight = FontWeight.ExtraBold,
-                                                fontSize = 16.sp
-                                            ),
-                                            color = themeColor,
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis,
-                                            modifier = Modifier.weight(1f, fill = false)
-                                        )
-                                        Box(
-                                            modifier = Modifier
-                                                .clip(RoundedCornerShape(4.dp))
-                                                .background(if (isSmart) MaterialTheme.colorScheme.secondary.copy(alpha = 0.15f) else MaterialTheme.extendedColors.warning.copy(alpha = 0.15f))
-                                                .padding(horizontal = 5.dp, vertical = 1.dp)
-                                        ) {
-                                            Text(
-                                                text = if (isSmart) "Linked" else "Keypad",
-                                                maxLines = 1,
-                                                softWrap = false,
-                                                fontSize = 14.sp,
-                                                fontWeight = FontWeight.Bold,
-                                                color = if (isSmart) MaterialTheme.colorScheme.secondary else MaterialTheme.extendedColors.warning
-                                            )
-                                        }
-                                    }
-                                    Text(
-                                        text = if (isSmart)
-                                            "✓ Auto-connected to ${meterStatus.manufacturerName} • 228V"
-                                        else
-                                            "Non-Smart Area • Standard 20-digit token keypad meter",
-                                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                }
-                            }
-
-                            Button(
-                                onClick = onOpenSmartMeterGateway,
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = themeColor,
-                                    contentColor = if (isSmart) MaterialTheme.extendedColors.onInfo else MaterialTheme.extendedColors.onWarning
-                                ),
-                                shape = RoundedCornerShape(8.dp),
-                                contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp),
-                                modifier = Modifier.testTag("open_smart_meter_gateway_btn")
-                            ) {
-                                Text(if (isSmart) "View" else "Status", fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                            }
-                        }
-                    }
-                }
-
-                // 8. More Tools (opens the More tab) & Comprehensive Utilities
-                item {
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable(onClick = onNavigateMore)
-                            .testTag("more_tools_section_card"),
-                        shape = RoundedCornerShape(16.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(12.dp)
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(36.dp)
-                                        .clip(CircleShape)
-                                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Bolt,
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.primary,
-                                        modifier = Modifier.size(20.dp)
-                                    )
-                                }
-                                Column {
-                                    Text(
-                                        text = "MORE TOOLS & PROTOCOLS",
-                                        style = MaterialTheme.typography.labelSmall.copy(
-                                            fontWeight = FontWeight.ExtraBold,
-                                            letterSpacing = 0.5.sp
-                                        ),
-                                        color = MaterialTheme.colorScheme.onSurface
-                                    )
-                                    Text(
-                                        text = "Tariffs, diagnostics, escrow rebates, forums & policies",
-                                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                }
-                            }
-
-                            Icon(
-                                imageVector = Icons.Filled.ChevronRight,
-                                contentDescription = "View More",
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.size(20.dp)
-                            )
-                        }
-                    }
-                }
-
-                // 10. Real-Time National Grid Telemetry Bar
-                item {
-                    RealTimeTicker(telemetry = telemetry)
-                }
-
-                // 11. Power Restoration Alert Chime (Feature 9)
-                item {
-                    PowerRestorationAlertCard(
-                        isAlarmEnabled = isRestorationAlarmEnabled,
-                        transformerId = userProfile.transformerId,
-                        onToggleAlarm = onToggleRestorationAlarm,
-                        onTestChime = onPlayRestorationChime
-                    )
-                }
             }
         }
     }
 }
 
+
+/**
+ * Background helpers run on their own; the only thing the user ever sees about them is a calm
+ * hint when one needs a permission (notifications first, then location). Hidden when all is fine.
+ */
+@Composable
+private fun GentlePermissionHints() {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    var tick by remember { mutableStateOf(0) }
+    val notif = com.example.ui.solutions.common.BrightPermissions.NOTIFICATIONS
+    val location = com.example.ui.solutions.common.BrightPermissions.LOCATION
+    val needsNotif = tick >= 0 && notif.isNotEmpty() && !com.example.ui.solutions.common.BrightPermissions.hasAny(context, notif)
+    val needsLocation = tick >= 0 && !com.example.ui.solutions.common.BrightPermissions.hasAny(context, location)
+    val onGranted = {
+        tick++
+        com.example.ui.solutions.common.SolutionsAutomation.sync(context)
+    }
+    val askNotif = com.example.ui.solutions.common.rememberPermissionAction(
+        permissions = notif,
+        title = "Let Bright tell you things",
+        rationale = "Bright plays a soft chime when your light comes back and when there is news about your report."
+    ) { onGranted() }
+    val askLocation = com.example.ui.solutions.common.rememberPermissionAction(
+        permissions = location,
+        title = "Let Bright find your street",
+        rationale = "Bright uses your location only to show the repair team where the fault is."
+    ) { onGranted() }
+
+    when {
+        needsNotif -> PermissionHintCard("Turn on alerts so Bright can tell you when your light is back.", askNotif)
+        needsLocation -> PermissionHintCard("Allow location so the repair team can find your street.", askLocation)
+        else -> Unit
+    }
+}
+
+@Composable
+private fun PermissionHintCard(text: String, onAllow: () -> Unit) {
+    Card(
+        modifier = Modifier.fillMaxWidth().testTag("permission_hint_card"),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Text(
+                text = text,
+                fontSize = 16.sp,
+                color = MaterialTheme.colorScheme.onSecondaryContainer,
+                modifier = Modifier.weight(1f)
+            )
+            Button(
+                onClick = onAllow,
+                modifier = Modifier.height(56.dp),
+                shape = RoundedCornerShape(14.dp)
+            ) {
+                Text("Allow", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+            }
+        }
+    }
+}
