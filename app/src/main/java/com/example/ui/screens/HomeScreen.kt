@@ -463,7 +463,7 @@ fun HomeScreen(
 
                 // Save status lives in the one small chip at the top of the app (no duplicate banner here).
 
-                // 4. Section Title: "MY ACTIVE COMPLAINTS"
+                // 4. Section Title: "My reports"
                 item {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -472,17 +472,17 @@ fun HomeScreen(
                     ) {
                         Column {
                             Text(
-                                text = "MY ACTIVE COMPLAINTS",
-                                style = MaterialTheme.typography.labelMedium.copy(
-                                    fontWeight = FontWeight.ExtraBold,
-                                    letterSpacing = 0.5.sp
+                                text = "My reports",
+                                style = MaterialTheme.typography.titleLarge.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 22.sp
                                 ),
                                 color = MaterialTheme.colorScheme.onBackground
                             )
                             Text(
-                                text = "Tracked directly with Meter #${userProfile.meterNumber}",
-                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
-                                color = MaterialTheme.colorScheme.primary
+                                text = "For meter ${userProfile.meterNumber}",
+                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 16.sp),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
 

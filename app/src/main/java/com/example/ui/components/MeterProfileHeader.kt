@@ -137,11 +137,10 @@ fun MeterProfileHeader(
                                         .background(MaterialTheme.colorScheme.secondary)
                                 )
                                 Text(
-                                    text = "LIVE FEED • VERIFIED ACTIVE",
+                                    text = "Meter active",
                                     style = MaterialTheme.typography.labelSmall.copy(
-                                        fontSize = 12.sp,
-                                        fontWeight = FontWeight.ExtraBold,
-                                        letterSpacing = 0.5.sp
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.Bold
                                     ),
                                     color = MaterialTheme.colorScheme.secondary,
                                     softWrap = false,
@@ -196,17 +195,17 @@ fun MeterProfileHeader(
                                     .background(MaterialTheme.colorScheme.tertiary)
                             )
                             Text(
-                                text = "Phase Status:",
-                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
+                                text = "Power:",
+                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 16.sp),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 softWrap = false,
                                 maxLines = 1
                             )
                             Text(
-                                text = "Stable (234V Balanced)",
+                                text = "Normal",
                                 style = MaterialTheme.typography.bodySmall.copy(
                                     fontWeight = FontWeight.SemiBold,
-                                    fontSize = 12.sp
+                                    fontSize = 16.sp
                                 ),
                                 color = MaterialTheme.colorScheme.onSurface,
                                 softWrap = false,
@@ -317,17 +316,10 @@ fun MeterProfileHeader(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(
-                            text = "Households:",
-                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            softWrap = false,
-                            maxLines = 1
-                        )
-                        Text(
-                            text = "${profile.connectedHouseholdsCount} Connected Consumers on Local Feeder",
+                            text = "${profile.connectedHouseholdsCount} homes on your line",
                             style = MaterialTheme.typography.labelSmall.copy(
                                 fontWeight = FontWeight.Bold,
-                                fontSize = 12.sp
+                                fontSize = 16.sp
                             ),
                             color = MaterialTheme.extendedColors.info,
                             softWrap = false,
