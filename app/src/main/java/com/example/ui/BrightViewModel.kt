@@ -276,18 +276,8 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
         _surgeWarningActive.value = true
         _surgeCountdownSeconds.value = 180
 
-        // Play loud audible high-pitch alert tones
-        try {
-            val toneGen = ToneGenerator(AudioManager.STREAM_ALARM, 100)
-            toneGen.startTone(ToneGenerator.TONE_CDMA_HIGH_L, 400)
-            Handler(Looper.getMainLooper()).postDelayed({
-                try {
-                    toneGen.startTone(ToneGenerator.TONE_CDMA_EMERGENCY_RINGBACK, 600)
-                } catch (ignored: Exception) {}
-            }, 500)
-        } catch (e: Exception) {
-            // fallback
-        }
+        // Gentle chime + soft buzz (no loud tones for our mostly elderly users).
+        com.example.ui.solutions.common.GentleAlert.play(getApplication())
 
         showNotification("🚨 POWER RESTORATION SURGE ALERT: High voltage surge detected! Disconnect sensitive electronics for 3 minutes.")
 
@@ -826,18 +816,8 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     fun playRestorationChime() {
-        try {
-            val toneGen = ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100)
-            toneGen.startTone(ToneGenerator.TONE_PROP_BEEP2, 350)
-            Handler(Looper.getMainLooper()).postDelayed({
-                try {
-                    toneGen.startTone(ToneGenerator.TONE_PROP_ACK, 500)
-                } catch (ignored: Exception) {}
-            }, 300)
-            showNotification("⚡ POWER RESTORATION CHIME TEST: Sound & vibration triggered successfully!")
-        } catch (e: Exception) {
-            showNotification("⚡ Power Restored! Chime alert active.")
-        }
+        com.example.ui.solutions.common.GentleAlert.play(getApplication())
+        showNotification("Your light is back. This is the sound Bright will play.")
     }
 
     fun saveUserProfile(profile: UserProfile) {
