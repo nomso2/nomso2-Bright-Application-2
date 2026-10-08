@@ -201,7 +201,7 @@ fun HomeScreen(
                     },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.error,
-                        contentColor = Color.White
+                        contentColor = MaterialTheme.colorScheme.onError
                     ),
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier.testTag("confirm_logout_button")
