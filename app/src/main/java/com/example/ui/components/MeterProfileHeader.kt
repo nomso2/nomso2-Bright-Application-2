@@ -49,12 +49,10 @@ fun MeterProfileHeader(
     onEditProfileClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val isDark = MaterialTheme.colorScheme.background == com.example.ui.theme.MaterialTheme.colorScheme.background
-    val cardBrush = if (isDark) {
-        Brush.linearGradient(colors = listOf(MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.colorScheme.surface))
-    } else {
-        Brush.linearGradient(colors = listOf(Color.White, MaterialTheme.colorScheme.onSurface))
-    }
+    // Soft card background from theme roles (works in light and dark).
+    val cardBrush = Brush.linearGradient(
+        colors = listOf(MaterialTheme.colorScheme.surfaceContainerHigh, MaterialTheme.colorScheme.surface)
+    )
 
     Card(
         modifier = modifier
