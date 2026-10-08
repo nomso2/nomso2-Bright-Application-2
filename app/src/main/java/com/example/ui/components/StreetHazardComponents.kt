@@ -54,12 +54,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.model.StreetHazardPin
 import com.example.model.UserProfile
-import com.example.ui.theme.ElegantDarkBar
-import com.example.ui.theme.ElegantDarkBorder
-import com.example.ui.theme.ElegantGoldPrimary
-import com.example.ui.theme.Slate100Text
-import com.example.ui.theme.Slate400Text
-import com.example.ui.theme.Slate500Text
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -103,7 +97,7 @@ fun PinStreetHazardDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         modifier = modifier.testTag("pin_street_hazard_dialog"),
-        containerColor = ElegantDarkBar,
+        containerColor = MaterialTheme.colorScheme.surface,
         title = {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -127,7 +121,7 @@ fun PinStreetHazardDialog(
                     Text(
                         text = "Pin Street Electrical Hazard",
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
                         text = "Broadcast Danger to Community & DisCo",
@@ -148,7 +142,7 @@ fun PinStreetHazardDialog(
                 Text(
                     text = "Warn neighbors and force rapid DisCo emergency response before electrocution or fire occurs.",
                     style = MaterialTheme.typography.bodySmall,
-                    color = Slate400Text
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
                 Text(
@@ -163,7 +157,7 @@ fun PinStreetHazardDialog(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(8.dp))
-                            .background(if (isSelected) MaterialTheme.colorScheme.error.copy(alpha = 0.2f) else ElegantDarkBorder)
+                            .background(if (isSelected) MaterialTheme.colorScheme.error.copy(alpha = 0.2f) else MaterialTheme.colorScheme.outline)
                             .border(1.dp, if (isSelected) MaterialTheme.colorScheme.error else Color.Transparent, RoundedCornerShape(8.dp))
                             .clickable {
                                 selectedType = type
@@ -179,7 +173,7 @@ fun PinStreetHazardDialog(
                             style = MaterialTheme.typography.bodySmall.copy(
                                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
                             ),
-                            color = if (isSelected) Color.White else Slate400Text
+                            color = if (isSelected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -192,9 +186,9 @@ fun PinStreetHazardDialog(
                     modifier = Modifier.fillMaxWidth().testTag("hazard_title_input"),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = MaterialTheme.colorScheme.error,
-                        unfocusedBorderColor = ElegantDarkBorder,
-                        focusedTextColor = Slate100Text,
-                        unfocusedTextColor = Slate100Text
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface
                     )
                 )
 
@@ -206,9 +200,9 @@ fun PinStreetHazardDialog(
                     modifier = Modifier.fillMaxWidth().testTag("hazard_location_input"),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = MaterialTheme.colorScheme.error,
-                        unfocusedBorderColor = ElegantDarkBorder,
-                        focusedTextColor = Slate100Text,
-                        unfocusedTextColor = Slate100Text
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface
                     )
                 )
 
@@ -220,9 +214,9 @@ fun PinStreetHazardDialog(
                     modifier = Modifier.fillMaxWidth().testTag("hazard_landmark_input"),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = MaterialTheme.colorScheme.error,
-                        unfocusedBorderColor = ElegantDarkBorder,
-                        focusedTextColor = Slate100Text,
-                        unfocusedTextColor = Slate100Text
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface
                     )
                 )
             }
@@ -247,7 +241,7 @@ fun PinStreetHazardDialog(
         },
         dismissButton = {
             OutlinedButton(onClick = onDismiss, shape = RoundedCornerShape(8.dp)) {
-                Text("Cancel", color = Slate400Text)
+                Text("Cancel", color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
     )
@@ -267,7 +261,7 @@ fun StreetHazardsListDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         modifier = modifier.testTag("street_hazards_list_dialog"),
-        containerColor = ElegantDarkBar,
+        containerColor = MaterialTheme.colorScheme.surface,
         title = {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -288,7 +282,7 @@ fun StreetHazardsListDialog(
                         Text(
                             text = "Pinned Street Hazards",
                             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                            color = Color.White
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
                             text = "${hazards.size} Live Community Danger Pins",
@@ -329,7 +323,7 @@ fun StreetHazardsListDialog(
                         Text(
                             text = "No active electrical street hazards reported in your feeder zone.",
                             style = MaterialTheme.typography.bodySmall,
-                            color = Slate400Text
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 } else {
@@ -352,7 +346,7 @@ fun StreetHazardsListDialog(
         confirmButton = {
             Button(
                 onClick = onDismiss,
-                colors = ButtonDefaults.buttonColors(containerColor = ElegantDarkBorder, contentColor = Color.White),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceVariant, contentColor = MaterialTheme.colorScheme.onSurface),
                 shape = RoundedCornerShape(8.dp)
             ) {
                 Text("Close")
@@ -372,7 +366,7 @@ fun HazardCardItem(
             .fillMaxWidth()
             .testTag("hazard_card_${hazard.id}"),
         shape = RoundedCornerShape(10.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF141820)),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
         border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.4f))
     ) {
         Column(
@@ -420,7 +414,7 @@ fun HazardCardItem(
             Text(
                 text = hazard.title,
                 style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                color = Slate100Text
+                color = MaterialTheme.colorScheme.onSurface
             )
 
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -428,7 +422,7 @@ fun HazardCardItem(
                 Text(
                     text = "${hazard.location} (${hazard.landmark})",
                     style = MaterialTheme.typography.bodySmall,
-                    color = Slate400Text
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
@@ -440,7 +434,7 @@ fun HazardCardItem(
                 Text(
                     text = "Reported by ${hazard.reportedBy}",
                     style = MaterialTheme.typography.labelSmall,
-                    color = Slate500Text
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
                 OutlinedButton(

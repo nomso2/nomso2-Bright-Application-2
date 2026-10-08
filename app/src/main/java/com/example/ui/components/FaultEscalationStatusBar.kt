@@ -64,13 +64,6 @@ import androidx.compose.ui.unit.sp
 import com.example.model.Complaint
 import com.example.model.ComplaintStatus
 import com.example.model.EscalationTier
-import com.example.ui.theme.ElegantDarkBorder
-import com.example.ui.theme.ElegantDarkSurface
-import com.example.ui.theme.ElegantGoldDark
-import com.example.ui.theme.ElegantGoldPrimary
-import com.example.ui.theme.Slate100Text
-import com.example.ui.theme.Slate400Text
-import com.example.ui.theme.Slate500Text
 import com.example.ui.theme.extendedColors
 
 /**
@@ -388,7 +381,7 @@ fun FaultEscalationStatusBar(
                                     )
                                     .border(
                                         width = if (isCurrent) 2.dp else 1.dp,
-                                        color = if (isCurrent) Color.White else MaterialTheme.colorScheme.outline.copy(alpha = 0.4f),
+                                        color = if (isCurrent) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.outline.copy(alpha = 0.4f),
                                         shape = CircleShape
                                     ),
                                 contentAlignment = Alignment.Center
@@ -397,14 +390,14 @@ fun FaultEscalationStatusBar(
                                     Icon(
                                         imageVector = Icons.Default.Check,
                                         contentDescription = "Completed",
-                                        tint = Color.Black,
+                                        tint = MaterialTheme.colorScheme.onPrimary,
                                         modifier = Modifier.size(14.dp)
                                     )
                                 } else if (isCurrent) {
                                     Icon(
                                         imageVector = Icons.Default.Bolt,
                                         contentDescription = "Active",
-                                        tint = Color.Black,
+                                        tint = MaterialTheme.colorScheme.onPrimary,
                                         modifier = Modifier.size(14.dp)
                                     )
                                 } else {

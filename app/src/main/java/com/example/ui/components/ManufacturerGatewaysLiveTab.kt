@@ -51,13 +51,7 @@ import androidx.compose.ui.unit.sp
 import com.example.model.MeterGatewayTelemetry
 import com.example.model.MeterManufacturer
 import com.example.model.MeterRelayState
-import com.example.ui.theme.DarkCharcoal
-import com.example.ui.theme.ElegantDarkBorder
-import com.example.ui.theme.ElegantGoldPrimary
-import com.example.ui.theme.MutedSlateText
-import com.example.ui.theme.Slate100Text
 import com.example.ui.theme.extendedColors
-import com.example.ui.theme.ConsoleDarkBackground
 
 @Composable
 fun ManufacturerGatewaysLiveTab(
@@ -76,8 +70,8 @@ fun ManufacturerGatewaysLiveTab(
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(containerColor = DarkCharcoal),
-                border = androidx.compose.foundation.BorderStroke(1.dp, ElegantDarkBorder)
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Row(
@@ -94,14 +88,14 @@ fun ManufacturerGatewaysLiveTab(
                             text = "Nigerian AMI Gateway API Layer",
                             style = MaterialTheme.typography.titleSmall,
                             fontWeight = FontWeight.Bold,
-                            color = Color.White
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = "Real-time bidirectional telemetry simulation across Mojec International, Momas (MEMCOL), and Conlog Nigeria head-end AMI gateways. Polling retrieves live voltage, active load, power factor, and relay status directly from meter firmware.",
                         style = MaterialTheme.typography.bodySmall,
-                        color = MutedSlateText,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         lineHeight = 16.sp
                     )
                 }
@@ -140,7 +134,7 @@ private fun ManufacturerGatewayCard(
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = DarkCharcoal),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
         border = androidx.compose.foundation.BorderStroke(1.dp, accentColor.copy(alpha = 0.4f))
     ) {
         Column(
@@ -178,12 +172,12 @@ private fun ManufacturerGatewayCard(
                             text = manufacturer.displayName,
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
-                            color = Color.White
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
                             text = "Protocol: ${manufacturer.defaultProtocol}",
                             fontSize = 12.sp,
-                            color = MutedSlateText
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -220,7 +214,7 @@ private fun ManufacturerGatewayCard(
             }
 
             Spacer(modifier = Modifier.height(14.dp))
-            HorizontalDivider(color = ElegantDarkBorder.copy(alpha = 0.6f))
+            HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.6f))
             Spacer(modifier = Modifier.height(14.dp))
 
             // Endpoint & Gateway Target
@@ -228,7 +222,7 @@ private fun ManufacturerGatewayCard(
                 text = "AMI Gateway Endpoint: ${manufacturer.apiEndpointPrefix}",
                 fontFamily = FontFamily.Monospace,
                 fontSize = 12.sp,
-                color = MutedSlateText
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -298,7 +292,7 @@ private fun ManufacturerGatewayCard(
                     Text(
                         text = "Hardware Model: ${telemetry.model}",
                         fontSize = 12.sp,
-                        color = Slate100Text,
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontWeight = FontWeight.Medium
                     )
                     Text(
@@ -314,14 +308,14 @@ private fun ManufacturerGatewayCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(8.dp))
-                        .background(ConsoleDarkBackground)
+                        .background(MaterialTheme.colorScheme.background)
                         .padding(14.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = "Tap 'Poll Gateway' to query ${manufacturer.displayName} cloud API for Meter #$meterNumber",
                         fontSize = 12.sp,
-                        color = MutedSlateText,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = androidx.compose.ui.text.style.TextAlign.Center
                     )
                 }
@@ -341,8 +335,8 @@ private fun MetricBox(
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(8.dp))
-            .background(ConsoleDarkBackground)
-            .border(1.dp, ElegantDarkBorder.copy(alpha = 0.5f), RoundedCornerShape(8.dp))
+            .background(MaterialTheme.colorScheme.background)
+            .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f), RoundedCornerShape(8.dp))
             .padding(8.dp)
     ) {
         Column {
@@ -350,7 +344,7 @@ private fun MetricBox(
                 text = title,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold,
-                color = MutedSlateText,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 letterSpacing = 0.5.sp
             )
             Spacer(modifier = Modifier.height(2.dp))
@@ -364,7 +358,7 @@ private fun MetricBox(
             Text(
                 text = subtitle,
                 fontSize = 12.sp,
-                color = Slate100Text.copy(alpha = 0.7f)
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
             )
         }
     }

@@ -74,10 +74,6 @@ import com.example.ui.screens.VandalismScreen
 import com.example.ui.solutions.settings.SolutionsFirstRun
 import com.example.ui.solutions.settings.SolutionsSettingsScreen
 import com.example.ui.theme.BrightTheme
-import com.example.ui.theme.ElegantDarkBar
-import com.example.ui.theme.ElegantDarkBorder
-import com.example.ui.theme.ElegantGoldPrimary
-import com.example.ui.theme.Slate500Text
 
 /** The five bottom-bar tabs (Material 3 recommends at most five). */
 enum class BrightNavDestination(

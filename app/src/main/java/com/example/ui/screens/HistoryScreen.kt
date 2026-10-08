@@ -92,8 +92,6 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import com.example.ui.theme.extendedColors
-import com.example.ui.theme.ConsoleDarkBackground
-import com.example.ui.theme.Slate400Text
 
 enum class HistoryFilter {
     ALL,
@@ -442,7 +440,7 @@ fun HistoryScreen(
                     .fillMaxWidth()
                     .padding(16.dp),
                 shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = ConsoleDarkBackground)
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
             ) {
                 Column(
                     modifier = Modifier
@@ -457,13 +455,13 @@ fun HistoryScreen(
                         Text(
                             text = if (isExpandedVideo) "VIDEO EVIDENCE CLIP" else "FAULT PHOTO EVIDENCE",
                             style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                            color = Color.White
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                         IconButton(onClick = { expandedMediaUri = null }) {
                             Icon(
                                 imageVector = Icons.Default.Close,
                                 contentDescription = "Close",
-                                tint = Color.White
+                                tint = MaterialTheme.colorScheme.onSurface
                             )
                         }
                     }
@@ -517,7 +515,7 @@ fun HistoryScreen(
                     Text(
                         text = "Verified field technician asset attached to fault report.",
                         style = MaterialTheme.typography.bodySmall,
-                        color = Slate400Text
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
@@ -1031,7 +1029,7 @@ fun HistoricalComplaintCard(
                         },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.primary,
-                            contentColor = ConsoleDarkBackground
+                            contentColor = MaterialTheme.colorScheme.background
                         ),
                         shape = RoundedCornerShape(8.dp),
                         modifier = Modifier.testTag("escalate_ticket_${complaint.id}")

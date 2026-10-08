@@ -91,16 +91,6 @@ import com.example.ui.components.QuickActionGrid
 import com.example.ui.components.RealTimeTicker
 import com.example.ui.components.TransformerOverloadCard
 import com.example.ui.components.GridSurgeWarningBanner
-import com.example.ui.theme.ElegantDarkBar
-import com.example.ui.theme.ElegantDarkBorder
-import com.example.ui.theme.ElegantDarkCardStart
-import com.example.ui.theme.ElegantDarkSurface
-import com.example.ui.theme.ElegantGoldPrimary
-import com.example.ui.theme.ElegantGreenLive
-import com.example.ui.theme.Slate100Text
-import com.example.ui.theme.Slate300Text
-import com.example.ui.theme.Slate400Text
-import com.example.ui.theme.Slate500Text
 import com.example.ui.theme.extendedColors
 
 @Composable
@@ -667,7 +657,7 @@ fun HomeScreen(
                                 onClick = onOpenSmartMeterGateway,
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = themeColor,
-                                    contentColor = if (isSmart) Color.Black else Color.White
+                                    contentColor = if (isSmart) MaterialTheme.extendedColors.onInfo else MaterialTheme.extendedColors.onWarning
                                 ),
                                 shape = RoundedCornerShape(8.dp),
                                 contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp),

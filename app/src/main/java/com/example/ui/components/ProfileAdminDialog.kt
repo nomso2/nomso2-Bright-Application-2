@@ -67,12 +67,6 @@ import com.example.model.UserProfile
 import com.example.model.WhistleblowerReport
 import com.example.ui.components.BiometricAuthMode
 import com.example.ui.components.BiometricVerificationDialog
-import com.example.ui.theme.ElegantDarkBorder
-import com.example.ui.theme.ElegantDarkSurface
-import com.example.ui.theme.ElegantGoldPrimary
-import com.example.ui.theme.Slate100Text
-import com.example.ui.theme.Slate400Text
-import com.example.ui.theme.Slate500Text
 import com.example.ui.theme.extendedColors
 
 /**

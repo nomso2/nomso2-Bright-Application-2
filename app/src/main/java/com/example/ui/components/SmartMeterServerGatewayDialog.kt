@@ -99,17 +99,7 @@ import com.example.model.MeterRelayState
 import com.example.model.UserProfile
 import com.example.data.service.CitizenMeterStatus
 import com.example.data.service.NigeriaSmartMeterDiscoveryService
-import com.example.ui.theme.DarkCharcoal
-import com.example.ui.theme.ElegantDarkBorder
-import com.example.ui.theme.ElegantDarkCanvas
-import com.example.ui.theme.ElegantGoldPrimary
-import com.example.ui.theme.MutedSlateText
-import com.example.ui.theme.Slate100Text
 import com.example.ui.theme.extendedColors
-import com.example.ui.theme.ConsoleDarkBackground
-import com.example.ui.theme.ConsoleDarkSurface
-import com.example.ui.theme.ElegantDarkSurface
-import com.example.ui.theme.Slate700Icon
 
 enum class GatewayTab(val title: String) {
     CITIZEN_AUTO_CONNECT("Citizen Auto-Link"),
@@ -190,7 +180,7 @@ fun SmartMeterServerGatewayDialog(
                             .fillMaxWidth()
                             .background(
                                 Brush.horizontalGradient(
-                                    listOf(ConsoleDarkBackground, ConsoleDarkSurface)
+                                    listOf(MaterialTheme.colorScheme.background, MaterialTheme.colorScheme.surfaceVariant)
                                 )
                             )
                             .padding(horizontal = 16.dp, vertical = 14.dp),
@@ -223,7 +213,7 @@ fun SmartMeterServerGatewayDialog(
                                         fontWeight = FontWeight.ExtraBold,
                                         letterSpacing = 0.5.sp
                                     ),
-                                    color = Color.White
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically,
@@ -246,7 +236,7 @@ fun SmartMeterServerGatewayDialog(
                                     Text(
                                         text = "• #${userProfile.meterNumber}",
                                         fontSize = 12.sp,
-                                        color = MutedSlateText
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
                             }
@@ -256,13 +246,13 @@ fun SmartMeterServerGatewayDialog(
                             onClick = onDismiss,
                             modifier = Modifier
                                 .clip(CircleShape)
-                                .background(Color(0x22FFFFFF))
+                                .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.13f))
                                 .testTag("close_smart_meter_gateway_btn")
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Close,
                                 contentDescription = "Close",
-                                tint = Color.White,
+                                tint = MaterialTheme.colorScheme.onSurface,
                                 modifier = Modifier.size(18.dp)
                             )
                         }
@@ -289,7 +279,7 @@ fun SmartMeterServerGatewayDialog(
                                     Text(
                                         text = tab.title,
                                         fontWeight = if (selectedTab == tab) FontWeight.Bold else FontWeight.Normal,
-                                        color = if (selectedTab == tab) MaterialTheme.colorScheme.primary else MutedSlateText,
+                                        color = if (selectedTab == tab) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                                         fontSize = 13.sp
                                     )
                                 }
@@ -393,7 +383,7 @@ fun SmartMeterServerGatewayDialog(
             title = {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Icon(Icons.Default.FlashOn, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-                    Text("Over-The-Air Token Push", fontWeight = FontWeight.Bold, color = Color.White)
+                    Text("Over-The-Air Token Push", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
                 }
             },
             text = {
@@ -401,7 +391,7 @@ fun SmartMeterServerGatewayDialog(
                     Text(
                         text = "Transmit 20-digit STS prepayment token over cellular/APN bridge directly to Meter #${meter.meterNumber} (${meter.manufacturer}). No physical keypad entry required.",
                         fontSize = 12.sp,
-                        color = MutedSlateText
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     OutlinedTextField(
                         value = otaTokenInput,
@@ -411,9 +401,9 @@ fun SmartMeterServerGatewayDialog(
                         modifier = Modifier.fillMaxWidth().testTag("ota_token_input_field"),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = MaterialTheme.colorScheme.primary,
-                            unfocusedBorderColor = ElegantDarkBorder,
-                            focusedTextColor = Color.White,
-                            unfocusedTextColor = Color.White
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onSurface
                         )
                     )
                 }
@@ -434,10 +424,10 @@ fun SmartMeterServerGatewayDialog(
             },
             dismissButton = {
                 TextButton(onClick = { tokenTargetMeter = null }) {
-                    Text("Cancel", color = MutedSlateText)
+                    Text("Cancel", color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             },
-            containerColor = ConsoleDarkSurface
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
         )
     }
 }
@@ -477,7 +467,7 @@ private fun MetersCatalogTab(
                 Text(
                     text = "${meters.count { it.isOnline }} Online / ${meters.size} Registered Meters",
                     fontSize = 12.sp,
-                    color = MutedSlateText
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
@@ -510,7 +500,7 @@ private fun MetersCatalogTab(
                     modifier = Modifier
                         .clip(RoundedCornerShape(16.dp))
                         .background(
-                            if (isSelected) MaterialTheme.colorScheme.primary else ConsoleDarkSurface
+                            if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
                         )
                         .clickable { onSelectDisco(disco) }
                         .padding(horizontal = 12.dp, vertical = 5.dp)
@@ -519,7 +509,7 @@ private fun MetersCatalogTab(
                         text = disco,
                         fontSize = 12.sp,
                         fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.Medium,
-                        color = if (isSelected) Color.Black else Slate100Text
+                        color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
                     )
                 }
             }
@@ -556,10 +546,10 @@ private fun SmartMeterDeviceCard(
             .fillMaxWidth()
             .testTag("smart_meter_card_${meter.meterNumber}"),
         shape = RoundedCornerShape(14.dp),
-        colors = CardDefaults.cardColors(containerColor = ElegantDarkSurface),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         border = androidx.compose.foundation.BorderStroke(
             1.dp,
-            if (meter.tamperDetected) MaterialTheme.colorScheme.error.copy(alpha = 0.6f) else ElegantDarkBorder
+            if (meter.tamperDetected) MaterialTheme.colorScheme.error.copy(alpha = 0.6f) else MaterialTheme.colorScheme.outline
         )
     ) {
         Column(modifier = Modifier.padding(14.dp)) {
@@ -588,7 +578,7 @@ private fun SmartMeterDeviceCard(
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(6.dp))
-                            .background(ConsoleDarkSurface)
+                            .background(MaterialTheme.colorScheme.surfaceVariant)
                             .padding(horizontal = 6.dp, vertical = 2.dp)
                     ) {
                         Text(
@@ -623,12 +613,12 @@ private fun SmartMeterDeviceCard(
             Text(
                 text = "${meter.manufacturer} (${meter.modelNumber}) • ${meter.protocol}",
                 fontSize = 12.sp,
-                color = MutedSlateText
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Text(
                 text = "Feeder: ${meter.feederName} | APN: ${meter.ipOrSimImei}",
                 fontSize = 12.sp,
-                color = MutedSlateText
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -637,7 +627,7 @@ private fun SmartMeterDeviceCard(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(ConsoleDarkBackground, RoundedCornerShape(10.dp))
+                    .background(MaterialTheme.colorScheme.background, RoundedCornerShape(10.dp))
                     .padding(8.dp),
                 horizontalArrangement = Arrangement.SpaceAround
             ) {
@@ -659,7 +649,7 @@ private fun SmartMeterDeviceCard(
                 TelemetryMetricItem(
                     label = "ACTIVE LOAD",
                     value = "${meter.activePowerKw} kW",
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
 
@@ -695,7 +685,7 @@ private fun SmartMeterDeviceCard(
                         onClick = onPing,
                         modifier = Modifier
                             .clip(CircleShape)
-                            .background(ConsoleDarkSurface)
+                            .background(MaterialTheme.colorScheme.surfaceVariant)
                             .testTag("ping_meter_btn_${meter.meterNumber}")
                     ) {
                         Icon(
@@ -711,7 +701,7 @@ private fun SmartMeterDeviceCard(
                         onClick = onOpenOtaToken,
                         modifier = Modifier
                             .clip(CircleShape)
-                            .background(ConsoleDarkSurface)
+                            .background(MaterialTheme.colorScheme.surfaceVariant)
                             .testTag("ota_token_btn_${meter.meterNumber}")
                     ) {
                         Icon(
@@ -748,7 +738,7 @@ private fun SmartMeterDeviceCard(
 @Composable
 private fun TelemetryMetricItem(label: String, value: String, color: Color) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(text = label, fontSize = 12.sp, color = MutedSlateText, fontWeight = FontWeight.Bold)
+        Text(text = label, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, fontWeight = FontWeight.Bold)
         Text(text = value, fontSize = 12.sp, color = color, fontWeight = FontWeight.ExtraBold)
     }
 }
@@ -792,8 +782,8 @@ private fun ServerConfigTab(
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(containerColor = ElegantDarkSurface),
-                border = androidx.compose.foundation.BorderStroke(1.dp, ElegantDarkBorder)
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
             ) {
                 Row(
                     modifier = Modifier
@@ -817,14 +807,14 @@ private fun ServerConfigTab(
                         Text(
                             text = "Last Handshake: ${serverConfig.lastHeartbeatTime}",
                             fontSize = 12.sp,
-                            color = MutedSlateText
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
 
                     Button(
                         onClick = onTestConnection,
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = ConsoleDarkSurface,
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant,
                             contentColor = Color.White
                         ),
                         shape = RoundedCornerShape(8.dp),
@@ -843,7 +833,7 @@ private fun ServerConfigTab(
                 text = "Primary App Server Base URL",
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold,
-                color = Slate100Text
+                color = MaterialTheme.colorScheme.onSurface
             )
             Spacer(modifier = Modifier.height(4.dp))
             OutlinedTextField(
@@ -853,9 +843,9 @@ private fun ServerConfigTab(
                 modifier = Modifier.fillMaxWidth().testTag("server_url_input"),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = ElegantDarkBorder,
-                    focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White
+                    unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface
                 )
             )
         }
@@ -865,7 +855,7 @@ private fun ServerConfigTab(
                 text = "Communication Protocol",
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold,
-                color = Slate100Text
+                color = MaterialTheme.colorScheme.onSurface
             )
             Spacer(modifier = Modifier.height(4.dp))
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -875,7 +865,7 @@ private fun ServerConfigTab(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(8.dp))
-                            .background(if (isSelected) ConsoleDarkSurface else ConsoleDarkBackground)
+                            .background(if (isSelected) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.background)
                             .border(
                                 1.dp,
                                 if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent,
@@ -889,7 +879,7 @@ private fun ServerConfigTab(
                             modifier = Modifier
                                 .size(16.dp)
                                 .clip(CircleShape)
-                                .background(if (isSelected) MaterialTheme.colorScheme.primary else Slate700Icon),
+                                .background(if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant),
                             contentAlignment = Alignment.Center
                         ) {
                             if (isSelected) {
@@ -899,7 +889,7 @@ private fun ServerConfigTab(
                         Spacer(modifier = Modifier.width(10.dp))
                         Column {
                             Text(text = code, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color.White)
-                            Text(text = label, fontSize = 12.sp, color = MutedSlateText)
+                            Text(text = label, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     }
                 }
@@ -911,7 +901,7 @@ private fun ServerConfigTab(
                 text = "MQTT IoT Broker Host:Port",
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold,
-                color = Slate100Text
+                color = MaterialTheme.colorScheme.onSurface
             )
             Spacer(modifier = Modifier.height(4.dp))
             OutlinedTextField(
@@ -921,9 +911,9 @@ private fun ServerConfigTab(
                 modifier = Modifier.fillMaxWidth().testTag("mqtt_host_input"),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = ElegantDarkBorder,
-                    focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White
+                    unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface
                 )
             )
         }
@@ -933,7 +923,7 @@ private fun ServerConfigTab(
                 text = "Server API Bearer Key / Secret Token",
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold,
-                color = Slate100Text
+                color = MaterialTheme.colorScheme.onSurface
             )
             Spacer(modifier = Modifier.height(4.dp))
             OutlinedTextField(
@@ -943,9 +933,9 @@ private fun ServerConfigTab(
                 modifier = Modifier.fillMaxWidth().testTag("api_key_input"),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = ElegantDarkBorder,
-                    focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White
+                    unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface
                 )
             )
         }
@@ -961,12 +951,12 @@ private fun ServerConfigTab(
                         text = "Enforce TLS / SSL mTLS Verification",
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Slate100Text
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
                         text = "Requires valid CA certificate for meter communication",
                         fontSize = 12.sp,
-                        color = MutedSlateText
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
                 Switch(
@@ -1014,14 +1004,14 @@ private fun CommandsLogTab(commands: List<SmartMeterCommand>) {
         Text(
             text = "Cryptographically timestamped commands sent to Nigerian smart meters",
             fontSize = 12.sp,
-            color = MutedSlateText
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
 
         Spacer(modifier = Modifier.height(12.dp))
 
         if (commands.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("No remote commands dispatched yet.", color = MutedSlateText)
+                Text("No remote commands dispatched yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         } else {
             LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -1029,8 +1019,8 @@ private fun CommandsLogTab(commands: List<SmartMeterCommand>) {
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(10.dp),
-                        colors = CardDefaults.cardColors(containerColor = ElegantDarkSurface),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, ElegantDarkBorder)
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
                     ) {
                         Row(
                             modifier = Modifier
@@ -1045,7 +1035,7 @@ private fun CommandsLogTab(commands: List<SmartMeterCommand>) {
                                         text = cmd.commandType,
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 13.sp,
-                                        color = Color.White
+                                        color = MaterialTheme.colorScheme.onSurface
                                     )
                                     Box(
                                         modifier = Modifier
@@ -1059,10 +1049,10 @@ private fun CommandsLogTab(commands: List<SmartMeterCommand>) {
                                 Text(
                                     text = "Meter #${cmd.meterNumber} • Payload: ${cmd.payload}",
                                     fontSize = 12.sp,
-                                    color = MutedSlateText
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
-                            Text(text = cmd.timestampText, fontSize = 12.sp, color = MutedSlateText)
+                            Text(text = cmd.timestampText, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     }
                 }
@@ -1132,7 +1122,7 @@ app.listen(8080, () => console.log('Smart Meter Gateway running on port 8080'));
             Text(
                 text = "Connect your backend server to receive live telemetry from Mojec, Momas, Conlog, and Hexing smart meters across Nigerian DisCos.",
                 fontSize = 12.sp,
-                color = MutedSlateText
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
 
@@ -1140,8 +1130,8 @@ app.listen(8080, () => console.log('Smart Meter Gateway running on port 8080'));
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(10.dp),
-                colors = CardDefaults.cardColors(containerColor = ElegantDarkSurface),
-                border = androidx.compose.foundation.BorderStroke(1.dp, ElegantDarkBorder)
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
             ) {
                 Column(modifier = Modifier.padding(12.dp)) {
                     Row(
@@ -1149,7 +1139,7 @@ app.listen(8080, () => console.log('Smart Meter Gateway running on port 8080'));
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(text = "cURL Telemetry Push Sample", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                        Text(text = "cURL Telemetry Push Sample", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
                         IconButton(
                             onClick = {
                                 val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
@@ -1168,7 +1158,7 @@ app.listen(8080, () => console.log('Smart Meter Gateway running on port 8080'));
                         color = MaterialTheme.extendedColors.info,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(ConsoleDarkBackground, RoundedCornerShape(8.dp))
+                            .background(MaterialTheme.colorScheme.background, RoundedCornerShape(8.dp))
                             .padding(8.dp)
                     )
                 }
@@ -1179,8 +1169,8 @@ app.listen(8080, () => console.log('Smart Meter Gateway running on port 8080'));
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(10.dp),
-                colors = CardDefaults.cardColors(containerColor = ElegantDarkSurface),
-                border = androidx.compose.foundation.BorderStroke(1.dp, ElegantDarkBorder)
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
             ) {
                 Column(modifier = Modifier.padding(12.dp)) {
                     Row(
@@ -1188,7 +1178,7 @@ app.listen(8080, () => console.log('Smart Meter Gateway running on port 8080'));
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(text = "Node.js Server Endpoint", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                        Text(text = "Node.js Server Endpoint", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
                         IconButton(
                             onClick = {
                                 val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
@@ -1207,7 +1197,7 @@ app.listen(8080, () => console.log('Smart Meter Gateway running on port 8080'));
                         color = MaterialTheme.colorScheme.secondary,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(ConsoleDarkBackground, RoundedCornerShape(8.dp))
+                            .background(MaterialTheme.colorScheme.background, RoundedCornerShape(8.dp))
                             .padding(8.dp)
                     )
                 }
@@ -1249,7 +1239,7 @@ private fun AddSmartMeterModal(
         title = {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Icon(Icons.Default.Router, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-                Text("Connect New Smart Meter", fontWeight = FontWeight.Bold, color = Color.White)
+                Text("Connect New Smart Meter", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
             }
         },
         text = {
@@ -1261,7 +1251,7 @@ private fun AddSmartMeterModal(
                     Text(
                         text = "Register a Nigerian smart meter into the AMI Head-End server gateway.",
                         fontSize = 12.sp,
-                        color = MutedSlateText
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
 
@@ -1274,22 +1264,22 @@ private fun AddSmartMeterModal(
                         modifier = Modifier.fillMaxWidth().testTag("modal_meter_number_input"),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = MaterialTheme.colorScheme.primary,
-                            unfocusedBorderColor = ElegantDarkBorder,
-                            focusedTextColor = Color.White,
-                            unfocusedTextColor = Color.White
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onSurface
                         )
                     )
                 }
 
                 item {
-                    Text("Manufacturer Brand", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Slate100Text)
+                    Text("Manufacturer Brand", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
                     LazyRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                         items(manufacturers) { mfg ->
                             val isSel = manufacturer == mfg
                             Box(
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(8.dp))
-                                    .background(if (isSel) MaterialTheme.colorScheme.primary else ConsoleDarkBackground)
+                                    .background(if (isSel) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.background)
                                     .clickable { manufacturer = mfg }
                                     .padding(horizontal = 8.dp, vertical = 4.dp)
                             ) {
@@ -1297,7 +1287,7 @@ private fun AddSmartMeterModal(
                                     text = mfg,
                                     fontSize = 12.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = if (isSel) Color.Black else Color.White
+                                    color = if (isSel) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
                                 )
                             }
                         }
@@ -1305,14 +1295,14 @@ private fun AddSmartMeterModal(
                 }
 
                 item {
-                    Text("Assigned DisCo", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Slate100Text)
+                    Text("Assigned DisCo", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
                     LazyRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                         items(discos) { d ->
                             val isSel = discoCode == d
                             Box(
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(8.dp))
-                                    .background(if (isSel) MaterialTheme.colorScheme.primary else ConsoleDarkBackground)
+                                    .background(if (isSel) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.background)
                                     .clickable { discoCode = d }
                                     .padding(horizontal = 8.dp, vertical = 4.dp)
                             ) {
@@ -1320,7 +1310,7 @@ private fun AddSmartMeterModal(
                                     text = d,
                                     fontSize = 12.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = if (isSel) Color.Black else Color.White
+                                    color = if (isSel) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
                                 )
                             }
                         }
@@ -1335,9 +1325,9 @@ private fun AddSmartMeterModal(
                         modifier = Modifier.fillMaxWidth(),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = MaterialTheme.colorScheme.primary,
-                            unfocusedBorderColor = ElegantDarkBorder,
-                            focusedTextColor = Color.White,
-                            unfocusedTextColor = Color.White
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onSurface
                         )
                     )
                 }
@@ -1351,9 +1341,9 @@ private fun AddSmartMeterModal(
                         modifier = Modifier.fillMaxWidth(),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = MaterialTheme.colorScheme.primary,
-                            unfocusedBorderColor = ElegantDarkBorder,
-                            focusedTextColor = Color.White,
-                            unfocusedTextColor = Color.White
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onSurface
                         )
                     )
                 }
@@ -1375,9 +1365,9 @@ private fun AddSmartMeterModal(
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel", color = MutedSlateText)
+                Text("Cancel", color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         },
-        containerColor = ConsoleDarkSurface
+        containerColor = MaterialTheme.colorScheme.surfaceVariant
     )
 }

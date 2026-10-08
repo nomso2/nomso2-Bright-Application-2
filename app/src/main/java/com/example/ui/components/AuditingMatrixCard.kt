@@ -48,14 +48,6 @@ import androidx.compose.ui.unit.sp
 import com.example.model.AuditingHourRecord
 import com.example.model.GridTelemetry
 import com.example.model.UserProfile
-import com.example.ui.theme.ElegantDarkBorder
-import com.example.ui.theme.ElegantDarkCardStart
-import com.example.ui.theme.ElegantDarkSurface
-import com.example.ui.theme.ElegantGoldPrimary
-import com.example.ui.theme.ElegantGreenLive
-import com.example.ui.theme.Slate100Text
-import com.example.ui.theme.Slate400Text
-import com.example.ui.theme.Slate500Text
 
 /**
  * Phase 2: Geofenced Grid Telemetry & Contractual Hour Auditing Matrix
@@ -234,7 +226,7 @@ fun AuditingMatrixCard(
                         Text(
                             text = "7-DAY SHORTFALL",
                             style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp, fontWeight = FontWeight.Bold),
-                            color = Color(0xFFFCA5A5)
+                            color = MaterialTheme.colorScheme.error
                         )
                         Spacer(modifier = Modifier.height(2.dp))
                         Text(
@@ -264,7 +256,7 @@ fun AuditingMatrixCard(
                         Text(
                             text = "ESCROW REBATE DUE",
                             style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp, fontWeight = FontWeight.Bold),
-                            color = Color(0xFF86EFAC)
+                            color = MaterialTheme.colorScheme.secondary
                         )
                         Spacer(modifier = Modifier.height(2.dp))
                         Text(

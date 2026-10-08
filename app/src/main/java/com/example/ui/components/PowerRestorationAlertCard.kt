@@ -37,12 +37,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.ui.theme.ElegantDarkBar
-import com.example.ui.theme.ElegantDarkBorder
-import com.example.ui.theme.ElegantGoldPrimary
-import com.example.ui.theme.Slate100Text
-import com.example.ui.theme.Slate400Text
-import com.example.ui.theme.Slate500Text
 import com.example.ui.theme.extendedColors
 
 /**
@@ -156,7 +150,7 @@ fun PowerRestorationAlertCard(
                             fontWeight = FontWeight.Bold,
                             fontSize = 12.sp
                         ),
-                        color = if (isAlarmEnabled) MaterialTheme.extendedColors.success else Slate500Text
+                        color = if (isAlarmEnabled) MaterialTheme.extendedColors.success else MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
 

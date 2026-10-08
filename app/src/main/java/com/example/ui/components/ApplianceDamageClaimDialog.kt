@@ -62,16 +62,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.model.UserProfile
-import com.example.ui.theme.ElegantDarkBar
-import com.example.ui.theme.ElegantDarkBorder
-import com.example.ui.theme.ElegantGoldPrimary
-import com.example.ui.theme.Slate100Text
-import com.example.ui.theme.Slate400Text
-import com.example.ui.theme.Slate500Text
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import com.example.ui.theme.Slate300Text
 
 /**
  * Feature 4: Appliance Surge Damage Claim Assistant
@@ -156,9 +149,9 @@ fun ApplianceDamageClaimDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         modifier = modifier.testTag("appliance_surge_claim_dialog"),
-        containerColor = ElegantDarkBar,
-        titleContentColor = Color.White,
-        textContentColor = Slate400Text,
+        containerColor = MaterialTheme.colorScheme.surface,
+        titleContentColor = MaterialTheme.colorScheme.onSurface,
+        textContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
         title = {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -182,7 +175,7 @@ fun ApplianceDamageClaimDialog(
                     Text(
                         text = "Appliance Surge Claim",
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
                         text = "NERC Statutory Compensation Assistant",
@@ -203,7 +196,7 @@ fun ApplianceDamageClaimDialog(
                 Text(
                     text = "Did a power surge or voltage spike burn your inverter, fridge, AC, or TV? DisCos are legally required by NERC CPR 2023 to inspect and compensate verified claims.",
                     style = MaterialTheme.typography.bodySmall,
-                    color = Slate400Text
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
                 // Select Appliance
@@ -228,9 +221,9 @@ fun ApplianceDamageClaimDialog(
                             label = { Text(category, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                             colors = FilterChipDefaults.filterChipColors(
                                 selectedContainerColor = MaterialTheme.colorScheme.primary,
-                                selectedLabelColor = Color.Black,
-                                containerColor = ElegantDarkBorder,
-                                labelColor = Slate400Text
+                                selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                                containerColor = MaterialTheme.colorScheme.outline,
+                                labelColor = MaterialTheme.colorScheme.onSurfaceVariant
                             ),
                             modifier = Modifier.testTag("appliance_chip_${category.take(8)}")
                         )
@@ -247,9 +240,9 @@ fun ApplianceDamageClaimDialog(
                         .testTag("claim_brand_model_input"),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = MaterialTheme.colorScheme.primary,
-                        unfocusedBorderColor = ElegantDarkBorder,
-                        focusedTextColor = Slate100Text,
-                        unfocusedTextColor = Slate100Text
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface
                     )
                 )
 
@@ -264,9 +257,9 @@ fun ApplianceDamageClaimDialog(
                         .testTag("claim_loss_amount_input"),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = MaterialTheme.colorScheme.primary,
-                        unfocusedBorderColor = ElegantDarkBorder,
-                        focusedTextColor = Slate100Text,
-                        unfocusedTextColor = Slate100Text
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface
                     )
                 )
 
@@ -280,9 +273,9 @@ fun ApplianceDamageClaimDialog(
                         .testTag("claim_surge_time_input"),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = MaterialTheme.colorScheme.primary,
-                        unfocusedBorderColor = ElegantDarkBorder,
-                        focusedTextColor = Slate100Text,
-                        unfocusedTextColor = Slate100Text
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface
                     )
                 )
 
@@ -297,9 +290,9 @@ fun ApplianceDamageClaimDialog(
                         .testTag("claim_surge_desc_input"),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = MaterialTheme.colorScheme.primary,
-                        unfocusedBorderColor = ElegantDarkBorder,
-                        focusedTextColor = Slate100Text,
-                        unfocusedTextColor = Slate100Text
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface
                     )
                 )
 
@@ -310,15 +303,15 @@ fun ApplianceDamageClaimDialog(
                         fontWeight = FontWeight.Bold,
                         letterSpacing = 0.5.sp
                     ),
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onSurface
                 )
 
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(8.dp))
-                        .background(Color(0xFF0B0D12))
-                        .border(1.dp, ElegantDarkBorder, RoundedCornerShape(8.dp))
+                        .background(MaterialTheme.colorScheme.background)
+                        .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(8.dp))
                         .padding(12.dp)
                 ) {
                     Text(
@@ -326,7 +319,7 @@ fun ApplianceDamageClaimDialog(
                         fontFamily = FontFamily.Monospace,
                         fontSize = 12.sp,
                         lineHeight = 14.sp,
-                        color = Slate300Text
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
 
@@ -362,7 +355,7 @@ fun ApplianceDamageClaimDialog(
                             }
                             context.startActivity(Intent.createChooser(shareIntent, "Share Statutory Claim Notice"))
                         },
-                        colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White),
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.onSurface),
                         modifier = Modifier
                             .weight(1f)
                             .testTag("share_statutory_claim_btn")
@@ -402,7 +395,7 @@ fun ApplianceDamageClaimDialog(
         },
         dismissButton = {
             OutlinedButton(onClick = onDismiss, shape = RoundedCornerShape(8.dp)) {
-                Text("Close", color = Slate400Text)
+                Text("Close", color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
     )

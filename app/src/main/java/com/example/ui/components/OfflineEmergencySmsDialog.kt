@@ -60,11 +60,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.model.DisCo
 import com.example.model.UserProfile
-import com.example.ui.theme.ElegantDarkBar
-import com.example.ui.theme.ElegantDarkBorder
-import com.example.ui.theme.ElegantGoldPrimary
-import com.example.ui.theme.Slate400Text
-import com.example.ui.theme.Slate500Text
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -117,9 +112,9 @@ fun OfflineEmergencySmsDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         modifier = modifier.testTag("offline_sms_emergency_dialog"),
-        containerColor = ElegantDarkBar,
-        titleContentColor = Color.White,
-        textContentColor = Slate400Text,
+        containerColor = MaterialTheme.colorScheme.surface,
+        titleContentColor = MaterialTheme.colorScheme.onSurface,
+        textContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
         title = {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -143,7 +138,7 @@ fun OfflineEmergencySmsDialog(
                     Text(
                         text = "Offline SMS Dispatcher",
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
                         text = "Zero Data • Works without Internet",
@@ -164,7 +159,7 @@ fun OfflineEmergencySmsDialog(
                 Text(
                     text = "When cellular data is down during a blackout, this formats an official DisCo emergency dispatch SMS with your meter & transformer coordinates.",
                     style = MaterialTheme.typography.bodySmall,
-                    color = Slate400Text
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
                 Text(
@@ -182,7 +177,7 @@ fun OfflineEmergencySmsDialog(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(8.dp))
-                            .background(if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.2f) else ElegantDarkBorder)
+                            .background(if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.2f) else MaterialTheme.colorScheme.outline)
                             .border(
                                 1.dp,
                                 if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent,
@@ -196,7 +191,7 @@ fun OfflineEmergencySmsDialog(
                         Icon(
                             imageVector = if (isSelected) Icons.Default.FlashOn else Icons.Default.Warning,
                             contentDescription = null,
-                            tint = if (isSelected) MaterialTheme.colorScheme.primary else Slate500Text,
+                            tint = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(16.dp)
                         )
                         Text(
@@ -204,7 +199,7 @@ fun OfflineEmergencySmsDialog(
                             style = MaterialTheme.typography.bodySmall.copy(
                                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
                             ),
-                            color = if (isSelected) Color.White else Slate400Text
+                            color = if (isSelected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -217,7 +212,7 @@ fun OfflineEmergencySmsDialog(
                         fontWeight = FontWeight.Bold,
                         letterSpacing = 0.5.sp
                     ),
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onSurface
                 )
 
                 // SMS Preview Box
@@ -225,8 +220,8 @@ fun OfflineEmergencySmsDialog(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(8.dp))
-                        .background(Color(0xFF0B0D12))
-                        .border(1.dp, ElegantDarkBorder, RoundedCornerShape(8.dp))
+                        .background(MaterialTheme.colorScheme.background)
+                        .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(8.dp))
                         .padding(12.dp)
                 ) {
                     Text(
@@ -309,7 +304,7 @@ fun OfflineEmergencySmsDialog(
                 onClick = onDismiss,
                 shape = RoundedCornerShape(8.dp)
             ) {
-                Text("Cancel", color = Slate400Text)
+                Text("Cancel", color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
     )

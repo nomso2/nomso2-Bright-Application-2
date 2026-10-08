@@ -41,16 +41,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.model.UserProfile
-import com.example.ui.theme.ElegantBluePhase
-import com.example.ui.theme.ElegantDarkBorder
-import com.example.ui.theme.ElegantDarkCardEnd
-import com.example.ui.theme.ElegantDarkCardStart
-import com.example.ui.theme.ElegantGoldPrimary
-import com.example.ui.theme.ElegantGreenLive
-import com.example.ui.theme.Slate100Text
-import com.example.ui.theme.Slate300Text
-import com.example.ui.theme.Slate400Text
-import com.example.ui.theme.Slate500Text
 import com.example.ui.theme.extendedColors
 
 @Composable
@@ -59,11 +49,11 @@ fun MeterProfileHeader(
     onEditProfileClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val isDark = MaterialTheme.colorScheme.background == com.example.ui.theme.ElegantDarkCanvas
+    val isDark = MaterialTheme.colorScheme.background == com.example.ui.theme.MaterialTheme.colorScheme.background
     val cardBrush = if (isDark) {
-        Brush.linearGradient(colors = listOf(ElegantDarkCardStart, ElegantDarkCardEnd))
+        Brush.linearGradient(colors = listOf(MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.colorScheme.surface))
     } else {
-        Brush.linearGradient(colors = listOf(Color.White, Slate100Text))
+        Brush.linearGradient(colors = listOf(Color.White, MaterialTheme.colorScheme.onSurface))
     }
 
     Card(

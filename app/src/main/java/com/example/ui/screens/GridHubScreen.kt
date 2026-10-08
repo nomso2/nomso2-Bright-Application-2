@@ -82,8 +82,6 @@ import com.example.model.UserProfile
 import com.example.ui.AppLanguage
 import com.example.ui.components.Solutions30ComprehensiveHub
 import com.example.ui.theme.extendedColors
-import com.example.ui.theme.Slate400Text
-import com.example.ui.theme.Slate500Text
 
 enum class HubSection {
     SOLUTIONS_30,
@@ -499,14 +497,14 @@ fun GridHubScreen(
                             hoursText = "8 – 12 hrs/day",
                             rateText = "₦33.00 / kWh",
                             description = "Subsidized sub-urban feeder lines.",
-                            badgeColor = Slate400Text
+                            badgeColor = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         TariffBandRow(
                             bandName = "Band E",
                             hoursText = "4 – 8 hrs/day",
                             rateText = "₦32.00 / kWh",
                             description = "Rural/industrial frontier supply.",
-                            badgeColor = Slate500Text
+                            badgeColor = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -571,7 +569,7 @@ fun GridHubScreen(
                                         text = band.code,
                                         style = MaterialTheme.typography.labelSmall.copy(
                                             fontWeight = FontWeight.Bold,
-                                            color = if (isSel) Color.White else MaterialTheme.colorScheme.onSurface
+                                            color = if (isSel) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
                                         )
                                     )
                                 }

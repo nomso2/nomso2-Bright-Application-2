@@ -84,9 +84,6 @@ import com.example.model.NigeriaTransformerRegistry
 import com.example.model.OutageGridNode
 import com.example.model.TransformerStatus
 import com.example.model.UserProfile
-import com.example.ui.theme.EmeraldAccent
-import com.example.ui.theme.GoldPrimary
-import com.example.ui.theme.ConsoleDarkSurface
 
 enum class MapStyleMode {
     ROADMAP,
@@ -834,7 +831,7 @@ private fun DisCoFacilityCard(
                 onClick = onOpenDirections,
                 shape = RoundedCornerShape(8.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = ConsoleDarkSurface,
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
                     contentColor = MaterialTheme.colorScheme.primary
                 ),
                 border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)),
