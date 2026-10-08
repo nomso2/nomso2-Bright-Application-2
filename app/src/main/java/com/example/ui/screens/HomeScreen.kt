@@ -461,12 +461,7 @@ fun HomeScreen(
                     }
                 }
 
-                // Offline queue status: shown high up only when reports are waiting to send
-                if (pendingSyncCount > 0) {
-                    item {
-                        OfflineSyncStatusCard(pendingSyncCount = pendingSyncCount, onSyncNow = onSyncNow)
-                    }
-                }
+                // Save status lives in the one small chip at the top of the app (no duplicate banner here).
 
                 // 4. Section Title: "MY ACTIVE COMPLAINTS"
                 item {
@@ -662,12 +657,15 @@ fun HomeScreen(
                                         horizontalArrangement = Arrangement.spacedBy(6.dp)
                                     ) {
                                         Text(
-                                            text = if (isSmart) "SMART METER AUTO-CONNECTED" else "STANDARD PREPAID METER",
+                                            text = if (isSmart) "Smart meter" else "Prepaid meter",
                                             style = MaterialTheme.typography.labelSmall.copy(
                                                 fontWeight = FontWeight.ExtraBold,
-                                                letterSpacing = 0.5.sp
+                                                fontSize = 16.sp
                                             ),
-                                            color = themeColor
+                                            color = themeColor,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                            modifier = Modifier.weight(1f, fill = false)
                                         )
                                         Box(
                                             modifier = Modifier
@@ -676,8 +674,10 @@ fun HomeScreen(
                                                 .padding(horizontal = 5.dp, vertical = 1.dp)
                                         ) {
                                             Text(
-                                                text = if (isSmart) "AUTO-LINKED" else "STS KEYPAD",
-                                                fontSize = 12.sp,
+                                                text = if (isSmart) "Linked" else "Keypad",
+                                                maxLines = 1,
+                                                softWrap = false,
+                                                fontSize = 14.sp,
                                                 fontWeight = FontWeight.Bold,
                                                 color = if (isSmart) MaterialTheme.colorScheme.secondary else MaterialTheme.extendedColors.warning
                                             )
@@ -773,13 +773,6 @@ fun HomeScreen(
                     }
                 }
 
-                // 9. Offline status when nothing is waiting (low priority)
-                if (pendingSyncCount == 0) {
-                    item {
-                        OfflineSyncStatusCard(pendingSyncCount = 0, onSyncNow = onSyncNow)
-                    }
-                }
-
                 // 10. Real-Time National Grid Telemetry Bar
                 item {
                     RealTimeTicker(telemetry = telemetry)
@@ -799,77 +792,3 @@ fun HomeScreen(
     }
 }
 
-/**
- * Plain-language status of reports saved on the phone that haven't reached the server yet.
- */
-@Composable
-private fun OfflineSyncStatusCard(
-    pendingSyncCount: Int,
-    onSyncNow: () -> Unit
-) {
-    val hasPending = pendingSyncCount > 0
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .testTag("offline_cache_status_card"),
-        colors = CardDefaults.cardColors(
-            containerColor = if (hasPending) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.surface
-        ),
-        shape = RoundedCornerShape(12.dp),
-        border = BorderStroke(
-            1.dp,
-            if (hasPending) MaterialTheme.colorScheme.primary.copy(alpha = 0.5f) else MaterialTheme.colorScheme.secondary.copy(alpha = 0.3f)
-        )
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 14.dp, vertical = 10.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
-                modifier = Modifier.weight(1f)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(10.dp)
-                        .background(
-                            if (hasPending) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,
-                            shape = CircleShape
-                        )
-                )
-                Column {
-                    Text(
-                        text = when {
-                            pendingSyncCount == 1 -> "1 report waiting to send"
-                            hasPending -> "$pendingSyncCount reports waiting to send"
-                            else -> "All caught up"
-                        },
-                        style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    Text(
-                        text = "Your reports are saved on this phone and send when you're back online.",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
-            if (hasPending) {
-                TextButton(
-                    onClick = onSyncNow,
-                    modifier = Modifier.testTag("offline_sync_button")
-                ) {
-                    Text(
-                        text = "Send now",
-                        color = MaterialTheme.colorScheme.primary,
-                        style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
-                    )
-                }
-            }
-        }
-    }
-}

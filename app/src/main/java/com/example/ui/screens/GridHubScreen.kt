@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -264,9 +265,12 @@ fun GridHubScreen(
                                 horizontalArrangement = Arrangement.spacedBy(6.dp)
                             ) {
                                 Text(
-                                    text = if (isSmart) "SMART METER AUTO-CONNECTED" else "STANDARD PREPAID METER (STS)",
-                                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.ExtraBold),
-                                    color = themeColor
+                                    text = if (isSmart) "Smart meter" else "Prepaid meter",
+                                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.ExtraBold, fontSize = 16.sp),
+                                    color = themeColor,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    modifier = Modifier.weight(1f, fill = false)
                                 )
                                 Box(
                                     modifier = Modifier
@@ -275,8 +279,10 @@ fun GridHubScreen(
                                         .padding(horizontal = 5.dp, vertical = 1.dp)
                                 ) {
                                     Text(
-                                        text = if (isSmart) "AUTO-LINKED ONCE" else "NON-SMART AREA",
-                                        fontSize = 12.sp,
+                                        text = if (isSmart) "Linked" else "Keypad",
+                                        maxLines = 1,
+                                        softWrap = false,
+                                        fontSize = 14.sp,
                                         fontWeight = FontWeight.Bold,
                                         color = if (isSmart) MaterialTheme.colorScheme.secondary else MaterialTheme.extendedColors.warning
                                     )
@@ -299,9 +305,10 @@ fun GridHubScreen(
                         onClick = onOpenSmartMeterGateway,
                         colors = ButtonDefaults.buttonColors(containerColor = themeColor, contentColor = Color.White),
                         shape = RoundedCornerShape(8.dp),
-                        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp)
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 6.dp),
+                        modifier = Modifier.heightIn(min = 56.dp)
                     ) {
-                        Text(if (isSmart) "View Meter" else "Check Access", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                        Text(if (isSmart) "View meter" else "Check meter", fontSize = 16.sp, fontWeight = FontWeight.Bold, maxLines = 1, softWrap = false)
                     }
                 }
             }
@@ -326,6 +333,7 @@ fun GridHubScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Row(
+                        modifier = Modifier.weight(1f),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
@@ -345,7 +353,7 @@ fun GridHubScreen(
                         }
                         Column {
                             Text(
-                                text = "ESTATE EXCO PORTAL & NERC DOSSIER",
+                                text = "Estate group & reports file",
                                 style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.ExtraBold),
                                 color = MaterialTheme.extendedColors.warning
                             )
@@ -361,9 +369,10 @@ fun GridHubScreen(
                         onClick = onOpenEstateExco,
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.extendedColors.warning, contentColor = Color.White),
                         shape = RoundedCornerShape(8.dp),
-                        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp)
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 6.dp),
+                        modifier = Modifier.heightIn(min = 56.dp)
                     ) {
-                        Text("Open", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                        Text("Open", fontSize = 16.sp, fontWeight = FontWeight.Bold, maxLines = 1, softWrap = false)
                     }
                 }
             }

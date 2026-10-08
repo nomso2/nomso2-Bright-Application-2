@@ -228,7 +228,10 @@ fun SmartMeterServerGatewayDialog(
                                             )
                                     )
                                     Text(
-                                        text = if (headerStatus.hasSmartAccess) "AUTO-LINKED ONCE (${headerStatus.manufacturerName})" else "NON-SMART AREA (KEYPAD ONLY)",
+                                        text = if (headerStatus.hasSmartAccess) "Linked (${headerStatus.manufacturerName})" else "Keypad meter",
+                                        maxLines = 1,
+                                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                                        modifier = Modifier.weight(1f, fill = false),
                                         fontSize = 12.sp,
                                         fontWeight = FontWeight.Bold,
                                         color = if (headerStatus.hasSmartAccess) MaterialTheme.colorScheme.secondary else MaterialTheme.extendedColors.warning
