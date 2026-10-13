@@ -83,6 +83,13 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
         repository.getHistoricalComplaints(profile.meterNumber)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
+    /**
+     * Every complaint the user has made on this phone (or restored from their cloud backup):
+     * active and resolved, from every report path, newest first. This is what History shows.
+     */
+    val complaintHistory: StateFlow<List<Complaint>> = repository.getAllComplaints()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
     val outageNodes: StateFlow<List<OutageGridNode>> = repository.outageNodes
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
     val vandalismReports: StateFlow<List<VandalismReport>> = repository.getVandalismReports()
@@ -412,6 +419,9 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
             _isOnboardingCompleted.value = true
             _isAppLocked.value = false
             _userMessage.value = "Welcome back, ${profile.customerName}! Signed in to Meter #${profile.meterNumber}."
+            // Bring back complaint history from the cloud backup (reinstall / new phone).
+            val restored = repository.syncComplaintHistoryWithCloud()
+            if (restored > 0) showNotification("Restored $restored past complaint(s) from your backup.")
         }
     }
 
@@ -610,10 +620,10 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
                 discoCode = profile.discoCode,
                 transformerId = profile.transformerId,
                 feederName = profile.feederName,
-                imageUri = "https://images.unsplash.com/photo-1544724569-5f546fd6f2b5?w=600&q=80",
+                imageUri = null,
                 isVideo = false
             )
-            _userMessage.value = "🚨 Critical Danger Alert Logged! DisCo Emergency Crew Dispatched."
+            _userMessage.value = "🚨 Critical danger report $complaintId logged. Call your DisCo's emergency line now and keep clear of the cable."
         }
     }
 

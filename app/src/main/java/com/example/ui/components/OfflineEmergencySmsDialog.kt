@@ -4,6 +4,7 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import kotlinx.coroutines.launch
 import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -263,6 +264,29 @@ fun OfflineEmergencySmsDialog(
         confirmButton = {
             Button(
                 onClick = {
+                    // Save the report so it appears in History (mirrored into complaints).
+                    val appContext = context.applicationContext
+                    val faultTitle = selectedFault
+                    val smsBody = formattedSms
+                    val transformer = userProfile.transformerId
+                    val isHazardFault = faultTitle.contains("Hazard") || faultTitle.contains("Risk")
+                    kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
+                        try {
+                            com.example.data.solutions.SolutionsDatabase.get(appContext).dao().insertReport(
+                                com.example.data.solutions.FaultReportEntity(
+                                    reference = com.example.data.solutions.Refs.make("SMS"),
+                                    source = "SMS",
+                                    tier = 1,
+                                    title = faultTitle,
+                                    details = smsBody,
+                                    transformerId = transformer,
+                                    isHazard = isHazardFault
+                                )
+                            )
+                        } catch (e: Exception) {
+                            // The SMS itself still goes out.
+                        }
+                    }
                     try {
                         val smsIntent = Intent(Intent.ACTION_SENDTO).apply {
                             data = Uri.parse("smsto:$emergencyPhone")

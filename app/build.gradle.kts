@@ -21,6 +21,15 @@ android {
     versionName = "1.0"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+    // Firebase web API key for project bright-a9edc. Never committed: it comes from the
+    // FIREBASE_API_KEY environment variable (GitHub Actions secret) or a Gradle property.
+    // When empty, the app skips Firebase and keeps everything on the phone.
+    val firebaseApiKey: String =
+      System.getenv("FIREBASE_API_KEY")?.takeIf { it.isNotBlank() }
+        ?: (project.findProperty("FIREBASE_API_KEY") as String?)?.takeIf { it.isNotBlank() }
+        ?: ""
+    buildConfigField("String", "FIREBASE_API_KEY", "\"${firebaseApiKey.replace("\"", "")}\"")
   }
 
   signingConfigs {
@@ -73,6 +82,8 @@ secrets {
   propertiesFileName = ".env"
   defaultPropertiesFileName = ".env.example"
   ignoreList.add("FIREBASE_APPCHECK_DEBUG_TOKEN")
+  // Supplied by defaultConfig's buildConfigField instead, so it is never defined twice.
+  ignoreList.add("FIREBASE_API_KEY")
 }
 
 googleServices { missingGoogleServicesStrategy = MissingGoogleServicesStrategy.WARN }
@@ -107,12 +118,13 @@ dependencies {
   implementation(libs.coil.compose)
   implementation(libs.converter.moshi)
   implementation(libs.firebase.ai)
-  // Uncomment to use Firestore:
-  // implementation(libs.firebase.firestore)
+  // Firestore + anonymous Auth: cloud backup of complaint history and community data.
+  // Firebase is initialised in code (BrightFirebase), not via google-services.json.
+  implementation(libs.firebase.firestore)
+  implementation(libs.firebase.auth)
 
-  // Uncomment ALL FOUR of the following dependencies together to use Firebase Auth and Google
-  // Sign-In via Credential Manager:
-  // implementation(libs.firebase.auth)
+  // Uncomment the following dependencies together (firebase-auth is already enabled above) to
+  // add Google Sign-In via Credential Manager:
   // implementation(libs.androidx.credentials)
   // implementation(libs.androidx.credentials.play.services)
   // implementation(libs.googleid)

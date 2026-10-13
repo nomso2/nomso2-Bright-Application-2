@@ -18,6 +18,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -122,8 +124,10 @@ fun HistoryScreen(
     val dateFormat = remember { SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.getDefault()) }
 
     // Combined filtered items
+    var detailsComplaintId by remember { mutableStateOf<String?>(null) }
+
     val filteredComplaints = remember(historicalComplaints, searchQuery, selectedFilter) {
-        historicalComplaints.filter { complaint ->
+        historicalComplaints.sortedByDescending { it.reportedAt }.filter { complaint ->
             val matchesFilter = when (selectedFilter) {
                 HistoryFilter.ALL -> true
                 HistoryFilter.RESOLVED_ONLY -> complaint.status == ComplaintStatus.RESOLVED
@@ -145,6 +149,17 @@ fun HistoryScreen(
 
     val resolvedCount = historicalComplaints.count { it.status == ComplaintStatus.RESOLVED }
     val activeCount = historicalComplaints.count { it.status != ComplaintStatus.RESOLVED }
+    // Real average time from report to confirmed resolution, from the user's own tickets only.
+    val avgTurnaroundText = remember(historicalComplaints) {
+        val durations = historicalComplaints.mapNotNull { c ->
+            val done = c.resolvedAt
+            if (c.status == ComplaintStatus.RESOLVED && done != null && done >= c.reportedAt) done - c.reportedAt else null
+        }
+        if (durations.isEmpty()) "—" else {
+            val hours = durations.average() / 3_600_000.0
+            if (hours >= 48) "${"%.1f".format(hours / 24)}d" else "${"%.1f".format(hours)}h"
+        }
+    }
 
     Column(
         modifier = modifier
@@ -249,7 +264,7 @@ fun HistoryScreen(
             )
             HistoryKpiCard(
                 title = "Avg Turnaround",
-                value = "3.2h",
+                value = avgTurnaroundText,
                 subtitle = "NERC SLA 4h",
                 accentColor = MaterialTheme.extendedColors.info,
                 modifier = Modifier.weight(1f)
@@ -410,11 +425,24 @@ fun HistoryScreen(
                             onEscalateClicked = onEscalateClicked,
                             onRequestBiometricEscalation = { id ->
                                 biometricAuthPendingTicketId = id
-                            }
+                            },
+                            onOpenDetails = { detailsComplaintId = it.id }
                         )
                     }
                 }
             }
+        }
+    }
+
+    // Tap a complaint to see its full record.
+    detailsComplaintId?.let { id ->
+        val complaint = historicalComplaints.firstOrNull { it.id == id }
+        if (complaint != null) {
+            ComplaintDetailsDialog(
+                complaint = complaint,
+                dateFormat = dateFormat,
+                onDismiss = { detailsComplaintId = null }
+            )
         }
     }
 
@@ -538,6 +566,7 @@ fun HistoricalComplaintCard(
     onExpandMedia: (uri: String, isVideo: Boolean) -> Unit,
     onEscalateClicked: (String) -> Unit = {},
     onRequestBiometricEscalation: (String) -> Unit = {},
+    onOpenDetails: (Complaint) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -547,6 +576,7 @@ fun HistoricalComplaintCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
+            .clickable { onOpenDetails(complaint) }
             .testTag("history_item_${complaint.id}"),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
@@ -1243,4 +1273,85 @@ fun EmptyHistoryPlaceholder(
             )
         }
     }
+}
+
+/** Full record of one complaint, opened by tapping it in History. */
+@Composable
+fun ComplaintDetailsDialog(
+    complaint: Complaint,
+    dateFormat: SimpleDateFormat,
+    onDismiss: () -> Unit
+) {
+    val rows = buildList {
+        add("Reference" to complaint.id)
+        add("Type" to complaint.faultType.displayName)
+        add("Status" to complaint.status.displayName)
+        add("Reported" to dateFormat.format(Date(complaint.reportedAt)))
+        add("Last updated" to dateFormat.format(Date(complaint.updatedAt)))
+        complaint.resolvedAt?.let { add("Resolved" to dateFormat.format(Date(it))) }
+        add("Escalation" to "Level ${complaint.escalationTier.level}: ${complaint.escalationTier.title}")
+        if (complaint.isHazardEmergency) add("Priority" to "Emergency hazard")
+        if (complaint.discoCode.isNotBlank()) add("DisCo" to complaint.discoCode)
+        if (complaint.transformerId.isNotBlank()) add("Transformer" to complaint.transformerId)
+        if (complaint.feederName.isNotBlank()) add("Feeder" to complaint.feederName)
+        if (complaint.meterNumber.isNotBlank()) add("Meter" to complaint.meterNumber)
+        complaint.assignedCrewName?.let { add("Handled by" to it) }
+        complaint.userSatisfaction?.let { add("Your rating" to "$it / 5") }
+        complaint.resolutionNotes?.takeIf { it.isNotBlank() }?.let { add("Resolution notes" to it) }
+        if (complaint.imageUri != null) add("Evidence" to if (complaint.isVideo) "Video attached" else "Photo attached")
+    }
+    androidx.compose.material3.AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = MaterialTheme.colorScheme.surface,
+        title = {
+            Text(
+                text = complaint.title,
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        },
+        text = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                rows.forEach { (label, value) ->
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        Text(
+                            text = label,
+                            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.width(110.dp)
+                        )
+                        Text(
+                            text = value,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                }
+                if (complaint.description.isNotBlank()) {
+                    Text(
+                        text = "Description",
+                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Text(
+                        text = complaint.description,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            androidx.compose.material3.TextButton(
+                onClick = onDismiss,
+                modifier = Modifier.testTag("complaint_details_close")
+            ) { Text("Close") }
+        }
+    )
 }

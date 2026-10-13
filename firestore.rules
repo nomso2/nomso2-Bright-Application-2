@@ -1,0 +1,21 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{db}/documents {
+    // Each user's private data (complaint history backup): only that signed-in user.
+    match /users/{uid}/{doc=**} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+    // Anonymised outage report summaries pooled for community averages.
+    match /community_reports/{id} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null && request.resource.data.uid == request.auth.uid;
+      allow update, delete: if request.auth != null && resource.data.uid == request.auth.uid;
+    }
+    // Crowdsourced "crew seen / working / left" sightings per transformer.
+    match /crew_sightings/{id} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null && request.resource.data.uid == request.auth.uid;
+      allow update, delete: if request.auth != null && resource.data.uid == request.auth.uid;
+    }
+  }
+}
