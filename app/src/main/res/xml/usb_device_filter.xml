@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- USB-serial chips used in IEC 62056-21 optical probes. -->
+<resources>
+    <!-- FTDI FT232 / FT230X -->
+    <usb-device vendor-id="1027" />
+    <!-- Silicon Labs CP210x -->
+    <usb-device vendor-id="4292" />
+    <!-- Prolific PL2303 -->
+    <usb-device vendor-id="1659" />
+    <!-- WCH CH340 / CH341 -->
+    <usb-device vendor-id="6790" />
+</resources>

@@ -141,6 +141,14 @@ fun BrightApp(viewModel: BrightViewModel) {
     var showProfileAdminDialog by remember { mutableStateOf(false) }
     var showEstateExcoDialog by remember { mutableStateOf(false) }
     var showSmartMeterGatewayDialog by remember { mutableStateOf(false) }
+    // Tool #9 Universal Meter Sync (and any other screen) can ask for the gateway dialog.
+    val meterConnectRequests by com.example.ui.meter.MeterConnectLauncher.requests.collectAsState()
+    LaunchedEffect(meterConnectRequests) {
+        if (meterConnectRequests > 0) {
+            showSmartMeterGatewayDialog = true
+            com.example.ui.meter.MeterConnectLauncher.consume()
+        }
+    }
     var showDeleteAccountDialog by remember { mutableStateOf(false) }
 
     // State collections

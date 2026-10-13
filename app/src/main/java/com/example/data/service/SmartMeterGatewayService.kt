@@ -199,11 +199,7 @@ class SmartMeterGatewayServiceImpl(
         val reactiveKvar = Math.round((powerKw * 0.35) * 100.0) / 100.0
         val frequency = Math.round((49.95 + (Random.nextDouble() * 0.15)) * 100.0) / 100.0
 
-        val signalRssi = when (manufacturer) {
-            MeterManufacturer.MOJEC -> Random.nextInt(-82, -65)
-            MeterManufacturer.MOMAS -> Random.nextInt(-78, -60)
-            MeterManufacturer.CONLOG -> Random.nextInt(-85, -68)
-        }
+        val signalRssi = Random.nextInt(-85, -60)
 
         return MeterGatewayTelemetry(
             meterNumber = meterNumber,

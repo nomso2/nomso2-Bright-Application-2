@@ -134,6 +134,8 @@ dependencies {
   implementation(libs.kotlinx.coroutines.core)
   implementation(libs.logging.interceptor)
   implementation(libs.mlkit.barcode.scanning)
+  // IEC 62056-21 optical probe readout over USB-OTG (FTDI / CP210x / CH34x / PL2303 probes).
+  implementation(libs.usb.serial.for.android)
   implementation(libs.androidx.work.runtime.ktx)
   implementation(libs.moshi.kotlin)
   implementation(libs.okhttp)

@@ -1359,18 +1359,14 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
 
     private val _gatewayTelemetryMap = MutableStateFlow<Map<MeterManufacturer, MeterGatewayTelemetry?>>(
         mapOf(
-            MeterManufacturer.MOJEC to null,
-            MeterManufacturer.MOMAS to null,
-            MeterManufacturer.CONLOG to null
+            *MeterManufacturer.entries.map { it to null }.toTypedArray()
         )
     )
     val gatewayTelemetryMap: StateFlow<Map<MeterManufacturer, MeterGatewayTelemetry?>> = _gatewayTelemetryMap.asStateFlow()
 
     private val _isPollingGateway = MutableStateFlow<Map<MeterManufacturer, Boolean>>(
         mapOf(
-            MeterManufacturer.MOJEC to false,
-            MeterManufacturer.MOMAS to false,
-            MeterManufacturer.CONLOG to false
+            *MeterManufacturer.entries.map { it to false }.toTypedArray()
         )
     )
     val isPollingGateway: StateFlow<Map<MeterManufacturer, Boolean>> = _isPollingGateway.asStateFlow()

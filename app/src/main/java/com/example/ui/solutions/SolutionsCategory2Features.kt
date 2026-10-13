@@ -261,6 +261,7 @@ fun UniversalMeterSyncFeature(userProfile: UserProfile) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         FeatureHeader(9, "Universal Meter Sync", "Scan the barcode or QR sticker on your prepaid meter (or type the number) to link it with your DisCo and band.")
         ActionButton("Scan meter barcode / QR", Icons.Default.QrCodeScanner, scan)
+        ActionButton("Open smart meter connection", Icons.Default.Save, { com.example.ui.meter.MeterConnectLauncher.open() }, outlined = true)
         status?.let { InfoNote(it) }
         TextInput("Meter number (11-13 digits)", meter, { meter = it.filter(Char::isDigit).take(13) }, keyboardType = KeyboardType.Number)
         if (meter.isNotEmpty() && !valid) Text("Prepaid meter numbers are 11 to 13 digits.", color = MaterialTheme.colorScheme.error, fontSize = 14.sp)

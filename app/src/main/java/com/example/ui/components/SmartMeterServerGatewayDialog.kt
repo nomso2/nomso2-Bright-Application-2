@@ -102,8 +102,8 @@ import com.example.data.service.NigeriaSmartMeterDiscoveryService
 import com.example.ui.theme.extendedColors
 
 enum class GatewayTab(val title: String) {
-    CITIZEN_AUTO_CONNECT("Citizen Auto-Link"),
-    LIVE_GATEWAYS("Mojec / Momas / Conlog"),
+    CITIZEN_AUTO_CONNECT("Citizen Auto-Link"),  // now the dedicated "connect my meter" hub
+    LIVE_GATEWAYS("Mojec / Momas / Conlog +3"),
     METERS("All Smart Meters"),
     SERVER_CONFIG("Advanced Server"),
     COMMANDS_LOG("Commands Log"),
@@ -310,7 +310,9 @@ fun SmartMeterServerGatewayDialog(
                                 ManufacturerGatewaysLiveTab(
                                     telemetryMap = gatewayTelemetryMap,
                                     isPollingMap = isPollingGateway,
-                                    onPollGateway = onPollGateway
+                                    onPollGateway = onPollGateway,
+                                    activeMeterNumber = userProfile.meterNumber,
+                                    userProfile = userProfile
                                 )
                             }
                             GatewayTab.METERS -> {
