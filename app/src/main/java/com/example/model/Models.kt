@@ -126,14 +126,24 @@ data class MaintenanceAlert(
  * Live National Grid Telemetry
  */
 data class GridTelemetry(
-    val nationalGenerationMw: Int = 4318,
-    val peakForecastMw: Int = 5850,
-    val systemFrequencyHz: Double = 50.08,
-    val systemStatus: String = "Grid Stable",
-    val spinningReserveMw: Int = 240,
-    val activeGenCos: Int = 22,
-    val lastUpdatedText: String = "Live (TCN NCC Osogbo)"
-)
+    /** Daily figures published by NISO on https://www.niso.org.ng/ ("Grid Performance for <date>"). */
+    val reportDate: String = "",
+    val peakGenerationMw: Double? = null,
+    val peakTime: String = "",
+    val peakFrequencyHz: Double? = null,
+    val offPeakGenerationMw: Double? = null,
+    val offPeakTime: String = "",
+    val offPeakFrequencyHz: Double? = null,
+    val energyGeneratedMwh: Double? = null,
+    val energySentOutMwh: Double? = null,
+    val source: String = "NISO",
+    /** When this phone fetched the figures (0 = never). */
+    val fetchedAt: Long = 0L,
+    /** True when the last fetch failed and these are the previously saved figures. */
+    val isFromCache: Boolean = false
+) {
+    val hasData: Boolean get() = peakGenerationMw != null
+}
 
 /**
  * Appliance Surge Damage Statutory Compensation Claim (NERC CPR 2023)
@@ -317,10 +327,10 @@ data class SmartMeterServerConfig(
     val apiKey: String = "", // Never hardcode a live key; the user/operator enters it in the gateway settings.
     val webhookEndpoint: String = "/api/v1/telemetry/webhook",
     val syncIntervalSeconds: Int = 15,
-    val isConnected: Boolean = true,
-    val lastHeartbeatTime: String = "Just now",
-    val latencyMs: Int = 42,
-    val connectedMetersCount: Int = 8,
+    val isConnected: Boolean = false,
+    val lastHeartbeatTime: String = "Never",
+    val latencyMs: Int = 0,
+    val connectedMetersCount: Int = 0,
     val tlsEnabled: Boolean = true
 )
 

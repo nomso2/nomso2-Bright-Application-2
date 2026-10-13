@@ -106,6 +106,9 @@ fun CitizenAutoConnectTab(
             }
         }
 
+        // Readings the user enters from the meter display / vendor app (no invented server data).
+        item { com.example.ui.meter.ManualMeterReadingsCard() }
+
         // If smart meter is connected, show live telemetry and citizen direct tools
         if (citizenMeterStatus.hasSmartAccess) {
             item {

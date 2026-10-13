@@ -208,7 +208,7 @@ fun SmartMeterServerGatewayDialog(
                             val headerStatus = citizenMeterStatus ?: NigeriaSmartMeterDiscoveryService.checkSmartMeterAccess(userProfile)
                             Column {
                                 Text(
-                                    text = if (headerStatus.hasSmartAccess) "SMART METER AUTO-CONNECTED" else "STANDARD PREPAID METER (STS)",
+                                    text = if (headerStatus.hasSmartAccess) "POSSIBLE SMART METER (NOT LINKED)" else "STANDARD PREPAID METER (STS)",
                                     style = MaterialTheme.typography.titleMedium.copy(
                                         fontWeight = FontWeight.ExtraBold,
                                         letterSpacing = 0.5.sp
@@ -228,7 +228,7 @@ fun SmartMeterServerGatewayDialog(
                                             )
                                     )
                                     Text(
-                                        text = if (headerStatus.hasSmartAccess) "Linked (${headerStatus.manufacturerName})" else "Keypad meter",
+                                        text = if (headerStatus.hasSmartAccess) "Guess: ${headerStatus.manufacturerName}" else "Keypad meter",
                                         maxLines = 1,
                                         overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
                                         modifier = Modifier.weight(1f, fill = false),

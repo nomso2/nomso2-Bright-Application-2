@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Dialpad
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.OpenInNew
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.Sms
 import androidx.compose.material3.Button
@@ -51,7 +52,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.data.solutions.DemoGridPulseSource
 import com.example.data.solutions.FaultReportEntity
 import com.example.data.solutions.GridPulse
 import com.example.data.solutions.Refs
@@ -286,54 +286,55 @@ fun UniversalMeterSyncFeature(userProfile: UserProfile) {
 }
 
 // SOLUTION 10: NATIONAL GRID PULSE MONITOR
+// Real figures from NISO's public homepage, published once a day. No live frequency is shown
+// because no public live feed exists.
 @Composable
 fun NationalGridPulseMonitorFeature() {
-    val source = remember { DemoGridPulseSource() }
-    val history = remember { mutableStateListOf<GridPulse>() }
-    var refreshTick by remember { mutableStateOf(0) }
+    val context = LocalContext.current
     val scope = rememberCoroutineScope()
+    var data by remember { mutableStateOf<com.example.model.GridTelemetry?>(null) }
+    var loading by remember { mutableStateOf(false) }
 
-    LaunchedEffect(refreshTick) {
-        while (true) {
-            history.add(source.latest())
-            if (history.size > 30) history.removeAt(0)
-            delay(15_000)
+    fun load() {
+        loading = true
+        scope.launch {
+            data = com.example.data.cloud.NisoGridFeed.refresh(context)
+            loading = false
         }
     }
-    val latest = history.lastOrNull()
+    LaunchedEffect(Unit) {
+        data = com.example.data.cloud.NisoGridFeed.cached(context)
+        load()
+    }
+    val d = data
 
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        FeatureHeader(10, "National Grid Pulse Monitor", "Grid frequency and generation, refreshed every 15 seconds while open.")
-        Row { DemoDataBadge("Demo feed - TCN/NISO API not connected") }
-        if (latest != null) {
-            val healthy = latest.status == "Stable"
+        FeatureHeader(10, "National Grid Pulse Monitor", "Yesterday's national grid figures as published by NISO. Daily figures, not real-time.")
+        if (d == null || !d.hasData) {
+            InfoNote(if (loading) "Fetching today's figures from NISO..." else "No NISO figures saved yet. Connect to the internet and tap Refresh.")
+        } else {
+            val freqOk = d.peakFrequencyHz?.let { it in 49.75..50.25 } ?: true
             SectionCard {
-                StatRow("Status", latest.status, if (healthy) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error)
-                StatRow("Frequency", "${latest.frequencyHz} Hz (target 50.00)")
-                val dev = (1f - (kotlin.math.abs(latest.frequencyHz - 50.0) / 1.25).toFloat()).coerceIn(0f, 1f)
-                LinearProgressIndicator(progress = { dev }, modifier = Modifier.fillMaxWidth().height(8.dp))
-                StatRow("Generation", "${latest.generationMw} MW")
-                StatRow("Record peak", "${latest.peakMw} MW")
-                StatRow("Updated", Fmt.time(latest.takenAt))
-            }
-            val lineColor = MaterialTheme.colorScheme.primary
-            val guide = MaterialTheme.colorScheme.outlineVariant
-            Text("Generation trend (this session)", fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            Canvas(Modifier.fillMaxWidth().height(80.dp).semantics { contentDescription = "Generation trend chart" }) {
-                val pts = history.map { it.generationMw.toFloat() }
-                drawLine(guide, Offset(0f, size.height / 2), Offset(size.width, size.height / 2))
-                if (pts.size >= 2) {
-                    val min = pts.min() - 100f
-                    val max = pts.max() + 100f
-                    val step = size.width / (pts.size - 1)
-                    for (i in 1 until pts.size) {
-                        val y0 = size.height - (pts[i - 1] - min) / (max - min) * size.height
-                        val y1 = size.height - (pts[i] - min) / (max - min) * size.height
-                        drawLine(lineColor, Offset((i - 1) * step, y0), Offset(i * step, y1), strokeWidth = 4f)
-                    }
+                StatRow("Figures for", d.reportDate)
+                StatRow("Source", "NISO (niso.org.ng), daily")
+                d.peakGenerationMw?.let { StatRow("Peak generation", "${"%,.2f".format(it)} MW at ${d.peakTime}") }
+                d.peakFrequencyHz?.let {
+                    StatRow("Frequency at peak", "$it Hz (target 50.00)", if (freqOk) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error)
                 }
+                d.offPeakGenerationMw?.let { StatRow("Off-peak generation", "${"%,.2f".format(it)} MW at ${d.offPeakTime}") }
+                d.offPeakFrequencyHz?.let { StatRow("Frequency at off-peak", "$it Hz") }
+                d.energyGeneratedMwh?.let { StatRow("Energy generated", "${"%,.2f".format(it)} MWh") }
+                d.energySentOutMwh?.let { StatRow("Energy sent out", "${"%,.2f".format(it)} MWh") }
+                if (d.fetchedAt > 0) StatRow("Checked", Fmt.dateTime(d.fetchedAt))
             }
+            if (d.isFromCache) InfoNote("Couldn't reach NISO just now. These are the last saved figures (for ${d.reportDate}).", isWarning = true)
+            Text("NISO's normal band is 49.75-50.25 Hz. Bright doesn't show a live frequency: there is no public real-time feed.", fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
-        ActionButton("Refresh now", Icons.Default.Refresh, { scope.launch { refreshTick++ } }, outlined = true)
+        ActionButton(if (loading) "Refreshing..." else "Refresh now", Icons.Default.Refresh, { load() }, outlined = true, enabled = !loading)
+        ActionButton("Open NISO website", Icons.Default.OpenInNew, {
+            try {
+                context.startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(com.example.data.cloud.NisoGridFeed.SOURCE_URL)))
+            } catch (e: Exception) { }
+        }, outlined = true)
     }
 }

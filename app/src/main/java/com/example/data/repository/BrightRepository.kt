@@ -34,6 +34,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import com.example.data.cloud.BrightFirebase
 import com.example.data.cloud.ComplaintCloudBackup
+import com.example.data.cloud.CommunityFeed
+import com.example.data.cloud.NisoGridFeed
 import com.example.data.solutions.FaultReportEntity
 import com.example.data.solutions.SolutionsDatabase
 import kotlinx.coroutines.flow.Flow
@@ -138,7 +140,7 @@ class BrightRepository(
     val pendingSyncCount: Flow<Int> = offlineQueueDao.getPendingCount()
     val pendingSyncActions: Flow<List<OfflineSyncQueueEntity>> = offlineQueueDao.getPendingActions()
 
-    // Real-time Telemetry state backed by Room cache
+    // National grid: NISO's published daily figures, cached in Room (never a simulated reading).
     private val _gridTelemetry = MutableStateFlow(GridTelemetry())
     val gridTelemetry: StateFlow<GridTelemetry> = _gridTelemetry.asStateFlow()
 
@@ -164,10 +166,32 @@ class BrightRepository(
         val backup = complaintBackup ?: return
         ioScope.launch {
             try {
-                complaintDao.getComplaintById(id)?.let { backup.upload(it) }
+                complaintDao.getComplaintById(id)?.let { complaint ->
+                    backup.upload(complaint)
+                    // Anonymised summary for community averages (no name / phone / meter).
+                    context?.let { ctx ->
+                        val profile = profileDao.getUserProfileSync()
+                        CommunityFeed.publishReport(ctx, complaint, profile?.state ?: "", recentSupplyHoursPerDay())
+                    }
+                }
             } catch (e: Exception) {
                 // Best effort: the next full sync uploads anything missed.
             }
+        }
+    }
+
+    /** Average daily supply hours over the last 7 full logged days (Light On/Off log), or null. */
+    private suspend fun recentSupplyHoursPerDay(): Double? {
+        val ctx = context ?: return null
+        return try {
+            val events = SolutionsDatabase.get(ctx).dao().supplyEvents().firstOrNull() ?: return null
+            val firstLog = events.minOfOrNull { it.timestamp } ?: return null
+            val now = System.currentTimeMillis()
+            val days = com.example.data.solutions.SupplyMath.hoursByDay(events, 8, now).dropLast(1)
+                .filter { it.dayStart >= com.example.data.solutions.SupplyMath.startOfDay(firstLog) }
+            if (days.isEmpty()) null else days.sumOf { it.hours } / days.size
+        } catch (e: Exception) {
+            null
         }
     }
 
@@ -296,16 +320,20 @@ class BrightRepository(
 
     private suspend fun initTelemetryCache() {
         try {
-            telemetryDao.getTelemetry().collect { cached ->
-                if (cached != null) {
-                    _gridTelemetry.value = cached.toDomain()
-                } else {
-                    telemetryDao.cacheTelemetry(GridTelemetryEntity.fromDomain(_gridTelemetry.value))
-                }
+            telemetryDao.getTelemetrySync()?.let { cached ->
+                if (!_gridTelemetry.value.hasData) _gridTelemetry.value = cached.toDomain(fromCache = true)
             }
         } catch (e: Exception) {
-            // Room telemetry cache fallback
+            // Nothing saved yet: the ticker shows "waiting for NISO figures".
         }
+    }
+
+    /** Fetches NISO's daily grid figures (falls back to the last saved ones with their date). */
+    suspend fun refreshGridTelemetry(): GridTelemetry {
+        val ctx = context ?: return _gridTelemetry.value
+        val result = NisoGridFeed.refresh(ctx)
+        if (result.hasData || !_gridTelemetry.value.hasData) _gridTelemetry.value = result
+        return result
     }
 
     private suspend fun cleanOldDummyData() {
@@ -607,13 +635,6 @@ class BrightRepository(
         streetHazardDao.markDispatched(id)
     }
 
-    fun updateGridTelemetry(frequency: Double, generationMw: Int) {
-        _gridTelemetry.value = _gridTelemetry.value.copy(
-            systemFrequencyHz = frequency,
-            nationalGenerationMw = generationMw,
-            systemStatus = if (frequency in 49.8..50.2) "Grid Stable" else "Frequency Disturbance Detected"
-        )
-    }
 
     private suspend fun seedDefaultDataIfEmpty() {
         // Deliberately no default profile: a fresh install (or a deleted account) must go through
@@ -834,7 +855,10 @@ class BrightRepository(
             // Cloud copy first, while we still hold the Firebase session that owns it.
             try {
                 complaintBackup?.deleteAll()
-                context?.let { BrightFirebase.signOut(it) }
+                context?.let {
+                    CommunityFeed.deleteMine(it)
+                    BrightFirebase.signOut(it)
+                }
             } catch (e: Exception) {
                 // Best effort; local data is still wiped below.
             }
@@ -856,6 +880,8 @@ class BrightRepository(
             streetHazardDao.clearAll()
             offlineQueueDao.clearAll()
             telemetryDao.clearAll()
+            database.communityStatsDao().clearAll()
+            database.crewSightingDao().clearAll()
             outageDao.clearAll()
             maintenanceDao.clearAll()
             profileDao.clearProfile()
@@ -863,6 +889,7 @@ class BrightRepository(
             // The 30-solutions data (supply log, claims, voice notes, evidence photos, reports).
             context?.let { ctx ->
                 com.example.data.solutions.SolutionsDatabase.wipe(ctx)
+                com.example.data.meter.ManualMeterReadings.clear(ctx)
                 com.example.ui.solutions.common.SolutionsNotifier.hideQuickLog(ctx)
                 com.example.ui.solutions.common.SolutionsNotifier.cancelSurgeWarning(ctx)
             }

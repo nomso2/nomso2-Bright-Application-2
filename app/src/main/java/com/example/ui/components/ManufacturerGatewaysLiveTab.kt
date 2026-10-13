@@ -93,7 +93,7 @@ fun ManufacturerGatewaysLiveTab(
                     }
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = "Real-time bidirectional telemetry simulation across Mojec International, Momas (MEMCOL), and Conlog Nigeria head-end AMI gateways. Polling retrieves live voltage, active load, power factor, and relay status directly from meter firmware.",
+                        text = "Mojec, Momas (MEMCOL) and Conlog don't offer a public consumer API, so polling shows \"Not connected\" instead of made-up readings. Enter readings from your meter or vendor app in the Citizen tab.",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         lineHeight = 16.sp
