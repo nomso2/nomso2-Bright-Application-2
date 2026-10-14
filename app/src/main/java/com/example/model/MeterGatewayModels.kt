@@ -7,26 +7,64 @@ enum class MeterManufacturer(
     val displayName: String,
     val defaultProtocol: String,
     val supportedModels: List<String>,
-    val apiEndpointPrefix: String
+    /**
+     * Vendor HES base URL. Empty: none of these manufacturers publishes a public consumer API.
+     * A DisCo-issued HES endpoint is configured by the user in the gateway screen instead.
+     */
+    val apiEndpointPrefix: String,
+    /** Words that identify the brand when they appear in a nameplate barcode / QR payload. */
+    val nameplateKeywords: List<String>
 ) {
     MOJEC(
         displayName = "Mojec International",
-        defaultProtocol = "REST_MQTT_HYBRID",
-        supportedModels = listOf("Mojec M-Smart 3000", "Mojec SmartCell GPRS", "Mojec Polyphase STS"),
-        apiEndpointPrefix = "https://ami-gateway.mojec.com/api/v2"
+        defaultProtocol = "DLMS/COSEM + STS",
+        supportedModels = listOf("Mojec single-phase STS", "Mojec three-phase STS"),
+        apiEndpointPrefix = "",
+        nameplateKeywords = listOf("MOJEC")
     ),
     MOMAS(
-        displayName = "Momas Electricity Meters (MEMCOL)",
-        defaultProtocol = "DLMS_COSEM_HDLC",
-        supportedModels = listOf("Momas MEM-500 Smart", "Momas STS Single-Phase 4G", "Momas Industrial Tri-Vector"),
-        apiEndpointPrefix = "https://ami.momas.ng/gateway/v1"
+        displayName = "Momas (MEMMCOL)",
+        defaultProtocol = "DLMS/COSEM + STS",
+        supportedModels = listOf("Momas single-phase STS", "Momas three-phase STS"),
+        apiEndpointPrefix = "",
+        nameplateKeywords = listOf("MOMAS", "MEMMCOL", "MEMCOL")
     ),
     CONLOG(
-        displayName = "Conlog Nigeria",
-        defaultProtocol = "STS6_CELLULAR_APN",
-        supportedModels = listOf("Conlog BEC44(09)", "Conlog Wireless In-Home AMI", "Conlog Omnicube STS"),
-        apiEndpointPrefix = "https://ng-cloud.conlog.com/meter-telemetry"
-    )
+        displayName = "Conlog",
+        defaultProtocol = "STS",
+        supportedModels = listOf("Conlog BEC series", "Conlog split prepayment"),
+        apiEndpointPrefix = "",
+        nameplateKeywords = listOf("CONLOG")
+    ),
+    HEXING(
+        displayName = "Hexing Electrical",
+        defaultProtocol = "DLMS/COSEM + STS",
+        supportedModels = listOf("Hexing single-phase STS", "Hexing three-phase STS"),
+        apiEndpointPrefix = "",
+        nameplateKeywords = listOf("HEXING")
+    ),
+    SANXING(
+        displayName = "Ningbo Sanxing",
+        defaultProtocol = "DLMS/COSEM + STS",
+        supportedModels = listOf("Sanxing single-phase STS", "Sanxing three-phase STS"),
+        apiEndpointPrefix = "",
+        nameplateKeywords = listOf("SANXING", "SAN XING")
+    ),
+    CHINT(
+        displayName = "Shenzhen Chint",
+        defaultProtocol = "DLMS/COSEM + STS",
+        supportedModels = listOf("Chint single-phase STS", "Chint three-phase STS"),
+        apiEndpointPrefix = "",
+        nameplateKeywords = listOf("CHINT")
+    );
+
+    companion object {
+        /** Brand named in a scanned payload, or null when the payload doesn't say. */
+        fun guessFromText(raw: String): MeterManufacturer? {
+            val up = raw.uppercase()
+            return entries.firstOrNull { m -> m.nameplateKeywords.any { up.contains(it) } }
+        }
+    }
 }
 
 /**

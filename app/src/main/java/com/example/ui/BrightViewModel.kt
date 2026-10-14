@@ -98,6 +98,10 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
         repository.getBillingDisputes(profile.meterNumber)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
     val gridTelemetry: StateFlow<GridTelemetry> = repository.gridTelemetry
+
+    fun refreshGridTelemetry() {
+        viewModelScope.launch { repository.refreshGridTelemetry() }
+    }
     val maintenanceAlerts: StateFlow<List<MaintenanceAlert>> = repository.maintenanceAlerts
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
     val pendingSyncCount: StateFlow<Int> = repository.pendingSyncCount
@@ -1177,21 +1181,10 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
         _citizenMeterStatus.value = status
 
         if (status.hasSmartAccess && status.manufacturer != null) {
-            val existing = _smartMetersList.value.firstOrNull { it.meterNumber == profile.meterNumber }
-            if (existing == null) {
-                val newMeter = NigeriaSmartMeterDiscoveryService.buildAutoConnectedSmartMeter(
-                    profile = profile,
-                    mfg = status.manufacturer,
-                    model = status.modelName
-                )
-                _smartMetersList.value = listOf(newMeter) + _smartMetersList.value.filter { it.meterNumber != profile.meterNumber }
-            }
-            _smartMeterServerConfig.value = _smartMeterServerConfig.value.copy(
-                isConnected = true,
-                connectedMetersCount = _smartMetersList.value.count { it.isOnline }
-            )
+            // No public vendor API exists, so nothing is "auto-connected" and no readings are made
+            // up. The user enters readings from the meter or vendor app instead.
             if (!isSilent) {
-                showNotification("✓ Smart meter auto-connected: ${status.manufacturerName} (Meter #${profile.meterNumber})")
+                showNotification("Possible ${status.manufacturerName} smart meter. Bright can't read it remotely yet: enter readings from your meter or vendor app.")
             }
         } else {
             if (!isSilent) {
@@ -1207,26 +1200,8 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
         autoDetectAndConnectSmartMeter(userProfile.value, isSilent = false)
     }
 
-    private val _smartMeterCommands = MutableStateFlow<List<SmartMeterCommand>>(
-        listOf(
-            SmartMeterCommand(
-                id = "CMD-9081",
-                meterNumber = "01429583192",
-                commandType = "INSTANT_TELEMETRY_READ",
-                payload = "DLMS_GET_ACTIVE_VOLTAGE_CURRENT",
-                timestampText = "10 mins ago",
-                status = "DELIVERED_ACK"
-            ),
-            SmartMeterCommand(
-                id = "CMD-9082",
-                meterNumber = "45019283741",
-                commandType = "OTA_TOKEN_INJECTION",
-                payload = "STS_TOKEN: 8421 9901 3821 9021 4410",
-                timestampText = "1 hour ago",
-                status = "DELIVERED_ACK"
-            )
-        )
-    )
+    // Starts empty: only commands the user actually sends are logged (no sample entries).
+    private val _smartMeterCommands = MutableStateFlow<List<SmartMeterCommand>>(emptyList())
     val smartMeterCommands: StateFlow<List<SmartMeterCommand>> = _smartMeterCommands.asStateFlow()
 
     fun updateSmartMeterServerConfig(
@@ -1384,18 +1359,14 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
 
     private val _gatewayTelemetryMap = MutableStateFlow<Map<MeterManufacturer, MeterGatewayTelemetry?>>(
         mapOf(
-            MeterManufacturer.MOJEC to null,
-            MeterManufacturer.MOMAS to null,
-            MeterManufacturer.CONLOG to null
+            *MeterManufacturer.entries.map { it to null }.toTypedArray()
         )
     )
     val gatewayTelemetryMap: StateFlow<Map<MeterManufacturer, MeterGatewayTelemetry?>> = _gatewayTelemetryMap.asStateFlow()
 
     private val _isPollingGateway = MutableStateFlow<Map<MeterManufacturer, Boolean>>(
         mapOf(
-            MeterManufacturer.MOJEC to false,
-            MeterManufacturer.MOMAS to false,
-            MeterManufacturer.CONLOG to false
+            *MeterManufacturer.entries.map { it to false }.toTypedArray()
         )
     )
     val isPollingGateway: StateFlow<Map<MeterManufacturer, Boolean>> = _isPollingGateway.asStateFlow()
@@ -1423,15 +1394,16 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     init {
-        // Live grid telemetry oscillation simulator (e.g. 50.04 Hz - 50.12 Hz realistic variation)
+        // National grid figures: NISO publishes them once a day, so check every 3 hours while the
+        // app is open. (This replaced a simulator that invented a "live" frequency.)
         viewModelScope.launch {
             while (true) {
-                delay(8000)
-                val current = gridTelemetry.value
-                val jitter = ((-4..4).random()) / 100.0
-                val newFreq = Math.round((50.06 + jitter) * 100.0) / 100.0
-                val mwJitter = (-25..35).random()
-                repository.updateGridTelemetry(newFreq, current.nationalGenerationMw + mwJitter)
+                try {
+                    repository.refreshGridTelemetry()
+                } catch (e: Exception) {
+                    // Offline: the last saved NISO figures stay on screen with their date.
+                }
+                delay(3 * 60 * 60 * 1000L)
             }
         }
 

@@ -28,11 +28,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.model.GridTelemetry
 
+/**
+ * National grid strip. Shows NISO's published DAILY figures (peak generation, frequency at peak)
+ * with their date. It is not a live reading, and it says so.
+ */
 @Composable
 fun RealTimeTicker(
     telemetry: GridTelemetry,
     modifier: Modifier = Modifier
 ) {
+    val freq = telemetry.peakFrequencyHz
+    val freqOk = freq != null && freq in 49.75..50.25
     Surface(
         modifier = modifier
             .fillMaxWidth()
@@ -48,7 +54,6 @@ fun RealTimeTicker(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            // Live blinking indicator
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(6.dp)
@@ -57,10 +62,10 @@ fun RealTimeTicker(
                     modifier = Modifier
                         .size(8.dp)
                         .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.secondary)
+                        .background(if (telemetry.hasData) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.outline)
                 )
                 Text(
-                    text = "LIVE GRID",
+                    text = "GRID DAILY",
                     style = MaterialTheme.typography.labelSmall.copy(
                         fontWeight = FontWeight.ExtraBold,
                         fontSize = 12.sp,
@@ -70,49 +75,49 @@ fun RealTimeTicker(
                 )
             }
 
-            // Generation MW with Gold bolt
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Bolt,
-                    contentDescription = "National Power Generation",
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(16.dp)
-                )
+            if (!telemetry.hasData) {
                 Text(
-                    text = "${telemetry.nationalGenerationMw} MW",
-                    style = MaterialTheme.typography.bodySmall.copy(
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 12.sp
-                    ),
-                    color = MaterialTheme.colorScheme.onSurface
+                    text = "Waiting for NISO figures",
+                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+            } else {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Bolt,
+                        contentDescription = "Peak generation",
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Text(
+                        text = "Peak ${"%,.0f".format(telemetry.peakGenerationMw ?: 0.0)} MW",
+                        style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold, fontSize = 12.sp),
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+                if (freq != null) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Speed,
+                            contentDescription = "Frequency at peak",
+                            tint = if (freqOk) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Text(
+                            text = "$freq Hz",
+                            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold, fontSize = 12.sp),
+                            color = if (freqOk) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.error
+                        )
+                    }
+                }
             }
 
-            // Frequency
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Speed,
-                    contentDescription = "System Grid Frequency",
-                    tint = if (telemetry.systemFrequencyHz in 49.8..50.2) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
-                    modifier = Modifier.size(16.dp)
-                )
-                Text(
-                    text = "${telemetry.systemFrequencyHz} Hz",
-                    style = MaterialTheme.typography.bodySmall.copy(
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 12.sp
-                    ),
-                    color = if (telemetry.systemFrequencyHz in 49.8..50.2) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.error
-                )
-            }
-
-            // Status chip
             Box(
                 modifier = Modifier
                     .clip(RoundedCornerShape(6.dp))
@@ -121,14 +126,17 @@ fun RealTimeTicker(
                     .padding(horizontal = 6.dp, vertical = 2.dp)
             ) {
                 Text(
-                    text = telemetry.systemStatus,
-                    style = MaterialTheme.typography.labelSmall.copy(
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold
-                    ),
+                    text = if (telemetry.hasData) "NISO · ${shortNisoDate(telemetry.reportDate)}" else "NISO",
+                    style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp, fontWeight = FontWeight.Bold),
                     color = MaterialTheme.colorScheme.secondary
                 )
             }
         }
     }
+}
+
+/** "Monday, October 12, 2026" -> "Oct 12". */
+fun shortNisoDate(date: String): String {
+    val m = Regex("([A-Za-z]{3})[A-Za-z]*\\s+(\\d{1,2})").findAll(date).lastOrNull() ?: return date
+    return "${m.groupValues[1]} ${m.groupValues[2]}"
 }

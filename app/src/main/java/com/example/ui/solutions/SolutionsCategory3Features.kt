@@ -86,6 +86,7 @@ fun AutomatedBandAuditorFeature(userProfile: UserProfile) {
             StatRow("Actually delivered", if (counted.isEmpty()) "-" else SupplyMath.deliveredBand(avg))
             if (counted.isNotEmpty()) DailyHoursChart(counted, promised)
         }
+        com.example.ui.solutions.common.CommunityAveragesCard(userProfile)
         if (counted.isNotEmpty() && avg < promised) {
             InfoNote("You pay for ${userProfile.feederBand.code} but receive ${SupplyMath.deliveredBand(avg)} service. Claim compensation in #12.", isWarning = true)
         }
@@ -232,7 +233,7 @@ fun MeterWaitlistTrackerFeature(userProfile: UserProfile) {
                 StatRow("${i + 1}. $code" + if (mine.containsKey(code)) " (incl. yours)" else "", "$d days",
                     if (d > 10) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary)
             }
-            Text("Community averages are demo figures until reports are pooled on a server; your own entries are real.", fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text("The other DisCos' waits above are demo figures: meter-installation waits aren't pooled yet. Your own entries are real.", fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
 }

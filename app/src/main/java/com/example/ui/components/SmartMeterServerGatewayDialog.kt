@@ -102,8 +102,8 @@ import com.example.data.service.NigeriaSmartMeterDiscoveryService
 import com.example.ui.theme.extendedColors
 
 enum class GatewayTab(val title: String) {
-    CITIZEN_AUTO_CONNECT("Citizen Auto-Link"),
-    LIVE_GATEWAYS("Mojec / Momas / Conlog"),
+    CITIZEN_AUTO_CONNECT("Citizen Auto-Link"),  // now the dedicated "connect my meter" hub
+    LIVE_GATEWAYS("Mojec / Momas / Conlog +3"),
     METERS("All Smart Meters"),
     SERVER_CONFIG("Advanced Server"),
     COMMANDS_LOG("Commands Log"),
@@ -208,7 +208,7 @@ fun SmartMeterServerGatewayDialog(
                             val headerStatus = citizenMeterStatus ?: NigeriaSmartMeterDiscoveryService.checkSmartMeterAccess(userProfile)
                             Column {
                                 Text(
-                                    text = if (headerStatus.hasSmartAccess) "SMART METER AUTO-CONNECTED" else "STANDARD PREPAID METER (STS)",
+                                    text = if (headerStatus.hasSmartAccess) "POSSIBLE SMART METER (NOT LINKED)" else "STANDARD PREPAID METER (STS)",
                                     style = MaterialTheme.typography.titleMedium.copy(
                                         fontWeight = FontWeight.ExtraBold,
                                         letterSpacing = 0.5.sp
@@ -228,7 +228,7 @@ fun SmartMeterServerGatewayDialog(
                                             )
                                     )
                                     Text(
-                                        text = if (headerStatus.hasSmartAccess) "Linked (${headerStatus.manufacturerName})" else "Keypad meter",
+                                        text = if (headerStatus.hasSmartAccess) "Guess: ${headerStatus.manufacturerName}" else "Keypad meter",
                                         maxLines = 1,
                                         overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
                                         modifier = Modifier.weight(1f, fill = false),
@@ -310,7 +310,9 @@ fun SmartMeterServerGatewayDialog(
                                 ManufacturerGatewaysLiveTab(
                                     telemetryMap = gatewayTelemetryMap,
                                     isPollingMap = isPollingGateway,
-                                    onPollGateway = onPollGateway
+                                    onPollGateway = onPollGateway,
+                                    activeMeterNumber = userProfile.meterNumber,
+                                    userProfile = userProfile
                                 )
                             }
                             GatewayTab.METERS -> {

@@ -16,9 +16,11 @@ import androidx.room.RoomDatabase
         OutageGridNodeEntity::class,
         MaintenanceAlertEntity::class,
         GridTelemetryEntity::class,
-        OfflineSyncQueueEntity::class
+        OfflineSyncQueueEntity::class,
+        CommunityStatsEntity::class,
+        CrewSightingEntity::class
     ],
-    version = 7,
+    version = 8,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -32,6 +34,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun maintenanceAlertDao(): MaintenanceAlertDao
     abstract fun gridTelemetryDao(): GridTelemetryDao
     abstract fun offlineSyncQueueDao(): OfflineSyncQueueDao
+    abstract fun communityStatsDao(): CommunityStatsDao
+    abstract fun crewSightingDao(): CrewSightingDao
 
     companion object {
         @Volatile

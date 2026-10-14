@@ -162,8 +162,11 @@ interface MaintenanceAlertDao {
 
 @Dao
 interface GridTelemetryDao {
-    @Query("SELECT * FROM grid_telemetry_cache WHERE id = 'CURRENT_TELEMETRY' LIMIT 1")
+    @Query("SELECT * FROM grid_telemetry_cache WHERE id = 'NISO_DAILY' LIMIT 1")
     fun getTelemetry(): Flow<GridTelemetryEntity?>
+
+    @Query("SELECT * FROM grid_telemetry_cache WHERE id = 'NISO_DAILY' LIMIT 1")
+    suspend fun getTelemetrySync(): GridTelemetryEntity?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun cacheTelemetry(telemetry: GridTelemetryEntity)
@@ -194,3 +197,30 @@ interface OfflineSyncQueueDao {
 }
 
 
+
+@Dao
+interface CommunityStatsDao {
+    @Query("SELECT * FROM community_stats_cache WHERE scope = :scope LIMIT 1")
+    fun observe(scope: String): Flow<CommunityStatsEntity?>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsert(stats: CommunityStatsEntity)
+
+    @Query("DELETE FROM community_stats_cache")
+    suspend fun clearAll()
+}
+
+@Dao
+interface CrewSightingDao {
+    @Query("SELECT * FROM crew_sightings_cache WHERE transformerId = :transformerId ORDER BY createdAt DESC LIMIT 50")
+    fun observe(transformerId: String): Flow<List<CrewSightingEntity>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsertAll(items: List<CrewSightingEntity>)
+
+    @Query("DELETE FROM crew_sightings_cache WHERE transformerId = :transformerId")
+    suspend fun clearFor(transformerId: String)
+
+    @Query("DELETE FROM crew_sightings_cache")
+    suspend fun clearAll()
+}

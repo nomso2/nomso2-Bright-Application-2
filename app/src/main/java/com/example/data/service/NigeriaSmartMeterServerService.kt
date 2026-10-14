@@ -47,8 +47,8 @@ class NigeriaSmartMeterServerService {
                 Pair(response.isSuccessful || response.code in 200..499, elapsed)
             }
         } catch (e: Exception) {
-            // Server offline or in local simulation mode
-            Pair(true, (28..65).random())
+            // Unreachable: say so, with the real time it took to fail.
+            Pair(false, (System.currentTimeMillis() - startTime).toInt())
         }
     }
 
@@ -81,7 +81,7 @@ class NigeriaSmartMeterServerService {
                 response.isSuccessful
             }
         } catch (e: Exception) {
-            true // fallback gracefully in simulated grid testing
+            false // not delivered
         }
     }
 

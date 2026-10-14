@@ -33,41 +33,11 @@ interface GridPulseSource {
     suspend fun latest(): GridPulse
 }
 
-class DemoGridPulseSource(private val random: Random = Random.Default) : GridPulseSource {
-    override suspend fun latest(): GridPulse {
-        val freq = 49.6 + random.nextDouble() * 0.7
-        val gen = 3600 + random.nextInt(1600)
-        return GridPulse(
-            frequencyHz = (freq * 100).roundToInt() / 100.0,
-            generationMw = gen,
-            peakMw = 5801,
-            takenAt = System.currentTimeMillis(),
-            isDemo = true
-        )
-    }
-}
+// The demo grid pulse source was removed: national grid figures now come from NISO
+// (com.example.data.cloud.NisoGridFeed), daily, never simulated.
 
-data class FieldCrew(
-    val name: String,
-    val vehicleReg: String,
-    val phone: String,
-    val latitude: Double,
-    val longitude: Double,
-    val isDemo: Boolean
-)
-
-interface CrewDirectory {
-    suspend fun crewsNear(latitude: Double, longitude: Double): List<FieldCrew>
-}
-
-/** Places three fictional crews a short drive from the given point. */
-class DemoCrewDirectory : CrewDirectory {
-    override suspend fun crewsNear(latitude: Double, longitude: Double): List<FieldCrew> = listOf(
-        FieldCrew("Crew A (demo) - Tunde B.", "LND-482-XY", "", latitude + 0.012, longitude + 0.008, true),
-        FieldCrew("Crew B (demo) - Amaka O.", "KJA-219-KA", "", latitude - 0.025, longitude + 0.018, true),
-        FieldCrew("Crew C (demo) - Musa I.", "ABJ-731-GW", "", latitude + 0.04, longitude - 0.03, true)
-    )
-}
+// Field crews: no DisCo publishes crew positions, so the tracker shows residents' crowdsourced
+// sightings instead (com.example.data.cloud.CommunityFeed, Firestore crew_sightings).
 
 data class OutageDiagnosis(
     val kind: String,

@@ -1,5 +1,9 @@
 package com.example.ui.solutions
 
+import com.example.data.solutions.SupplyMath
+import com.example.ui.solutions.common.TextInput
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -45,10 +49,8 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.data.solutions.DemoCrewDirectory
 import com.example.data.solutions.DemoOutageStatusSource
 import com.example.data.solutions.FaultReportEntity
-import com.example.data.solutions.FieldCrew
 import com.example.data.solutions.Geo
 import com.example.data.solutions.OutageDiagnosis
 import com.example.data.solutions.Refs
@@ -219,59 +221,78 @@ fun GpsFaultGeofencingFeature(userProfile: UserProfile) {
     }
 }
 
-// SOLUTION 3: AUTOMATED DISPATCH ROUTER
+// SOLUTION 3: AUTOMATED DISPATCH ROUTER -> crowdsourced crew tracker
+// No DisCo publishes crew positions, so this shows real "crew seen / working / left" posts from
+// residents on the same transformer (Firestore crew_sightings), cached on the phone for offline.
 @Composable
 fun AutomatedDispatchRouterFeature(userProfile: UserProfile) {
     val context = LocalContext.current
-    val dao = rememberSolutionsDao()
     val scope = rememberCoroutineScope()
-    val directory = remember { DemoCrewDirectory() }
+    val transformer = userProfile.transformerId
+    val sightingsFlow = remember(transformer) {
+        com.example.data.database.AppDatabase.getDatabase(context).crewSightingDao().observe(transformer)
+    }
+    val sightings by sightingsFlow.collectAsState(initial = emptyList())
     var pin by remember { mutableStateOf<PinnedLocation?>(null) }
-    var crews by remember { mutableStateOf<List<FieldCrew>>(emptyList()) }
-    var requested by remember { mutableStateOf<String?>(null) }
+    var note by remember { mutableStateOf("") }
+    var status by remember { mutableStateOf<String?>(null) }
+    var busy by remember { mutableStateOf(false) }
+    val cloudReady = com.example.data.cloud.BrightFirebase.isConfigured
+
+    LaunchedEffect(transformer) {
+        if (cloudReady && transformer.isNotBlank()) {
+            com.example.data.cloud.CommunityFeed.refreshSightings(context, transformer)
+        }
+    }
 
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        FeatureHeader(3, "Automated Dispatch Router", "Pin the fault and Bright picks the nearest field crew, with distance and ETA.")
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) { DemoDataBadge("Demo crews") }
-        LocationPinner(pin) { new ->
-            pin = new
-            if (new?.hasCoordinates == true) {
-                scope.launch { crews = directory.crewsNear(new.latitude!!, new.longitude!!) }
-            } else crews = emptyList()
-        }
-        val p = pin
-        if (p != null && !p.hasCoordinates) InfoNote("Distance needs GPS or typed coordinates. You can still call your DisCo below.")
-        if (p?.hasCoordinates == true && crews.isNotEmpty()) {
-            val ranked = crews.map { it to Geo.distanceKm(p.latitude!!, p.longitude!!, it.latitude, it.longitude) }.sortedBy { it.second }
-            ranked.forEachIndexed { i, (crew, km) ->
-                SectionCard {
-                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Icon(Icons.Default.LocalShipping, contentDescription = null)
-                        Text(crew.name, fontWeight = FontWeight.Bold, fontSize = 16.sp, modifier = Modifier.weight(1f))
-                        if (i == 0) Text("Nearest", color = MaterialTheme.colorScheme.primary, fontSize = 14.sp, fontWeight = FontWeight.Bold)
-                    }
-                    StatRow("Vehicle", crew.vehicleReg)
-                    StatRow("Distance", String.format(java.util.Locale.US, "%.1f km", km))
-                    StatRow("ETA (city traffic)", "${Geo.etaMinutes(km)} min")
-                    if (i == 0) {
-                        ActionButton("Request this crew", Icons.Default.Send, {
-                            val ref = Refs.make("DSP")
-                            scope.launch {
-                                dao.insertReport(FaultReportEntity(
-                                    reference = ref, source = "GPS", tier = 2,
-                                    title = "Crew requested: ${crew.name}",
-                                    details = "Vehicle ${crew.vehicleReg}, ETA ${Geo.etaMinutes(km)} min (demo)",
-                                    transformerId = userProfile.transformerId,
-                                    latitude = p.latitude, longitude = p.longitude, stage = 2
-                                ))
-                                requested = ref
-                            }
-                        })
-                    }
+        FeatureHeader(3, "Automated Dispatch Router", "See when neighbours on your transformer last saw a DisCo crew, and tell them when you see one.")
+        if (transformer.isBlank()) InfoNote("Add your transformer in your profile to see crew sightings for it.")
+        if (!cloudReady) InfoNote("Crew sightings need Bright's online service, which isn't switched on in this version yet. You can still call your DisCo below.", isWarning = true)
+        SectionCard {
+            Text("Crew sightings for ${transformer.ifBlank { "your transformer" }} (last 48 hours)", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+            if (sightings.isEmpty()) {
+                Text("No neighbours have reported a crew yet.", fontSize = 15.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            } else {
+                val recent = sightings.filter { System.currentTimeMillis() - it.createdAt < 6 * SupplyMath.HOUR_MS }
+                com.example.data.cloud.CommunityFeed.CrewKind.entries.forEach { k ->
+                    val people = recent.filter { it.kind == k.name }.map { it.reporterKey }.toSet().size
+                    if (people > 0) StatRow(k.label, "$people neighbour${if (people == 1) "" else "s"} (last 6 h)")
+                }
+                sightings.take(15).forEach { s ->
+                    val label = com.example.data.cloud.CommunityFeed.CrewKind.entries.firstOrNull { it.name == s.kind }?.label ?: s.kind
+                    StatRow(label + if (s.isMine) " (you)" else "", Fmt.dateTime(s.createdAt))
+                    if (s.note.isNotBlank()) Text(s.note, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
         }
-        requested?.let { InfoNote("Request $it logged at 'Crew dispatched'. Track it in #22.") }
+        SectionCard {
+            Text("I can see a crew", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+            TextInput("Short note (optional, no names or phone numbers)", note, { note = it.take(140) })
+            com.example.data.cloud.CommunityFeed.CrewKind.entries.forEach { k ->
+                ActionButton(k.label, Icons.Default.LocalShipping, {
+                    busy = true
+                    scope.launch {
+                        val ok = com.example.data.cloud.CommunityFeed.postSighting(context, transformer, userProfile.discoCode, k, note.trim())
+                        status = if (ok) "Thanks. Your neighbours can see it now." else "Couldn't post. Check your internet and try again."
+                        if (ok) note = ""
+                        busy = false
+                    }
+                }, enabled = cloudReady && transformer.isNotBlank() && !busy, outlined = k != com.example.data.cloud.CommunityFeed.CrewKind.SEEN)
+            }
+            status?.let { Text(it, fontSize = 14.sp, color = MaterialTheme.colorScheme.primary) }
+            ActionButton("Refresh sightings", Icons.Default.Refresh, {
+                scope.launch { com.example.data.cloud.CommunityFeed.refreshSightings(context, transformer) }
+            }, enabled = cloudReady && transformer.isNotBlank(), outlined = true)
+        }
+        Text("Pin the fault so you can share its exact location with the DisCo:", fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        LocationPinner(pin) { pin = it }
+        pin?.let { p ->
+            ActionButton("Share fault location", Icons.Default.Send, {
+                SolutionIntents.shareText(context, "Fault location",
+                    "Electricity fault here: ${p.mapsLink() ?: p.label}\nMeter ${userProfile.meterNumber}, transformer ${userProfile.transformerId}")
+            }, outlined = true)
+        }
         SolutionIntents.discoFor(userProfile)?.let { d ->
             if (d.primaryPhone.isNotBlank()) ActionButton("Call ${d.code} dispatch (${d.primaryPhone})", Icons.Default.Call, {
                 SolutionIntents.dial(context, d.primaryPhone)

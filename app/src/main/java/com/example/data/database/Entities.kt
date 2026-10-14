@@ -436,38 +436,77 @@ data class MaintenanceAlertEntity(
  */
 @Entity(tableName = "grid_telemetry_cache")
 data class GridTelemetryEntity(
-    @PrimaryKey val id: String = "CURRENT_TELEMETRY",
-    val nationalGenerationMw: Int,
-    val peakForecastMw: Int,
-    val systemFrequencyHz: Double,
-    val systemStatus: String,
-    val spinningReserveMw: Int,
-    val activeGenCos: Int,
-    val lastUpdatedText: String,
-    val cachedAt: Long = System.currentTimeMillis()
+    @PrimaryKey val id: String = "NISO_DAILY",
+    val reportDate: String,
+    val peakGenerationMw: Double?,
+    val peakTime: String,
+    val peakFrequencyHz: Double?,
+    val offPeakGenerationMw: Double?,
+    val offPeakTime: String,
+    val offPeakFrequencyHz: Double?,
+    val energyGeneratedMwh: Double?,
+    val energySentOutMwh: Double?,
+    val source: String,
+    val fetchedAt: Long
 ) {
-    fun toDomain() = com.example.model.GridTelemetry(
-        nationalGenerationMw = nationalGenerationMw,
-        peakForecastMw = peakForecastMw,
-        systemFrequencyHz = systemFrequencyHz,
-        systemStatus = systemStatus,
-        spinningReserveMw = spinningReserveMw,
-        activeGenCos = activeGenCos,
-        lastUpdatedText = "$lastUpdatedText (saved on this phone)"
+    fun toDomain(fromCache: Boolean = true) = com.example.model.GridTelemetry(
+        reportDate = reportDate,
+        peakGenerationMw = peakGenerationMw,
+        peakTime = peakTime,
+        peakFrequencyHz = peakFrequencyHz,
+        offPeakGenerationMw = offPeakGenerationMw,
+        offPeakTime = offPeakTime,
+        offPeakFrequencyHz = offPeakFrequencyHz,
+        energyGeneratedMwh = energyGeneratedMwh,
+        energySentOutMwh = energySentOutMwh,
+        source = source,
+        fetchedAt = fetchedAt,
+        isFromCache = fromCache
     )
 
     companion object {
         fun fromDomain(t: com.example.model.GridTelemetry) = GridTelemetryEntity(
-            nationalGenerationMw = t.nationalGenerationMw,
-            peakForecastMw = t.peakForecastMw,
-            systemFrequencyHz = t.systemFrequencyHz,
-            systemStatus = t.systemStatus,
-            spinningReserveMw = t.spinningReserveMw,
-            activeGenCos = t.activeGenCos,
-            lastUpdatedText = t.lastUpdatedText
+            reportDate = t.reportDate,
+            peakGenerationMw = t.peakGenerationMw,
+            peakTime = t.peakTime,
+            peakFrequencyHz = t.peakFrequencyHz,
+            offPeakGenerationMw = t.offPeakGenerationMw,
+            offPeakTime = t.offPeakTime,
+            offPeakFrequencyHz = t.offPeakFrequencyHz,
+            energyGeneratedMwh = t.energyGeneratedMwh,
+            energySentOutMwh = t.energySentOutMwh,
+            source = t.source,
+            fetchedAt = t.fetchedAt
         )
     }
 }
+
+/**
+ * Community averages computed from neighbours' anonymised reports in Firestore
+ * (community_reports), cached for offline. scope = "T:<transformer>", "F:<feeder>" or "D:<DisCo>".
+ */
+@Entity(tableName = "community_stats_cache")
+data class CommunityStatsEntity(
+    @PrimaryKey val scope: String,
+    val reportCount: Int,
+    val neighbourCount: Int,
+    val avgRestoreHours: Double?,
+    val avgSupplyHours: Double?,
+    val reportsPerTransformer: Double?,
+    val fetchedAt: Long
+)
+
+/** Crowdsourced crew sightings from crew_sightings, cached for offline. kind = SEEN / WORKING / LEFT. */
+@Entity(tableName = "crew_sightings_cache")
+data class CrewSightingEntity(
+    @PrimaryKey val id: String,
+    val transformerId: String,
+    val kind: String,
+    val note: String,
+    val createdAt: Long,
+    val reporterKey: String,
+    val isMine: Boolean
+)
 
 /**
  * Room Entity for Outbox / Queued user actions submitted while offline

@@ -90,16 +90,12 @@ class SmartMeterGatewayServiceImpl(
                     }
                 }
             } catch (_: Exception) {
-                // Network unreachable or local lab environment -> Proceed to robust protocol simulation
+                // Unreachable: report it honestly below.
             }
 
-            // High-fidelity Gateway simulation tuned specifically to manufacturer hardware profiles
-            val simulatedTelemetry = generateRealisticTelemetry(meterNumber, manufacturer, discoCode)
-            // Simulated gateway latency (e.g., GPRS/NB-IoT turnaround in Nigerian cellular environment)
-            delay(Random.nextLong(120, 380))
-            val latency = (System.currentTimeMillis() - start).toInt()
-            
-            GatewayResult.Success(simulatedTelemetry, latency)
+            // No public vendor API answers for consumer meters, so there is nothing real to show.
+            // (This used to return made-up "live" readings.)
+            GatewayResult.Error("Not connected: ${manufacturer.displayName} has no public meter API. Enter readings from your meter or vendor app.")
         } catch (e: Exception) {
             GatewayResult.Error(e.message ?: "Failed to communicate with ${manufacturer.displayName} Gateway")
         }
@@ -109,6 +105,15 @@ class SmartMeterGatewayServiceImpl(
      * Continuous live stream of telemetry packets (e.g. over MQTT/Websocket or polling)
      */
     override fun streamRealtimeTelemetry(
+        meterNumber: String,
+        manufacturer: MeterManufacturer,
+        intervalMs: Long
+    ): Flow<MeterGatewayTelemetry> = flow<MeterGatewayTelemetry> {
+        // No real gateway feed exists for consumers; emit nothing rather than invented readings.
+    }.flowOn(Dispatchers.IO)
+
+    @Suppress("unused")
+    private fun legacySimulatedStream(
         meterNumber: String,
         manufacturer: MeterManufacturer,
         intervalMs: Long
@@ -144,10 +149,7 @@ class SmartMeterGatewayServiceImpl(
     ): GatewayResult<MeterRelayState> = withContext(Dispatchers.IO) {
         val start = System.currentTimeMillis()
         try {
-            // Simulate cryptographic handshake & PLC/GPRS relay pulse
-            delay(Random.nextLong(250, 500))
-            val latency = (System.currentTimeMillis() - start).toInt()
-            GatewayResult.Success(targetState, latency)
+            GatewayResult.Error("Not connected: remote relay control needs your DisCo's head-end system access.")
         } catch (e: Exception) {
             GatewayResult.Error("Relay operation failed for $meterNumber: ${e.message}")
         }
@@ -169,11 +171,8 @@ class SmartMeterGatewayServiceImpl(
                 return@withContext GatewayResult.Error("Invalid 20-digit STS token format")
             }
 
-            // Estimate units loaded based on standard token payload
-            val unitsCredited = 48.5 + (Random.nextDouble() * 10.0)
-            val rounded = Math.round(unitsCredited * 10.0) / 10.0
-            val latency = (System.currentTimeMillis() - start).toInt()
-            GatewayResult.Success(rounded, latency)
+            // No gateway connection: the token must be typed on the meter keypad.
+            GatewayResult.Error("Not connected to a meter gateway. Type the 20-digit token on your meter keypad.")
         } catch (e: Exception) {
             GatewayResult.Error("Token injection failed on ${manufacturer.displayName} Gateway: ${e.message}")
         }
@@ -200,11 +199,7 @@ class SmartMeterGatewayServiceImpl(
         val reactiveKvar = Math.round((powerKw * 0.35) * 100.0) / 100.0
         val frequency = Math.round((49.95 + (Random.nextDouble() * 0.15)) * 100.0) / 100.0
 
-        val signalRssi = when (manufacturer) {
-            MeterManufacturer.MOJEC -> Random.nextInt(-82, -65)
-            MeterManufacturer.MOMAS -> Random.nextInt(-78, -60)
-            MeterManufacturer.CONLOG -> Random.nextInt(-85, -68)
-        }
+        val signalRssi = Random.nextInt(-85, -60)
 
         return MeterGatewayTelemetry(
             meterNumber = meterNumber,

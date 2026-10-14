@@ -58,62 +58,18 @@ fun ManufacturerGatewaysLiveTab(
     telemetryMap: Map<MeterManufacturer, MeterGatewayTelemetry?>,
     isPollingMap: Map<MeterManufacturer, Boolean>,
     onPollGateway: (MeterManufacturer) -> Unit,
-    activeMeterNumber: String = "04192837461"
+    activeMeterNumber: String = "",
+    userProfile: com.example.model.UserProfile = com.example.model.UserProfile()
 ) {
+    // Mojec, Momas (MEMMCOL), Conlog, Hexing, Ningbo Sanxing, Shenzhen Chint: each connects through
+    // the DisCo's HES when configured, otherwise a clearly labelled DEMO meter.
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        item {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
-                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.CellTower,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Text(
-                            text = "Nigerian AMI Gateway API Layer",
-                            style = MaterialTheme.typography.titleSmall,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = "Real-time bidirectional telemetry simulation across Mojec International, Momas (MEMCOL), and Conlog Nigeria head-end AMI gateways. Polling retrieves live voltage, active load, power factor, and relay status directly from meter firmware.",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        lineHeight = 16.sp
-                    )
-                }
-            }
-        }
-
-        items(MeterManufacturer.values()) { manufacturer ->
-            val telemetry = telemetryMap[manufacturer]
-            val isPolling = isPollingMap[manufacturer] == true
-
-            ManufacturerGatewayCard(
-                manufacturer = manufacturer,
-                telemetry = telemetry,
-                isPolling = isPolling,
-                onPoll = { onPollGateway(manufacturer) },
-                meterNumber = activeMeterNumber
-            )
-        }
+        item { com.example.ui.meter.HesGatewaysPanel(userProfile) }
     }
 }
 
@@ -129,6 +85,7 @@ private fun ManufacturerGatewayCard(
         MeterManufacturer.MOJEC -> MaterialTheme.extendedColors.warning // Amber
         MeterManufacturer.MOMAS -> MaterialTheme.extendedColors.success // Emerald Green
         MeterManufacturer.CONLOG -> MaterialTheme.extendedColors.info // Sky Blue
+        else -> MaterialTheme.colorScheme.primary
     }
 
     Card(

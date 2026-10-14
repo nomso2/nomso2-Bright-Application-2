@@ -19,6 +19,8 @@ dependencyResolutionManagement {
   repositories {
     google()
     mavenCentral()
+    // usb-serial-for-android (USB-OTG optical meter probes) is published on JitPack only.
+    maven("https://jitpack.io") { content { includeGroup("com.github.mik3y") } }
   }
 }
 

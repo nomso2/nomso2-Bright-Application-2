@@ -104,14 +104,14 @@ object NigeriaSmartMeterDiscoveryService {
                 manufacturerName = finalMfg.displayName,
                 modelName = finalModel,
                 hasSmartAccess = true,
-                isAutoConnected = true,
-                statusTitle = "SMART METER AUTO-CONNECTED",
-                statusBadge = "✓ Auto-Linked (${finalMfg.displayName})",
-                shortSummary = "Meter #${meterNum} auto-linked to ${finalMfg.displayName} AMI • Live telemetry active",
-                detailedExplanation = "Your area (${profile.streetAddress}, ${profile.feederBand.label}) has active smart meter coverage. We automatically connected your ${finalMfg.displayName} smart meter once in the background. You do not need to configure any servers or protocols manually.",
+                isAutoConnected = false,
+                statusTitle = "POSSIBLE SMART METER (NOT LINKED)",
+                statusBadge = "Best guess: ${finalMfg.displayName}",
+                shortSummary = "Meter #${meterNum} may be a ${finalMfg.displayName} smart meter • Not connected",
+                detailedExplanation = "This is a guess from your meter number, band and area. ${finalMfg.displayName} and the DisCos don't offer a public API, so Bright can't read your meter remotely yet. Enter readings from your meter display or your vendor app; they are saved on this phone.",
                 detectedFeederType = "AMI Smart Feeder (${profile.feederBand.label})",
-                supportsOtaTokens = true,
-                supportsRemoteRelay = true
+                supportsOtaTokens = false,
+                supportsRemoteRelay = false
             )
         } else {
             CitizenMeterStatus(
