@@ -1,7 +1,11 @@
 package com.example.model
 
 /**
- * Real-world Distribution Transformer & Substation Node across Nigeria
+ * Distribution transformer record.
+ *
+ * NOTE: [NigeriaTransformerRegistry] below is ILLUSTRATIVE SAMPLE DATA (made-up loads, voltages,
+ * statuses and IDs at real street locations). It is no longer drawn on the outage map, which
+ * shows real reports only (see data/outage/OutageMap.kt). Do not display it as real data.
  */
 data class NigeriaTransformer(
     val id: String,

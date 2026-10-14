@@ -19,6 +19,8 @@ import com.example.model.FaultType
 import com.example.model.GridTelemetry
 import com.example.model.MaintenanceAlert
 import com.example.model.OutageGridNode
+import com.example.data.outage.CommunityOutageSnapshot
+import com.example.data.outage.OutagePin
 import com.example.model.UserProfile
 import com.example.model.VandalismReport
 import com.example.model.ApplianceDamageClaim
@@ -92,6 +94,30 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
 
     val outageNodes: StateFlow<List<OutageGridNode>> = repository.outageNodes
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    /** Real outage pins: the user's own located complaints + last-48h community reports. */
+    val outagePins: StateFlow<List<OutagePin>> = repository.outagePins
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    /** Cached community reports and when they were last fetched (null = never). */
+    val communityOutages: StateFlow<CommunityOutageSnapshot> = repository.communityOutages
+
+    /** Refresh button on the map: re-fetch community reports and say honestly what happened. */
+    fun refreshOutageMap() {
+        viewModelScope.launch {
+            showNotification("Refreshing outage map...")
+            val ok = repository.refreshCommunityOutages()
+            if (ok) {
+                val n = repository.communityOutages.value.reports.size
+                showNotification(
+                    if (n == 0) "Outage map updated: no community reports in the last 48 hours."
+                    else "Outage map updated: $n community report${if (n == 1) "" else "s"} in the last 48 hours."
+                )
+            } else {
+                showNotification("Couldn't reach Bright's community reports. Showing your own reports and the last saved ones.")
+            }
+        }
+    }
     val vandalismReports: StateFlow<List<VandalismReport>> = repository.getVandalismReports()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
     val billingDisputes: StateFlow<List<BillingDispute>> = userProfile.flatMapLatest { profile ->
@@ -1404,6 +1430,19 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
                     // Offline: the last saved NISO figures stay on screen with their date.
                 }
                 delay(3 * 60 * 60 * 1000L)
+            }
+        }
+
+        // Community outage reports for the map: refresh every 30 minutes while the app is open.
+        // Offline, the last saved reports stay on the map with their fetch time.
+        viewModelScope.launch {
+            while (true) {
+                try {
+                    repository.refreshCommunityOutages()
+                } catch (e: Exception) {
+                    // Keep the cached reports.
+                }
+                delay(30 * 60 * 1000L)
             }
         }
 

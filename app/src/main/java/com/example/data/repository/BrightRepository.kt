@@ -42,6 +42,12 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOf
+import com.example.data.outage.CommunityOutageCache
+import com.example.data.outage.CommunityOutageSnapshot
+import com.example.data.outage.OutageMapBuilder
+import com.example.data.outage.OutagePin
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -136,6 +142,40 @@ class BrightRepository(
         list.map { it.toDomain() }
     }
 
+    // Outage map: real pins only (the user's own located complaints + recent community reports).
+    private val _communityOutages = MutableStateFlow(CommunityOutageCache.load(context))
+    val communityOutages: StateFlow<CommunityOutageSnapshot> = _communityOutages.asStateFlow()
+
+    private val solutionReportsFlow: Flow<List<FaultReportEntity>> =
+        context?.let { SolutionsDatabase.get(it).dao().reports() } ?: flowOf(emptyList())
+
+    val outagePins: Flow<List<OutagePin>> = combine(
+        complaintDao.getAllComplaints(),
+        solutionReportsFlow,
+        _communityOutages,
+        profileDao.getUserProfile()
+    ) { complaints, reports, community, profile ->
+        OutageMapBuilder.build(complaints, reports, community, profile?.state ?: "")
+    }
+
+    /**
+     * Fetches the last 48 h of anonymised community reports and caches them on the phone.
+     * Returns true on success; false when offline or Firebase isn't configured (the cached
+     * reports stay on the map with their fetch time).
+     */
+    suspend fun refreshCommunityOutages(): Boolean = withContext(Dispatchers.IO) {
+        val ctx = context ?: return@withContext false
+        val fetched: CommunityOutageSnapshot? = try {
+            CommunityFeed.fetchRecentOutages(ctx)
+        } catch (e: Exception) {
+            null
+        }
+        val fresh = fetched ?: return@withContext false
+        _communityOutages.value = fresh
+        CommunityOutageCache.save(ctx, fresh)
+        true
+    }
+
     // Offline Sync Outbox Queue - Count of pending offline operations
     val pendingSyncCount: Flow<Int> = offlineQueueDao.getPendingCount()
     val pendingSyncActions: Flow<List<OfflineSyncQueueEntity>> = offlineQueueDao.getPendingActions()
@@ -148,8 +188,6 @@ class BrightRepository(
         CoroutineScope(Dispatchers.IO).launch {
             cleanOldDummyData()
             seedDefaultDataIfEmpty()
-            seedLiveOutageData()
-            seedMaintenanceAlerts()
             initTelemetryCache()
         }
         mirrorSolutionReportsIntoHistory()
@@ -171,12 +209,30 @@ class BrightRepository(
                     // Anonymised summary for community averages (no name / phone / meter).
                     context?.let { ctx ->
                         val profile = profileDao.getUserProfileSync()
-                        CommunityFeed.publishReport(ctx, complaint, profile?.state ?: "", recentSupplyHoursPerDay())
+                        CommunityFeed.publishReport(
+                            ctx, complaint, profile?.state ?: "", recentSupplyHoursPerDay(),
+                            approxLocationFor(complaint.id)
+                        )
                     }
                 }
             } catch (e: Exception) {
                 // Best effort: the next full sync uploads anything missed.
             }
+        }
+    }
+
+    /** GPS fix of a report raised with location (SOL-<reference>), or null. */
+    private suspend fun approxLocationFor(complaintId: String): Pair<Double, Double>? {
+        val ctx = context ?: return null
+        if (!complaintId.startsWith("SOL-")) return null
+        val ref = complaintId.removePrefix("SOL-")
+        return try {
+            val r = SolutionsDatabase.get(ctx).dao().reports().firstOrNull()?.firstOrNull { it.reference == ref }
+            val lat = r?.latitude
+            val lng = r?.longitude
+            if (lat != null && lng != null && !(lat == 0.0 && lng == 0.0)) lat to lng else null
+        } catch (e: Exception) {
+            null
         }
     }
 
@@ -343,6 +399,10 @@ class BrightRepository(
             disputeDao.deleteSeedDisputes()
             applianceClaimDao.deleteSeedClaims()
             streetHazardDao.deleteSeedHazards()
+            // Older versions seeded made-up outage map nodes (NODE-*) and maintenance notices
+            // (MNT-*). Remove them; the map and notices now show real data only.
+            outageDao.deleteSeedNodes()
+            maintenanceDao.deleteSeedAlerts()
         } catch (e: Exception) {
             // Ignored if tables are clean
         }
@@ -643,202 +703,6 @@ class BrightRepository(
         // Clean slate: 0 fake stranger reports, 0 fake vandalism, 0 fake claims.
     }
 
-    private suspend fun seedLiveOutageData() {
-        val nodes = listOf(
-            OutageGridNode(
-                id = "NODE-LAG-01",
-                name = "Victoria Island & Ikoyi Feeder Ring",
-                city = "Lagos",
-                state = "Lagos State",
-                discoCode = "EKEDC",
-                status = OutageStatus.FAULT_DOWN,
-                affectedConsumers = 14200,
-                xPosRatio = 0.28f,
-                yPosRatio = 0.65f,
-                lastUpdate = "12 mins ago",
-                reportedFaults = 48,
-                estimatedRestoration = "2 hrs 15 mins"
-            ),
-            OutageGridNode(
-                id = "NODE-LAG-02",
-                name = "Ikeja Industrial & Alausa Substation",
-                city = "Ikeja",
-                state = "Lagos State",
-                discoCode = "IE",
-                status = OutageStatus.ACTIVE,
-                affectedConsumers = 0,
-                xPosRatio = 0.26f,
-                yPosRatio = 0.61f,
-                lastUpdate = "Live",
-                reportedFaults = 3,
-                estimatedRestoration = "Operational"
-            ),
-            OutageGridNode(
-                id = "NODE-ABJ-01",
-                name = "Central Area & Maitama Injection Station",
-                city = "Abuja",
-                state = "FCT",
-                discoCode = "AEDC",
-                status = OutageStatus.ACTIVE,
-                affectedConsumers = 0,
-                xPosRatio = 0.48f,
-                yPosRatio = 0.42f,
-                lastUpdate = "Live",
-                reportedFaults = 1,
-                estimatedRestoration = "Operational"
-            ),
-            OutageGridNode(
-                id = "NODE-ABJ-02",
-                name = "Gwarinpa & Kubwa 33kV Line",
-                city = "Gwarinpa",
-                state = "FCT",
-                discoCode = "AEDC",
-                status = OutageStatus.MAINTENANCE,
-                affectedConsumers = 8900,
-                xPosRatio = 0.46f,
-                yPosRatio = 0.39f,
-                lastUpdate = "34 mins ago",
-                reportedFaults = 12,
-                estimatedRestoration = "4 hrs 00 mins"
-            ),
-            OutageGridNode(
-                id = "NODE-IBD-01",
-                name = "Bodija & University Feeder Corridor",
-                city = "Ibadan",
-                state = "Oyo State",
-                discoCode = "IBEDC",
-                status = OutageStatus.LOAD_SHEDDING,
-                affectedConsumers = 11300,
-                xPosRatio = 0.30f,
-                yPosRatio = 0.58f,
-                lastUpdate = "18 mins ago",
-                reportedFaults = 22,
-                estimatedRestoration = "Load-shed rotation (ends 6 PM)"
-            ),
-            OutageGridNode(
-                id = "NODE-ENU-01",
-                name = "Independence Layout 11kV Feeder",
-                city = "Enugu",
-                state = "Enugu State",
-                discoCode = "EEDC",
-                status = OutageStatus.FAULT_DOWN,
-                affectedConsumers = 7400,
-                xPosRatio = 0.62f,
-                yPosRatio = 0.62f,
-                lastUpdate = "5 mins ago",
-                reportedFaults = 31,
-                estimatedRestoration = "6 hrs 30 mins"
-            ),
-            OutageGridNode(
-                id = "NODE-PH-01",
-                name = "Trans-Amadi Industrial & GRA Phase 2",
-                city = "Port Harcourt",
-                state = "Rivers State",
-                discoCode = "PHED",
-                status = OutageStatus.ACTIVE,
-                affectedConsumers = 0,
-                xPosRatio = 0.54f,
-                yPosRatio = 0.74f,
-                lastUpdate = "Live",
-                reportedFaults = 4,
-                estimatedRestoration = "Operational"
-            ),
-            OutageGridNode(
-                id = "NODE-KAN-01",
-                name = "Bompai & Nassarawa Injection Station",
-                city = "Kano",
-                state = "Kano State",
-                discoCode = "KEDCO",
-                status = OutageStatus.LOAD_SHEDDING,
-                affectedConsumers = 16500,
-                xPosRatio = 0.65f,
-                yPosRatio = 0.18f,
-                lastUpdate = "22 mins ago",
-                reportedFaults = 19,
-                estimatedRestoration = "Rotation till 8 PM"
-            ),
-            OutageGridNode(
-                id = "NODE-KAD-01",
-                name = "Barnawa & Kakuri Feeder Network",
-                city = "Kaduna",
-                state = "Kaduna State",
-                discoCode = "KAEDC",
-                status = OutageStatus.MAINTENANCE,
-                affectedConsumers = 9200,
-                xPosRatio = 0.52f,
-                yPosRatio = 0.28f,
-                lastUpdate = "40 mins ago",
-                reportedFaults = 14,
-                estimatedRestoration = "3 hrs"
-            ),
-            OutageGridNode(
-                id = "NODE-BEN-01",
-                name = "Uselu & Ring Road Feeder",
-                city = "Benin City",
-                state = "Edo State",
-                discoCode = "BEDC",
-                status = OutageStatus.FAULT_DOWN,
-                affectedConsumers = 6800,
-                xPosRatio = 0.42f,
-                yPosRatio = 0.66f,
-                lastUpdate = "1 hour ago",
-                reportedFaults = 27,
-                estimatedRestoration = "5 hrs"
-            ),
-            OutageGridNode(
-                id = "NODE-JOS-01",
-                name = "Bukuru & Rayfield Feeder",
-                city = "Jos",
-                state = "Plateau State",
-                discoCode = "JED",
-                status = OutageStatus.ACTIVE,
-                affectedConsumers = 0,
-                xPosRatio = 0.68f,
-                yPosRatio = 0.38f,
-                lastUpdate = "Live",
-                reportedFaults = 2,
-                estimatedRestoration = "Operational"
-            )
-        )
-        outageDao.insertAll(nodes.map { OutageGridNodeEntity.fromDomain(it) })
-    }
-
-    private suspend fun seedMaintenanceAlerts() {
-        val alerts = listOf(
-            MaintenanceAlert(
-                id = "MNT-01",
-                title = "TCN 330kV Egbin-Ikeja West Line Overhaul",
-                discoCode = "EKEDC / IE",
-                affectedFeeders = "Victoria Island, Ikoyi, Marina, Surulere 33kV feeders",
-                startDate = "Tomorrow, 08:00 AM - 02:00 PM",
-                durationHours = 6,
-                reason = "Annual preventive substation maintenance and replacement of cracked disc insulators",
-                alternativeSupplyAvailable = true
-            ),
-            MaintenanceAlert(
-                id = "MNT-02",
-                title = "AEDC Injection Substation Transformer Service",
-                discoCode = "AEDC",
-                affectedFeeders = "Gwarinpa Estate 11kV lines 1, 2, 3",
-                startDate = "Saturday, 10:00 AM - 04:00 PM",
-                durationHours = 6,
-                reason = "Routine silica gel replacement and oil filtration on 15MVA power transformer",
-                alternativeSupplyAvailable = false
-            ),
-            MaintenanceAlert(
-                id = "MNT-03",
-                title = "Right of Way Vegetation & Tree Trimming",
-                discoCode = "IBEDC",
-                affectedFeeders = "Ibadan North-East 33kV transmission corridor",
-                startDate = "Sunday, 07:00 AM - 01:00 PM",
-                durationHours = 6,
-                reason = "Clearing heavy canopy branches touching high-voltage conductors to prevent stormy arc-trips",
-                alternativeSupplyAvailable = true
-            )
-        )
-        maintenanceDao.insertAll(alerts.map { MaintenanceAlertEntity.fromDomain(it) })
-    }
-
     /**
      * Delete account: permanently removes everything Bright keeps about the user on this phone:
      * profile, PIN, complaints and history, reports, claims, the offline outbox, cached grid data
@@ -848,7 +712,7 @@ class BrightRepository(
      * out of Firebase. Plain "Log out" never calls this, so history survives sign-out.
      *
      * Kept on purpose: the paid-meter record, so re-registering the same meter isn't charged again.
-     * Public grid data (outage map, maintenance notices) is re-seeded so the map still works.
+     * Nothing is re-seeded: the outage map and maintenance notices only ever show real reports.
      */
     suspend fun deleteAllLocalUserData() {
         withContext(Dispatchers.IO) {
@@ -904,8 +768,8 @@ class BrightRepository(
                 // Best effort: anything left is cleaned up by the system later.
             }
 
-            seedLiveOutageData()
-            seedMaintenanceAlerts()
+            _communityOutages.value = CommunityOutageSnapshot()
+            CommunityOutageCache.clear(context)
         }
     }
 

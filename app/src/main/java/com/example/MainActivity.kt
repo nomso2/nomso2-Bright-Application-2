@@ -157,6 +157,8 @@ fun BrightApp(viewModel: BrightViewModel) {
     // History shows every complaint (active and resolved), not just resolved ones.
     val historyComplaints by viewModel.complaintHistory.collectAsState()
     val outageNodes by viewModel.outageNodes.collectAsState()
+    val outagePins by viewModel.outagePins.collectAsState()
+    val communityOutages by viewModel.communityOutages.collectAsState()
     val vandalismReports by viewModel.vandalismReports.collectAsState()
     val billingDisputes by viewModel.billingDisputes.collectAsState()
     val gridTelemetry by viewModel.gridTelemetry.collectAsState()
@@ -431,9 +433,9 @@ fun BrightApp(viewModel: BrightViewModel) {
                 LiveMapScreen(
                     userProfile = userProfile,
                     outageNodes = outageNodes,
-                    onRefreshMap = {
-                        viewModel.showNotification("Refreshing outage map...")
-                    }
+                    outagePins = outagePins,
+                    communityFetchedAt = communityOutages.fetchedAt,
+                    onRefreshMap = { viewModel.refreshOutageMap() }
                 )
             }
 

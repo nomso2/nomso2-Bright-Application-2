@@ -5,6 +5,9 @@ import com.example.data.database.AppDatabase
 import com.example.data.database.CommunityStatsEntity
 import com.example.data.database.ComplaintEntity
 import com.example.data.database.CrewSightingEntity
+import com.example.data.outage.CommunityOutageReport
+import com.example.data.outage.CommunityOutageSnapshot
+import com.example.data.outage.OutageMapBuilder
 import com.google.firebase.firestore.SetOptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -34,7 +37,8 @@ object CommunityFeed {
         context: Context,
         complaint: ComplaintEntity,
         state: String,
-        supplyHoursPerDay: Double?
+        supplyHoursPerDay: Double?,
+        approxLocation: Pair<Double, Double>? = null
     ): Boolean {
         val uid = BrightFirebase.uid(context) ?: return false
         val db = BrightFirebase.firestore(context) ?: return false
@@ -50,12 +54,47 @@ object CommunityFeed {
             "startedAt" to complaint.reportedAt,
             "restoredAt" to restoredAt,
             "restoreHours" to restoredAt?.let { (it - complaint.reportedAt) / 3_600_000.0 }?.takeIf { it >= 0 },
-            "supplyHoursPerDay" to supplyHoursPerDay
+            "supplyHoursPerDay" to supplyHoursPerDay,
+            // Only when the report itself carried a GPS fix, and only rounded to 2 decimals
+            // (about 1 km) so the outage map can show the area without pinpointing a home.
+            "approxLat" to approxLocation?.first?.let { OutageMapBuilder.roundCoord(it) },
+            "approxLng" to approxLocation?.second?.let { OutageMapBuilder.roundCoord(it) }
         )
         return BrightFirebase.network {
             db.collection(REPORTS).document("${uid}_${complaint.id}").set(data, SetOptions.merge()).await()
             true
         } ?: false
+    }
+
+    /**
+     * Fetches community outage reports started in the last [OutageMapBuilder.COMMUNITY_WINDOW_MS]
+     * for the outage map. The caller's own reports are left out (they are drawn from the phone's
+     * own history instead) and no uid is kept. Returns null when offline or not configured.
+     */
+    suspend fun fetchRecentOutages(context: Context): CommunityOutageSnapshot? {
+        val db = BrightFirebase.firestore(context) ?: return null
+        val me = BrightFirebase.uid(context) ?: return null
+        val cutoff = System.currentTimeMillis() - OutageMapBuilder.COMMUNITY_WINDOW_MS
+        val docs = BrightFirebase.network {
+            db.collection(REPORTS).whereGreaterThanOrEqualTo("startedAt", cutoff).limit(500).get().await().documents
+        } ?: return null
+        val reports = docs.mapNotNull { d ->
+            val m = d.data ?: return@mapNotNull null
+            if ((m["uid"] as? String) == me) return@mapNotNull null
+            val started = (m["startedAt"] as? Number)?.toLong() ?: return@mapNotNull null
+            if (started < cutoff) return@mapNotNull null
+            CommunityOutageReport(
+                key = hash(d.id),
+                state = m["state"] as? String ?: "",
+                discoCode = m["discoCode"] as? String ?: "",
+                faultType = m["faultType"] as? String ?: "",
+                startedAt = started,
+                restoredAt = (m["restoredAt"] as? Number)?.toLong(),
+                approxLat = (m["approxLat"] as? Number)?.toDouble(),
+                approxLng = (m["approxLng"] as? Number)?.toDouble()
+            )
+        }
+        return CommunityOutageSnapshot(reports, System.currentTimeMillis())
     }
 
     /** Delete account: removes this user's community summaries and crew sightings. */

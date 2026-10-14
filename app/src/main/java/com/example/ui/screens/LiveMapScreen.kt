@@ -65,6 +65,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -80,9 +81,12 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.example.data.service.GoogleMapsAgentService
 import com.example.data.service.PlaceResult
 import com.example.model.NigeriaTransformer
-import com.example.model.NigeriaTransformerRegistry
 import com.example.model.OutageGridNode
-import com.example.model.TransformerStatus
+import com.example.data.outage.OutagePin
+import com.example.data.outage.StateCentroids
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import com.example.model.UserProfile
 
 enum class MapStyleMode {
@@ -95,12 +99,11 @@ enum class MapStyleMode {
  * Launches real-time Google Maps Navigation Directions directly to the Transformer,
  * clearly pinpointing the Transformer ID as the destination.
  */
-fun launchGoogleMapsDirections(context: Context, transformer: NigeriaTransformer) {
-    val lat = transformer.latitude
-    val lng = transformer.longitude
-    val id = transformer.id
-    val name = transformer.name
-    val queryLabel = "$id - $name"
+fun launchGoogleMapsDirections(context: Context, transformer: NigeriaTransformer) =
+    launchGoogleMapsDirections(context, transformer.latitude, transformer.longitude, "${transformer.id} - ${transformer.name}")
+
+/** Opens Google Maps directions to [lat],[lng], labelled with [queryLabel]. */
+fun launchGoogleMapsDirections(context: Context, lat: Double, lng: Double, queryLabel: String) {
     val encoded = Uri.encode(queryLabel)
 
     // 1. Primary Google Maps Navigation Universal Intent with destination pinpoint & label
@@ -133,12 +136,11 @@ fun launchGoogleMapsDirections(context: Context, transformer: NigeriaTransformer
  * Drops a precise pinpoint marker in Google Maps at the Transformer's GPS coordinates,
  * labeled with the Transformer ID and Substation Name.
  */
-fun launchGoogleMapsPinpoint(context: Context, transformer: NigeriaTransformer) {
-    val lat = transformer.latitude
-    val lng = transformer.longitude
-    val id = transformer.id
-    val name = transformer.name
-    val queryLabel = "$id - $name"
+fun launchGoogleMapsPinpoint(context: Context, transformer: NigeriaTransformer) =
+    launchGoogleMapsPinpoint(context, transformer.latitude, transformer.longitude, "${transformer.id} - ${transformer.name}")
+
+/** Drops a labelled pin in Google Maps at [lat],[lng]. */
+fun launchGoogleMapsPinpoint(context: Context, lat: Double, lng: Double, queryLabel: String) {
     val encoded = Uri.encode(queryLabel)
 
     val geoUri = Uri.parse("geo:$lat,$lng?q=$lat,$lng($encoded)&z=17")
@@ -165,12 +167,17 @@ fun launchGoogleMapsPinpoint(context: Context, transformer: NigeriaTransformer) 
     }
 }
 
+
 @Composable
 fun LiveMapScreen(
     userProfile: UserProfile,
     outageNodes: List<OutageGridNode>,
     onRefreshMap: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    /** Real pins only: the user's own located complaints + last-48h community reports. */
+    outagePins: List<OutagePin> = emptyList(),
+    /** When community reports were last fetched (epoch ms), or null if never. */
+    communityFetchedAt: Long? = null
 ) {
     var selectedTab by remember { mutableStateOf(0) }
     var mapStyle by remember { mutableStateOf(MapStyleMode.ROADMAP) }
@@ -178,38 +185,32 @@ fun LiveMapScreen(
     // Map tab search and filter state
     var searchQuery by remember { mutableStateOf("") }
     var selectedCityFilter by remember { mutableStateOf<String?>(null) }
-    var selectedStatusFilter by remember { mutableStateOf<TransformerStatus?>(null) }
 
     // DisCo Care Router tab search and filter state
     var discoSearchQuery by remember { mutableStateOf("") }
     var selectedDiscoFilter by remember { mutableStateOf<String?>(null) }
 
-    val allTransformers = NigeriaTransformerRegistry.ALL_TRANSFORMERS
-    var selectedTransformer by remember {
-        mutableStateOf<NigeriaTransformer?>(allTransformers.firstOrNull())
-    }
+    var selectedPinId by remember { mutableStateOf<String?>(null) }
 
     val context = LocalContext.current
     var webViewRef by remember { mutableStateOf<WebView?>(null) }
 
-    val filteredTransformers = remember(searchQuery, selectedCityFilter, selectedStatusFilter) {
-        allTransformers.filter { tr ->
+    val filteredPins = remember(outagePins, searchQuery, selectedCityFilter) {
+        outagePins.filter { pin ->
             val matchesSearch = searchQuery.isBlank() ||
-                    tr.id.contains(searchQuery, ignoreCase = true) ||
-                    tr.name.contains(searchQuery, ignoreCase = true) ||
-                    tr.street.contains(searchQuery, ignoreCase = true) ||
-                    tr.city.contains(searchQuery, ignoreCase = true) ||
-                    tr.discoCode.contains(searchQuery, ignoreCase = true)
+                    pin.title.contains(searchQuery, ignoreCase = true) ||
+                    pin.place.contains(searchQuery, ignoreCase = true) ||
+                    pin.state.contains(searchQuery, ignoreCase = true) ||
+                    pin.discoCode.contains(searchQuery, ignoreCase = true) ||
+                    pin.sourceLabel.contains(searchQuery, ignoreCase = true)
 
-            val matchesCity = selectedCityFilter == null ||
-                    tr.city.equals(selectedCityFilter, ignoreCase = true) ||
-                    tr.state.contains(selectedCityFilter!!, ignoreCase = true)
+            val cityState = selectedCityFilter?.let { MAP_CITY_STATES[it] ?: it }
+            val matchesCity = cityState == null || pin.state.equals(cityState, ignoreCase = true)
 
-            val matchesStatus = selectedStatusFilter == null || tr.status == selectedStatusFilter
-
-            matchesSearch && matchesCity && matchesStatus
+            matchesSearch && matchesCity
         }
     }
+    val selectedPin = filteredPins.firstOrNull { it.id == selectedPinId }
 
     // Filtered DisCos for DisCo Care Router
     val discoResults = remember(discoSearchQuery, selectedDiscoFilter) {
@@ -227,11 +228,11 @@ fun LiveMapScreen(
         }
     }
 
-    // When selectedTransformer updates, center the real-time map smoothly
-    LaunchedEffect(selectedTransformer) {
-        selectedTransformer?.let { tr ->
+    // When the selected pin changes, center the map on it
+    LaunchedEffect(selectedPinId) {
+        selectedPin?.let { pin ->
             webViewRef?.evaluateJavascript(
-                "if (window.focusTransformer) { window.focusTransformer('${tr.id}', ${tr.latitude}, ${tr.longitude}); }",
+                "if (window.focusPin) { window.focusPin('${pin.id}', ${pin.latitude}, ${pin.longitude}, ${if (pin.isApproximate) 9 else 14}); }",
                 null
             )
         }
@@ -255,7 +256,7 @@ fun LiveMapScreen(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
-        // TOP HEADER: Title & SCADA Refresh
+        // TOP HEADER: Title & Refresh
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -266,7 +267,7 @@ fun LiveMapScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column {
+                Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = "NIGERIA GRID & DISCO NAVIGATOR",
                         style = MaterialTheme.typography.titleMedium.copy(
@@ -276,7 +277,7 @@ fun LiveMapScreen(
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
-                        text = "Pinpointing 33kV/11kV substations and official DisCo offices",
+                        text = "Outages reported by you and other Bright users, plus official DisCo offices",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -313,7 +314,7 @@ fun LiveMapScreen(
                             horizontalArrangement = Arrangement.spacedBy(6.dp)
                         ) {
                             Icon(Icons.Default.Map, contentDescription = null, modifier = Modifier.size(16.dp))
-                            Text("Google Map View (${filteredTransformers.size})", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                            Text("Google Map View (${filteredPins.size})", fontSize = 12.sp, fontWeight = FontWeight.Bold)
                         }
                     }
                 )
@@ -334,19 +335,15 @@ fun LiveMapScreen(
         }
 
         if (selectedTab == 0) {
-            // TAB 0: REAL-TIME INTERACTIVE GOOGLE MAP PINPOINTING TRANSFORMERS
+            // TAB 0: OUTAGE MAP - real reports only (never seeded or simulated pins)
             Column(modifier = Modifier.fillMaxSize()) {
-                // Search Bar: Search by Transformer ID, Street, or City
+                // Search Bar: search the reported outages by area, state or DisCo
                 OutlinedTextField(
                     value = searchQuery,
                     onValueChange = { query ->
                         searchQuery = query
-                        val match = filteredTransformers.firstOrNull()
-                        if (match != null) {
-                            selectedTransformer = match
-                        }
                     },
-                    placeholder = { Text("Search by Transformer ID, Street, or City...", fontSize = 12.sp) },
+                    placeholder = { Text("Search outages by area, state or DisCo...", fontSize = 12.sp) },
                     leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp)) },
                     trailingIcon = {
                         if (searchQuery.isNotBlank()) {
@@ -379,10 +376,10 @@ fun LiveMapScreen(
                             selected = selectedCityFilter == null,
                             onClick = {
                                 selectedCityFilter = null
-                                selectedTransformer = allTransformers.firstOrNull()
+                                selectedPinId = null
                                 webViewRef?.evaluateJavascript("if (window.recenterMap) { window.recenterMap(9.0820, 8.6753, 6); }", null)
                             },
-                            label = { Text("All Nigeria (${allTransformers.size})", fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                            label = { Text("All Nigeria (${outagePins.size})", fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                             modifier = Modifier.testTag("filter_all_nigeria")
                         )
                     }
@@ -393,10 +390,10 @@ fun LiveMapScreen(
                             selected = isSelected,
                             onClick = {
                                 selectedCityFilter = if (isSelected) null else city
-                                val firstInCity = allTransformers.firstOrNull { it.city.equals(city, ignoreCase = true) }
-                                if (firstInCity != null) {
-                                    selectedTransformer = firstInCity
-                                }
+                                selectedPinId = null
+                                val cap = if (isSelected) null else StateCentroids.capitalOf(MAP_CITY_STATES[city] ?: city)
+                                val js = if (cap != null) "window.recenterMap(${cap.second}, ${cap.third}, 9)" else "window.recenterMap(9.0820, 8.6753, 6)"
+                                webViewRef?.evaluateJavascript("if (window.recenterMap) { $js; }", null)
                             },
                             label = { Text(city, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                             colors = FilterChipDefaults.filterChipColors(
@@ -406,6 +403,14 @@ fun LiveMapScreen(
                         )
                     }
                 }
+
+                // Where the pins come from, and how fresh the community reports are
+                OutageSourceStrip(
+                    communityFetchedAt = communityFetchedAt,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 2.dp)
+                )
 
                 // REAL-TIME INTERACTIVE MAP CONTAINER
                 Box(
@@ -417,14 +422,24 @@ fun LiveMapScreen(
                         .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(16.dp))
                 ) {
                     RealtimeGoogleMapView(
-                        transformers = filteredTransformers,
-                        selectedTransformer = selectedTransformer,
+                        pins = filteredPins,
+                        selectedPin = selectedPin,
                         mapStyle = mapStyle,
                         onWebViewReady = { webViewRef = it },
-                        onTransformerSelected = { tr -> selectedTransformer = tr },
-                        onDirectionsClicked = { tr -> launchGoogleMapsDirections(context, tr) },
+                        onPinSelected = { pin -> selectedPinId = pin.id },
+                        onDirectionsClicked = { pin -> launchGoogleMapsDirections(context, pin.latitude, pin.longitude, pin.title) },
                         modifier = Modifier.fillMaxSize()
                     )
+
+                    // Honest empty state: no reports means no pins (never invented ones)
+                    if (filteredPins.isEmpty()) {
+                        OutageMapEmptyState(
+                            filtered = outagePins.isNotEmpty(),
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .padding(16.dp)
+                        )
+                    }
 
                     // Top Floating Map Style Toggles: Roadmap, Satellite, Dark SCADA
                     Row(
@@ -516,9 +531,9 @@ fun LiveMapScreen(
                         ) {
                             IconButton(
                                 onClick = {
-                                    selectedTransformer?.let { tr ->
+                                    selectedPin?.let { pin ->
                                         webViewRef?.evaluateJavascript(
-                                            "if (window.focusTransformer) { window.focusTransformer('${tr.id}', ${tr.latitude}, ${tr.longitude}); }",
+                                            "if (window.focusPin) { window.focusPin('${pin.id}', ${pin.latitude}, ${pin.longitude}, ${if (pin.isApproximate) 9 else 14}); }",
                                             null
                                         )
                                     } ?: run {
@@ -533,12 +548,12 @@ fun LiveMapScreen(
                     }
                 }
 
-                // Selected Transformer Detail Card
-                selectedTransformer?.let { tr ->
-                    TransformerInspectorCard(
-                        transformer = tr,
-                        onGoogleMapsDirections = { launchGoogleMapsDirections(context, tr) },
-                        onGoogleMapsPinpoint = { launchGoogleMapsPinpoint(context, tr) },
+                // Selected outage pin detail card
+                selectedPin?.let { pin ->
+                    OutagePinInspectorCard(
+                        pin = pin,
+                        onGoogleMapsDirections = { launchGoogleMapsDirections(context, pin.latitude, pin.longitude, pin.title) },
+                        onGoogleMapsPinpoint = { launchGoogleMapsPinpoint(context, pin.latitude, pin.longitude, pin.title) },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 12.dp, vertical = 4.dp)
@@ -845,23 +860,110 @@ private fun DisCoFacilityCard(
     }
 }
 
+
+/** City chips on the map filter by the state the city is in. */
+private val MAP_CITY_STATES: Map<String, String> = mapOf(
+    "Benin" to "Edo",
+    "Lagos" to "Lagos",
+    "Abuja" to "FCT",
+    "Port Harcourt" to "Rivers",
+    "Ibadan" to "Oyo",
+    "Enugu" to "Enugu",
+    "Kano" to "Kano",
+    "Kaduna" to "Kaduna",
+    "Jos" to "Plateau",
+    "Calabar" to "Cross River"
+)
+
+private fun formatMapTime(ms: Long): String =
+    SimpleDateFormat("d MMM, h:mm a", Locale.getDefault()).format(Date(ms))
+
+private fun timeAgo(ms: Long, now: Long = System.currentTimeMillis()): String {
+    val mins = ((now - ms) / 60_000L).coerceAtLeast(0)
+    return when {
+        mins < 1 -> "just now"
+        mins < 60 -> "$mins min ago"
+        mins < 48 * 60 -> "${mins / 60} hr ago"
+        else -> formatMapTime(ms)
+    }
+}
+
+/** One line saying where the pins come from and how fresh the community reports are. */
+@Composable
+private fun OutageSourceStrip(communityFetchedAt: Long?, modifier: Modifier = Modifier) {
+    val text = if (communityFetchedAt == null) {
+        "Your own reports with GPS. Community reports appear once Bright can reach its server."
+    } else {
+        "Your reports with GPS + Bright users' reports from the last 48 hours. Updated ${formatMapTime(communityFetchedAt)}."
+    }
+    Text(
+        text = text,
+        fontSize = 13.sp,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = modifier
+    )
+}
+
+/** Shown over the map when there is nothing real to pin. */
+@Composable
+private fun OutageMapEmptyState(filtered: Boolean, modifier: Modifier = Modifier) {
+    Card(
+        modifier = modifier.testTag("outage_map_empty_state"),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.96f)),
+        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.6f))
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.LocationOn,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(28.dp)
+            )
+            Text(
+                text = if (filtered) "No outages reported here yet" else "No outages reported near you yet",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Text(
+                text = if (filtered) {
+                    "Nothing matches this search or area. Clear the filter to see all reports."
+                } else {
+                    "Pins appear when you report a fault with your location, or when other Bright users report one in the last 48 hours."
+                },
+                fontSize = 15.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
+
 /**
- * Embedded Real-Time Map component leveraging high-performance Leaflet WebGL/Canvas rendering
- * with real tile sets (Roadmap, Satellite Imagery, Dark SCADA) pinpointing transformer IDs.
+ * Embedded map (Leaflet in a WebView, real OpenStreetMap / Esri / Carto tiles) showing real
+ * outage pins only.
  */
 @Composable
 fun RealtimeGoogleMapView(
-    transformers: List<NigeriaTransformer>,
-    selectedTransformer: NigeriaTransformer?,
+    pins: List<OutagePin>,
+    selectedPin: OutagePin?,
     mapStyle: MapStyleMode,
     onWebViewReady: (WebView) -> Unit,
-    onTransformerSelected: (NigeriaTransformer) -> Unit,
-    onDirectionsClicked: (NigeriaTransformer) -> Unit,
+    onPinSelected: (OutagePin) -> Unit,
+    onDirectionsClicked: (OutagePin) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val htmlContent = remember(transformers) {
-        buildLeafletMapHtml(transformers, selectedTransformer?.id, mapStyle)
+    val htmlContent = remember(pins) {
+        buildLeafletMapHtml(pins, selectedPin?.id, mapStyle)
     }
+    // The JS bridge is created once; read the latest pins and callbacks through these.
+    val currentPins by rememberUpdatedState(pins)
+    val currentOnSelected by rememberUpdatedState(onPinSelected)
+    val currentOnDirections by rememberUpdatedState(onDirectionsClicked)
 
     AndroidView(
         modifier = modifier,
@@ -878,75 +980,63 @@ fun RealtimeGoogleMapView(
                     displayZoomControls = false
                 }
                 webChromeClient = WebChromeClient()
-                webViewClient = object : WebViewClient() {
-                    override fun onPageFinished(view: WebView?, url: String?) {
-                        super.onPageFinished(view, url)
-                        selectedTransformer?.let { tr ->
-                            view?.evaluateJavascript(
-                                "if (window.focusTransformer) { window.focusTransformer('${tr.id}', ${tr.latitude}, ${tr.longitude}); }",
-                                null
-                            )
-                        }
-                    }
-                }
+                webViewClient = WebViewClient()
                 addJavascriptInterface(
                     object {
                         @JavascriptInterface
-                        fun onTransformerSelected(id: String) {
+                        fun onPinSelected(id: String) {
                             Handler(Looper.getMainLooper()).post {
-                                val match = transformers.firstOrNull { it.id == id }
-                                if (match != null) {
-                                    onTransformerSelected(match)
-                                }
+                                currentPins.firstOrNull { it.id == id }?.let { currentOnSelected(it) }
                             }
                         }
 
                         @JavascriptInterface
                         fun onDirections(id: String) {
                             Handler(Looper.getMainLooper()).post {
-                                val match = transformers.firstOrNull { it.id == id }
-                                if (match != null) {
-                                    onDirectionsClicked(match)
-                                }
+                                currentPins.firstOrNull { it.id == id }?.let { currentOnDirections(it) }
                             }
                         }
                     },
                     "AndroidBridge"
                 )
+                tag = htmlContent.hashCode()
                 loadDataWithBaseURL("https://maps.google.com", htmlContent, "text/html", "UTF-8", null)
                 onWebViewReady(this)
             }
         },
         update = { webView ->
+            // Pins changed (new report, community refresh): reload the map with the new set.
+            if (webView.tag != htmlContent.hashCode()) {
+                webView.tag = htmlContent.hashCode()
+                webView.loadDataWithBaseURL("https://maps.google.com", htmlContent, "text/html", "UTF-8", null)
+            }
             onWebViewReady(webView)
         }
     )
 }
 
+private fun jsSafe(s: String): String =
+    s.replace("\\", "\\\\").replace("'", "\\'").replace("<", "&lt;").replace(">", "&gt;").replace("\n", " ")
+
 private fun buildLeafletMapHtml(
-    transformers: List<NigeriaTransformer>,
+    pins: List<OutagePin>,
     selectedId: String?,
     mapStyle: MapStyleMode
 ): String {
     val sb = StringBuilder()
-    transformers.forEach { tr ->
-        val colorHex = when (tr.status) {
-            TransformerStatus.HEALTHY -> "#22C55E"
-            TransformerStatus.HEAVY_LOAD -> "#F59E0B"
-            TransformerStatus.OVERLOADED, TransformerStatus.FAULT_TRIPPED -> "#EF4444"
-            TransformerStatus.LOAD_SHEDDING -> "#8B5CF6"
+    pins.forEach { p ->
+        val desc = buildString {
+            append(p.statusLabel)
+            append(" · ")
+            append(p.place)
+            append("<br>Latest: ")
+            append(timeAgo(p.latestAt))
+            if (p.discoCode.isNotBlank()) append(" · ").append(p.discoCode)
         }
-        val safeName = tr.name.replace("'", "\\'")
-        val safeStreet = tr.street.replace("'", "\\'")
-        val safeCity = tr.city.replace("'", "\\'")
         sb.append(
-            """{ id: '${tr.id}', name: '$safeName', street: '$safeStreet', city: '$safeCity', lat: ${tr.latitude}, lng: ${tr.longitude}, capacity: ${tr.capacityKva}, load: ${tr.loadPercent}, color: '$colorHex' },"""
+            """{ id: '${jsSafe(p.id)}', badge: '${jsSafe(p.badge)}', title: '${jsSafe(p.title)}', desc: '${jsSafe(desc).replace("&lt;br&gt;", "<br>")}', lat: ${p.latitude}, lng: ${p.longitude}, color: '${p.colorHex}' },"""
         )
     }
-
-    val defaultLat = transformers.firstOrNull()?.latitude ?: 9.0820
-    val defaultLng = transformers.firstOrNull()?.longitude ?: 8.6753
-    val initialZoom = if (transformers.size == 1) 15 else 6
 
     val tileUrl = when (mapStyle) {
         MapStyleMode.SATELLITE -> "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
@@ -972,17 +1062,16 @@ private fun buildLeafletMapHtml(
               padding: 4px;
             }
             .leaflet-popup-tip { background: #1E293B; }
-            .popup-id { font-size: 13px; font-weight: 900; color: #E5B869; margin: 0 0 2px 0; }
-            .popup-name { font-size: 11px; font-weight: 600; color: #F1F5F9; margin: 0 0 4px 0; }
-            .popup-desc { font-size: 10px; color: #94A3B8; margin: 0 0 8px 0; }
+            .popup-id { font-size: 15px; font-weight: 900; color: #E5B869; margin: 0 0 4px 0; }
+            .popup-desc { font-size: 13px; color: #CBD5E1; margin: 0 0 8px 0; line-height: 1.35; }
             .popup-btn {
               background: #E5B869;
               color: #000000;
-              font-size: 11px;
+              font-size: 13px;
               font-weight: 800;
               border: none;
               border-radius: 6px;
-              padding: 6px 12px;
+              padding: 8px 12px;
               width: 100%;
               box-sizing: border-box;
               cursor: pointer;
@@ -990,19 +1079,15 @@ private fun buildLeafletMapHtml(
               text-align: center;
               text-decoration: none;
             }
-            .pin-container {
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-            }
+            .pin-container { display: flex; flex-direction: column; align-items: center; }
             .pin-badge {
               background: rgba(15, 23, 42, 0.92);
               color: #E5B869;
               border: 1px solid rgba(229,184,105,0.7);
               border-radius: 4px;
-              font-size: 8.5px;
+              font-size: 11px;
               font-weight: 800;
-              padding: 1px 4px;
+              padding: 1px 5px;
               white-space: nowrap;
               margin-bottom: 2px;
               box-shadow: 0 2px 4px rgba(0,0,0,0.6);
@@ -1014,21 +1099,21 @@ private fun buildLeafletMapHtml(
           <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
           <script>
             var rawData = [$sb];
-            var map = L.map('map', { zoomControl: false, attributionControl: false }).setView([$defaultLat, $defaultLng], $initialZoom);
+            var map = L.map('map', { zoomControl: false, attributionControl: false }).setView([9.0820, 8.6753], 6);
 
             var currentTile = L.tileLayer('$tileUrl', { maxZoom: 19 }).addTo(map);
 
             var markers = {};
 
-            function createPinIcon(tr, isSelected) {
+            function createPinIcon(p, isSelected) {
               var scale = isSelected ? 1.25 : 1.0;
               var svg = '<svg width="' + (22 * scale) + '" height="' + (30 * scale) + '" viewBox="0 0 24 32" fill="none" xmlns="http://www.w3.org/2000/svg">' +
-                '<path d="M12 0C5.37258 0 0 5.37258 0 12C0 19.5 12 32 12 32C12 32 24 19.5 24 12C24 5.37258 18.6274 0 12 0Z" fill="' + tr.color + '" stroke="#FFFFFF" stroke-width="1.5"/>' +
+                '<path d="M12 0C5.37258 0 0 5.37258 0 12C0 19.5 12 32 12 32C12 32 24 19.5 24 12C24 5.37258 18.6274 0 12 0Z" fill="' + p.color + '" stroke="#FFFFFF" stroke-width="1.5"/>' +
                 '<circle cx="12" cy="12" r="5" fill="#FFFFFF"/>' +
-                (isSelected ? '<circle cx="12" cy="12" r="2.5" fill="' + tr.color + '"/>' : '') +
+                (isSelected ? '<circle cx="12" cy="12" r="2.5" fill="' + p.color + '"/>' : '') +
                 '</svg>';
               var html = '<div class="pin-container">' +
-                '<div class="pin-badge">' + tr.id + '</div>' +
+                '<div class="pin-badge">' + p.badge + '</div>' +
                 svg +
                 '</div>';
               return L.divIcon({
@@ -1040,26 +1125,29 @@ private fun buildLeafletMapHtml(
               });
             }
 
-            rawData.forEach(function(tr) {
-              var isSel = (tr.id === '$selectedId');
-              var icon = createPinIcon(tr, isSel);
-              var marker = L.marker([tr.lat, tr.lng], { icon: icon }).addTo(map);
+            rawData.forEach(function(p) {
+              var isSel = (p.id === '${jsSafe(selectedId ?: "")}');
+              var marker = L.marker([p.lat, p.lng], { icon: createPinIcon(p, isSel) }).addTo(map);
 
-              var popupContent = '<div class="popup-id">' + tr.id + '</div>' +
-                '<div class="popup-name">' + tr.name + '</div>' +
-                '<div class="popup-desc">' + tr.street + ', ' + tr.city + '<br><b>Capacity:</b> ' + tr.capacity + ' kVA | <b>Load:</b> ' + tr.load + '%</div>' +
-                '<button class="popup-btn" onclick="openDirections(\'' + tr.id + '\')">📍 Google Maps Directions</button>';
+              var popupContent = '<div class="popup-id">' + p.title + '</div>' +
+                '<div class="popup-desc">' + p.desc + '</div>' +
+                '<button class="popup-btn" onclick="openDirections(\'' + p.id + '\')">Google Maps Directions</button>';
 
               marker.bindPopup(popupContent);
 
               marker.on('click', function() {
-                if (window.AndroidBridge && window.AndroidBridge.onTransformerSelected) {
-                  window.AndroidBridge.onTransformerSelected(tr.id);
+                if (window.AndroidBridge && window.AndroidBridge.onPinSelected) {
+                  window.AndroidBridge.onPinSelected(p.id);
                 }
               });
 
-              markers[tr.id] = marker;
+              markers[p.id] = marker;
             });
+
+            if (rawData.length > 0) {
+              var group = L.featureGroup(Object.keys(markers).map(function(k) { return markers[k]; }));
+              map.fitBounds(group.getBounds().pad(0.3), { maxZoom: 12 });
+            }
 
             function openDirections(id) {
               if (window.AndroidBridge && window.AndroidBridge.onDirections) {
@@ -1067,9 +1155,9 @@ private fun buildLeafletMapHtml(
               }
             }
 
-            window.focusTransformer = function(id, lat, lng) {
+            window.focusPin = function(id, lat, lng, zoom) {
               if (map) {
-                map.flyTo([lat, lng], 15, { animate: true, duration: 0.8 });
+                map.flyTo([lat, lng], zoom, { animate: true, duration: 0.8 });
                 if (markers[id]) {
                   markers[id].openPopup();
                 }
@@ -1090,20 +1178,17 @@ private fun buildLeafletMapHtml(
     """.trimIndent()
 }
 
-/**
- * Inspector Card for the selected Transformer Unit.
- * Clean, production-grade layout displaying real grid metrics, with zero demo reports,
- * and a prominent Google Maps Direction feature that takes you to Google Maps pinpointing the Transformer ID.
- */
+/** Detail card for the selected outage pin. */
 @Composable
-private fun TransformerInspectorCard(
-    transformer: NigeriaTransformer,
+private fun OutagePinInspectorCard(
+    pin: OutagePin,
     onGoogleMapsDirections: () -> Unit,
     onGoogleMapsPinpoint: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val statusColor = Color(android.graphics.Color.parseColor(pin.colorHex))
     Card(
-        modifier = modifier,
+        modifier = modifier.testTag("selected_outage_pin_card"),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
@@ -1114,113 +1199,49 @@ private fun TransformerInspectorCard(
                 .padding(14.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            // Top Header: Transformer ID + Status Badge
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                Surface(
+                    color = statusColor.copy(alpha = 0.15f),
+                    shape = RoundedCornerShape(6.dp)
                 ) {
                     Text(
-                        text = transformer.id,
-                        fontWeight = FontWeight.Black,
+                        text = pin.statusLabel,
+                        color = statusColor,
                         fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.primary
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
                     )
-                    Surface(
-                        color = Color(transformer.status.colorHex).copy(alpha = 0.15f),
-                        shape = RoundedCornerShape(4.dp)
-                    ) {
-                        Text(
-                            text = transformer.status.label,
-                            color = Color(transformer.status.colorHex),
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
-                        )
-                    }
                 }
+                Text(
+                    text = timeAgo(pin.latestAt),
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
 
-            // Transformer Name
             Text(
-                text = transformer.name,
-                style = MaterialTheme.typography.titleSmall,
+                text = pin.title,
+                fontSize = 17.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface
             )
 
-            // Horizontally placed Capacity pill directly under the transformer name
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Surface(
-                    color = MaterialTheme.colorScheme.surfaceVariant,
-                    shape = RoundedCornerShape(6.dp)
-                ) {
-                    Text(
-                        text = "${transformer.capacityKva} kVA",
-                        fontWeight = FontWeight.Black,
-                        fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
-                    )
-                }
-
-                Surface(
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                    shape = RoundedCornerShape(6.dp)
-                ) {
-                    Text(
-                        text = "Distribution Substation Unit",
-                        fontWeight = FontWeight.Medium,
-                        fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(horizontal = 7.dp, vertical = 3.dp)
-                    )
-                }
-            }
-
             Text(
-                text = "${transformer.street}, ${transformer.city}, ${transformer.state} (${transformer.discoCode})",
-                fontSize = 12.sp,
+                text = listOf(pin.place, pin.discoCode).filter { it.isNotBlank() }.joinToString(" · "),
+                fontSize = 14.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
-            // Overload & Voltages Progress Bar
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Load: ${transformer.loadPercent}% (${transformer.connectedHouseholds} Households)",
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = "Phase A: ${transformer.phaseAVolts}V | B: ${transformer.phaseBVolts}V | C: ${transformer.phaseCVolts}V",
-                    fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.outline
-                )
-            }
-
-            LinearProgressIndicator(
-                progress = { (transformer.loadPercent / 100f).coerceIn(0f, 1f) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(6.dp)
-                    .clip(RoundedCornerShape(3.dp)),
-                color = Color(transformer.status.colorHex),
-                trackColor = MaterialTheme.colorScheme.surfaceVariant
+            Text(
+                text = "Source: ${pin.sourceLabel}" +
+                        if (pin.isApproximate) ". Shown at the state capital because the exact spot was not shared." else "",
+                fontSize = 13.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
-            // Real-Time Google Maps Actions (Directions & Pinpoint labeled with Transformer ID)
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -1233,10 +1254,7 @@ private fun TransformerInspectorCard(
                 ) {
                     Icon(Icons.Default.Directions, contentDescription = null, modifier = Modifier.size(16.dp))
                     Spacer(modifier = Modifier.width(6.dp))
-                    Column(horizontalAlignment = Alignment.Start) {
-                        Text("Google Maps Directions", fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                        Text("Pinpointing ${transformer.id}", fontSize = 12.sp, fontWeight = FontWeight.Normal)
-                    }
+                    Text("Google Maps Directions", fontSize = 13.sp, fontWeight = FontWeight.Bold)
                 }
 
                 OutlinedButton(
@@ -1248,7 +1266,7 @@ private fun TransformerInspectorCard(
                 ) {
                     Icon(Icons.Default.LocationOn, contentDescription = null, modifier = Modifier.size(15.dp))
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text("Pinpoint Map", fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                    Text("Pinpoint Map", fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
                 }
             }
         }
