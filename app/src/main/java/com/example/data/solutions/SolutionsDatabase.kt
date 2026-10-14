@@ -7,8 +7,9 @@ import androidx.room.RoomDatabase
 import java.io.File
 
 /**
- * Separate database for the 30 solutions so adding tables here never triggers the main
- * database's destructive migration (which would wipe the user's profile and complaints).
+ * Separate database for the 30 solutions (supply log, reports, claims, voice notes...).
+ * Schema changes go through explicit migrations (SolutionsDatabaseMigrations); nothing here is
+ * ever dropped by an app update.
  */
 @Database(
     entities = [
@@ -41,7 +42,12 @@ abstract class SolutionsDatabase : RoomDatabase() {
                     context.applicationContext,
                     SolutionsDatabase::class.java,
                     NAME
-                ).fallbackToDestructiveMigration().build().also { instance = it }
+                )
+                    // No destructive fallback: version 1 is the baseline and every future schema
+                    // change must add a Migration in SolutionsDatabaseMigrations.
+                    .addMigrations(*SolutionsDatabaseMigrations.ALL)
+                    .fallbackToDestructiveMigrationOnDowngrade(true)
+                    .build().also { instance = it }
             }
 
         /** Used by "Delete account": clears every table and the voice/photo evidence files. */

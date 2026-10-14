@@ -43,7 +43,15 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "bright_electricity_db"
-                ).fallbackToDestructiveMigration().build()
+                )
+                    // Real migrations only: an app update must never wipe complaint history.
+                    .addMigrations(*AppDatabaseMigrations.ALL)
+                    // Only pre-baseline versions (1-6, schemas never recorded) may be rebuilt.
+                    .fallbackToDestructiveMigrationFrom(true, *AppDatabaseMigrations.LEGACY_DESTRUCTIVE_FROM)
+                    // Installing an older APK over a newer one cannot be migrated; rebuild
+                    // rather than crash (history comes back from the cloud backup when enabled).
+                    .fallbackToDestructiveMigrationOnDowngrade(true)
+                    .build()
                 INSTANCE = instance
                 instance
             }

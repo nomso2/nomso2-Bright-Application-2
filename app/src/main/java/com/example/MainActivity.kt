@@ -146,7 +146,8 @@ fun BrightApp(viewModel: BrightViewModel) {
     // State collections
     val userProfile by viewModel.userProfile.collectAsState()
     val personalComplaints by viewModel.activePersonalComplaints.collectAsState()
-    val historyComplaints by viewModel.historicalComplaints.collectAsState()
+    // History shows every complaint (active and resolved), not just resolved ones.
+    val historyComplaints by viewModel.complaintHistory.collectAsState()
     val outageNodes by viewModel.outageNodes.collectAsState()
     val vandalismReports by viewModel.vandalismReports.collectAsState()
     val billingDisputes by viewModel.billingDisputes.collectAsState()

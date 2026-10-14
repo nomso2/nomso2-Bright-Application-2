@@ -31,6 +31,11 @@ import com.example.data.security.PinStore
 import android.content.SharedPreferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import com.example.data.cloud.BrightFirebase
+import com.example.data.cloud.ComplaintCloudBackup
+import com.example.data.solutions.FaultReportEntity
+import com.example.data.solutions.SolutionsDatabase
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -61,6 +66,12 @@ class BrightRepository(
     private val offlineQueueDao = database.offlineSyncQueueDao()
 
     private val prefs: SharedPreferences? = context?.getSharedPreferences("bright_security_prefs", Context.MODE_PRIVATE)
+
+    /** Background work that must outlive a single screen (cloud backup, report mirroring). */
+    private val ioScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+
+    /** Firestore backup of complaint history (users/{uid}/complaints). Null-safe when offline. */
+    private val complaintBackup: ComplaintCloudBackup? = context?.let { ComplaintCloudBackup(it) }
 
     // Re-login & Session Lock preferences
     private val _requireLoginOnLeave = MutableStateFlow(
@@ -139,6 +150,148 @@ class BrightRepository(
             seedMaintenanceAlerts()
             initTelemetryCache()
         }
+        mirrorSolutionReportsIntoHistory()
+        // Restore history from the cloud on first launch / reinstall (no-op offline).
+        ioScope.launch { syncComplaintHistoryWithCloud() }
+    }
+
+    // ---------------------------------------------------------------------------------------
+    // Complaint history: cloud backup + one history for every kind of report
+    // ---------------------------------------------------------------------------------------
+
+    /** Uploads one complaint to the user's cloud backup in the background (no-op offline). */
+    private fun backupComplaint(id: String) {
+        val backup = complaintBackup ?: return
+        ioScope.launch {
+            try {
+                complaintDao.getComplaintById(id)?.let { backup.upload(it) }
+            } catch (e: Exception) {
+                // Best effort: the next full sync uploads anything missed.
+            }
+        }
+    }
+
+    /**
+     * Two-way merge of complaint history with Firestore (users/{uid}/complaints):
+     * restores anything missing or newer from the cloud into Room (reinstall / new phone), then
+     * uploads local complaints the cloud doesn't have yet. Returns how many were restored.
+     * Does nothing when Firebase isn't configured or the phone is offline.
+     */
+    suspend fun syncComplaintHistoryWithCloud(): Int = withContext(Dispatchers.IO) {
+        val backup = complaintBackup ?: return@withContext 0
+        try {
+            val remote = backup.fetchAll() ?: return@withContext 0
+            val remoteById = remote.associateBy { it.id }
+            var restored = 0
+            for (r in remote) {
+                if (r.id.startsWith("SEED-") || r.id.startsWith("CMP-SEED")) continue
+                val local = complaintDao.getComplaintById(r.id)
+                if (local == null || r.updatedAt > local.updatedAt) {
+                    complaintDao.insertComplaint(r)
+                    restored++
+                }
+            }
+            val locals = complaintDao.getAllComplaints().firstOrNull() ?: emptyList()
+            for (l in locals) {
+                val r = remoteById[l.id]
+                if (r == null || l.updatedAt > r.updatedAt) backup.upload(l)
+            }
+            restored
+        } catch (e: Exception) {
+            0
+        }
+    }
+
+    /**
+     * Reports raised from the 30-solutions tools (SOS, voice, SMS fallback, photo, GPS...) live in
+     * the solutions database. Mirror each one into the complaints table so History shows every
+     * report the user ever made, and back it up with the rest.
+     */
+    private fun mirrorSolutionReportsIntoHistory() {
+        val ctx = context ?: return
+        ioScope.launch {
+            try {
+                SolutionsDatabase.get(ctx).dao().reports().collect { reports ->
+                    reports.forEach { mirrorSolutionReport(it) }
+                }
+            } catch (e: Exception) {
+                // Mirroring is additive; a failure never blocks reporting itself.
+            }
+        }
+    }
+
+    private suspend fun mirrorSolutionReport(r: FaultReportEntity) {
+        val id = "SOL-${r.reference}"
+        val existing = complaintDao.getComplaintById(id)
+        val stageTime = maxOf(r.stageUpdatedAt, r.createdAt)
+        if (existing != null && existing.updatedAt >= stageTime) return
+        val status = when (r.stage) {
+            0 -> ComplaintStatus.LOGGED
+            1 -> ComplaintStatus.ASSIGNED
+            2 -> ComplaintStatus.DISPATCHED
+            3 -> ComplaintStatus.WORK_IN_PROGRESS
+            4 -> ComplaintStatus.TESTING
+            else -> ComplaintStatus.RESOLVED
+        }
+        if (existing != null) {
+            complaintDao.updateComplaint(
+                existing.copy(
+                    statusName = status.name,
+                    updatedAt = stageTime,
+                    resolvedAt = if (status == ComplaintStatus.RESOLVED) (existing.resolvedAt ?: stageTime) else existing.resolvedAt
+                )
+            )
+        } else {
+            val profile = profileDao.getUserProfileSync()
+            val faultType = when {
+                r.isHazard -> FaultType.LIVE_CABLE_EXPOSED
+                r.source == "TAMPER" -> FaultType.METER_TAMPER_FAULT
+                r.tier >= 3 -> FaultType.FEEDER_TRIPPED
+                else -> FaultType.TOTAL_BLACKOUT
+            }
+            val slaHours = if (r.isHazard) 2 else 4
+            val via = when (r.source) {
+                "SOS" -> "SOS button"
+                "SMS" -> "SMS fallback"
+                "USSD" -> "USSD"
+                "VOICE" -> "voice report"
+                "PHOTO" -> "photo report"
+                "GPS" -> "GPS pin"
+                "TIER" -> "urgency check"
+                "TAMPER" -> "tamper report"
+                "BATSIGNAL" -> "neighbour alert"
+                else -> "Bright tools"
+            }
+            complaintDao.insertComplaint(
+                ComplaintEntity(
+                    id = id,
+                    meterNumber = profile?.meterNumber ?: "",
+                    title = r.title,
+                    description = listOf(r.details, "Sent via $via.").filter { it.isNotBlank() }.joinToString("\n"),
+                    faultTypeName = faultType.name,
+                    isHazardEmergency = r.isHazard,
+                    statusName = status.name,
+                    escalationTierLevel = EscalationTier.LEVEL_1.level,
+                    discoCode = profile?.discoCode ?: "",
+                    transformerId = r.transformerId.ifBlank { profile?.transformerId ?: "" },
+                    feederName = profile?.feederName ?: "",
+                    reportedAt = r.createdAt,
+                    updatedAt = stageTime,
+                    escalationDeadline = r.createdAt + slaHours * 60 * 60 * 1000L,
+                    upvotesCount = 1,
+                    assignedCrewName = null,
+                    assignedCrewPhone = null,
+                    etaMinutes = null,
+                    resolutionNotes = null,
+                    userSatisfaction = null,
+                    imageUri = r.photoPath,
+                    autoClusteredCount = 1,
+                    resolvedAt = if (status == ComplaintStatus.RESOLVED) stageTime else null,
+                    isVideo = false
+                )
+            )
+        }
+        backupComplaint(id)
     }
 
     private suspend fun initTelemetryCache() {
@@ -238,7 +391,9 @@ class BrightRepository(
             description = description,
             faultTypeName = faultType.name,
             isHazardEmergency = isHazardEmergency,
-            statusName = if (isHazardEmergency) ComplaintStatus.DISPATCHED.name else ComplaintStatus.LOGGED.name,
+            // Bright has no DisCo dispatch feed, so every ticket starts as "logged". (It used to
+            // claim a crew was en route with a made-up name, phone and ETA.)
+            statusName = ComplaintStatus.LOGGED.name,
             escalationTierLevel = EscalationTier.LEVEL_1.level,
             discoCode = discoCode,
             transformerId = transformerId,
@@ -247,18 +402,19 @@ class BrightRepository(
             updatedAt = now,
             escalationDeadline = deadline,
             upvotesCount = 1,
-            assignedCrewName = if (isHazardEmergency) "Rapid Safety Response Team Alpha" else "Engr. Babatunde Lawal (Field Tech)",
-            assignedCrewPhone = "0802-991-3820",
-            etaMinutes = if (isHazardEmergency) 25 else 75,
+            assignedCrewName = null,
+            assignedCrewPhone = null,
+            etaMinutes = null,
             resolutionNotes = null,
             userSatisfaction = null,
             imageUri = imageUri,
-            autoClusteredCount = if (faultType == FaultType.BURNT_TRANSFORMER || faultType == FaultType.FEEDER_TRIPPED) 38 else 1,
+            autoClusteredCount = 1,
             resolvedAt = null,
             isVideo = isVideo
         )
 
         complaintDao.insertComplaint(newComplaint)
+        backupComplaint(ticketId)
         enqueueOfflineSyncAction("FAULT_REPORT", ticketId, """{"title":"$title","faultType":"${faultType.name}"}""")
         return ticketId
     }
@@ -283,6 +439,7 @@ class BrightRepository(
             }
         )
         complaintDao.updateComplaint(updated)
+        backupComplaint(complaintId)
     }
 
     suspend fun advanceComplaintStatus(complaintId: String, nextStatus: ComplaintStatus) {
@@ -293,6 +450,7 @@ class BrightRepository(
                 updatedAt = System.currentTimeMillis()
             )
         )
+        backupComplaint(complaintId)
         enqueueOfflineSyncAction("STATUS_UPDATE", complaintId, """{"nextStatus":"${nextStatus.name}"}""")
     }
 
@@ -306,11 +464,13 @@ class BrightRepository(
             updatedAt = now,
             resolvedAt = now
         )
+        backupComplaint(complaintId)
         enqueueOfflineSyncAction("RESOLUTION_CONFIRMED", complaintId, """{"rating":$rating,"notes":"$notes"}""")
     }
 
     suspend fun upvoteComplaint(complaintId: String) {
         complaintDao.upvoteComplaint(complaintId)
+        backupComplaint(complaintId)
         enqueueOfflineSyncAction("UPVOTE", complaintId, """{}""")
     }
 
@@ -663,11 +823,21 @@ class BrightRepository(
      * profile, PIN, complaints and history, reports, claims, the offline outbox, cached grid data
      * and cached files (evidence photos, generated dossiers).
      *
+     * Also deletes the cloud backup of the complaint history (users/{uid}/complaints) and signs
+     * out of Firebase. Plain "Log out" never calls this, so history survives sign-out.
+     *
      * Kept on purpose: the paid-meter record, so re-registering the same meter isn't charged again.
      * Public grid data (outage map, maintenance notices) is re-seeded so the map still works.
      */
     suspend fun deleteAllLocalUserData() {
         withContext(Dispatchers.IO) {
+            // Cloud copy first, while we still hold the Firebase session that owns it.
+            try {
+                complaintBackup?.deleteAll()
+                context?.let { BrightFirebase.signOut(it) }
+            } catch (e: Exception) {
+                // Best effort; local data is still wiped below.
+            }
             // PIN and preferences first, so the UI never shows a "signed in" state without data.
             // Wipe everything except the paid-meter record.
             val paidMeters = _paidMeterNumbers.value

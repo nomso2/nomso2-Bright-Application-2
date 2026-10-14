@@ -37,6 +37,9 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build Debug APK
+        env:
+          # Optional: when the secret is missing the app builds and runs fully offline.
+          FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
         run: ./gradlew assembleDebug --no-daemon --stacktrace
 
       - name: Upload APK Binary Artifact
