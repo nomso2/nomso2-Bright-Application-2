@@ -54,7 +54,9 @@ import com.example.model.EscrowTokenRebate
 import com.example.model.UserProfile
 
 /**
- * Phase 4: AI Settlement Engine & Token Escrow Clearinghouse
+ * Rebates & refunds: compensation tokens owed by the DisCo for overdue fault repairs, and the
+ * NERC filing. Bright never sells, vends or recharges tokens. Escrow parameters are kept for
+ * call-site compatibility but no longer shown.
  */
 @Composable
 fun TokenEscrowClearinghouseDialog(
@@ -101,7 +103,7 @@ fun TokenEscrowClearinghouseDialog(
                             )
                             Spacer(modifier = Modifier.width(6.dp))
                             Text(
-                                text = "PHASE 4: AI SETTLEMENT ENGINE",
+                                text = "REBATES & REFUNDS",
                                 style = MaterialTheme.typography.labelSmall.copy(
                                     fontWeight = FontWeight.ExtraBold,
                                     letterSpacing = 1.sp
@@ -110,68 +112,14 @@ fun TokenEscrowClearinghouseDialog(
                             )
                         }
                         Text(
-                            text = "Token Escrow Clearinghouse",
-                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                            text = "Compensation tokens",
+                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, fontSize = 18.sp),
                             color = MaterialTheme.colorScheme.onSurface
                         )
                     }
 
                     IconButton(onClick = onDismiss) {
                         Icon(imageVector = Icons.Default.Close, contentDescription = "Close", tint = MaterialTheme.colorScheme.onSurfaceVariant)
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(14.dp))
-
-                // Escrow Token Liquidity Ledger Vault
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f))
-                        .border(1.dp, MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f), RoundedCornerShape(16.dp))
-                        .padding(14.dp)
-                ) {
-                    Column {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(
-                                    imageVector = Icons.Default.Lock,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.secondary,
-                                    modifier = Modifier.size(18.dp)
-                                )
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Text(
-                                    text = "ESCROW LIQUIDITY VAULT",
-                                    style = MaterialTheme.typography.labelSmall.copy(
-                                        fontWeight = FontWeight.Bold,
-                                        letterSpacing = 0.5.sp
-                                    ),
-                                    color = MaterialTheme.colorScheme.secondary
-                                )
-                            }
-                            Text(
-                                text = "INSTITUTIONAL AGGREGATOR",
-                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp, fontWeight = FontWeight.ExtraBold),
-                                color = MaterialTheme.colorScheme.secondary
-                            )
-                        }
-                        Spacer(modifier = Modifier.height(6.dp))
-                        Text(
-                            text = "₦${String.format("%,.2f", escrowVaultBalanceNgn)}",
-                            style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.ExtraBold),
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        Text(
-                            text = "Wholesale utility liquidity pre-funded for automated compensatory rebates",
-                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
                     }
                 }
 
@@ -264,138 +212,15 @@ fun TokenEscrowClearinghouseDialog(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Section: 20-Digit Automated Rebate Tokens
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "AUTOMATED 20-DIGIT REBATES",
-                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.ExtraBold),
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    Text(
-                        text = "${escrowTokens.size} Issued",
-                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                }
+                // Compensation tokens: owed by the DisCo for fault repairs past the NERC limit.
+                // No buying, vending or recharging; the only token entry is the one the DisCo issued.
+                com.example.ui.meter.CompensationTokensSection(
+                    meterNumber = userProfile.meterNumber,
+                    customerName = userProfile.customerName,
+                    discoCode = userProfile.discoCode
+                )
 
-                Spacer(modifier = Modifier.height(8.dp))
-
-                escrowTokens.forEach { token ->
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp)
-                            .clip(RoundedCornerShape(14.dp))
-                            .background(if (token.isRedeemed) MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f) else MaterialTheme.colorScheme.primary.copy(alpha = 0.08f))
-                            .border(
-                                1.dp,
-                                if (token.isRedeemed) MaterialTheme.colorScheme.outline.copy(alpha = 0.3f) else MaterialTheme.colorScheme.primary,
-                                RoundedCornerShape(14.dp)
-                            )
-                            .padding(12.dp)
-                    ) {
-                        Column {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(
-                                        imageVector = Icons.Default.Bolt,
-                                        contentDescription = null,
-                                        tint = if (token.isRedeemed) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.primary,
-                                        modifier = Modifier.size(16.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(6.dp))
-                                    Text(
-                                        text = "${token.kwhValue} kWh (₦${token.monetaryValueNgn.toInt()})",
-                                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                                        color = if (token.isRedeemed) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface
-                                    )
-                                }
-
-                                if (token.isRedeemed) {
-                                    Text(
-                                        text = "LOADED ON METER",
-                                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                } else {
-                                    Box(
-                                        modifier = Modifier
-                                            .clip(RoundedCornerShape(6.dp))
-                                            .background(MaterialTheme.colorScheme.primary)
-                                            .clickable { onClaimToken(token.id) }
-                                            .padding(horizontal = 8.dp, vertical = 4.dp)
-                                    ) {
-                                        Row(verticalAlignment = Alignment.CenterVertically) {
-                                            Icon(
-                                                imageVector = Icons.Default.ContentCopy,
-                                                contentDescription = null,
-                                                tint = MaterialTheme.colorScheme.onPrimary,
-                                                modifier = Modifier.size(12.dp)
-                                            )
-                                            Spacer(modifier = Modifier.width(4.dp))
-                                            Text(
-                                                text = "Copy Token",
-                                                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                                                color = MaterialTheme.colorScheme.onPrimary
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-
-                            Spacer(modifier = Modifier.height(6.dp))
-
-                            // 20-digit token code
-                            Text(
-                                text = token.token20Digit,
-                                style = MaterialTheme.typography.bodyMedium.copy(
-                                    fontWeight = FontWeight.Bold,
-                                    fontFamily = FontFamily.Monospace,
-                                    letterSpacing = 1.sp
-                                ),
-                                color = if (token.isRedeemed) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.primary
-                            )
-
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text(
-                                text = token.reason,
-                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                // Trigger Instant Escrow Settlement Demo
-                Button(
-                    onClick = onGenerateManualRebate,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(46.dp)
-                        .testTag("trigger_escrow_settlement_button"),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                        contentColor = MaterialTheme.colorScheme.primary
-                    ),
-                    shape = RoundedCornerShape(12.dp),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
-                ) {
-                    Icon(imageVector = Icons.Default.Bolt, contentDescription = null, modifier = Modifier.size(18.dp))
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(text = "Trigger SLA Default Rebate (₦5,132)", fontWeight = FontWeight.Bold)
-                }
-
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
                 // NERC Enforcement Document Compiler
                 Button(

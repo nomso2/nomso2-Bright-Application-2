@@ -33,22 +33,16 @@ import com.example.data.meter.Iec62056Reader
 import com.example.data.meter.MeterIdentity
 import com.example.data.meter.MeterReading
 import com.example.data.meter.MeterResult
-import com.example.data.meter.StsToken
-import com.example.data.meter.TokenHistory
-import com.example.data.meter.TokenRecord
 import com.example.model.MeterManufacturer
 import com.example.model.UserProfile
 import com.example.ui.solutions.common.BrightPermissions
 import com.example.ui.solutions.common.SolutionIntents
 import com.example.ui.solutions.common.rememberPermissionAction
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 /**
  * Dedicated smart meter connection. Real paths: nameplate scan, USB-OTG optical probe
- * (IEC 62056-21), a DisCo HES when configured, STS token entry with history, and SMS / USSD / call
+ * (IEC 62056-21), a DisCo HES when configured, compensation tokens owed for overdue fault repairs, and SMS / USSD / call
  * backup. Until a DisCo grants HES access, the cloud path runs a clearly labelled DEMO meter.
  * Phones have no CIU RF or PLC radio, so those methods say so.
  */
@@ -65,9 +59,6 @@ fun MeterConnectHub(userProfile: UserProfile) {
     var busy by remember { mutableStateOf<String?>(null) }
     var message by remember { mutableStateOf<String?>(null) }
     var probes by remember { mutableStateOf(Iec62056Reader.findProbes(context)) }
-    var token by remember { mutableStateOf("") }
-    var keypadSteps by remember { mutableStateOf<List<String>>(emptyList()) }
-    var history by remember { mutableStateOf(TokenHistory.all(context)) }
     var ussd by remember { mutableStateOf("") }
     val disco = userProfile.discoCode
     val hesConfigured = manufacturer?.let { HesRegistry.config(context, disco, it) != null } == true
@@ -177,80 +168,14 @@ fun MeterConnectHub(userProfile: UserProfile) {
             }
         }
 
-        // 4. STS token
-        MeterCard("4. Load an STS token") {
-            OutlinedTextField(
-                value = StsToken.pretty(token),
-                onValueChange = { token = StsToken.digits(it).take(20) },
-                label = { Text("20-digit token") },
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                modifier = Modifier.fillMaxWidth().testTag("sts_token_input")
+        // 4. Compensation tokens (owed by the DisCo for overdue fault repairs; no buying or recharging)
+        MeterCard("4. Compensation tokens") {
+            CompensationTokensSection(
+                meterNumber = userProfile.meterNumber,
+                customerName = userProfile.customerName,
+                discoCode = userProfile.discoCode,
+                showHeading = false
             )
-            val valid = token.length == 20
-            if (token.isNotEmpty() && !valid) Text("${token.length} of 20 digits.", color = MaterialTheme.colorScheme.error, fontSize = 13.sp)
-            if (hesConfigured && manufacturer != null) {
-                Button(enabled = valid && busy == null, modifier = Modifier.fillMaxWidth(), onClick = {
-                    val m = manufacturer!!
-                    busy = "token"
-                    scope.launch {
-                        val r = HesRegistry.connectorFor(context, disco, m).pushToken(meterNumber, token)
-                        val result = when (r) {
-                            is MeterResult.Ok -> "Accepted by HES" + (r.value?.let { ", credit %.2f kWh".format(it) } ?: "")
-                            is MeterResult.Fail -> "Failed: ${r.message}"
-                        }
-                        TokenHistory.add(context, TokenRecord(token, meterNumber, System.currentTimeMillis(), "HES", result))
-                        history = TokenHistory.all(context)
-                        message = result
-                        if (r is MeterResult.Fail) keypadSteps = StsToken.keypadSteps(token, m.displayName)
-                        busy = null
-                    }
-                }) { Text("Push token via HES") }
-            }
-            Button(enabled = valid, modifier = Modifier.fillMaxWidth(), onClick = {
-                keypadSteps = StsToken.keypadSteps(token, manufacturer?.displayName)
-                TokenHistory.add(context, TokenRecord(token, meterNumber, System.currentTimeMillis(), "KEYPAD", "Saved; typed on the meter keypad"))
-                history = TokenHistory.all(context)
-            }) { Text("Save and show keypad steps") }
-            OutlinedButton(enabled = valid, modifier = Modifier.fillMaxWidth(), onClick = {
-                SolutionIntents.copy(context, "Token", StsToken.pretty(token))
-            }) { Text("Copy token") }
-            if (!hesConfigured && manufacturer != null) {
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
-                    OutlinedButton(enabled = valid && busy == null, onClick = {
-                        val m = manufacturer!!
-                        busy = "token"
-                        scope.launch {
-                            val c = HesRegistry.connectorFor(context, disco, m)
-                            val result = when (val r = c.pushToken(meterNumber, token)) {
-                                is MeterResult.Ok -> "DEMO: credited, demo balance now %.2f kWh".format(r.value ?: 0.0)
-                                is MeterResult.Fail -> "DEMO: ${r.message}"
-                            }
-                            TokenHistory.add(context, TokenRecord(token, meterNumber, System.currentTimeMillis(), "DEMO", result))
-                            history = TokenHistory.all(context)
-                            message = result
-                            (c.readTelemetry(meterNumber) as? MeterResult.Ok)?.let { reading = it.value }
-                            busy = null
-                        }
-                    }) { Text("Push to DEMO meter") }
-                    DemoBadge()
-                }
-            }
-            if (keypadSteps.isNotEmpty()) {
-                Text("On the meter keypad:", fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                keypadSteps.forEachIndexed { i, s -> Text("${i + 1}. $s", fontSize = 14.sp) }
-            }
-            if (history.isNotEmpty()) {
-                Text("Token history (entered by you)", fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                val fmt = SimpleDateFormat("d MMM yyyy, h:mm a", Locale.UK)
-                history.take(10).forEach { h ->
-                    Text("${StsToken.pretty(h.token)} · ${fmt.format(Date(h.enteredAt))}", fontSize = 13.sp)
-                    Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                        Text(h.result, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.weight(1f))
-                        if (h.method == "DEMO") DemoBadge()
-                    }
-                }
-            }
         }
 
         // 5. SMS / USSD / call backup (only numbers Bright already holds from DisCo websites)
@@ -260,7 +185,7 @@ fun MeterConnectHub(userProfile: UserProfile) {
                 Text("Add your DisCo in your profile to see its official contacts.", fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
             } else {
                 Text("${contact.name}: numbers from its official website.", fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                val body = "Meter $meterNumber${manufacturer?.let { " (${it.displayName})" } ?: ""}: please confirm my credit balance / last token status. ${userProfile.customerName}".trim()
+                val body = "Meter $meterNumber${manufacturer?.let { " (${it.displayName})" } ?: ""}: please confirm my credit balance / compensation token status. ${userProfile.customerName}".trim()
                 if (contact.primaryPhone.isNotBlank()) {
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         OutlinedButton(onClick = { SolutionIntents.dial(context, contact.primaryPhone) }) { Text("Call") }

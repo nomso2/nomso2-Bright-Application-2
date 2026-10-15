@@ -81,7 +81,9 @@ fun ReportFaultScreen(
     userProfile: UserProfile,
     onBack: () -> Unit,
     onSubmit: (title: String, description: String, faultType: FaultType, isHazard: Boolean, mediaUri: String?, isVideo: Boolean) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    /** One-tap danger report (moved here from the Home fast-track card; same logic). */
+    onQuickHazard: ((String) -> Unit)? = null
 ) {
     var selectedFaultType by remember { mutableStateOf(FaultType.TOTAL_BLACKOUT) }
     var title by remember { mutableStateOf("") }
@@ -353,6 +355,45 @@ fun ReportFaultScreen(
                     ),
                     modifier = Modifier.testTag("emergency_hazard_switch")
                 )
+            }
+        }
+
+        // Calm one-tap danger report (moved from the Home fast-track card; same hazard names and logic).
+        if (onQuickHazard != null) {
+            Spacer(modifier = Modifier.height(16.dp))
+            Card(
+                modifier = Modifier.fillMaxWidth().testTag("report_danger_quick_card"),
+                shape = RoundedCornerShape(14.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxWidth().padding(14.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = "Something dangerous?",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Text(
+                        text = "Keep away from it. One tap sends a priority report to your DisCo.",
+                        fontSize = 16.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    listOf(
+                        "A wire is lying on the ground" to "Fallen Live Wire on Ground",
+                        "A transformer is sparking or burning" to "Sparking / Exploding Transformer",
+                        "A pole has fallen across the street" to "Snapped Concrete Pole Blocking Street"
+                    ).forEach { (label, hazard) ->
+                        OutlinedButton(
+                            onClick = { onQuickHazard(hazard) },
+                            modifier = Modifier.fillMaxWidth().testTag("report_danger_${hazard.take(12).lowercase().replace(" ", "_")}")
+                        ) {
+                            Text(label, fontSize = 16.sp, color = MaterialTheme.colorScheme.primary)
+                        }
+                    }
+                }
             }
         }
 

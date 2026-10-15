@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Forum
 import androidx.compose.material.icons.filled.Gavel
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Router
 import androidx.compose.material.icons.filled.Security
@@ -85,16 +86,19 @@ fun MoreScreen(
     onDeleteAccount: () -> Unit = {},
     onOpenSolutionsSettings: () -> Unit = {},
     onOpenHelp: () -> Unit = {},
+    onOpenUserRefund: () -> Unit = onOpenClearinghouse,
+    onOpenHistory: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     var showLogoutConfirmDialog by remember { mutableStateOf(false) }
 
     val toolItems = listOf(
+        MoreItem("smart_meter_gateway", "Smart Meter", "Check your meter's connection, readings and compensation tokens", Icons.Default.Router, onOpenSmartMeterGateway),
+        MoreItem("estate_exco", "Estate & Dossier", "NERC complaint dossier for your estate", Icons.Default.Gavel, onOpenEstateExcoDossier),
+        MoreItem("user_refund", "User Refund", "Band refund calculator, late-repair compensation tokens and claim letter", Icons.Default.AccountBalanceWallet, onOpenUserRefund),
+        MoreItem("history", "History", "All your fault reports and billing disputes", Icons.Default.History, onOpenHistory),
         MoreItem("anti_theft", "Anti-Theft", "Report cable theft and vandalism, anonymously if you like", Icons.Default.Security, onOpenAntiTheft),
         MoreItem("grid_hub", "Grid Hub", "Tariffs, billing disputes, language and data-saver settings", Icons.Default.Bolt, onOpenGridHub),
-        MoreItem("smart_meter_gateway", "Smart Meter", "Check your meter's connection and readings", Icons.Default.Router, onOpenSmartMeterGateway),
-        MoreItem("estate_exco", "Estate & Dossier", "Estate dues, compensation claims and NERC dossier", Icons.Default.Gavel, onOpenEstateExcoDossier),
-        MoreItem("clearinghouse", "Rebates & Refunds", "Claim rebate tokens for long outages", Icons.Default.AccountBalanceWallet, onOpenClearinghouse),
         MoreItem("transformer_forum", "Neighbour Forum", "Talk with people on your transformer", Icons.Default.Forum, onOpenTransformerForum),
         MoreItem("energy_optimization", "Energy & Surge Guard", "Appliance budget, restore alerts and surge warnings", Icons.Default.Tune, onOpenEnergyOptimization)
     )

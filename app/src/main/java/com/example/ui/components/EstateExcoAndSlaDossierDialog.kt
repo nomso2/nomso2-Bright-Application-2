@@ -84,7 +84,6 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.example.model.Complaint
 import com.example.model.SlaCompensationAssessment
-import com.example.model.TransformerDuesEntry
 import com.example.model.UserProfile
 import com.example.util.NercDossierPdfGenerator
 import java.text.SimpleDateFormat
@@ -96,45 +95,18 @@ import com.example.ui.theme.ElegantLightBorder
 /**
  * Full Suite for:
  * 1. Estate Exco Portal & Printable NERC Complaint Dossier (PDF/Text Export)
- * 2. CDA Transformer Dues Transparency Ledger
- * 3. Automated NERC SLA Credit Refund Calculator & Demand Letter
- * 4. High-Pitch Voltage Surge Warning Banner & Audio Siren
+ * 2. High-Pitch Voltage Surge Warning Banner & Audio Siren
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EstateExcoAndSlaDossierDialog(
     userProfile: UserProfile,
     activeComplaints: List<Complaint>,
-    duesEntries: List<TransformerDuesEntry>,
-    onAddDuesEntry: (name: String, address: String, meter: String, purpose: String, amount: Double, method: String) -> Unit,
-    onGenerateSlaAssessment: (ticketId: String, title: String, delayHours: Int) -> SlaCompensationAssessment,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
     val clipboardManager = LocalClipboardManager.current
-    var selectedTab by remember { mutableIntStateOf(0) } // 0 = NERC PDF Dossier, 1 = Transformer Dues Ledger, 2 = SLA Refund Calculator
-
-    // State for New Dues Contribution Form
-    var showAddDuesForm by remember { mutableStateOf(false) }
-    var residentName by remember { mutableStateOf("") }
-    var houseAddress by remember { mutableStateOf("") }
-    var duesPurpose by remember { mutableStateOf("3x 300A HRC Fuses Replacement") }
-    var duesAmount by remember { mutableStateOf("10000") }
-    var paymentMethod by remember { mutableStateOf("Bank Transfer") }
-
-    // State for SLA Refund Calculator
-    var selectedDelayHours by remember { mutableIntStateOf(48) }
-    var calculatedAssessment by remember {
-        mutableStateOf(
-            onGenerateSlaAssessment(
-                "BRT-8421",
-                "Transformer Fuse Dropout & Feeder Breaker Trip",
-                48
-            )
-        )
-    }
-
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false)
@@ -207,82 +179,25 @@ fun EstateExcoAndSlaDossierDialog(
 
                 Spacer(modifier = Modifier.height(14.dp))
 
-                // Navigation Tabs
-                TabRow(
-                    selectedTabIndex = selectedTab,
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    contentColor = MaterialTheme.colorScheme.primary,
-                    indicator = { tabPositions ->
-                        TabRowDefaults.SecondaryIndicator(
-                            modifier = Modifier.tabIndicatorOffset(tabPositions[selectedTab]),
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                ) {
-                    Tab(
-                        selected = selectedTab == 0,
-                        onClick = { selectedTab = 0 },
-                        text = {
-                            Text(
-                                text = "NERC PDF Dossier",
-                                fontSize = 12.sp,
-                                fontWeight = if (selectedTab == 0) FontWeight.Bold else FontWeight.Normal,
-                                color = if (selectedTab == 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        },
-                        icon = {
-                            Icon(
-                                imageVector = Icons.Default.ReceiptLong,
-                                contentDescription = null,
-                                modifier = Modifier.size(18.dp)
-                            )
-                        }
+                // Single section: the NERC PDF Dossier. Refunds moved to the User Refund screen in More.
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Icon(
+                        imageVector = Icons.Default.ReceiptLong,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(20.dp)
                     )
-                    Tab(
-                        selected = selectedTab == 1,
-                        onClick = { selectedTab = 1 },
-                        text = {
-                            Text(
-                                text = "Transformer Dues",
-                                fontSize = 12.sp,
-                                fontWeight = if (selectedTab == 1) FontWeight.Bold else FontWeight.Normal,
-                                color = if (selectedTab == 1) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        },
-                        icon = {
-                            Icon(
-                                imageVector = Icons.Default.Groups,
-                                contentDescription = null,
-                                modifier = Modifier.size(18.dp)
-                            )
-                        }
-                    )
-                    Tab(
-                        selected = selectedTab == 2,
-                        onClick = { selectedTab = 2 },
-                        text = {
-                            Text(
-                                text = "SLA Refund Calc",
-                                fontSize = 12.sp,
-                                fontWeight = if (selectedTab == 2) FontWeight.Bold else FontWeight.Normal,
-                                color = if (selectedTab == 2) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        },
-                        icon = {
-                            Icon(
-                                imageVector = Icons.Default.Payments,
-                                contentDescription = null,
-                                modifier = Modifier.size(18.dp)
-                            )
-                        }
+                    Text(
+                        text = "NERC PDF Dossier",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // Tab Content Body
-                when (selectedTab) {
-                    0 -> NercDossierTabContent(
+                NercDossierTabContent(
                         userProfile = userProfile,
                         activeComplaints = activeComplaints,
                         onShare = { text ->
@@ -299,59 +214,13 @@ fun EstateExcoAndSlaDossierDialog(
                         }
                     )
 
-                    1 -> TransformerDuesTabContent(
-                        userProfile = userProfile,
-                        duesEntries = duesEntries,
-                        showAddForm = showAddDuesForm,
-                        onToggleAddForm = { showAddDuesForm = !showAddDuesForm },
-                        residentName = residentName,
-                        onResidentNameChange = { residentName = it },
-                        houseAddress = houseAddress,
-                        onHouseAddressChange = { houseAddress = it },
-                        purpose = duesPurpose,
-                        onPurposeChange = { duesPurpose = it },
-                        amount = duesAmount,
-                        onAmountChange = { duesAmount = it },
-                        method = paymentMethod,
-                        onMethodChange = { paymentMethod = it },
-                        onSubmit = {
-                            val parsed = duesAmount.toDoubleOrNull() ?: 5000.0
-                            onAddDuesEntry(residentName, houseAddress, userProfile.meterNumber, duesPurpose, parsed, paymentMethod)
-                            showAddDuesForm = false
-                            residentName = ""
-                            houseAddress = ""
-                        }
-                    )
-
-                    2 -> SlaRefundCalculatorTabContent(
-                        assessment = calculatedAssessment,
-                        delayHours = selectedDelayHours,
-                        onDelayHoursChanged = { hours ->
-                            selectedDelayHours = hours
-                            calculatedAssessment = onGenerateSlaAssessment(
-                                "TICKET-4821",
-                                "Feeder Breaker Failure & Substation Dropout",
-                                hours
-                            )
-                        },
-                        onDispatchClaim = {
-                            val sendIntent = Intent().apply {
-                                action = Intent.ACTION_SEND
-                                putExtra(Intent.EXTRA_TEXT, calculatedAssessment.demandLetterText)
-                                putExtra(Intent.EXTRA_SUBJECT, "DEMAND FOR STATUTORY RECHARGE CREDIT: NERC/CPR/2023 - ${userProfile.meterNumber}")
-                                type = "text/plain"
-                            }
-                            context.startActivity(Intent.createChooser(sendIntent, "Serve Demand Letter to DisCo"))
-                        }
-                    )
-                }
             }
         }
     }
 }
 
 /**
- * TAB 1: Official Formatted NERC Complaint Dossier (PDF/Text)
+ * Official Formatted NERC Complaint Dossier (PDF/Text)
  */
 @Composable
 private fun NercDossierTabContent(
@@ -583,475 +452,6 @@ private fun NercDossierTabContent(
                         fontFamily = FontFamily.Monospace,
                         fontSize = 12.sp,
                         color = ElegantLightBorder,
-                        lineHeight = 16.sp
-                    )
-                }
-            }
-        }
-    }
-}
-
-/**
- * TAB 2: CDA / Transformer Dues Transparency Ledger
- */
-@Composable
-private fun TransformerDuesTabContent(
-    userProfile: UserProfile,
-    duesEntries: List<TransformerDuesEntry>,
-    showAddForm: Boolean,
-    onToggleAddForm: () -> Unit,
-    residentName: String,
-    onResidentNameChange: (String) -> Unit,
-    houseAddress: String,
-    onHouseAddressChange: (String) -> Unit,
-    purpose: String,
-    onPurposeChange: (String) -> Unit,
-    amount: String,
-    onAmountChange: (String) -> Unit,
-    method: String,
-    onMethodChange: (String) -> Unit,
-    onSubmit: () -> Unit
-) {
-    val totalCollected = remember(duesEntries) { duesEntries.sumOf { it.amountNgn } }
-
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        // CDA Balance Summary Card
-        item {
-            Card(
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(14.dp)
-                ) {
-                    Text(
-                        text = "TRANSFORMER TRUST LEDGER",
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary,
-                        letterSpacing = 1.sp
-                    )
-                    Spacer(modifier = Modifier.height(2.dp))
-                    Text(
-                        text = "${userProfile.transformerId} Community Pot",
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    // Lay sideways under the transformer community pot header
-                    Button(
-                        onClick = onToggleAddForm,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary,
-                            contentColor = MaterialTheme.colorScheme.onPrimary
-                        ),
-                        shape = RoundedCornerShape(10.dp),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(42.dp)
-                            .testTag("record_contribution_button")
-                    ) {
-                        Icon(Icons.Default.Payments, contentDescription = null, modifier = Modifier.size(16.dp))
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(
-                            text = if (showAddForm) "Close Form" else "+ Record Payment / Contribution",
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column {
-                            Text("Total Verified Collections", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                            Text("₦${String.format("%,.2f", totalCollected)}", fontSize = 18.sp, fontWeight = FontWeight.ExtraBold, color = MaterialTheme.colorScheme.secondary)
-                        }
-                        Column(horizontalAlignment = Alignment.End) {
-                            Text("Verified Households", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                            Text("${duesEntries.size} Recorded", fontSize = 15.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
-                        }
-                    }
-                }
-            }
-        }
-
-        // Add Dues Form (if toggled)
-        if (showAddForm) {
-            item {
-                Card(
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        Text(
-                            text = "Record Neighborhood Dues / Repair Levy",
-                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                            color = MaterialTheme.colorScheme.primary
-                        )
-
-                        OutlinedTextField(
-                            value = residentName,
-                            onValueChange = onResidentNameChange,
-                            label = { Text("Resident / Landlord Name") },
-                            placeholder = { Text(userProfile.customerName) },
-                            singleLine = true,
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = MaterialTheme.colorScheme.primary,
-                                unfocusedBorderColor = MaterialTheme.colorScheme.outline
-                            )
-                        )
-
-                        OutlinedTextField(
-                            value = houseAddress,
-                            onValueChange = onHouseAddressChange,
-                            label = { Text("House Address / Flat No") },
-                            placeholder = { Text(userProfile.streetAddress) },
-                            singleLine = true,
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = MaterialTheme.colorScheme.primary,
-                                unfocusedBorderColor = MaterialTheme.colorScheme.outline
-                            )
-                        )
-
-                        OutlinedTextField(
-                            value = purpose,
-                            onValueChange = onPurposeChange,
-                            label = { Text("Levy Purpose (e.g. Fuses, Transformer Oil)") },
-                            singleLine = true,
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = MaterialTheme.colorScheme.primary,
-                                unfocusedBorderColor = MaterialTheme.colorScheme.outline
-                            )
-                        )
-
-                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                            OutlinedTextField(
-                                value = amount,
-                                onValueChange = onAmountChange,
-                                label = { Text("Amount (₦)") },
-                                singleLine = true,
-                                modifier = Modifier.weight(1f),
-                                colors = OutlinedTextFieldDefaults.colors(
-                                    focusedBorderColor = MaterialTheme.colorScheme.primary,
-                                    unfocusedBorderColor = MaterialTheme.colorScheme.outline
-                                )
-                            )
-
-                            OutlinedTextField(
-                                value = method,
-                                onValueChange = onMethodChange,
-                                label = { Text("Payment Method") },
-                                singleLine = true,
-                                modifier = Modifier.weight(1f),
-                                colors = OutlinedTextFieldDefaults.colors(
-                                    focusedBorderColor = MaterialTheme.colorScheme.primary,
-                                    unfocusedBorderColor = MaterialTheme.colorScheme.outline
-                                )
-                            )
-                        }
-
-                        Button(
-                            onClick = onSubmit,
-                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary),
-                            shape = RoundedCornerShape(8.dp),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .testTag("submit_dues_button")
-                        ) {
-                            Text("Post to CDA Transparency Ledger", fontWeight = FontWeight.Bold)
-                        }
-                    }
-                }
-            }
-        }
-
-        // Ledger Entry List
-        item {
-            Text(
-                text = "TRANSPARENCY AUDIT LOG",
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary,
-                letterSpacing = 1.sp
-            )
-        }
-
-        items(duesEntries) { entry ->
-            Card(
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-                shape = RoundedCornerShape(10.dp)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(12.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(
-                                text = entry.residentName,
-                                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                            Spacer(modifier = Modifier.width(6.dp))
-                            if (entry.verifiedByChairman) {
-                                Box(
-                                    modifier = Modifier
-                                        .clip(RoundedCornerShape(4.dp))
-                                        .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f))
-                                        .padding(horizontal = 4.dp, vertical = 2.dp)
-                                ) {
-                                    Text("VERIFIED", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.secondary)
-                                }
-                            }
-                        }
-                        Text(
-                            text = "${entry.houseAddress} • ${entry.paymentMethod}",
-                            fontSize = 12.sp,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                        Spacer(modifier = Modifier.height(2.dp))
-                        Text(
-                            text = entry.purpose,
-                            fontSize = 12.sp,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    }
-
-                    Column(horizontalAlignment = Alignment.End) {
-                        Text(
-                            text = "+₦${String.format("%,.0f", entry.amountNgn)}",
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.ExtraBold,
-                            color = MaterialTheme.colorScheme.secondary
-                        )
-                        Text(
-                            text = entry.dateText,
-                            fontSize = 12.sp,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
-
-/**
- * TAB 3: Automated NERC SLA Refund & Energy Credit Calculator
- */
-@Composable
-private fun SlaRefundCalculatorTabContent(
-    assessment: SlaCompensationAssessment,
-    delayHours: Int,
-    onDelayHoursChanged: (Int) -> Unit,
-    onDispatchClaim: () -> Unit
-) {
-    val clipboardManager = LocalClipboardManager.current
-
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        item {
-            Card(
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column {
-                            Text(
-                                text = "AUTOMATED METER REFUND CALCULATOR",
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary,
-                                letterSpacing = 1.sp
-                            )
-                            Text(
-                                text = "${assessment.discoCode} SLA Breach Compensation",
-                                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                        }
-
-                        Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(8.dp))
-                                .background(MaterialTheme.colorScheme.error.copy(alpha = 0.2f))
-                                .padding(horizontal = 8.dp, vertical = 4.dp)
-                        ) {
-                            Text(
-                                text = "SLA BREACHED",
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.ExtraBold,
-                                color = MaterialTheme.colorScheme.error
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(14.dp))
-
-                    // Duration Slider Selector
-                    Text(
-                        text = "Total Unresolved Outage Duration: $delayHours Hours (SLA Limit: ${assessment.nercStandardHoursLimit}h)",
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    Spacer(modifier = Modifier.height(6.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        listOf(24, 36, 48, 72, 96).forEach { hours ->
-                            val isSelected = delayHours == hours
-                            Box(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .clip(RoundedCornerShape(8.dp))
-                                    .background(if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f))
-                                    .clickable { onDelayHoursChanged(hours) }
-                                    .padding(vertical = 8.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text = "${hours}h",
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
-                                )
-                            }
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(14.dp))
-
-                    // Statutory Calculation Result
-                    Card(
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f)),
-                        shape = RoundedCornerShape(10.dp)
-                    ) {
-                        Column(modifier = Modifier.padding(14.dp)) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text("Excess Unlawful Delay:", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                Text("${assessment.excessHoursBreached} Hours", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
-                            }
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text("Statutory Rate (CPR 2023):", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                Text("₦93.75 / Hour", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
-                            }
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(1.dp)
-                                    .background(MaterialTheme.colorScheme.outline)
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Column {
-                                    Text("MANDATORY RECHARGE CREDIT DUE:", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.secondary)
-                                    Text("₦${String.format("%,.2f", assessment.totalCompensationPayableNgn)}", fontSize = 22.sp, fontWeight = FontWeight.ExtraBold, color = MaterialTheme.colorScheme.secondary)
-                                }
-
-                                Button(
-                                    onClick = onDispatchClaim,
-                                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary),
-                                    shape = RoundedCornerShape(8.dp),
-                                    modifier = Modifier.testTag("serve_demand_letter_button")
-                                ) {
-                                    Icon(Icons.Default.Send, contentDescription = null, modifier = Modifier.size(16.dp))
-                                    Spacer(modifier = Modifier.width(6.dp))
-                                    Text("Serve Demand", fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        // Demand Letter Preview
-        item {
-            Card(
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
-                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-                shape = RoundedCornerShape(10.dp)
-            ) {
-                Column(modifier = Modifier.padding(14.dp)) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "STATUTORY DEMAND LETTER PREVIEW",
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-
-                        IconButton(
-                            onClick = {
-                                clipboardManager.setText(AnnotatedString(assessment.demandLetterText))
-                            },
-                            modifier = Modifier
-                        ) {
-                            Icon(Icons.Default.ContentCopy, contentDescription = "Copy Letter", tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Text(
-                        text = assessment.demandLetterText,
-                        fontFamily = FontFamily.Monospace,
-                        fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.onSurface,
                         lineHeight = 16.sp
                     )
                 }

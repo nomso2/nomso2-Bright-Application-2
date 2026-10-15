@@ -254,8 +254,8 @@ fun AuditingMatrixCard(
                 ) {
                     Column {
                         Text(
-                            text = "ESCROW REBATE DUE",
-                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp, fontWeight = FontWeight.Bold),
+                            text = "BAND REFUND DUE",
+                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 16.sp, fontWeight = FontWeight.Bold),
                             color = MaterialTheme.colorScheme.secondary
                         )
                         Spacer(modifier = Modifier.height(2.dp))
@@ -265,8 +265,8 @@ fun AuditingMatrixCard(
                             color = MaterialTheme.colorScheme.secondary
                         )
                         Text(
-                            text = "Tap to Claim Escrow Token ›",
-                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp, fontWeight = FontWeight.Bold),
+                            text = "Open User Refund ›",
+                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 16.sp, fontWeight = FontWeight.Bold),
                             color = MaterialTheme.colorScheme.primary
                         )
                     }

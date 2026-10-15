@@ -143,10 +143,10 @@ object PowerSector30Registry {
         PowerProblemSolution(
             problemNumber = 15,
             category = SolutionCategory.BILLING_TARIFFS_FINANCIAL,
-            problemStatement = "Buying token units when the power is out often fails due to bad network gateways.",
-            solutionTitle = "Offline Token Vending via SMS",
-            solutionDetail = "Queues token purchases over secure SMS/USSD channels so users can purchase STS prepaid credit without active internet access.",
-            regulatoryBadge = "STS 20-Digit Standard"
+            problemStatement = "DisCos rarely compensate customers when fault repairs run past the NERC limit.",
+            solutionTitle = "Compensation Tokens",
+            solutionDetail = "Lists your complaint tickets that ran past 24 hours (phase fault) or 48 hours (transformer), the kWh owed, and lets you send the claim and record the 20-digit compensation token your DisCo issues.",
+            regulatoryBadge = "NERC Service Level"
         ),
 
         // CATEGORY 4: The "Neighbor Bottleneck" & Crowdsourcing

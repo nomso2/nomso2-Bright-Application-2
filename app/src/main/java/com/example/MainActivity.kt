@@ -64,7 +64,6 @@ import com.example.ui.components.ResolutionRatingDialog
 import com.example.ui.components.SessionLockScreen
 import com.example.ui.components.SignUpOnboardingScreen
 import com.example.ui.components.SmartMeterServerGatewayDialog
-import com.example.ui.components.TokenEscrowClearinghouseDialog
 import com.example.ui.components.TransformerForumDialog
 import com.example.ui.screens.GridHubScreen
 import com.example.ui.screens.HistoryScreen
@@ -171,15 +170,12 @@ fun BrightApp(viewModel: BrightViewModel) {
     val isDarkMode = com.example.ui.theme.LocalIsDarkTheme.current
     val themeMode by viewModel.themeMode.collectAsState()
     val auditingRecords by viewModel.auditingRecords.collectAsState()
-    val escrowTokens by viewModel.escrowRebateTokens.collectAsState()
-    val escrowVaultBalanceNgn by viewModel.escrowLiquidityVaultBalanceNgn.collectAsState()
     val communityForumPosts by viewModel.communityForumPosts.collectAsState()
     val applianceBudgetList by viewModel.applianceBudgetList.collectAsState()
     val linkedMeterAssets by viewModel.linkedMeterAssets.collectAsState()
     val whistleblowerReports by viewModel.whistleblowerReports.collectAsState()
     val transformerTelemetry by viewModel.transformerTelemetry.collectAsState()
     val isRestorationAlarmEnabled by viewModel.isRestorationAlarmEnabled.collectAsState()
-    val transformerDuesEntries by viewModel.transformerDuesEntries.collectAsState()
     val surgeWarningActive by viewModel.surgeWarningActive.collectAsState()
     val surgeCountdownSeconds by viewModel.surgeCountdownSeconds.collectAsState()
 
@@ -450,6 +446,10 @@ fun BrightApp(viewModel: BrightViewModel) {
                     onSubmit = { title, desc, faultType, isHazard, mediaUri, isVideo ->
                         viewModel.reportFault(title, desc, faultType, isHazard, mediaUri, isVideo)
                         navController.navigateToTab(BrightNavDestination.HISTORY)
+                    },
+                    onQuickHazard = { hazardName ->
+                        viewModel.reportQuickEmergencyHazard(hazardName)
+                        navController.navigateToTab(BrightNavDestination.HISTORY)
                     }
                 )
             }
@@ -479,7 +479,9 @@ fun BrightApp(viewModel: BrightViewModel) {
                     onLogOut = { viewModel.logOut() },
                     onDeleteAccount = { showDeleteAccountDialog = true },
                     onOpenSolutionsSettings = { navController.navigateToMoreSubScreen(BrightSubRoutes.solutionsSettings(0)) },
-                    onOpenHelp = { navController.navigateToMoreSubScreen(BrightSubRoutes.HELP) }
+                    onOpenHelp = { navController.navigateToMoreSubScreen(BrightSubRoutes.HELP) },
+                    onOpenUserRefund = { showClearinghouseDialog = true },
+                    onOpenHistory = { navController.navigateToTab(BrightNavDestination.HISTORY) }
                 )
             }
 
@@ -567,15 +569,11 @@ fun BrightApp(viewModel: BrightViewModel) {
         )
     }
 
-    // Phase 4: Token Escrow & AI Settlement Clearinghouse
+    // User Refund: the single place for refunds (band refund calculator, late-repair compensation
+    // tokens, claim letter). Every former Rebates / Refunds / Token Escrow entry opens this.
     if (showClearinghouseDialog) {
-        TokenEscrowClearinghouseDialog(
+        com.example.ui.components.UserRefundDialog(
             userProfile = userProfile,
-            escrowTokens = escrowTokens,
-            escrowVaultBalanceNgn = escrowVaultBalanceNgn,
-            onClaimToken = { tokenId -> viewModel.claimRebateToken(tokenId) },
-            onGenerateManualRebate = { viewModel.requestEmergencyRebateGeneration() },
-            onCompileNercReport = { viewModel.compileNercEnforcementReport() },
             onDismiss = { showClearinghouseDialog = false }
         )
     }
@@ -659,18 +657,11 @@ fun BrightApp(viewModel: BrightViewModel) {
         )
     }
 
-    // Estate Exco Portal & NERC Dossier / Dues Ledger / SLA Refund Calculator
+    // Estate Exco Portal & NERC Dossier (refunds moved to User Refund)
     if (showEstateExcoDialog) {
         EstateExcoAndSlaDossierDialog(
             userProfile = userProfile,
             activeComplaints = personalComplaints,
-            duesEntries = transformerDuesEntries,
-            onAddDuesEntry = { name, addr, meter, purpose, amount, method ->
-                viewModel.addTransformerDuesContribution(name, addr, meter, purpose, amount, method)
-            },
-            onGenerateSlaAssessment = { ticketId, title, delayHours ->
-                viewModel.generateSlaCompensationAssessment(ticketId, title, delayHours)
-            },
             onDismiss = { showEstateExcoDialog = false }
         )
     }

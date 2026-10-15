@@ -107,7 +107,7 @@ fun CitizenAutoConnectTab(
         }
 
         // Dedicated smart meter connection: nameplate scan, optical probe, HES (or labelled DEMO),
-        // STS token, SMS/USSD backup, CIU RF / PLC status, manual readings.
+        // compensation tokens, SMS/USSD backup, CIU RF / PLC status, manual readings.
         item { com.example.ui.meter.MeterConnectHub(userProfile) }
     }
 }
@@ -308,8 +308,8 @@ private fun StandardMeterNonSmartHeroCard(
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
-                    text = "Traditional STS Keypad Meter • Manual Token Entry",
-                    style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
+                    text = "Traditional STS Keypad Meter",
+                    style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold, fontSize = 16.sp),
                     color = MaterialTheme.extendedColors.warning
                 )
             }

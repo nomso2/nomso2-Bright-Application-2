@@ -39,7 +39,7 @@ object SolutionCatalog {
         SolutionInfo(12, C3, "Track when light goes and comes back", "Works out money owed to you when you get fewer hours.", BrightPermissions.NOTIFICATIONS),
         SolutionInfo(13, C3, "Fair bill check", "Compare an estimated bill with what neighbours really use."),
         SolutionInfo(14, C3, "Waiting for a meter", "Counts the days since you paid for a meter."),
-        SolutionInfo(15, C3, "Buy units without internet", "Use your bank's * code to buy units."),
+        SolutionInfo(15, C3, "Compensation tokens", "Tokens your DisCo owes when a repair runs past 24h (phase) or 48h (transformer)."),
         SolutionInfo(16, C4, "Send a photo of the fault", "One clear photo is enough to report a fault."),
         SolutionInfo(17, C4, "Ask neighbours to report too", "After you report, Bright offers to invite neighbours."),
         SolutionInfo(18, C4, "Your reporting score", "Goes up when your reports are confirmed."),

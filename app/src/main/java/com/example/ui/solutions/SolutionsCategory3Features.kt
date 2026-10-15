@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.solutions.MeterWaitlistEntity
 import com.example.data.solutions.SupplyMath
-import com.example.data.solutions.TokenQueueEntity
+import com.example.data.meter.CompensationSla
 import com.example.model.DisCoContacts
 import com.example.model.UserProfile
 import com.example.ui.solutions.common.ActionButton
@@ -238,62 +238,22 @@ fun MeterWaitlistTrackerFeature(userProfile: UserProfile) {
     }
 }
 
-// SOLUTION 15: OFFLINE TOKEN VENDING VIA USSD
-private val BANK_USSD = listOf("GTBank" to "*737#", "First Bank" to "*894#", "UBA" to "*919#", "Zenith" to "*966#", "Access" to "*901#")
-
+// SOLUTION 15: COMPENSATION TOKENS
+// Bright never sells, vends or recharges electricity. The only tokens are compensation tokens a
+// DisCo owes for fault repairs that ran past the NERC limit (24h phase fault, 48h transformer).
+// The old offline-purchase queue table (sol_token_queue) is left in place, unused, so no data or
+// schema is dropped.
 @Composable
-fun OfflineTokenVendingFeature(userProfile: UserProfile) {
-    val context = LocalContext.current
-    val dao = rememberSolutionsDao()
-    val scope = rememberCoroutineScope()
-    val queue by dao.tokenQueue().collectAsState(initial = emptyList())
-    var meter by remember { mutableStateOf(userProfile.meterNumber) }
-    var amount by remember { mutableStateOf("5000") }
-    var bank by remember { mutableStateOf(BANK_USSD.first().first) }
-    val tokenInputs = remember { mutableStateOf(mapOf<Long, String>()) }
-
+fun CompensationTokensFeature(userProfile: UserProfile) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        FeatureHeader(15, "Offline Token Vending via USSD", "No internet? Queue the purchase, then buy through your bank's USSD menu (Pay Bills > Electricity) and save the 20-digit token here.")
+        FeatureHeader(15, "Compensation tokens", CompensationSla.EXPLANATION)
         SectionCard {
-            TextInput("Meter number", meter, { meter = it.filter(Char::isDigit).take(13) }, keyboardType = KeyboardType.Number)
-            NumberField("Amount", amount, { amount = it }, suffix = "₦")
-            ChoiceRow(BANK_USSD.map { it.first }, bank) { bank = it }
-            val code = BANK_USSD.first { it.first == bank }.second
-            ActionButton("Queue & dial $bank $code", Icons.Default.Dialpad, {
-                val amt = amount.toDoubleOrNull() ?: return@ActionButton
-                scope.launch { dao.insertToken(TokenQueueEntity(meterNumber = meter, amountNaira = amt, bankName = bank)) }
-                SolutionIntents.copy(context, "Meter number", meter)
-                SolutionIntents.dialUssd(context, code)
-            }, enabled = meter.length >= 11 && (amount.toDoubleOrNull() ?: 0.0) > 0)
-            Text("Your meter number is copied so you can paste it into the bank menu. USSD charges are set by your bank and network.", fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        }
-        queue.forEach { item ->
-            SectionCard {
-                StatRow("${Fmt.naira(item.amountNaira)} via ${item.bankName}", Fmt.dateTime(item.createdAt))
-                StatRow("Meter", item.meterNumber)
-                val token = item.token
-                if (token != null) {
-                    Text(token.chunked(4).joinToString("-"), fontWeight = FontWeight.Black, fontSize = 16.sp)
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        OutlinedButton(onClick = { SolutionIntents.copy(context, "Token", token) }, modifier = Modifier.heightIn(min = 48.dp)) {
-                            Icon(Icons.Default.ContentCopy, contentDescription = null); Text(" Copy token")
-                        }
-                        OutlinedButton(onClick = { scope.launch { dao.deleteToken(item) } }, modifier = Modifier.heightIn(min = 48.dp)) { Text("Remove") }
-                    }
-                } else {
-                    val typed = tokenInputs.value[item.id] ?: ""
-                    TextInput("Paste 20-digit token", typed, { v ->
-                        tokenInputs.value = tokenInputs.value + (item.id to v.filter(Char::isDigit).take(20))
-                    }, keyboardType = KeyboardType.Number)
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        OutlinedButton(onClick = {
-                            scope.launch { dao.updateToken(item.copy(token = typed)) }
-                        }, enabled = typed.length == 20, modifier = Modifier.heightIn(min = 48.dp)) { Text("Save token") }
-                        OutlinedButton(onClick = { scope.launch { dao.deleteToken(item) } }, modifier = Modifier.heightIn(min = 48.dp)) { Text("Cancel") }
-                    }
-                    if (typed.isNotEmpty() && typed.length != 20) Text("STS tokens are exactly 20 digits (${typed.length}/20).", fontSize = 14.sp, color = MaterialTheme.colorScheme.error)
-                }
-            }
+            com.example.ui.meter.CompensationTokensSection(
+                meterNumber = userProfile.meterNumber,
+                customerName = userProfile.customerName,
+                discoCode = userProfile.discoCode,
+                showHeading = false
+            )
         }
     }
 }
