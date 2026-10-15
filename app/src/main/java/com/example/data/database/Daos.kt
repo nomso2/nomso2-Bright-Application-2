@@ -144,6 +144,10 @@ interface OutageGridNodeDao {
     @Query("UPDATE outage_grid_nodes SET statusName = :status, lastUpdate = :lastUpdate, affectedConsumers = :affectedConsumers WHERE id = :id")
     suspend fun updateNodeStatus(id: String, status: String, lastUpdate: String, affectedConsumers: Int)
 
+    /** Removes the made-up nodes older versions seeded (ids NODE-*). */
+    @Query("DELETE FROM outage_grid_nodes WHERE id LIKE 'NODE-%'")
+    suspend fun deleteSeedNodes()
+
     @Query("DELETE FROM outage_grid_nodes")
     suspend fun clearAll()
 }
@@ -155,6 +159,10 @@ interface MaintenanceAlertDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(alerts: List<MaintenanceAlertEntity>)
+
+    /** Removes the made-up notices older versions seeded (ids MNT-*). */
+    @Query("DELETE FROM maintenance_alerts WHERE id LIKE 'MNT-%'")
+    suspend fun deleteSeedAlerts()
 
     @Query("DELETE FROM maintenance_alerts")
     suspend fun clearAll()

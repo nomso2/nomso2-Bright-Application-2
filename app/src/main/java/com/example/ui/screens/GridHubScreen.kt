@@ -378,6 +378,15 @@ fun GridHubScreen(
             }
         }
 
+        // Planned maintenance notices: real notices only, otherwise an honest empty state
+        // pointing to the user's DisCo's official channels.
+        item {
+            com.example.ui.components.PlannedMaintenanceNoticesCard(
+                alerts = maintenanceAlerts,
+                userProfile = userProfile
+            )
+        }
+
         // Section Filter Chips
         item {
             LazyRow(
