@@ -79,10 +79,9 @@ fun DisCoQuickChannelsDialog(
         ?.firstNotNullOfOrNull { PhoneNumbers.toWhatsAppDigits(it) }
 
     val ussdCodes = listOf(
-        UssdQuickCode("Prepaid Token Retrieval", "*389*300#", "Retrieve lost 20-digit token or check vend history"),
+        UssdQuickCode("Prepaid Token Retrieval", "*389*300#", "Retrieve a lost 20-digit token from your DisCo"),
         UssdQuickCode("DisCo Outage Status", "*5455#", "Check feeder status and scheduled load-shedding"),
-        UssdQuickCode("Meter Account Verification", "*746#", "Verify tariff band, NIN link, and meter status"),
-        UssdQuickCode("Quick Energy Vend Pay", "*737*50#", "Direct USSD mobile payment for electricity token")
+        UssdQuickCode("Meter Account Verification", "*746#", "Verify tariff band, NIN link, and meter status")
     )
 
     AlertDialog(

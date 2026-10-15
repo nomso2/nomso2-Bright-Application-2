@@ -29,9 +29,6 @@ import com.example.data.meter.HesRegistry
 import com.example.data.meter.MeterIdentity
 import com.example.data.meter.MeterReading
 import com.example.data.meter.MeterResult
-import com.example.data.meter.StsToken
-import com.example.data.meter.TokenHistory
-import com.example.data.meter.TokenRecord
 import com.example.model.MeterManufacturer
 import com.example.model.UserProfile
 import kotlinx.coroutines.launch
@@ -58,7 +55,6 @@ private fun ManufacturerHesCard(m: MeterManufacturer, userProfile: UserProfile) 
     var reading by remember { mutableStateOf<MeterReading?>(null) }
     var message by remember { mutableStateOf<String?>(null) }
     var busy by remember { mutableStateOf(false) }
-    var token by remember { mutableStateOf("") }
     val meterNumber = MeterIdentity.meterNumber(context, userProfile.meterNumber)
 
     MeterCard(m.displayName, badge = { if (configured) StatusChip("HES connected", ok = true) else DemoBadge("DEMO") }) {
@@ -91,28 +87,8 @@ private fun ManufacturerHesCard(m: MeterManufacturer, userProfile: UserProfile) 
         message?.let { Text(it, fontSize = 13.sp, color = MaterialTheme.colorScheme.primary) }
         if (reading != null) TelemetryPanel(reading, title = if (reading!!.source.isDemo) "DEMO telemetry" else "Live telemetry")
 
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            OutlinedTextField(
-                value = StsToken.pretty(token), onValueChange = { token = StsToken.digits(it).take(20) },
-                label = { Text(if (configured) "STS token to push" else "STS token (DEMO push)") }, singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), modifier = Modifier.weight(1f)
-            )
-            Button(enabled = token.length == 20 && !busy, onClick = {
-                busy = true
-                scope.launch {
-                    val c = HesRegistry.connectorFor(context, disco, m)
-                    val result = when (val r = c.pushToken(meterNumber, token)) {
-                        is MeterResult.Ok -> (if (c.isDemo) "DEMO: credited, demo balance " else "Accepted by HES, credit ") + (r.value?.let { "%.2f kWh".format(it) } ?: "not reported")
-                        is MeterResult.Fail -> (if (c.isDemo) "DEMO: " else "Failed: ") + r.message
-                    }
-                    TokenHistory.add(context, TokenRecord(token, meterNumber, System.currentTimeMillis(), if (c.isDemo) "DEMO" else "HES", result))
-                    message = result
-                    token = ""
-                    (c.readTelemetry(meterNumber) as? MeterResult.Ok)?.let { reading = it.value }
-                    busy = false
-                }
-            }) { Text("Push") }
-        }
+        Text("No token buying or recharging here. Compensation tokens your DisCo owes for overdue fault repairs are listed under Compensation tokens.",
+            fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
         TextButton(onClick = { showConfig = !showConfig }) {
             Text(if (showConfig) "Hide HES settings" else if (configured) "HES settings" else "Add DisCo HES endpoint")

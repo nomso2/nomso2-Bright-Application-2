@@ -71,6 +71,8 @@ import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -135,7 +137,6 @@ fun SmartMeterServerGatewayDialog(
     // Dialog states
     var showAddMeterModal by remember { mutableStateOf(false) }
     var tokenTargetMeter by remember { mutableStateOf<SmartMeterDevice?>(null) }
-    var otaTokenInput by remember { mutableStateOf("") }
 
     // Config form states initialized from serverConfig
     var formServerUrl by remember(serverConfig) { mutableStateOf(serverConfig.serverUrl) }
@@ -324,7 +325,6 @@ fun SmartMeterServerGatewayDialog(
                                     onToggleRelay = onToggleRelay,
                                     onOpenOtaTokenDialog = { meter ->
                                         tokenTargetMeter = meter
-                                        otaTokenInput = ""
                                     },
                                     onPingMeter = onPingMeter
                                 )
@@ -381,55 +381,40 @@ fun SmartMeterServerGatewayDialog(
         )
     }
 
-    // Modal: Over-The-Air (OTA) STS Token Injection
+    // Modal: Compensation tokens for this meter (owed by the DisCo for overdue fault repairs).
+    // Bright never sells, vends or recharges tokens.
     tokenTargetMeter?.let { meter ->
         AlertDialog(
             onDismissRequest = { tokenTargetMeter = null },
             title = {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Icon(Icons.Default.FlashOn, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-                    Text("Over-The-Air Token Push", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
+                    Text("Compensation tokens", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = MaterialTheme.colorScheme.onSurface)
                 }
             },
             text = {
-                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Column(
+                    modifier = Modifier
+                        .verticalScroll(rememberScrollState())
+                        .testTag("ota_token_input_field"),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
                     Text(
-                        text = "Transmit 20-digit STS prepayment token over cellular/APN bridge directly to Meter #${meter.meterNumber} (${meter.manufacturer}). No physical keypad entry required.",
-                        fontSize = 12.sp,
+                        text = "Meter #${meter.meterNumber} (${meter.manufacturer})",
+                        fontSize = 16.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
-                    OutlinedTextField(
-                        value = otaTokenInput,
-                        onValueChange = { if (it.length <= 24) otaTokenInput = it },
-                        label = { Text("20-Digit STS Token") },
-                        placeholder = { Text("4829 1092 3841 9201 3819") },
-                        modifier = Modifier.fillMaxWidth().testTag("ota_token_input_field"),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = MaterialTheme.colorScheme.primary,
-                            unfocusedBorderColor = MaterialTheme.colorScheme.outline,
-                            focusedTextColor = MaterialTheme.colorScheme.onSurface,
-                            unfocusedTextColor = MaterialTheme.colorScheme.onSurface
-                        )
+                    com.example.ui.meter.CompensationTokensSection(
+                        meterNumber = meter.meterNumber,
+                        customerName = userProfile.customerName,
+                        discoCode = meter.discoCode,
+                        showHeading = false
                     )
                 }
             },
             confirmButton = {
-                Button(
-                    onClick = {
-                        if (otaTokenInput.isNotBlank()) {
-                            onSendOtaToken(meter.meterNumber, otaTokenInput)
-                            tokenTargetMeter = null
-                        }
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary),
-                    modifier = Modifier.testTag("submit_ota_token_btn")
-                ) {
-                    Text("Transmit OTA Token", fontWeight = FontWeight.Bold)
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { tokenTargetMeter = null }) {
-                    Text("Cancel", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                TextButton(onClick = { tokenTargetMeter = null }, modifier = Modifier.testTag("submit_ota_token_btn")) {
+                    Text("Close", fontSize = 16.sp, color = MaterialTheme.colorScheme.primary)
                 }
             },
             containerColor = MaterialTheme.colorScheme.surfaceVariant
@@ -701,7 +686,7 @@ private fun SmartMeterDeviceCard(
                         )
                     }
 
-                    // OTA Token Vending
+                    // Compensation tokens owed for overdue fault repairs
                     IconButton(
                         onClick = onOpenOtaToken,
                         modifier = Modifier
@@ -711,7 +696,7 @@ private fun SmartMeterDeviceCard(
                     ) {
                         Icon(
                             imageVector = Icons.Default.FlashOn,
-                            contentDescription = "Push OTA Token",
+                            contentDescription = "Compensation tokens",
                             tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(16.dp)
                         )

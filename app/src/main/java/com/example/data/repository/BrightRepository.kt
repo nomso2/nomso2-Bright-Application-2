@@ -755,6 +755,7 @@ class BrightRepository(
                 com.example.data.solutions.SolutionsDatabase.wipe(ctx)
                 com.example.data.meter.ManualMeterReadings.clear(ctx)
                 com.example.data.meter.TokenHistory.clear(ctx)
+                com.example.data.meter.CompensationTokens.clear(ctx)
                 com.example.data.meter.MeterIdentity.clear(ctx)
                 com.example.data.meter.HesRegistry.clearAll(ctx)
                 com.example.ui.solutions.common.SolutionsNotifier.hideQuickLog(ctx)

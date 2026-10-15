@@ -283,20 +283,6 @@ data class WhistleblowerReport(
     val status: String = "CRYPTOGRAPHICALLY_SEALED_NERC_DISPATCHED"
 )
 
-/**
- * CDA / Transformer Dues Ledger Entry
- */
-data class TransformerDuesEntry(
-    val id: String,
-    val residentName: String,
-    val houseAddress: String,
-    val meterNumber: String,
-    val purpose: String, // "Jumper Cable Replacement", "500kVA Transformer Oil Top-Up", "Street Security Light Repairs", "Lineman Requisition"
-    val amountNgn: Double,
-    val dateText: String,
-    val paymentMethod: String, // "Bank Transfer", "OPay", "Cash to Chairman"
-    val verifiedByChairman: Boolean = true
-)
 
 /**
  * NERC SLA Compensation Assessment Record

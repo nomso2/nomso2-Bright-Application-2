@@ -178,7 +178,7 @@ fun GridHubScreen(
             PolicyGuide(
                 title = "Meter Asset Provider (MAP) Regulations",
                 regulationCode = "NERC/REG/MAP-REV-2024",
-                summary = "Rules governing prepaid meter procurement, installation timelines, and token vending transparency.",
+                summary = "Rules governing prepaid meter procurement and installation timelines.",
                 keyPoints = listOf(
                     "DisCos must install prepaid meters within 10 working days of verified MAP payment.",
                     "Customers who pay upfront for meters are entitled to full reimbursement via electricity energy tokens over time.",
@@ -290,9 +290,9 @@ fun GridHubScreen(
                             }
                             Text(
                                 text = if (isSmart)
-                                    "✓ Linked to ${meterStatus.manufacturerName} AMI • 228V • OTA Top-up Ready"
+                                    "✓ Linked to ${meterStatus.manufacturerName} AMI • 228V"
                                 else
-                                    "Standard STS Keypad Meter • Manual 20-digit Token Recharge Active",
+                                    "Standard STS Keypad Meter",
                                 style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -358,8 +358,8 @@ fun GridHubScreen(
                                 color = MaterialTheme.extendedColors.warning
                             )
                             Text(
-                                text = "PDF Export • Dues Ledger • ₦ SLA Refund Calculator",
-                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
+                                text = "NERC PDF Dossier export",
+                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 16.sp),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
@@ -597,7 +597,7 @@ fun GridHubScreen(
                         OutlinedTextField(
                             value = calcAmountText,
                             onValueChange = { calcAmountText = it },
-                            label = { Text("Recharge Amount (NGN ₦)") },
+                            label = { Text("Amount spent on electricity (NGN ₦)", fontSize = 16.sp) },
                             singleLine = true,
                             shape = RoundedCornerShape(10.dp),
                             modifier = Modifier.fillMaxWidth()
@@ -719,7 +719,7 @@ fun GridHubScreen(
                         }
 
                         Text(
-                            text = "• Pay-as-you-use: Purchase 20-digit STS tokens via app, USSD, or banking channels.\n• Absolute transparency: Users only consume what they purchase; zero estimation risk.\n• Real-time CIU Display: View current voltage, instantaneous load (kW), and remaining credit kWh.\n• Automatic cutoff when units expire; restored instantly upon token entry.",
+                            text = "• Pay-as-you-use prepaid meter on the 20-digit STS standard. Bright doesn't sell or recharge tokens.\n• No estimated bills: you are charged only for what the meter records.\n• Real-time CIU Display: View current voltage, instantaneous load (kW), and remaining credit kWh.\n• Automatic cutoff when units expire; restored instantly upon token entry.",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )

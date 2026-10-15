@@ -102,6 +102,11 @@ class SolutionsPrefs(context: Context) {
         get() = prefs.getFloat("units_month_kwh", 150f)
         set(v) = prefs.edit().putFloat("units_month_kwh", v).apply()
 
+    /** Average household load in kW while supply is on (User Refund band calculator). */
+    var avgLoadKw: Float
+        get() = prefs.getFloat("avg_load_kw", 1.0f)
+        set(v) = prefs.edit().putFloat("avg_load_kw", v).apply()
+
     var tariffPaid: Float
         get() = prefs.getFloat("tariff_paid", 209.5f)
         set(v) = prefs.edit().putFloat("tariff_paid", v).apply()

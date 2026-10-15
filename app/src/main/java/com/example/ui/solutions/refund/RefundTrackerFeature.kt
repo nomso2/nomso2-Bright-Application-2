@@ -170,14 +170,14 @@ fun RefundTrackerFeature(userProfile: UserProfile) {
 
         SectionCard {
             Text("What you're owed (estimate)", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-            NumberField("Units you buy per month", units, { units = it; it.toFloatOrNull()?.let { v -> prefs.unitsPerMonthKwh = v } }, suffix = "kWh")
+            NumberField("Units you use per month", units, { units = it; it.toFloatOrNull()?.let { v -> prefs.unitsPerMonthKwh = v } }, suffix = "kWh")
             NumberField("Tariff you pay (${userProfile.feederBand.code})", tariffPaid, { tariffPaid = it; it.toFloatOrNull()?.let { v -> prefs.tariffPaid = v } }, suffix = "₦/kWh")
             NumberField("Tariff for the band you actually got", tariffDelivered, { tariffDelivered = it; it.toFloatOrNull()?.let { v -> prefs.tariffDelivered = v } }, suffix = "₦/kWh")
             Text("Check both tariffs on your DisCo's current tariff table; Band A was ₦209.50/kWh from July 2024.", fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
             StatRow("Supplied vs promised", "${Fmt.hours(summary.suppliedTotal)} / ${Fmt.hours(summary.promisedTotal)}")
             StatRow("Estimated owed", Fmt.naira(owed), if (owed > 0) MaterialTheme.extendedColors.success else MaterialTheme.colorScheme.onSurface)
             Text(
-                "Estimate = units bought in the logged period x (tariff paid - tariff for the band delivered). Prepaid is credited as kWh token; postpaid as a bill adjustment. Your DisCo makes the final calculation.",
+                "Estimate = units used in the logged period x (tariff paid - tariff for the band delivered). Prepaid is credited as kWh token; postpaid as a bill adjustment. Your DisCo makes the final calculation.",
                 fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }

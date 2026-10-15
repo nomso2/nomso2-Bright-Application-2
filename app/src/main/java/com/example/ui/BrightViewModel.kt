@@ -32,7 +32,6 @@ import com.example.model.CommunityForumPost
 import com.example.model.ApplianceBudgetItem
 import com.example.model.LinkedMeterAsset
 import com.example.model.WhistleblowerReport
-import com.example.model.TransformerDuesEntry
 import com.example.model.SlaCompensationAssessment
 import com.example.model.SmartMeterServerConfig
 import com.example.model.SmartMeterDevice
@@ -214,33 +213,6 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
     private val _userMessage = MutableStateFlow<String?>(null)
     val userMessage: StateFlow<String?> = _userMessage.asStateFlow()
 
-    // Transformer Dues & CDA Transparency Ledger
-    private val _transformerDuesEntries = MutableStateFlow<List<TransformerDuesEntry>>(emptyList())
-    val transformerDuesEntries: StateFlow<List<TransformerDuesEntry>> = _transformerDuesEntries.asStateFlow()
-
-    fun addTransformerDuesContribution(
-        name: String,
-        address: String,
-        meter: String,
-        purpose: String,
-        amount: Double,
-        method: String
-    ) {
-        val entry = TransformerDuesEntry(
-            id = "DUE-2026-${(100..999).random()}",
-            residentName = name.ifBlank { userProfile.value.customerName },
-            houseAddress = address.ifBlank { userProfile.value.streetAddress },
-            meterNumber = meter.ifBlank { userProfile.value.meterNumber },
-            purpose = purpose,
-            amountNgn = amount.coerceAtLeast(500.0),
-            dateText = "Just now",
-            paymentMethod = method,
-            verifiedByChairman = true
-        )
-        _transformerDuesEntries.value = listOf(entry) + _transformerDuesEntries.value
-        showNotification("₦${amount.toInt()} Dues Contribution recorded in CDA Ledger for ${entry.residentName}")
-    }
-
     // NERC SLA Compensation Claim Generator
     fun generateSlaCompensationAssessment(
         ticketId: String,
@@ -253,12 +225,13 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
         val standardHours = if (faultTitle.contains("Transformer", ignoreCase = true)) 48 else 24
         val excessBreached = (delayHours - standardHours).coerceAtLeast(1)
         val compensationNgn = excessBreached * 93.75 // ₦93.75 per hour under NERC CPR statutory restitution
-        val token = "${(1000..9999).random()} ${(1000..9999).random()} ${(1000..9999).random()} ${(1000..9999).random()} ${(1000..9999).random()}"
+        // No token is invented here: the DisCo issues the compensation token, and the user enters it.
+        val token = ""
         val targetTransformer = if (transformerId.isNotBlank()) transformerId else profile.transformerId
         val incidentDescriptionLine = if (faultDescription.isNotBlank()) "\nIncident Description: $faultDescription" else ""
 
         val letter = """
-            FORMAL STATUTORY RECHARGE CREDIT DEMAND
+            FORMAL COMPENSATION CLAIM
             Pursuant to NERC Customer Protection Regulations (CPR) 2023, Order on Service Level Agreements
             
             TO: Managing Director / Chief Executive Officer
@@ -280,9 +253,9 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
             
             Pursuant to NERC CPR Section 14(2), the licensee is mandatorily required to credit the affected consumer's prepaid meter account with statutory compensatory billing energy at the rate of ₦93.75 per defaulting hour.
             
-            TOTAL STATUTORY COMPENSATORY RECHARGE CREDIT: ₦${String.format("%.2f", compensationNgn)}
+            TOTAL COMPENSATION CLAIMED: ₦${String.format("%.2f", compensationNgn)}
             
-            Take notice that failure to reflect this compensatory energy credit in the consumer's next token vending will result in immediate escalation to the NERC Consumer Forum and commencement of administrative sanctions under Section 63 of the Electricity Act 2023.
+            Take notice that failure to issue the compensation token owed for this fault will result in immediate escalation to the NERC Consumer Forum and commencement of administrative sanctions under Section 63 of the Electricity Act 2023.
             
             DATED THIS ${java.text.SimpleDateFormat("dd MMMM yyyy", java.util.Locale.getDefault()).format(java.util.Date())}
             Certified via BRIGHT National Grid Telemetry Platform
@@ -487,7 +460,6 @@ class BrightViewModel(application: Application) : AndroidViewModel(application) 
             _communityForumPosts.value = emptyList()
             _linkedMeterAssets.value = emptyList()
             _whistleblowerReports.value = emptyList()
-            _transformerDuesEntries.value = emptyList()
             showNotification("Your account was deleted from this phone.")
         }
     }

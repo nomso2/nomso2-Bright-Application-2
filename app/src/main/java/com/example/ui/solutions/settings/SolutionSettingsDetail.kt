@@ -183,7 +183,7 @@ fun SolutionFeatureContent(
             12 -> RefundTrackerFeature(userProfile)
             13 -> CommunityConsumptionCalculatorFeature(userProfile)
             14 -> MeterWaitlistTrackerFeature(userProfile)
-            15 -> OfflineTokenVendingFeature(userProfile)
+            15 -> CompensationTokensFeature(userProfile)
             16 -> VisualProofOverrideFeature(userProfile)
             17 -> WakeUpStreetAlertsFeature(userProfile)
             18 -> UserTrustScoreFeature()

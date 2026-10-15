@@ -65,6 +65,8 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -87,12 +89,10 @@ import com.example.model.TransformerOverloadTelemetry
 import com.example.model.UserProfile
 import com.example.ui.components.AuditingMatrixCard
 import com.example.ui.components.ComplaintCard
-import com.example.ui.components.HazardFastTrackCard
 import com.example.ui.components.MeterProfileHeader
 import com.example.ui.components.PowerRestorationAlertCard
 import com.example.ui.components.QuickActionGrid
 import com.example.ui.components.RealTimeTicker
-import com.example.ui.components.TransformerOverloadCard
 import com.example.ui.components.GridSurgeWarningBanner
 import com.example.ui.theme.extendedColors
 
@@ -214,15 +214,24 @@ fun HomeScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(modifier = Modifier.weight(1f, fill = false)) {
+                    // Time-of-day greeting on the device clock, refreshed every minute.
+                    var greetingNow by remember { mutableLongStateOf(System.currentTimeMillis()) }
+                    LaunchedEffect(Unit) {
+                        while (true) {
+                            kotlinx.coroutines.delay(60_000)
+                            greetingNow = System.currentTimeMillis()
+                        }
+                    }
                     Text(
-                        text = "THE BRIGHT PROJECT",
-                        style = MaterialTheme.typography.labelSmall.copy(
-                            fontWeight = FontWeight.ExtraBold,
-                            fontSize = 12.sp,
-                            letterSpacing = 1.sp
+                        text = homeGreeting(userProfile.customerName, greetingNow),
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 20.sp
                         ),
                         color = MaterialTheme.colorScheme.primary,
-                        maxLines = 1
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.testTag("home_greeting")
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
@@ -555,7 +564,7 @@ fun HomeScreen(
                                 }
                                 Spacer(modifier = Modifier.height(12.dp))
                                 Text(
-                                    text = "Your Lights are Bright!",
+                                    text = "No active reports",
                                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
@@ -613,12 +622,7 @@ fun HomeScreen(
                     )
                 }
 
-                // 6. Emergency Hazard Fast-Track (1-Tap SOS), kept on Home because it is safety-critical
-                item {
-                    HazardFastTrackCard(
-                        onQuickHazardSelected = onEmergencyHazardTriggered
-                    )
-                }
+                // Hazard fast-track card moved to the Report screen (calm one-tap danger report).
 
                 // 7. Citizen Smart Meter Gateway Card (Auto-Connected or Standard STS)
                 item {
@@ -722,68 +726,7 @@ fun HomeScreen(
                     }
                 }
 
-                // 8. More Tools (opens the More tab) & Comprehensive Utilities
-                item {
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable(onClick = onNavigateMore)
-                            .testTag("more_tools_section_card"),
-                        shape = RoundedCornerShape(16.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(12.dp)
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(36.dp)
-                                        .clip(CircleShape)
-                                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Bolt,
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.primary,
-                                        modifier = Modifier.size(20.dp)
-                                    )
-                                }
-                                Column {
-                                    Text(
-                                        text = "MORE TOOLS & PROTOCOLS",
-                                        style = MaterialTheme.typography.labelSmall.copy(
-                                            fontWeight = FontWeight.ExtraBold,
-                                            letterSpacing = 0.5.sp
-                                        ),
-                                        color = MaterialTheme.colorScheme.onSurface
-                                    )
-                                    Text(
-                                        text = "Tariffs, diagnostics, escrow rebates, forums & policies",
-                                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                }
-                            }
-
-                            Icon(
-                                imageVector = Icons.Filled.ChevronRight,
-                                contentDescription = "View More",
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.size(20.dp)
-                            )
-                        }
-                    }
-                }
+                // "More tools & protocols" card removed: Smart Meter, Estate & Dossier and User Refund live in More > Tools.
 
                 // 10. Real-Time National Grid Telemetry Bar
                 item {
@@ -804,3 +747,18 @@ fun HomeScreen(
     }
 }
 
+/**
+ * "Good morning" 05:00-11:59, "Good afternoon" 12:00-16:59, "Good evening" 17:00-20:59,
+ * "Good night" 21:00-04:59 on the device clock, followed by the customer's name when set.
+ */
+internal fun homeGreeting(customerName: String, nowMillis: Long = System.currentTimeMillis()): String {
+    val hour = java.util.Calendar.getInstance().apply { timeInMillis = nowMillis }.get(java.util.Calendar.HOUR_OF_DAY)
+    val greeting = when (hour) {
+        in 5..11 -> "Good morning"
+        in 12..16 -> "Good afternoon"
+        in 17..20 -> "Good evening"
+        else -> "Good night"
+    }
+    val name = customerName.trim()
+    return if (name.isBlank()) greeting else "$greeting, $name"
+}
